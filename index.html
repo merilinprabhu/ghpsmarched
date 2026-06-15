@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHPS Marched - Modern Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    .glass-input {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .animate-pulse-slow {
+      animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.15; }
+      50% { transform: scale(1.1); opacity: 0.25; }
+    }
+  </style>
+</head>
+<body class="bg-[#0f172a] bg-gradient-to-tr from-[#0f172a] via-[#1e1b4b] to-[#0f172a] flex flex-col items-center justify-center min-h-screen py-10 px-4 relative">
+  
+  <div class="absolute w-[500px] h-[500px] bg-indigo-600 rounded-full blur-[120px] opacity-20 -top-40 -left-20 pointer-events-none animate-pulse-slow"></div>
+  <div class="absolute w-[500px] h-[500px] bg-blue-500 rounded-full blur-[120px] opacity-20 -bottom-40 -right-20 pointer-events-none animate-pulse-slow" style="animation-delay: 3s;"></div>
+
+  <div class="glass-card p-8 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-md transform transition-all duration-500">
+    
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl border border-white/40 shadow-lg mb-4">
+        <svg class="w-10 h-10 text-white drop-shadow-[0_2px_8px_rgba(99,102,241,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          <circle cx="12" cy="7" r="1.5" fill="currentColor"></circle>
+        </svg>
+      </div>
+      <h1 class="text-xl font-bold text-white tracking-wide uppercase">GHPS Marched</h1>
+      <p class="text-[11px] font-semibold text-indigo-200 tracking-widest uppercase opacity-80 mt-1">Govt Higher Primary School</p>
+      <div class="w-12 h-[3px] bg-gradient-to-r from-blue-400 to-indigo-400 mx-auto mt-3 rounded-full"></div>
+    </div>
+
+    <h2 id="formTitle" class="text-sm font-medium mb-6 text-center text-indigo-100/80 tracking-wide">School Management System</h2>
+
+    <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4">
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Email Address</label>
+        <input type="email" id="loginEmail" placeholder="name@school.com" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
+      </div>
+      <div>
+        <div class="flex justify-between items-center mb-1.5 ml-1">
+          <label class="text-white text-xs font-semibold tracking-wider uppercase opacity-90">Password</label>
+          <a href="#" onclick="toggleForm('forgot')" class="text-xs text-indigo-300 hover:text-white font-medium transition">Forgot Password?</a>
+        </div>
+        <input type="password" id="loginPassword" placeholder="••••••••" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
+      </div>
+      <div class="pt-3">
+        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.99] text-white font-semibold py-3 rounded-xl transition duration-300 text-sm tracking-wide shadow-lg shadow-indigo-950/50">Login</button>
+      </div>
+      <p class="mt-6 text-xs text-center text-indigo-200/70">New user? <a href="#" onclick="toggleForm('register')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Register here</a></p>
+    </form>
+
+    <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" class="hidden space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Full Name</label>
+          <input type="text" id="regName" placeholder="Full Name" class="glass-input w-full px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
+        </div>
+        <div>
+          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Username</label>
+          <input type="text" id="regUsername" placeholder="username123" class="glass-input w-full px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
+        </div>
+      </div>
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Phone Number</label>
+        <input type="tel" id="regPhone" placeholder="9876543210" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
+      </div>
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Email Address</label>
+        <input type="email" id="regEmail" placeholder="name@school.com" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
+      </div>
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Password</label>
+        <input type="password" id="regPassword" placeholder="••••••••" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
+      </div>
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Role</label>
+        <select id="regRole" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
+          <option value="Teacher">Teacher</option>
+          <option value="Admin">Admin</option>
+        </select>
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] text-white font-semibold py-3 rounded-xl transition duration-300 text-sm tracking-wide shadow-lg">Register Account</button>
+      </div>
+      <p class="mt-4 text-xs text-center text-indigo-200/70">Already have an account? <a href="#" onclick="toggleForm('login')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Login here</a></p>
+    </form>
+
+    <form id="forgotForm" onsubmit="event.preventDefault(); handleForgotPassword();" class="hidden space-y-4">
+      <p class="text-xs text-indigo-200/80 text-center mb-2">ನಿಮ್ಮ ಖಾತೆಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ. ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ಕಳುಹಿಸಲಾಗುವುದು.</p>
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Registered Email</label>
+        <input type="email" id="forgotEmail" placeholder="name@school.com" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
+      </div>
+      <div class="pt-2">
+        <button type="submit" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 active:scale-[0.99] text-white font-semibold py-3 rounded-xl transition duration-300 text-sm tracking-wide shadow-lg">Reset Password</button>
+      </div>
+      <p class="mt-6 text-xs text-center text-indigo-200/70">Back to <a href="#" onclick="toggleForm('login')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Login</a></p>
+    </form>
+
+    <div id="message" class="mt-4 text-xs text-center hidden p-3 rounded-xl font-medium border backdrop-blur-md"></div>
+  </div>
+
+  <footer class="mt-8 text-center text-indigo-300/50 text-xs tracking-wider">
+    <p class="font-light">Designed & Developed by <span class="font-medium text-indigo-200 hover:text-white transition cursor-pointer border-b border-indigo-400/30 pb-0.5">Marilin Prabhu</span></p>
+  </footer>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    window.onload = async function() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        window.location.href = "dashboard.html";
+      }
+    };
+
+    function toggleForm(type) {
+      document.getElementById('message').classList.add('hidden');
+      
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+      document.getElementById('forgotForm').classList.add('hidden');
+      
+      if (type === 'register') {
+        document.getElementById('registerForm').classList.remove('hidden');
+        document.getElementById('formTitle').innerText = "Register Account";
+      } else if (type === 'forgot') {
+        document.getElementById('forgotForm').classList.remove('hidden');
+        document.getElementById('formTitle').innerText = "Reset Password";
+      } else {
+        document.getElementById('loginForm').classList.remove('hidden');
+        document.getElementById('formTitle').innerText = "School Management System";
+      }
+    }
+
+    function showMessage(text, isSuccess) {
+      const msgDiv = document.getElementById('message');
+      msgDiv.innerText = text;
+      msgDiv.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'border-red-500/30', 'bg-emerald-500/20', 'text-emerald-200', 'border-emerald-500/30');
+      
+      if (isSuccess) {
+        msgDiv.classList.add('bg-emerald-500/20', 'text-emerald-200', 'border-emerald-500/30');
+      } else {
+        msgDiv.classList.add('bg-red-500/20', 'text-red-200', 'border-red-500/30');
+      }
+      msgDiv.classList.remove('hidden');
+    }
+
+    async function handleLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      if(!email || !pass) { showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false); return; }
+      showMessage("ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...", true);
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: pass
+        });
+
+        if (error) {
+          showMessage(error.message, false);
+          return;
+        }
+
+        // Fetch user profile from the database
+        const { data: profile, error: profileErr } = await supabaseClient
+          .from('profiles')
+          .select('name')
+          .eq('id', data.user.id)
+          .single();
+
+        const name = profile ? profile.name : (data.user.user_metadata.name || "ಬಳಕೆದಾರ");
+        showMessage("ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ಸುಸ್ವಾಗತ " + name, true);
+        
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1200);
+      } catch (err) {
+        showMessage("ಲಾಗಿನ್ ದೋಷ: " + err.message, false);
+      }
+    }
+
+    async function handleRegister() {
+      const name = document.getElementById('regName').value;
+      const username = document.getElementById('regUsername').value;
+      const phone = document.getElementById('regPhone').value;
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPassword').value;
+      const role = document.getElementById('regRole').value;
+
+      if(!name || !username || !phone || !email || !pass) {
+        showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false);
+        return;
+      }
+
+      showMessage("ಖಾತೆಯನ್ನು ಸೃಷ್ಟಿಸಲಾಗುತ್ತಿದೆ...", true);
+
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email: email,
+          password: pass,
+          options: {
+            data: {
+              name: name,
+              username: username,
+              phone: phone,
+              role: role
+            }
+          }
+        });
+
+        if (error) {
+          showMessage(error.message, false);
+          return;
+        }
+
+        if (data.user) {
+          // Insert details to profiles table
+          const { error: profileErr } = await supabaseClient
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              email: email,
+              name: name,
+              username: username,
+              phone: phone,
+              role: role
+            });
+
+          if (profileErr) {
+            console.error("Profiles insertion error:", profileErr);
+          }
+
+          showMessage("ಖಾತೆ ಸೃಷ್ಟಿ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಯವಿಟ್ಟು ಇಮೇಲ್ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಲಾಗಿನ್ ಮಾಡಿ.", true);
+          setTimeout(() => toggleForm('login'), 2000);
+        }
+      } catch (err) {
+        showMessage("ನೋಂದಣಿ ದೋಷ: " + err.message, false);
+      }
+    }
+
+    async function handleForgotPassword() {
+      const email = document.getElementById('forgotEmail').value;
+      if(!email) { showMessage("ದಯವಿಟ್ಟು ಇಮೇಲ್ ಐಡಿ ನಮೂದಿಸಿ.", false); return; }
+      showMessage("ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...", true);
+
+      try {
+        const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
+        if (error) {
+          showMessage(error.message, false);
+        } else {
+          showMessage("ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ನಿಮ್ಮ ಇಮೇಲ್‌ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.", true);
+        }
+      } catch (err) {
+        showMessage("ದೋಷ: " + err.message, false);
+      }
+    }
+  </script>
+</body>
+</html>
