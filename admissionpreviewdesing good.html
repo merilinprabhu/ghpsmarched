@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GHPS Marched - New Admission Form</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.25);
+      --glass-blur: blur(12px);
+    }
+
+    body { 
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; 
+      background: linear-gradient(135deg, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      padding-top: 140px; 
+      padding-bottom: 40px; 
+    }
+
+    .toggle-header {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-switch-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px;
+      border-radius: 12px;
+      display: inline-flex;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toggle-btn {
+      padding: 6px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.2s ease;
+      color: #94a3b8;
+      background: transparent;
+    }
+
+    .toggle-btn.active {
+      background: #059669;
+      color: white;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .glass-container { 
+      background: var(--glass-bg); 
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border); 
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+      border-radius: 24px;
+    }
+
+    .form-section-block { 
+      background: rgba(255, 255, 255, 0.5); 
+      border: 1px solid var(--glass-border); 
+      border-radius: 16px; 
+      padding: 24px; 
+      margin-bottom: 24px; 
+      scroll-margin-top: 150px; 
+    }
+
+    .premium-input { 
+      background: rgba(255, 255, 255, 0.7) !important; 
+      border: 1px solid rgba(148, 163, 184, 0.4) !important; 
+      color: #1e293b !important; 
+      border-radius: 10px !important; 
+      font-size: 13px !important; 
+      font-weight: 500 !important; 
+      padding: 9px 14px !important; 
+      transition: all 0.3s ease; 
+    }
+
+    .premium-input:focus { 
+      border-color: #059669 !important; 
+      box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.15) !important; 
+      background: #ffffff !important;
+    }
+
+    .nav-sections .nav-link { 
+      color: #475569; 
+      font-weight: 600; 
+      font-size: 13px; 
+      margin: 2px 4px; 
+      border-radius: 8px; 
+      padding: 6px 14px; 
+    }
+
+    .nav-sections .nav-link.active { 
+      background: rgba(5, 150, 105, 0.1); 
+      color: #059669; 
+    }
+
+    label { 
+      font-weight: 700; 
+      margin-top: 12px; 
+      margin-bottom: 6px;
+      color: #334155; 
+      font-size: 11px; 
+      letter-spacing: 0.5px;
+      text-transform: uppercase; 
+    }
+
+    .required { color: #ef4444; }
+  </style>
+</head>
+<body>
+
+<header class="fixed-top toggle-header text-white px-4 d-flex justify-content-between align-items-center" style="height: 65px;">
+  <div class="d-flex align-items-center gap-3">
+    <div>
+      <h1 class="m-0 fs-6 font-bold text-white">GHPS MARCHED</h1>
+      <p class="m-0 text-slate-400" style="font-size: 10px;">ವಿದ್ಯಾರ್ಥಿ ನೋಂದಣಿ ಪೋರ್ಟಲ್</p>
+    </div>
+  </div>
+  
+  <div class="toggle-switch-container">
+    <button class="toggle-btn active" type="button" onclick="location.href='admissionpreviewdesing good.html'">
+      <i class="fa-solid fa-pen-to-square me-1"></i> Form Entry
+    </button>
+    <button class="toggle-btn" type="button" onclick="location.href='dashboard.html'">
+      <i class="fa-solid fa-chart-line me-1"></i> Dashboard
+    </button>
+  </div>
+</header>
+
+<nav class="nav-sections fixed-top glass-nav shadow-sm d-flex align-items-center" style="top: 65px; height: 55px;">
+  <div class="container d-flex justify-content-center flex-wrap">
+    <a class="nav-link active" href="#student-details">ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳು</a>
+    <a class="nav-link" href="#banking-details">ಬ್ಯಾಂಕಿಂಗ್ ವಿವರಗಳು</a>
+    <a class="nav-link" href="#parents-details">ಪೋಷಕರ ವಿವರಗಳು</a>
+    <a class="nav-link" href="#school-details">ಹಳೆಯ ಶಾಲಾ ವಿವರಗಳು</a>
+  </div>
+</nav>
+
+<div class="container max-w-5xl">
+  <div class="glass-container p-4 p-md-5">
+
+    <form id="admissionForm" action="Preview-2.html" method="GET">
+      
+      <!-- SECTION 1 -->
+      <div id="student-details" class="form-section-block">
+        <div class="fs-6 font-bold text-success border-b border-light pb-2 mb-3">📊 1. ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳು / Student Details</div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col">
+            <label>ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Academic Year <span class="required">*</span></label>
+            <select name="academicYear" class="form-select premium-input" required>
+              <option value="2026-27">2026-27</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium <span class="required">*</span></label>
+            <select name="medium" class="form-select premium-input" required>
+              <option value="ಕನ್ನಡ">ಕನ್ನಡ</option>
+              <option value="ENGLISH">ENGLISH</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>ದಾಖಲಾಗುವ ತರಗತಿ / Class <span class="required">*</span></label>
+            <select name="enrollClass" class="form-select premium-input" required>
+              <option value="1">Iನೇ ತರಗತಿ</option>
+              <option value="2">IIನೇ ತರಗತಿ</option>
+              <option value="3">IIIನೇ ತರಗತಿ</option>
+              <option value="4">IVನೇ ತರಗತಿ</option>
+              <option value="5">Vನೇ ತರಗತಿ</option>
+              <option value="6">VIನೇ ತರಗತಿ</option>
+              <option value="7">VIIನೇ ತರಗತಿ</option>
+              <option value="8">VIIIನೇ ತರಗತಿ</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>ಅರ್ಜಿ ಸಂಖ್ಯೆ / Application No. <span class="required">*</span></label>
+            <input type="text" name="appNo" value="GHPS-2026-0492" class="form-control premium-input" readonly required>
+          </div>
+          <div class="col">
+            <label>ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name <span class="required">*</span></label>
+            <input type="text" name="studentName" class="form-control premium-input" placeholder="ಕನ್ನಡದಲ್ಲಿ ಹೆಸರು" required>
+          </div>
+          <div class="col">
+            <label>ಇಂಗ್ಲೀಷಿನಲ್ಲಿ ಹೆಸರು / Name in English <span class="required">*</span></label>
+            <input type="text" name="nameEnglish" class="form-control premium-input" placeholder="IN BLOCK LETTERS" required>
+          </div>
+          <div class="col">
+            <label>ಹುಟ್ಟಿದ ದಿನಾಂಕ / Date of Birth <span class="required">*</span></label>
+            <input type="date" name="dob" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ಲಿಂಗ / Gender <span class="required">*</span></label>
+            <select name="gender" class="form-select premium-input" required>
+              <option value="ಗಂಡು">ಗಂಡು (Male)</option>
+              <option value="ಹೆಣ್ಣು">ಹೆಣ್ಣು (Female)</option>
+              <option value="ಟ್ರಾನ್ಸ್ಜೆಂಡರ್">ಟ್ರಾನ್ಸ್ಜೆಂಡರ್ (Transgender)</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar Number <span class="required">*</span></label>
+            <input type="text" name="studentAadhaar" class="form-control premium-input" maxlength="12" placeholder="0000 0000 0000" required>
+          </div>
+          <div class="col">
+            <label>ಧರ್ಮ / Religion <span class="required">*</span></label>
+            <input type="text" name="religion" value="ಹಿಂದೂ" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ವಿದ್ಯಾರ್ಥಿಯ ಜಾತಿ / Caste <span class="required">*</span></label>
+            <input type="text" name="caste" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category <span class="required">*</span></label>
+            <select name="socialClass" class="form-select premium-input" required>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+              <option value="C1">C1</option>
+              <option value="2A">2A</option>
+              <option value="3A">3A</option>
+              <option value="3B">3B</option>
+            </select>
+          </div>
+          <div class="col">
+            <label>ಮಾತೃ ಭಾಷೆ / Mother Tongue <span class="required">*</span></label>
+            <input type="text" name="motherTongue" value="ಕನ್ನಡ" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile <span class="required">*</span></label>
+            <input type="text" name="mobileNumber" class="form-control premium-input" maxlength="10" required>
+          </div>
+          <div class="col">
+            <label>ವಿಶೇಷ ಅಗತ್ಯತೆಯುಳ್ಳ ಮಗು / Special Need</label>
+            <input type="text" name="specialNeed" value="ಯาವುದು ಇಲ್ಲ" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವಿಶೇಷ ವರ್ಗ / Special Group Category</label>
+            <input type="text" name="specialCategory" value="ಯಾವುದು ಇಲ್ಲ" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಭಾಗ್ಯಲಕ್ಷ್ಮೀ ಬಾಂಡ್ ಸಂಖ್ಯೆ / Bhagya Bond No</label>
+            <input type="text" name="bhagyalakshmiBond" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವಯಸ್ಸಿನ ದಾಖಲೆ ವಿಧ / Age Reason Doc</label>
+            <input type="text" name="ageReason" value="ಜನನ ಪ್ರಮಾಣ ಪತ್ರ" class="form-control premium-input">
+          </div>
+          <div class="col col-md-12">
+            <label>ವಿಳಾಸ / Complete Address <span class="required">*</span></label>
+            <input type="text" name="address" class="form-control premium-input" placeholder="ಮನೆ ಸಂಖ್ಯೆ, ಊರು, ತಾಲೂಕು, ಜಿಲ್ಲೆ" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2 -->
+      <div id="banking-details" class="form-section-block">
+        <div class="fs-6 font-bold text-success border-b border-light pb-2 mb-3">💳 2. ಬ್ಯಾಂಕಿಂಗ್ ವಿವರಗಳು / Banking Details</div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col">
+            <label>ಉಳಿತಾಯ ಖಾತೆ ಸಂಖ್ಯೆ / Savings Bank Account</label>
+            <input type="text" name="bankAccNo" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಐ.ಎಫ್.ಎಸ್.ಸಿ. ಸಂಖ್ಯೆ / IFSC Number</label>
+            <input type="text" name="ifscCode" class="form-control premium-input" style="text-transform:uppercase;">
+          </div>
+          <div class="col">
+            <label>ಬ್ಯಾಂಕ್ ಹೆಸರು ಮತ್ತು ವಿಳಾಸ / Bank Name & Address</label>
+            <input type="text" name="bankAddress" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವಿದ್ಯರ್ಥಿ ವೇತನ ನೋಂದಣಿ ನಂ / Scholarship No</label>
+            <input type="text" name="scholarshipNo" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಜಾತಿ ಪ್ರಮಾಣ ಪತ್ರ ಸಂಖ್ಯೆ / Caste Cert No</label>
+            <input type="text" name="studentCasteCert" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಆದಾಯ ಪತ್ರದ ಸಂಖ್ಯೆ / Income Cert No</label>
+            <input type="text" name="studentIncomeCert" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಬಿ.ಪಿ.ಎಲ್. ಕಾರ್ಡ್ ಸಂಖ್ಯೆ / BPL Card No</label>
+            <input type="text" name="bplCardNo" class="form-control premium-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3 -->
+      <div id="parents-details" class="form-section-block">
+        <div class="fs-6 font-bold text-success border-b border-light pb-2 mb-3">👪 3. ಪೋಷಕರ ವಿವರಗಳು / Parents Details</div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col">
+            <label>ತಂದೆಯ ಹೆಸರು / Father Name <span class="required">*</span></label>
+            <input type="text" name="fatherNameKn" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ತಂದೆಯ ಆಧಾರ್ ಸಂಖ್ಯೆ / Father Aadhaar</label>
+            <input type="text" name="fatherAadhaar" class="form-control premium-input" maxlength="12">
+          </div>
+          <div class="col">
+            <label>ತಂದೆಯ ಉದ್ಯೋಗ / Occupation</label>
+            <input type="text" name="fatherOccupation" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ತಾಯಿಯ ಹೆಸರು / Mother Name <span class="required">*</span></label>
+            <input type="text" name="motherNameKn" class="form-control premium-input" required>
+          </div>
+          <div class="col">
+            <label>ತಾಯಿಯ ಆಧಾರ್ ಸಂಖ್ಯೆ / Mother Aadhaar</label>
+            <input type="text" name="motherAadhaar" class="form-control premium-input" maxlength="12">
+          </div>
+          <div class="col">
+            <label>ತಾಯಿಯ ಉದ್ಯೋಗ / Occupation</label>
+            <input type="text" name="motherOccupation" class="form-control premium-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4 -->
+      <div id="school-details" class="form-section-block">
+        <div class="fs-6 font-bold text-success border-b border-light pb-2 mb-3">🏫 4. ಪೂರ್ವ ಶಾಲೆಯ ವಿವರಗಳು / Previous School Details</div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="col">
+            <label>ಪೂರ್ವ ಶಾಲಾ ಮಂಡಳಿ / School Board</label>
+            <input type="text" name="preschoolBoard" value="ರಾಜ್ಯ ಮಂಡಳಿ" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಪೂರ್ವ ಶಾಲೆಯ ವಿಧ / School Type</label>
+            <input type="text" name="preschoolType" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ಪೂರ್ವ ಶಾಲೆಯ ಹೆಸರು / School Name</label>
+            <input type="text" name="preschoolName" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವರ್ಗಾವಣೆ ಪತ್ರದ ಸಂಖ್ಯೆ / TC Number</label>
+            <input type="text" name="transferNo" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವರ್ಗಾವಣೆ ಪತ್ರದ ದಿನಾಂಕ / TC Date</label>
+            <input type="date" name="transferDate" class="form-control premium-input">
+          </div>
+          <div class="col">
+            <label>ವಿದ್ಯಾರ್ಥಿಯ ಎಸ್.ಟಿ.ಎಸ್. / STS Number</label>
+            <input type="text" name="studentSts" class="form-control premium-input">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-success px-5 py-2.5 fs-6 font-bold rounded-3 shadow">
+          ಮುಂದೆ ಹೋಗಿ / Proceed to Preview <i class="fa-solid fa-arrow-right ms-2"></i>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+  const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  let sessionUser = null;
+
+  window.onload = async function() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      window.location.href = "index.html";
+      return;
+    }
+    sessionUser = session.user;
+
+    // Dynamically generate unique Application No. on load
+    const appNoInput = document.querySelector('input[name="appNo"]');
+    if (appNoInput && (appNoInput.value === 'GHPS-2026-0492' || !appNoInput.value)) {
+      const randNo = Math.floor(1000 + Math.random() * 9000);
+      appNoInput.value = `GHPS-2026-${randNo}`;
+    }
+  };
+
+  document.getElementById('admissionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Show loading state
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> ಉಳಿಸಲಾಗುತ್ತಿದೆ / Saving...';
+
+    const formData = new FormData(e.target);
+    
+    // Map date values safely (empty string to null for Postgres date columns)
+    const getOptionalDate = (name) => {
+      const val = formData.get(name);
+      return val ? val : null;
+    };
+
+    const data = {
+      academic_year: formData.get('academicYear'),
+      medium: formData.get('medium'),
+      enroll_class: formData.get('enrollClass'),
+      app_no: formData.get('appNo'),
+      student_name: formData.get('studentName'),
+      name_english: formData.get('nameEnglish'),
+      dob: formData.get('dob'),
+      gender: formData.get('gender'),
+      student_aadhaar: formData.get('studentAadhaar'),
+      religion: formData.get('religion'),
+      caste: formData.get('caste'),
+      social_class: formData.get('socialClass'),
+      mother_tongue: formData.get('motherTongue'),
+      mobile_number: formData.get('mobileNumber'),
+      special_need: formData.get('specialNeed'),
+      special_category: formData.get('specialCategory'),
+      bhagyalakshmi_bond: formData.get('bhagyalakshmiBond'),
+      age_reason: formData.get('ageReason'),
+      address: formData.get('address'),
+      bank_acc_no: formData.get('bankAccNo'),
+      ifsc_code: formData.get('ifscCode'),
+      bank_address: formData.get('bankAddress'),
+      scholarship_no: formData.get('scholarshipNo'),
+      student_caste_cert: formData.get('studentCasteCert'),
+      student_income_cert: formData.get('studentIncomeCert'),
+      bpl_card_no: formData.get('bplCardNo'),
+      father_name_kn: formData.get('fatherNameKn'),
+      father_aadhaar: formData.get('fatherAadhaar'),
+      father_occupation: formData.get('fatherOccupation'),
+      mother_name_kn: formData.get('motherNameKn'),
+      mother_aadhaar: formData.get('motherAadhaar'),
+      mother_occupation: formData.get('motherOccupation'),
+      preschool_board: formData.get('preschoolBoard'),
+      preschool_type: formData.get('preschoolType'),
+      preschool_name: formData.get('preschoolName'),
+      transfer_no: formData.get('transferNo'),
+      transfer_date: getOptionalDate('transferDate'),
+      student_sts: formData.get('studentSts'),
+      created_by: sessionUser ? sessionUser.id : null
+    };
+
+    try {
+      const { data: insertData, error } = await supabaseClient
+        .from('admissions')
+        .insert(data);
+
+      if (error) {
+        alert("ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + error.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      } else {
+        alert("ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!");
+        window.location.href = "dashboard.html";
+      }
+    } catch (err) {
+      alert("ದೋಷ ಸಂಭವಿಸಿದೆ: " + err.message);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+    }
+  });
+</script>
+</body>
+</html>
