@@ -1,0 +1,2075 @@
+﻿<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCE Assessment - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .rotate-90 { transform: rotate(90deg); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif !important;
+        font-size: 10px !important;
+      }
+      .no-print, aside, header, footer, #toast, #toast-notif, #grid-header, #stats-bar, button {
+        display: none !important;
+      }
+      main, section, #table-container {
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .print-container {
+        border: none !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        width: 100% !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto !important;
+        color: #000000 !important;
+        border: 1px solid #000000 !important;
+        table-layout: fixed !important;
+      }
+      #competency-table {
+        font-size: 7px !important;
+        width: 100% !important;
+      }
+      #competency-table th, #competency-table td {
+        padding: 3px 2px !important;
+      }
+      tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+        background-color: transparent !important;
+      }
+      th, td {
+        border: 1px solid #000000 !important;
+        padding: 6px 4px !important;
+        color: #000000 !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        word-wrap: break-word !important;
+        overflow: hidden !important;
+      }
+      th {
+        font-weight: bold !important;
+      }
+      span, div, td, th {
+        background: none !important;
+        background-color: transparent !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      input {
+        border: none !important;
+        background: transparent !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        text-align: center !important;
+        width: 100% !important;
+        font-weight: bold !important;
+        color: #000000 !important;
+        font-size: 11px !important;
+        -moz-appearance: textfield !important;
+      }
+      #competency-table input {
+        font-size: 7.5px !important;
+      }
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none !important;
+        margin: 0 !important;
+      }
+      .badge-print {
+        background: none !important;
+        background-color: transparent !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        font-weight: bold !important;
+        border: none !important;
+      }
+    }
+  
+        /* Sidebar Hover Collapsed Styles */
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      
+      /* Hide elements by default */
+      aside .sidebar-text,
+      aside i.fa-chevron-right,
+      aside ul,
+      aside span.uppercase,
+      aside nav span,
+      aside .developer-info {
+        display: none !important;
+      }
+      
+      /* Show elements on hover */
+      aside:hover .sidebar-text,
+      aside:hover i.fa-chevron-right,
+      aside:hover span.uppercase,
+      aside:hover nav span,
+      aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) {
+        display: block !important;
+      }
+      aside:hover .nav-item button {
+        justify-content: space-between !important;
+      }
+      aside:hover nav a {
+        justify-content: flex-start !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      
+      aside .nav-item button {
+        justify-content: center !important;
+      }
+      aside nav a {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+    
+    /* Theme Variables & Overrides */
+    body[data-theme="dark"] {
+      background-color: #0f172a !important;
+      color: #f1f5f9 !important;
+    }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] aside,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .modal-content,
+    body[data-theme="dark"] .section-block {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] td,
+    body[data-theme="dark"] th {
+      color: #cbd5e1 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] .text-slate-700,
+    body[data-theme="dark"] .text-slate-800,
+    body[data-theme="dark"] .text-slate-600,
+    body[data-theme="dark"] .text-slate-550,
+    body[data-theme="dark"] .text-slate-500,
+    body[data-theme="dark"] label {
+      color: #cbd5e1 !important;
+    }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea {
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      border-color: #475569 !important;
+    }
+    body[data-theme="dark"] .bg-slate-50,
+    body[data-theme="dark"] .bg-slate-100 {
+      background-color: #0f172a !important;
+    }
+    
+    /* Gray Theme */
+    body[data-theme="gray"] {
+      background-color: #cbd5e1 !important;
+      color: #1e293b !important;
+    }
+    body[data-theme="gray"] .bg-white,
+    body[data-theme="gray"] aside,
+    body[data-theme="gray"] main,
+    body[data-theme="gray"] .form-container,
+    body[data-theme="gray"] .section-block {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+    
+    /* Blue Theme */
+    body[data-theme="blue"] {
+      background-color: #bae6fd !important;
+      color: #0c4a6e !important;
+    }
+    body[data-theme="blue"] .bg-white,
+    body[data-theme="blue"] aside,
+    body[data-theme="blue"] main,
+    body[data-theme="blue"] .form-container,
+    body[data-theme="blue"] .section-block {
+      background-color: #f0f9ff !important;
+      border-color: #93c5fd !important;
+    }
+    
+    /* Green Theme */
+    body[data-theme="green"] {
+      background-color: #bbf7d0 !important;
+      color: #14532d !important;
+    }
+    body[data-theme="green"] .bg-white,
+    body[data-theme="green"] aside,
+    body[data-theme="green"] main,
+    body[data-theme="green"] .form-container,
+    body[data-theme="green"] .section-block {
+      background-color: #f0fdf4 !important;
+      border-color: #86efac !important;
+    }
+</style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div class="no-print">
+        <!-- Dark Header Bar -->
+    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">Ã°Å¸ÂÂ«</span>
+        <div>
+          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
+          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
+        </div>
+      </div>
+      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Theme Selector -->
+        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
+          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
+          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="gray">Gray</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
+          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
+          <span id="headerUser" class="font-semibold text-slate-200">User</span>
+        </div>
+        <div>
+          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
+          <span id="liveClock" class="font-bold text-emerald-400"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Outer Container -->
+    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
+      
+      <!-- Aside Menu -->
+      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
+        <div class="space-y-6">
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
+            <nav class="space-y-1 text-xs" id="sidebarNav">
+              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
+              </a>
+              
+              <!-- Accordion Items -->
+              <!-- Teachers -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
+                  </span>
+                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Students -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
+                  </span>
+                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
+                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
+                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
+                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
+                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Academic -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
+                  </span>
+                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
+                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
+                  <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Attendance -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-attendance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-655 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-amber-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Attendance</span>
+                  </span>
+                  <i id="menu-attendance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-attendance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-amber-600 font-semibold transition"><span class="sidebar-text">Manage Attendance</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Finance -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-finance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-wallet text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Finance</span>
+                  </span>
+                  <i id="menu-finance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-finance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-rose-600 font-semibold transition"><span class="sidebar-text">Exam Fee Collection</span></a></li>
+                </ul>
+              </div>
+
+              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
+            </nav>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Govt Portals</span>
+            <div class="space-y-1.5 text-[11px] font-semibold">
+              <a href="https://sts.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-globe text-indigo-400 w-4 text-center"></i> <span class="sidebar-text">SATS / STS Portal</span></a>
+              <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-utensils text-orange-400 w-4 text-center"></i> <span class="sidebar-text">Mid-Day Meals Login</span></a>
+              <a href="https://choas.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-file-invoice text-emerald-400 w-4 text-center"></i> <span class="sidebar-text">Shikshana Kirana</span></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
+          <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
+          <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
+        </div>
+      </aside>
+
+      <!-- Main Contents Container -->
+      <div class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
+        
+        <!-- Tab navigation bar -->
+        <div class="bg-white border-b border-slate-200 pb-2.5 flex gap-4 no-print flex-shrink-0">
+          <button id="tab-analytics" onclick="switchTab('analytics')" class="text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <i class="fa-solid fa-chart-line"></i> à²µà²¿à²¶à³à²²à³‡à²·à²£à³† à²µà²°à²¦à²¿ / Analytics Report
+          </button>
+          <button id="tab-grid" onclick="switchTab('grid')" class="text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200">
+            <i class="fa-solid fa-table-list"></i> à²…à²‚à²•à²—à²³ à²—à³à²°à²¿à²¡à³ / Marks Grid
+          </button>
+        </div>
+
+        <!-- Marks Grid View -->
+        <div id="main-grid-view" class="flex flex-col gap-4 w-full print-container hidden">
+          
+          <div id="grid-sub-nav" class="bg-slate-100 p-1.5 rounded-2xl flex no-print gap-2 self-start shadow-sm border border-slate-200">
+            <button id="sub-tab-entermarks" onclick="switchGridSubPage('entermarks')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-white text-slate-800 shadow">
+              <i class="fa-solid fa-pen-nib text-sky-600"></i> à²…à²‚à²•à²—à²³ à²¦à²¾à²–à²²à²¾à²¤à²¿ / Enter Marks
+            </button>
+            <button id="sub-tab-assesssetting" onclick="switchGridSubPage('assesssetting')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800">
+              <i class="fa-solid fa-sliders text-amber-600"></i> à²¨à²¿à²¯à²®à²—à²³ à²¸à²‚à²¯à³‹à²œà²¨à³† / Assessment Setting
+            </button>
+          </div>
+
+          <div id="page-enter-marks" class="flex flex-col lg:flex-row gap-6 w-full">
+            <aside class="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-slate-200 flex flex-col no-print">
+              <h2 class="text-base font-bold text-slate-800 mb-5 pb-2 border-b border-slate-100 flex items-center gap-2">
+                <i class="fa-solid fa-filter text-sky-600"></i> à²«à²¿à²²à³à²Ÿà²°à³â€Œà²—à²³à³ / Filters
+              </h2>
+              
+              <div class="space-y-4 flex-grow">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">à²¤à²°à²—à²¤à²¿ / Class</label>
+                  <select id="class-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    <option value="">-- à²¤à²°à²—à²¤à²¿ à²†à²¯à³à²•à³†à²®à²¾à²¡à²¿ --</option>
+                    <option value="ALL">à²Žà²²à³à²²à²¾ à²¤à²°à²—à²¤à²¿à²—à²³à³ / All Classes</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">à²ªà²°à³€à²•à³à²·à³†à²¯ à²µà²¿à²§ / Exam Type</label>
+                  <select id="exam-type-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    <option value="">-- à²ªà²°à³€à²•à³à²·à³† à²†à²¯à³à²•à³†à²®à²¾à²¡à²¿ --</option>
+                    <option value="FA1">FA1 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-1</option>
+                    <option value="FA2">FA2 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-2</option>
+                    <option value="FA3">FA3 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-3</option>
+                    <option value="FA4">FA4 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-4</option>
+                    <option value="SA1">SA1 / à²¸à²‚à²•à²²à²¨à²¾à²¤à³à²®à²•-1</option>
+                    <option value="SA2">SA2 / à²¸à²‚à²•à²²à²¨à²¾à²¤à³à²®à²•-2</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">à²µà²¿à²·à²¯ / Subject Filter</label>
+                  <select id="subject-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    <option value="ALL">à²Žà²²à³à²²à²¾ à²µà²¿à²·à²¯à²—à²³à³ / All Subjects</option>
+                  </select>
+                </div>
+
+                <div id="rules-note-card" class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mt-4 hidden">
+                  <h3 class="text-xs font-bold text-amber-800 mb-1.5 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-info"></i> à²ªà³à²°à²¸à³à²¤à³à²¤ à²¨à²¿à²¯à²®à²¾à²µà²³à²¿ / Active Scale Note
+                  </h3>
+                  <div id="rules-content" class="text-[11px] text-amber-900 space-y-1 font-medium"></div>
+                </div>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
+                <button id="btn-edit" onclick="enableEditing()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
+                  <i class="fa-solid fa-pen-to-square"></i> à²¤à²¿à²¦à³à²¦à³à²ªà²¡à²¿ à²®à²¾à²¡à²¿ / Edit Data
+                </button>
+                <button id="btn-save" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
+                  <i class="fa-solid fa-floppy-disk"></i> à²‰à²³à²¿à²¸à²¿ / Save Data
+                </button>
+                <button id="btn-cancel" onclick="cancelEditing()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
+                  <i class="fa-solid fa-xmark"></i> à²°à²¦à³à²¦à³à²®à²¾à²¡à²¿ / Cancel
+                </button>
+              </div>
+            </aside>
+
+            <section class="flex-grow bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden">
+              <div id="print-header" class="hidden print:block text-center p-4 border-b-2 border-black mb-6">
+                <h1 class="text-xl font-black text-black tracking-wide">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
+                <h2 class="text-sm font-bold text-gray-700 mt-1">à²¸à²‚à²•à²²à²¨à²¾à²¤à³à²®à²• à²®à²¤à³à²¤à³ à²°à³‚à²ªà²£à²¾à²¤à³à²®à²• à²ªà³à²°à²—à²¤à²¿ à²ªà²Ÿà³à²Ÿà²¿ (CCE Assessment Report)</h2>
+                <div class="flex justify-between text-xs font-bold text-gray-800 mt-5 px-1">
+                  <span id="print-class-lbl">à²¤à²°à²—à²¤à²¿: </span>
+                  <span id="print-exam-lbl">à²ªà²°à³€à²•à³à²·à³†: </span>
+                  <span id="print-date-lbl">à²¦à²¿à²¨à²¾à²‚à²•: </span>
+                </div>
+              </div>
+
+              <div id="grid-header" class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 no-print">
+                <div>
+                  <h2 id="grid-title" class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-table-list text-slate-600"></i> à²®à³Œà²²à³à²¯à²®à²¾à²ªà²¨ à²•à³‹à²·à³à²Ÿà²• / CCE Marks Grid
+                  </h2>
+                  <p id="grid-subtitle" class="text-[11px] text-slate-500 mt-0.5">à²¯à²¾à²µà³à²¦à³‡ à²¤à²°à²—à²¤à²¿à²¯à²¨à³à²¨à³ à²†à²°à²¿à²¸à²²à²¾à²—à²¿à²²à³à²²</p>
+                </div>
+                <div id="grid-actions" class="text-xs font-medium text-slate-500 flex items-center gap-2 no-print">
+                  <button id="btn-export-excel" onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
+                    <i class="fa-solid fa-file-excel"></i> à²°à²«à³à²¤à³ à²Žà²•à³à²¸à³†à²²à³ / Excel Export
+                  </button>
+                  <button id="btn-export-pdf" onclick="exportToPdf()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
+                    <i class="fa-solid fa-file-pdf"></i> à²°à²«à³à²¤à³ à²ªà²¿à²¡à²¿à²Žà²«à³ / PDF Export
+                  </button>
+                  <button id="btn-print" onclick="printPage()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
+                    <i class="fa-solid fa-print"></i> à²®à³à²¦à³à²°à²£ / Print
+                  </button>
+                  <span id="grid-mode-tag" class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[10px] hidden">View Mode</span>
+                </div>
+              </div>
+
+              <div id="stats-bar" class="grid grid-cols-3 gap-4 p-4 bg-slate-50 border-b border-slate-200 hidden no-print">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div class="p-2 bg-blue-50 rounded-lg text-blue-600"><i class="fa-solid fa-users text-lg"></i></div>
+                  <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">à²’à²Ÿà³à²Ÿà³ à²µà²¿à²¦à³à²¯à²¾à²°à³à²¥à²¿à²—à²³à³</div>
+                    <div id="stat-total-students" class="text-lg font-black text-slate-800">0</div>
+                  </div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600"><i class="fa-solid fa-circle-check text-lg"></i></div>
+                  <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">à²’à²Ÿà³à²Ÿà³ A+ à²®à²¤à³à²¤à³ A à²¶à³à²°à³‡à²£à²¿</div>
+                    <div id="stat-total-a" class="text-lg font-black text-slate-800">0</div>
+                  </div>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                  <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600"><i class="fa-solid fa-circle-info text-lg"></i></div>
+                  <div>
+                    <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">à²’à²Ÿà³à²Ÿà³ à²‡à²¤à²° à²¶à³à²°à³‡à²£à²¿à²—à²³à³</div>
+                    <div id="stat-total-b" class="text-lg font-black text-slate-800">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex-grow overflow-auto custom-scrollbar relative min-h-[350px]" id="table-container">
+                <div id="loading-overlay" class="absolute inset-0 bg-white/85 flex flex-col items-center justify-center z-50 hidden">
+                  <i class="fa-solid fa-circle-notch fa-spin text-4xl text-sky-600 mb-3"></i>
+                  <p class="text-xs font-bold text-slate-700">à²®à²¾à²¹à²¿à²¤à²¿ à²²à³‹à²¡à³ à²†à²—à³à²¤à³à²¤à²¿à²¦à³†...</p>
+                </div>
+
+                <div id="empty-state" class="h-full flex flex-col items-center justify-center text-center p-8">
+                  <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4 shadow-inner">
+                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                  </div>
+                  <h3 class="text-xs font-bold text-slate-700 mb-1">à²¯à²¾à²µà³à²¦à³‡ à²¡à³‡à²Ÿà²¾ à²²à³‹à²¡à³ à²†à²—à²¿à²²à³à²²</h3>
+                  <p class="text-[11px] text-slate-400 max-w-sm">à²®à³†à²¨à³à²µà²¿à²¨à²²à³à²²à²¿ à²µà²¿à²µà²°à²—à²³à²¨à³à²¨à³ à²†à²¯à³à²•à³† à²®à²¾à²¡à²¿.</p>
+                </div>
+
+                <table id="competency-table" class="w-full border-collapse text-left text-xs hidden">
+                  <thead id="table-head"></thead>
+                  <tbody id="student-grid-body" class="divide-y divide-slate-200"></tbody>
+                </table>
+
+                <div class="hidden print:flex justify-between font-bold text-black mt-20 px-10">
+                  <span id="print-teacher-sig">à²¤à²°à²—à²¤à²¿ à²¶à²¿à²•à³à²·à²•à²° à²¸à²¹à²¿<br>(Class Teacher)</span>
+                  <span>à²®à³à²–à³à²¯à³‹à²ªà²¾à²§à³à²¯à²¾à²¯à²° à²¸à²¹à²¿<br>(Head Master)</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Assessment Setting subpage -->
+          <div id="page-assessment-setting" class="w-full bg-white rounded-2xl border border-slate-200 p-6 no-print hidden">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 mb-6">
+              <div>
+                <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                  <i class="fa-solid fa-sliders text-amber-600"></i> à²¸à²®à²—à³à²°à³† à²¨à²¿à²¯à²®à²¾à²µà²³à²¿ à²•à³‡à²‚à²¦à³à²° / Blueprinted CCE Grading Panel
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">à²‡à²²à³à²²à²¿ à²¨à²¿à²®à³à²® à²¶à²¾à²²à³†à²¯ à²‡à²®à³‡à²œà³ à²¬à³à²²à³‚à²ªà³à²°à²¿à²‚à²Ÿà³ à²¨à²¿à²¯à²®à²—à²³ à²¡à²¿à²«à²¾à²²à³à²Ÿà³ à²®à³Œà²²à³à²¯à²—à²³à³ à²¸à²•à³à²°à²¿à²¯à²µà²¾à²—à²¿à²µà³†. à²…à²—à²¤à³à²¯à²µà²¿à²¦à³à²¦à²²à³à²²à²¿ à²¬à²¦à²²à²¾à²¯à²¿à²¸à²¿ à²¸à³‡à²µà³ à²®à²¾à²¡à²¬à²¹à³à²¦à³.</p>
+              </div>
+              <div class="flex gap-2.5">
+                <input type="file" id="import-file-input" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleImportFile(this)">
+                <button type="button" onclick="triggerImport()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                  <i class="fa-solid fa-file-import"></i> à²Žà²•à³à²¸à³†à²²à³ à²†à²®à²¦à³ / Import Excel
+                </button>
+                <button type="button" onclick="downloadExcelTemplate()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                  <i class="fa-solid fa-file-arrow-down"></i> à²¨à²®à³‚à²¨à³† à²ªà²¡à³† / Get Template
+                </button>
+                <button type="button" onclick="applyCustomSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-5 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                  <i class="fa-solid fa-check"></i> à²¬à²¦à²²à²¾à²µà²£à³† à²…à²¨à³à²µà²¯à²¿à²¸à³ / Apply Settings
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-calculator text-sky-600"></i> à²—à²°à²¿à²·à³à²  à²…à²‚à²•à²—à²³à³ / Max Marks Config</h3>
+                <div class="space-y-4 text-xs">
+                  <div class="grid grid-cols-5 gap-1 text-[9px] font-black text-slate-500 uppercase text-center mb-1">
+                    <div>à²¤à²°à²—à²¤à²¿</div>
+                    <div class="bg-sky-100 text-sky-800 rounded py-0.5 font-bold">FA max</div>
+                    <div class="bg-indigo-100 text-indigo-800 rounded py-0.5 font-bold">SA (W)</div>
+                    <div class="bg-purple-100 text-indigo-800 rounded py-0.5 font-bold">SA (O)</div>
+                    <div class="bg-amber-100 text-amber-800 rounded py-0.5 font-bold">Convert</div>
+                  </div>
+                  <div class="grid grid-cols-5 gap-2 items-center">
+                    <span class="font-bold text-slate-600">1 to 5:</span>
+                    <input type="number" id="cfg-p-fa" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-p-saw" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-p-sao" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-p-sa" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold bg-amber-50">
+                  </div>
+                  <div class="grid grid-cols-5 gap-2 items-center">
+                    <span class="font-bold text-slate-600">6 to 10:</span>
+                    <input type="number" id="cfg-m-fa" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-m-saw" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-m-sao" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold">
+                    <input type="number" id="cfg-m-sa" class="border border-slate-300 bg-white rounded-lg p-1.5 text-center font-bold bg-amber-50">
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-book text-indigo-600"></i> à²µà²¿à²·à²¯à²—à²³ à²œà³‹à²¡à²£à³† / Class Subjects</h3>
+                <div class="space-y-4 text-xs">
+                  <div>
+                    <label class="block font-bold text-slate-600 mb-1.5">Class 1 to 5 Subjects:</label>
+                    <textarea id="cfg-p-subs" rows="2" class="w-full border border-slate-300 bg-white rounded-xl p-2.5 font-sans focus:ring-1 focus:ring-sky-500 resize-none"></textarea>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-600 mb-1.5">Class 6 to 10 Subjects:</label>
+                    <textarea id="cfg-m-subs" rows="2" class="w-full border border-slate-300 bg-white rounded-xl p-2.5 font-sans focus:ring-1 focus:ring-sky-500 resize-none"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-1.5"><i class="fa-solid fa-graduation-cap text-amber-600"></i> à²¶à³à²°à³‡à²£à²¿ à²®à²¿à²¤à²¿à²—à²³à³ / Grading Scale Blueprint</h3>
+                <div class="max-h-[220px] overflow-y-auto pr-1 space-y-3 custom-scrollbar text-[11px] font-sans">
+                  <div class="grid grid-cols-5 gap-1 text-center font-black text-slate-500 uppercase text-[9px] sticky top-0 bg-slate-50 py-1">
+                    <div>Total Marks</div>
+                    <div class="text-emerald-700">A+</div>
+                    <div class="text-emerald-600">A</div>
+                    <div class="text-blue-700">B+</div>
+                    <div class="text-blue-600">B</div>
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">10</span>
+                    <input type="number" id="sc-10-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-10-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-10-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-10-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">15</span>
+                    <input type="number" id="sc-15-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-15-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-15-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-15-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">20</span>
+                    <input type="number" id="sc-20-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-20-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-20-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-20-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">25</span>
+                    <input type="number" id="sc-25-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-25-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-25-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-25-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">30</span>
+                    <input type="number" id="sc-30-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-30-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-30-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-30-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">50</span>
+                    <input type="number" id="sc-50-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-50-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-50-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-50-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                  <div class="grid grid-cols-5 gap-1.5 items-center">
+                    <span class="font-bold text-slate-700 text-center bg-slate-200/60 rounded">100</span>
+                    <input type="number" id="sc-100-ap" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-100-a" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-100-bp" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                    <input type="number" id="sc-100-b" step="0.5" class="border border-slate-300 bg-white rounded p-0.5 font-bold text-center">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics view -->
+        <div id="main-analytics-view" class="flex flex-col lg:flex-row gap-6 w-full no-print">
+          <aside class="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-slate-200 flex flex-col">
+            <h2 class="text-base font-bold text-slate-800 mb-5 pb-2 border-b border-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-indigo-600"></i>  à²¸à²‚à²•à³à²·à²¿à²ªà³à²¤ à²µà²¿à²¶à³à²²à³‡à²·à²£à³† / Summary
+            </h2>
+            
+            <div class="space-y-4 mb-5 pb-4 border-b border-slate-100 text-xs">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">à²¤à²°à²—à²¤à²¿ / Class</label>
+                <select id="ana-class-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <option value="">-- à²¤à²°à²—à²¤à²¿ à²†à²¯à³à²•à³†à²®à²¾à²¡à²¿ --</option>
+                  <option value="ALL">à²Žà²²à³à²²à²¾ à²¤à²°à²—à²¤à²¿à²—à²³à³ / All Classes</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">à²ªà²°à³€à²•à³à²·à³†à²¯ à²µà²¿à²§ / Exam Type</label>
+                <select id="ana-exam-type-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <option value="">-- à²ªà²°à³€à²•à³à²·à³† à²†à²¯à³à²•à³†à²®à²¾à²¡à²¿ --</option>
+                  <option value="FA1">FA1 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-1</option>
+                  <option value="FA2">FA2 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-2</option>
+                  <option value="FA3">FA3 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-3</option>
+                  <option value="FA4">FA4 / à²°à³‚à²ªà²£à²¾à²¤à³à²®à²•-4</option>
+                  <option value="SA1">SA1 / à²¸à²‚à²•à²²à²¨à²¾à²¤à³à²®à²•-1</option>
+                  <option value="SA2">SA2 / à²¸à²‚à²•à²²à²¨à²¾à²¤à³à²®à²•-2</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1.5 uppercase">à²µà²¿à²·à²¯ / Subject Filter</label>
+                <select id="ana-subject-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <option value="ALL">à²Žà²²à³à²²à²¾ à²µà²¿à²·à²¯à²—à²³à³ / All Subjects</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="space-y-4 flex-grow text-xs">
+              <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500 font-medium">à²’à²Ÿà³à²Ÿà³ à²µà²¿à²¦à³à²¯à²¾à²°à³à²¥à²¿à²—à²³à³:</span>
+                  <span id="ana-total-students" class="font-bold text-slate-800 text-sm">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500 font-medium">à²¤à²°à²—à²¤à²¿ à²¸à²°à²¾à²¸à²°à²¿ (Avg):</span>
+                  <span id="ana-class-avg" class="font-bold text-indigo-700 text-sm">0%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500 font-medium">à²…à²¤à²¿ à²¹à³†à²šà³à²šà³ à²…à²‚à²• (Highest):</span>
+                  <span id="ana-highest" class="font-bold text-emerald-700 text-sm">0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500 font-medium">à²…à²¤à²¿ à²•à²¡à²¿à²®à³† à²…à²‚à²• (Lowest):</span>
+                  <span id="ana-lowest" class="font-bold text-rose-700 text-sm">0</span>
+                </div>
+              </div>
+
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                <h3 class="font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-info text-slate-500"></i>  à²•à³à²°à²¿à²¯à³†à²—à²³à³ / Actions
+                </h3>
+                <div class="space-y-2 pt-1">
+                  <button onclick="sortRoster('desc')" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer border-0 text-[11px]">
+                    <i class="fa-solid fa-arrow-down-9-1"></i>  à²Ÿà²¾à²ªà²°à³à²¸à³ à²®à³Šà²¦à²²à³ / Toppers First
+                  </button>
+                  <button onclick="sortRoster('asc')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-3 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer border-0 text-[11px]">
+                    <i class="fa-solid fa-arrow-up-1-9"></i> à²•à²¡à²¿à²®à³† à²…à²‚à²•à²¦à²µà²°à³ à²®à³Šà²¦à²²à³ / Low Scorer First
+                  </button>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="flex-grow bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden">
+            <div class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div>
+                <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                  <i class="fa-solid fa-chart-line text-indigo-600"></i> à²µà²¿à²¶à³à²²à³‡à²·à²£à³† à²®à²¤à³à²¤à³ à²µà²°à²¦à²¿à²—à²³à³ / Analytics & Reports
+                </h2>
+                <p id="ana-subtitle" class="text-[11px] text-slate-500 mt-0.5">à²¯à²¾à²µà³à²¦à³‡ à²¤à²°à²—à²¤à²¿à²¯à²¨à³à²¨à³ à²†à²°à²¿à²¸à²²à²¾à²—à²¿à²²à³à²²</p>
+              </div>
+              <div class="flex bg-slate-200/80 p-1 rounded-xl no-print gap-1">
+                <button id="sub-tab-ranklist" onclick="switchAnalyticsSubTab('ranklist')" class="text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-white text-slate-800 shadow">
+                  à²¶à³à²°à³‡à²¯à²¾à²‚à²• à²ªà²Ÿà³à²Ÿà²¿ / Rank List
+                </button>
+                <button id="sub-tab-subjectreport" onclick="switchAnalyticsSubTab('subjectreport')" class="text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800">
+                  à²µà²¿à²·à²¯à²µà²¾à²°à³ à²µà²°à²¦à²¿ / Subject Exam Report
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-grow overflow-auto custom-scrollbar relative min-h-[350px]">
+              <div id="ana-empty-state" class="h-full flex flex-col items-center justify-center text-center p-8">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4 shadow-inner">
+                  <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="text-xs font-bold text-slate-700 mb-1">à²¯à²¾à²µà³à²¦à³‡ à²¡à³‡à²Ÿà²¾ à²²à³‹à²¡à³ à²†à²—à²¿à²²à³à²²</h3>
+                <p class="text-[11px] text-slate-400 max-w-sm">à²®à³†à²¨à³à²µà²¿à²¨à²²à³à²²à²¿ à²¤à²°à²—à²¤à²¿ à²¹à²¾à²—à³‚ à²ªà²°à³€à²•à³à²·à³†à²¯à²¨à³à²¨à³ à²†à²°à²¿à²¸à²¿ à²²à³‹à²¡à³ à²®à²¾à²¡à²¿.</p>
+              </div>
+
+              <div id="ranklist-container" class="hidden">
+                <table id="rank-table" class="w-full border-collapse text-left text-xs">
+                  <thead>
+                    <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                      <th class="p-3 text-center border-r border-slate-200 font-bold w-16">à²•à³à²°.à²¸à²‚ (Rank)</th>
+                      <th class="p-3 border-r border-slate-200 font-bold w-26">STS à²¸à²‚à²–à³à²¯à³†</th>
+                      <th class="p-3 border-r border-slate-200 font-bold w-48">à²¹à³†à²¸à²°à³</th>
+                      <th class="p-3 text-center border-r border-slate-200 font-bold w-20">à²’à²Ÿà³à²Ÿà³ à²…à²‚à²•à²—à²³à³</th>
+                      <th class="p-3 text-center border-r border-slate-200 font-bold w-20">à²¶à³‡à²•à²¡à²¾à²µà²¾à²°à³ (%)</th>
+                      <th class="p-3 text-center border-r border-slate-200 font-bold w-16">à²’à²Ÿà³à²Ÿà²¾à²°à³† à²—à³à²°à³‡à²¡à³</th>
+                      <th class="p-3 text-center font-bold w-32 no-print">à²ªà³à²°à²—à²¤à²¿ à²ªà²¤à³à²° / Report Card</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rank-table-body" class="divide-y divide-slate-200"></tbody>
+                </table>
+              </div>
+
+              <div id="subjectreport-container" class="hidden p-6 space-y-4">
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 no-print">
+                  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                    <div class="flex items-center gap-2">
+                      <label for="subreport-class-select" class="text-xs font-bold text-slate-700 whitespace-nowrap">à²¤à²°à²—à²¤à²¿ / Class:</label>
+                      <select id="subreport-class-select" class="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition min-w-36">
+                        <option value="ALL">à²Žà²²à³à²²à²¾ à²¤à²°à²—à²¤à²¿à²—à²³à³ / All Classes</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                      </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <label for="subreport-subject-select" class="text-xs font-bold text-slate-700 whitespace-nowrap">à²µà²¿à²·à²¯ / Subject:</label>
+                      <select id="subreport-subject-select" onchange="loadSubjectExamReport()" class="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition min-w-44">
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <div class="flex items-center gap-2">
+                    <button onclick="exportSubjectReportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs">
+                      <i class="fa-solid fa-file-excel"></i> Excel à²°à²«à³à²¤à³
+                    </button>
+                    <button onclick="exportSubjectReportToPdf()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs">
+                      <i class="fa-solid fa-file-pdf"></i> PDF à²¡à³Œà²¨à³â€Œà²²à³‹à²¡à³
+                    </button>
+                    <button onclick="printSubjectReport()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs">
+                      <i class="fa-solid fa-print"></i>  à²®à³à²¦à³à²°à²¿à²¸à³ / Print
+                    </button>
+                  </div>
+                </div>
+
+                <div id="subjectreport-print-area" class="bg-white p-2"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+      </div> <!-- End of Main Contents Container -->
+    </div> <!-- End of Main Outer Container -->
+  </div> <!-- End of no-print -->
+
+  <!-- Report Card Modal -->
+  <div id="report-card-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-address-card text-sky-600"></i> à²µà²¿à²¦à³à²¯à²¾à²°à³à²¥à²¿ à²ªà³à²°à²—à²¤à²¿ à²ªà²¤à³à²° / Student Report Card
+        </h3>
+        <button onclick="closeReportCardModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar" id="report-card-print-area"></div>
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3">
+        <button onclick="closeReportCardModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-1.5 px-4 rounded-xl transition text-xs border-0 cursor-pointer">à²®à³à²šà³à²šà³ / Close</button>
+        <button onclick="exportIndividualReportCardToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Excel à²°à²«à³à²¤à³</button>
+        <button onclick="exportIndividualReportCardToPdf()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-1.5 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> PDF à²¡à³Œà²¨à³â€Œà²²à³‹à²¡à³</button>
+        <button onclick="printIndividualReportCard()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1.5 px-5 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-print"></i> à²®à³à²¦à³à²°à²£ / Print</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="w-full bg-white border-t border-slate-200 py-2.5 text-center text-xs text-slate-400 mt-auto flex-shrink-0">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; h = h ? h : 12;
+      m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
+      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function toggleAccordion(menuId) {
+      const menu = document.getElementById(menuId);
+      const arrow = document.getElementById(menuId + '-arrow');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        arrow.classList.add('rotate-90');
+      } else {
+        menu.classList.add('hidden');
+        arrow.classList.remove('rotate-90');
+      }
+    }
+
+    function initSidebar() {
+      const path = window.location.pathname.split('/').pop();
+      if (path === 'dashboard.html' || path === '') {
+        const dashLink = document.getElementById('nav-Dashboard');
+        if (dashLink) dashLink.classList.add('bg-indigo-50', 'text-indigo-800');
+      } else if (path === 'teachers.html') {
+        expandMenu('menu-teachers');
+        highlightSubItem('menu-teachers', 'teachers.html');
+      } else if (path === 'NewAdmission.html') {
+        expandMenu('menu-students');
+        highlightSubItem('menu-students', 'NewAdmission.html');
+      } else if (path === 'NewAdmissionList.html') {
+        expandMenu('menu-students');
+        highlightSubItem('menu-students', 'NewAdmissionList.html');
+      } else if (path === 'StudentList.html') {
+        expandMenu('menu-students');
+        highlightSubItem('menu-students', 'StudentList.html');
+      } else if (path === 'StudentUpdate.html') {
+        expandMenu('menu-students');
+        highlightSubItem('menu-students', 'StudentUpdate.html');
+      } else if (path === 'ApaarModule.html') {
+        expandMenu('menu-students');
+        highlightSubItem('menu-students', 'ApaarModule.html');
+      } else if (path === 'BridgeCourse.html') {
+        expandMenu('menu-academic');
+        highlightSubItem('menu-academic', 'BridgeCourse.html');
+      } else if (path === 'CceAssessmet.html') {
+        expandMenu('menu-academic');
+        highlightSubItem('menu-academic', 'CceAssessmet.html');
+      } else if (path === 'FlnDashboard.html') {
+        expandMenu('menu-academic');
+        highlightSubItem('menu-academic', 'FlnDashboard.html');
+      }
+    }
+
+    function expandMenu(menuId) {
+      const menu = document.getElementById(menuId);
+      const arrow = document.getElementById(menuId + '-arrow');
+      if (menu) menu.classList.remove('hidden');
+      if (arrow) arrow.classList.add('rotate-90');
+    }
+
+    function highlightSubItem(menuId, href) {
+      const menu = document.getElementById(menuId);
+      if (!menu) return;
+      const links = menu.getElementsByTagName('a');
+      for (let link of links) {
+        if (link.getAttribute('href') === href) {
+          link.classList.remove('text-slate-500');
+          link.classList.add('text-indigo-600', 'font-bold');
+        }
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+
+    let mutableConfigs = {
+      primary: {
+        classes: ["1", "2", "3", "4", "5"],
+        faMax: 15,
+        saMax: 20, 
+        saWrittenMax: 30,
+        saOralMax: 20,
+        subjects: ["à²•à²¨à³à²¨à²¡ / Kannada", "English", "à²—à²£à²¿à²¤ / Maths", "à²ªà²°à²¿à²¸à²° à²…à²§à³à²¯à²¯à²¨ / EVS"],
+      },
+      middleHigh: {
+        classes: ["6", "7", "8", "9", "10"],
+        faMax: 10,
+        saMax: 30, 
+        saWrittenMax: 40,
+        saOralMax: 10,
+        subjects: ["à²•à²¨à³à²¨à²¡ / Kannada", "English", "à²¹à²¿à²‚à²¦à²¿ / Hindi", "à²—à²£à²¿à²¤ / Maths", "à²µà²¿à²œà³à²žà²¾à²¨ / Science", "à²¸à²®à²¾à²œ à²µà²¿à²œà³à²žà²¾à²¨ / Social Sci", "à²¦à³ˆà²¹à²¿à²• à²¶à²¿à²•à³à²·à²£ / PE"],
+      }
+    };
+
+    let gradeScales = {
+      10:  { 'A+': 9,  'A': 7,  'B+': 6,  'B': 3,  'C': 0 },
+      15:  { 'A+': 14, 'A': 11, 'B+': 8,  'B': 5,  'C': 0 },
+      20:  { 'A+': 18, 'A': 14, 'B+': 10, 'B': 6,  'C': 0 },
+      25:  { 'A+': 23, 'A': 18, 'B+': 13, 'B': 8,  'C': 0 },
+      30:  { 'A+': 27, 'A': 21, 'B+': 15, 'B': 9,  'C': 0 },
+      50:  { 'A+': 45, 'A': 35, 'B+': 25, 'B': 15, 'C': 0 },
+      100: { 'A+': 90, 'A': 70, 'B+': 50, 'B': 30, 'C': 0 }
+    };
+
+    let currentSubjects = [];
+    let students = [];
+    let evaluations = {};
+    let isEditing = false;
+    let originalEvaluations = {};
+
+    const classFilter = document.getElementById('class-filter');
+    const examTypeFilter = document.getElementById('exam-type-filter');
+    const subjectFilter = document.getElementById('subject-filter');
+
+    const anaClassFilter = document.getElementById('ana-class-filter');
+    const anaExamTypeFilter = document.getElementById('ana-exam-type-filter');
+    const anaSubjectFilter = document.getElementById('ana-subject-filter');
+    const subreportClassSelect = document.getElementById('subreport-class-select');
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      await initUserAndTheme();
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+      initSidebar();
+      loadSettingsFromBackend();
+      switchTab('analytics'); 
+    });
+
+    function syncAllFilters(source) {
+      if (source === 'grid') {
+        const c = classFilter.value;
+        const e = examTypeFilter.value;
+        const s = subjectFilter.value;
+        if (anaClassFilter) anaClassFilter.value = c;
+        if (anaExamTypeFilter) anaExamTypeFilter.value = e;
+        if (subreportClassSelect) subreportClassSelect.value = c || "ALL";
+        syncActiveGroupConfiguration();
+        if (anaSubjectFilter && [...anaSubjectFilter.options].some(o => o.value === s)) {
+          anaSubjectFilter.value = s;
+        }
+      } else if (source === 'analytics') {
+        const c = anaClassFilter.value;
+        const e = anaExamTypeFilter.value;
+        const s = anaSubjectFilter.value;
+        if (classFilter) classFilter.value = c;
+        if (examTypeFilter) examTypeFilter.value = e;
+        if (subreportClassSelect) subreportClassSelect.value = c || "ALL";
+        syncActiveGroupConfiguration();
+        if (subjectFilter && [...subjectFilter.options].some(o => o.value === s)) {
+          subjectFilter.value = s;
+        }
+      } else if (source === 'subreport') {
+        const c = subreportClassSelect.value;
+        if (classFilter) classFilter.value = c;
+        if (anaClassFilter) anaClassFilter.value = c;
+        syncActiveGroupConfiguration();
+      }
+    }
+
+    [classFilter, examTypeFilter].forEach(filter => {
+      filter.addEventListener('change', () => {
+        syncAllFilters('grid');
+        if (classFilter.value && examTypeFilter.value) {
+          showDynamicRulesNote();
+          loadSettingsIntoInputs();
+          checkAndLoadGrid();
+        } else {
+          resetToEmptyState();
+        }
+      });
+    });
+
+    subjectFilter.addEventListener('change', () => {
+      if (anaSubjectFilter) anaSubjectFilter.value = subjectFilter.value;
+      if (students.length > 0) {
+        buildTableHeader();
+        renderGrid();
+      }
+    });
+
+    if (anaClassFilter && anaExamTypeFilter) {
+      [anaClassFilter, anaExamTypeFilter].forEach(filter => {
+        filter.addEventListener('change', () => {
+          syncAllFilters('analytics');
+          if (classFilter.value && examTypeFilter.value) {
+            showDynamicRulesNote();
+            loadSettingsIntoInputs();
+            checkAndLoadGrid();
+          } else {
+            resetToEmptyState();
+          }
+        });
+      });
+    }
+
+    if (anaSubjectFilter) {
+      anaSubjectFilter.addEventListener('change', () => {
+        if (subjectFilter) subjectFilter.value = anaSubjectFilter.value;
+        if (students.length > 0) {
+          buildTableHeader();
+          renderGrid();
+          buildAnalytics();
+        }
+      });
+    }
+
+    if (subreportClassSelect) {
+      subreportClassSelect.addEventListener('change', () => {
+        syncAllFilters('subreport');
+        const c = classFilter.value;
+        const e = examTypeFilter.value;
+        if (c && e) {
+          populateSubjectReportSelect();
+          loadSubjectExamReport();
+          checkAndLoadGrid();
+        } else {
+          showToast("à²¦à²¯à²µà²¿à²Ÿà³à²Ÿà³ à²ªà²°à³€à²•à³à²·à³†à²¯à²¨à³à²¨à³ à²†à²¯à³à²•à³†à²®à²¾à²¡à²¿ / Please select an exam type", "warning");
+        }
+      });
+    }
+
+    // Grid Sub Page Switcher System
+    let currentGridSubPage = 'entermarks';
+    function switchGridSubPage(pageKey) {
+      currentGridSubPage = pageKey;
+      const tabEnterMarks = document.getElementById('sub-tab-entermarks');
+      const tabAssessSetting = document.getElementById('sub-tab-assesssetting');
+      const pageEnterMarksDiv = document.getElementById('page-enter-marks');
+      const pageAssessSettingDiv = document.getElementById('page-assessment-setting');
+
+      const setInnerTabActive = (btn, isActive) => {
+        if (!btn) return;
+        if (isActive) {
+          btn.className = "text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-white text-slate-800 shadow";
+        } else {
+          btn.className = "text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800";
+        }
+      };
+
+      setInnerTabActive(tabEnterMarks, pageKey === 'entermarks');
+      setInnerTabActive(tabAssessSetting, pageKey === 'assesssetting');
+
+      if (pageKey === 'entermarks') {
+        pageEnterMarksDiv.classList.remove('hidden');
+        pageAssessSettingDiv.classList.add('hidden');
+        if (classFilter.value && examTypeFilter.value) renderGrid();
+      } else {
+        pageEnterMarksDiv.classList.add('hidden');
+        pageAssessSettingDiv.classList.remove('hidden');
+        loadSettingsIntoInputs();
+      }
+    }
+
+    // FIXED: Main Navigation Tab bar state router engine
+    function switchTab(tabId) {
+      const tabAnalyticsBtn = document.getElementById('tab-analytics');
+      const tabGridBtn = document.getElementById('tab-grid');
+      const viewAnalyticsMain = document.getElementById('main-analytics-view');
+      const viewGridMain = document.getElementById('main-grid-view');
+
+      if (tabId === 'analytics') {
+        tabAnalyticsBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-sky-600 text-white shadow";
+        tabGridBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200";
+        
+        viewAnalyticsMain.classList.remove('hidden');
+        viewGridMain.classList.add('hidden');
+        buildAnalytics();
+      } else if (tabId === 'grid') {
+        tabAnalyticsBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200";
+        tabGridBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-sky-600 text-white shadow";
+        
+        viewAnalyticsMain.classList.add('hidden');
+        viewGridMain.classList.remove('hidden');
+        switchGridSubPage(currentGridSubPage);
+      }
+    }
+
+    function loadSettingsFromBackend() {
+      const saved = localStorage.getItem('cce_saved_settings');
+      if (saved) {
+        try { onSettingsLoaded({ success: true, settings: saved }); } catch(e) { loadSettingsIntoInputs(); }
+      } else {
+        loadSettingsIntoInputs();
+      }
+    }
+
+    function onSettingsLoaded(response) {
+      if (response && response.success && response.settings) {
+        try {
+          const parsed = JSON.parse(response.settings);
+          if (parsed.mutableConfigs) mutableConfigs = parsed.mutableConfigs;
+          if (parsed.gradeScales) gradeScales = parsed.gradeScales;
+        } catch(e) { console.error("Error parsing settings: ", e); }
+      }
+      loadSettingsIntoInputs();
+    }
+
+    function loadSettingsIntoInputs() {
+      document.getElementById('cfg-p-fa').value = mutableConfigs.primary.faMax;
+      document.getElementById('cfg-p-sa').value = mutableConfigs.primary.saMax;
+      document.getElementById('cfg-p-saw').value = mutableConfigs.primary.saWrittenMax;
+      document.getElementById('cfg-p-sao').value = mutableConfigs.primary.saOralMax;
+      document.getElementById('cfg-p-subs').value = mutableConfigs.primary.subjects.join(', ');
+
+      document.getElementById('cfg-m-fa').value = mutableConfigs.middleHigh.faMax;
+      document.getElementById('cfg-m-sa').value = mutableConfigs.middleHigh.saMax;
+      document.getElementById('cfg-m-saw').value = mutableConfigs.middleHigh.saWrittenMax;
+      document.getElementById('cfg-m-sao').value = mutableConfigs.middleHigh.saOralMax;
+      document.getElementById('cfg-m-subs').value = mutableConfigs.middleHigh.subjects.join(', ');
+
+      const targets = [10, 15, 20, 25, 30, 50, 100];
+      targets.forEach(t => {
+        if(gradeScales[t]) {
+          document.getElementById(`sc-${t}-ap`).value = gradeScales[t]['A+'];
+          document.getElementById(`sc-${t}-a`).value = gradeScales[t]['A'];
+          document.getElementById(`sc-${t}-bp`).value = gradeScales[t]['B+'];
+          document.getElementById(`sc-${t}-b`).value = gradeScales[t]['B'];
+        }
+      });
+    }
+
+    function applyCustomSettings() {
+      mutableConfigs.primary.faMax = parseFloat(document.getElementById('cfg-p-fa').value) || 15;
+      mutableConfigs.primary.saMax = parseFloat(document.getElementById('cfg-p-sa').value) || 20;
+      mutableConfigs.primary.saWrittenMax = parseFloat(document.getElementById('cfg-p-saw').value) || 30;
+      mutableConfigs.primary.saOralMax = parseFloat(document.getElementById('cfg-p-sao').value) || 20;
+      mutableConfigs.primary.subjects = document.getElementById('cfg-p-subs').value.split(',').map(s => s.trim()).filter(Boolean);
+
+      mutableConfigs.middleHigh.faMax = parseFloat(document.getElementById('cfg-m-fa').value) || 10;
+      mutableConfigs.middleHigh.saMax = parseFloat(document.getElementById('cfg-m-sa').value) || 30;
+      mutableConfigs.middleHigh.saWrittenMax = parseFloat(document.getElementById('cfg-m-saw').value) || 40;
+      mutableConfigs.middleHigh.saOralMax = parseFloat(document.getElementById('cfg-m-sao').value) || 10;
+      mutableConfigs.middleHigh.subjects = document.getElementById('cfg-m-subs').value.split(',').map(s => s.trim()).filter(Boolean);
+
+      const targets = [10, 15, 20, 25, 30, 50, 100];
+      targets.forEach(t => {
+        gradeScales[t] = {
+          'A+': parseFloat(document.getElementById(`sc-${t}-ap`).value) || 0,
+          'A': parseFloat(document.getElementById(`sc-${t}-a`).value) || 0,
+          'B+': parseFloat(document.getElementById(`sc-${t}-bp`).value) || 0,
+          'B': parseFloat(document.getElementById(`sc-${t}-b`).value) || 0,
+          'C': 0
+        };
+      });
+
+      const settingsPayload = JSON.stringify({ mutableConfigs, gradeScales });
+      localStorage.setItem('cce_saved_settings', settingsPayload);
+      showToast("à²¨à²¿à²¯à²®à²—à²³à²¨à³à²¨à³ à²¯à²¶à²¸à³à²µà²¿à²¯à²¾à²—à²¿ à²‰à²³à²¿à²¸à²²à²¾à²—à²¿à²¦à³†!", "success");
+
+      if (classFilter.value && examTypeFilter.value) {
+        syncActiveGroupConfiguration();
+        showDynamicRulesNote();
+        checkAndLoadGrid();
+      }
+    }
+
+    function syncActiveGroupConfiguration() {
+      const cls = classFilter.value;
+      let subsList = mutableConfigs.primary.classes.includes(cls === "ALL" ? "1" : cls) ? mutableConfigs.primary.subjects : mutableConfigs.middleHigh.subjects;
+      currentSubjects = subsList.map((subName, i) => ({ id: "sub_" + i, name: subName }));
+
+      const previousSelection = subjectFilter.value;
+      subjectFilter.innerHTML = '<option value="ALL">à²Žà²²à³à²²à²¾ à²µà²¿à²·à²¯à²—à²³à³ / All Subjects</option>';
+      currentSubjects.forEach(sub => {
+        subjectFilter.innerHTML += `<option value="${sub.id}">${sub.name}</option>`;
+      });
+      if([...subjectFilter.options].some(o => o.value === previousSelection)) subjectFilter.value = previousSelection;
+      populateSubjectReportSelect();
+    }
+
+    // Mathematical grading structure comparator
+    function determineGradeByScale(marks, maxTarget) {
+      if (marks === '' || marks === null || undefined === marks) return '-';
+      const m = parseFloat(marks);
+      const scale = gradeScales[maxTarget] || { 'A+': 90, 'A': 70, 'B+': 50, 'B': 30, 'C': 0 };
+      if (m >= scale['A+']) return 'A+';
+      if (m >= scale['A']) return 'A';
+      if (m >= scale['B+']) return 'B+';
+      if (m >= scale['B']) return 'B';
+      return 'C';
+    }
+
+    function showDynamicRulesNote() {
+      const cls = classFilter.value;
+      const exam = examTypeFilter.value;
+      const card = document.getElementById('rules-note-card');
+      const content = document.getElementById('rules-content');
+      if (!cls || !exam) { card.classList.add('hidden'); return; }
+
+      const isPrimary = mutableConfigs.primary.classes.includes(cls === "ALL" ? "1" : cls);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const isSA = exam.startsWith("SA");
+
+      let rulesHtml = `
+        <div class="grid grid-cols-1 gap-1 text-[11px]">
+          <span>â€¢ <b>à²µà²¿à²§ / Type:</b> ${exam}</span>
+          ${!isSA ? `<span>â€¢ <b>FA à²—à²°à²¿à²·à³à²  à²…à²‚à²•:</b> ${cfg.faMax} (à²—à³à²°à³‡à²¡à³ à²¸à²¾à²²à³: ${cfg.faMax})</span>` : 
+          `<span>â€¢ <b>SA à²¨à³ˆà²œ à²…à²‚à²•:</b> à²²à²¿à²–à²¿à²¤ (${cfg.saWrittenMax}) + à²®à³Œà²–à²¿à²• (${cfg.saOralMax}) = à²’à²Ÿà³à²Ÿà³ 50</span>
+           <span>â€¢ <b>à²—à³à²°à³‡à²¡à³ à²²à³†à²•à³à²•à²¾à²šà²¾à²°:</b> à²’à²Ÿà³à²Ÿà³ 50 à²° à²…à²‚à²•à²¦ à²ªà³à²¯à²¾à²Ÿà²°à³à²¨à³ à²®à³‡à²²à³†</span>
+           <span>â€¢ <b>à²µà²°à²¦à²¿ à²ªà²°à²¿à²µà²°à³à²¤à²¨à³†:</b> 50 à²° à²®à³Šà²¤à³à²¤à²µà²¨à³à²¨à³ <b>${cfg.saMax}</b> à²•à³à²•à³† à²¬à²¦à²²à²¾à²¯à²¿à²¸à²²à²¾à²—à³à²¤à³à²¤à²¦à³†.</span>`}
+        </div>
+      `;
+      content.innerHTML = rulesHtml;
+      card.classList.remove('hidden');
+    }
+
+    async function checkAndLoadGrid() {
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      if (!className || !examType) return;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+      document.getElementById('competency-table').classList.add('hidden');
+      document.getElementById('stats-bar').classList.add('hidden');
+      document.getElementById('btn-export-pdf').classList.add('hidden');
+      document.getElementById('btn-export-excel').classList.add('hidden');
+      document.getElementById('btn-print').classList.add('hidden');
+      hideActionButtons();
+
+      try {
+        let query = supabaseClient
+          .from('admissions')
+          .select('id, student_name, father_name_kn, app_no, enroll_class');
+        
+        if (className !== "ALL") {
+          query = query.eq('enroll_class', className);
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const roster = (data || []).map(s => ({
+          id: s.id,
+          name: s.student_name,
+          father: s.father_name_kn,
+          adminNo: s.app_no,
+          enrollClass: s.enroll_class
+        }));
+
+        let allEvaluations = {};
+        if (className === "ALL") {
+          const classes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+          classes.forEach((cName) => {
+            const mockKey = `cce_eval_${cName}_${examType}`;
+            let saved = localStorage.getItem(mockKey);
+            if (saved) {
+              try {
+                Object.assign(allEvaluations, JSON.parse(saved));
+              } catch (e) {
+                console.error("Failed to parse local CCE evaluations for " + cName, e);
+              }
+            }
+          });
+        } else {
+          const mockKey = `cce_eval_${className}_${examType}`;
+          let saved = localStorage.getItem(mockKey);
+          if (saved) {
+            try {
+              allEvaluations = JSON.parse(saved);
+            } catch (e) {
+              allEvaluations = {};
+            }
+          }
+        }
+
+        onDataLoaded({
+          success: true,
+          students: roster,
+          evaluations: allEvaluations
+        });
+      } catch (err) {
+        onDataLoadFailed(err);
+      }
+    }
+
+    function mapBackendEvaluationsToFrontend(backendEvals) {
+      const mapped = {};
+      for (let sId in backendEvals) {
+        mapped[sId] = {};
+        currentSubjects.forEach((sub) => {
+          const subKey = getBackendSubjectKey(sub.name);
+          mapped[sId][sub.id + "_mark"] = backendEvals[sId][subKey + "_mark"] !== undefined ? backendEvals[sId][subKey + "_mark"] : "";
+          mapped[sId][sub.id + "_grade"] = backendEvals[sId][subKey + "_grade"] !== undefined ? backendEvals[sId][subKey + "_grade"] : "-";
+        });
+      }
+      return mapped;
+    }
+
+    function onDataLoaded(response) {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      if (!response.success) { resetToEmptyState(); return; }
+
+      students = response.students || [];
+      evaluations = response.evaluations || {};
+      originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+
+      if (students.length === 0) { resetToEmptyState(); return; }
+
+      document.getElementById('grid-subtitle').innerText = `${classFilter.value} | Exam: ${examTypeFilter.value}`;
+      document.getElementById('competency-table').classList.remove('hidden');
+      document.getElementById('stats-bar').classList.remove('hidden');
+      document.getElementById('btn-export-pdf').classList.remove('hidden');
+      document.getElementById('btn-export-excel').classList.remove('hidden');
+      document.getElementById('btn-print').classList.remove('hidden');
+      
+      if (classFilter.value === "ALL") {
+        setMode(false);
+        document.getElementById('btn-edit').classList.add('hidden');
+      } else {
+        setMode(Object.keys(evaluations).length === 0);
+      }
+      buildTableHeader();
+      renderGrid();
+    }
+
+    function onDataLoadFailed(err) {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      showToast("à²¡à³‡à²Ÿà²¾ à²²à³‹à²¡à³ à²®à²¾à²¡à²²à³ à²¸à²¾à²§à³à²¯à²µà²¾à²—à²²à²¿à²²à³à²²: " + (err.message || err), "error");
+      resetToEmptyState();
+    }
+
+    function buildTableHeader() {
+      const thead = document.getElementById('table-head');
+      const selectedSub = subjectFilter.value;
+      const isSA = examTypeFilter.value.startsWith("SA");
+      
+      let subHeadersHtml = ''; let subLabelsHtml = '';
+      let numVisibleSubs = 0;
+      currentSubjects.forEach(sub => { if (selectedSub === "ALL" || sub.id === selectedSub) numVisibleSubs++; });
+
+      const colsPerSub = isSA ? 4 : 2;
+      const totalSubCols = numVisibleSubs * colsPerSub;
+      const pctPerSubCol = (100 - 38) / totalSubCols;
+
+      currentSubjects.forEach(sub => {
+        if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
+        if (isSA) {
+          subHeadersHtml += `<th colspan="4" class="p-2 text-center border-r border-slate-200 font-bold" style="width: ${(pctPerSubCol * 4).toFixed(2)}%;">${sub.name}</th>`;
+          subLabelsHtml += `
+            <th class="p-1.5 text-center border-r border-slate-200 bg-amber-50/20" style="width: ${pctPerSubCol.toFixed(2)}%;">W</th>
+            <th class="p-1.5 text-center border-r border-slate-200 bg-amber-50/20" style="width: ${pctPerSubCol.toFixed(2)}%;">O</th>
+            <th class="p-1.5 text-center border-r border-slate-200 font-bold bg-amber-100/20" style="width: ${pctPerSubCol.toFixed(2)}%;">Total</th>
+            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Grade</th>
+          `;
+        } else {
+          subHeadersHtml += `<th colspan="2" class="p-2 text-center border-r border-slate-200 font-bold" style="width: ${(pctPerSubCol * 2).toFixed(2)}%;">${sub.name}</th>`;
+          subLabelsHtml += `
+            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Mark</th>
+            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Grade</th>
+          `;
+        }
+      });
+
+      thead.innerHTML = `
+        <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
+          <th rowspan="2" class="p-3 text-center border-r border-slate-200 font-bold" style="width: 4%;">à²•à³à²°.à²¸à²‚</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 10%;">STS à²¸à²‚à²–à³à²¯à³†</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 16%;">à²¹à³†à²¸à²°à³</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 14%;">à²¤à²‚à²¦à³†à²¯ à²¹à³†à²¸à²°à³</th>
+          ${subHeadersHtml}
+          <th colspan="2" class="p-2 text-center font-bold" style="width: 10%;">à²’à²Ÿà³à²Ÿà³ à²•à³Œà²‚à²Ÿà³</th>
+        </tr>
+        <tr class="bg-slate-50 text-[10px] text-slate-500 uppercase border-b border-slate-200">
+          ${subLabelsHtml}
+          <th class="p-1.5 text-center border-r border-slate-200 bg-emerald-50 text-emerald-800 font-bold" style="width: 5%;">Total A+,A</th>
+          <th class="p-1.5 text-center bg-blue-50 text-blue-800 font-bold" style="width: 5%;">Others</th>
+        </tr>
+      `;
+    }
+
+    function renderGrid() {
+      const tbody = document.getElementById('student-grid-body');
+      tbody.innerHTML = '';
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      
+      const selectedSub = subjectFilter.value;
+      const isSA = examType.startsWith("SA");
+
+      students.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition";
+        const sId = student.id;
+
+        if (!evaluations[sId]) {
+          evaluations[sId] = {};
+          currentSubjects.forEach(s => {
+            evaluations[sId][s.id + "_mark"] = "";
+            evaluations[sId][s.id + "_grade"] = "-";
+          });
+        }
+        
+        const evalData = evaluations[sId];
+        let rowHtml = `
+          <td class="p-3 text-center border-r border-slate-200 font-medium">${index + 1}</td>
+          <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold">${student.adminNo || student.id}</td>
+          <td class="p-3 border-r border-slate-200 font-semibold text-slate-800">${student.name}</td>
+          <td class="p-3 border-r border-slate-200 text-slate-600">${student.father || ''}</td>
+        `;
+
+        currentSubjects.forEach(sub => {
+          if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
+
+          const m = evalData[sub.id + "_mark"] !== undefined ? evalData[sub.id + "_mark"] : '';
+          const g = evalData[sub.id + "_grade"] || '-';
+
+          if (isSA) {
+            let written = ''; let oral = ''; let convertedDisplay = '-';
+            if (m !== '' && m !== null) {
+              const parts = m.toString().split('+');
+              written = parts[0] !== undefined ? parts[0] : '';
+              oral = parts[1] !== undefined ? parts[1] : '';
+              
+              if (written !== '' || oral !== '') {
+                const wVal = parseFloat(written) || 0;
+                const oVal = parseFloat(oral) || 0;
+                const actualTotal = wVal + oVal;
+                convertedDisplay = ((actualTotal / 50) * cfg.saMax).toFixed(1);
+              }
+            }
+
+            if (isEditing) {
+              rowHtml += `
+                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-50/10">
+                  <input type="number" min="0" max="${cfg.saWrittenMax}" step="0.5" value="${written}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'w', this.value, this)" class="w-11 bg-slate-50 border border-slate-200 rounded px-0.5 py-1 text-center font-bold text-xs">
+                </td>
+                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-50/10">
+                  <input type="number" min="0" max="${cfg.saOralMax}" step="0.5" value="${oral}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'o', this.value, this)" class="w-11 bg-slate-50 border border-slate-200 rounded px-0.5 py-1 text-center font-bold text-xs">
+                </td>
+                <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-amber-100/10">
+                  <span id="sa-total-${sId}-${sub.id}" class="text-xs text-slate-700 font-bold">${convertedDisplay}</span>
+                </td>
+                <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-slate-50/50">
+                  <span id="grade-${sId}-${sub.id}" class="text-xs text-slate-600 font-bold">${g}</span>
+                </td>
+              `;
+            } else {
+              let badgeClass = (['A+', 'A'].includes(g)) ? "bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5" : "bg-slate-100 text-slate-700 rounded px-1.5 py-0.5";
+              rowHtml += `
+                <td class="p-3 border-r border-slate-200 text-center text-slate-600">${written !== '' ? written : '-'}</td>
+                <td class="p-3 border-r border-slate-200 text-center text-slate-600">${oral !== '' ? oral : '-'}</td>
+                <td class="p-3 border-r border-slate-200 text-center font-bold text-slate-800">${convertedDisplay}</td>
+                <td class="p-3 border-r border-slate-200 text-center font-bold"><span class="${badgeClass} badge-print">${g}</span></td>
+              `;
+            }
+          } else {
+            if (isEditing) {
+              rowHtml += `
+                <td class="p-1.5 border-r border-slate-200 text-center">
+                  <input type="number" min="0" max="${cfg.faMax}" step="0.5" value="${m}" oninput="onMarkChange('${sId}', '${sub.id}', this.value, this)" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-1 text-center font-bold">
+                </td>
+                <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-slate-50/50">
+                  <span id="grade-${sId}-${sub.id}" class="text-xs text-slate-600 font-bold">${g}</span>
+                </td>
+              `;
+            } else {
+              let badgeClass = (['A+', 'A'].includes(g)) ? "bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5" : "bg-slate-100 text-slate-700 rounded px-1.5 py-0.5";
+              rowHtml += `
+                <td class="p-3 border-r border-slate-200 text-center font-bold text-slate-700">${m !== '' ? m : '-'}</td>
+                <td class="p-3 border-r border-slate-200 text-center font-bold"><span class="${badgeClass} badge-print">${g}</span></td>
+              `;
+            }
+          }
+        });
+
+        rowHtml += `
+          <td id="row-total-a-${sId}" class="p-3 border-r border-slate-200 text-center font-black bg-emerald-50 text-emerald-800 text-xs">0</td>
+          <td id="row-total-b-${sId}" class="p-3 text-center font-black bg-blue-50 text-blue-800 text-xs">0</td>
+        `;
+
+        tr.innerHTML = rowHtml;
+        tbody.appendChild(tr);
+      });
+
+      updateTotals();
+    }
+
+    function onMarkChange(studentId, subjectId, val, inputEl) {
+      const className = classFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const targetScale = isPrimary ? mutableConfigs.primary.faMax : mutableConfigs.middleHigh.faMax;
+      
+      let markVal = val.trim() === '' ? '' : parseFloat(val);
+      if (markVal !== '' && markVal > targetScale) {
+        markVal = targetScale;
+        if (inputEl) inputEl.value = targetScale; 
+      }
+
+      const gradeVal = determineGradeByScale(markVal, targetScale);
+      evaluations[studentId][subjectId + "_mark"] = markVal;
+      evaluations[studentId][subjectId + "_grade"] = gradeVal;
+
+      const gradeEl = document.getElementById(`grade-${studentId}-${subjectId}`);
+      if (gradeEl) gradeEl.innerText = gradeVal;
+      updateTotals();
+    }
+
+    function onSaMarkChange(studentId, subjectId, type, val, inputEl) {
+      const className = classFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+
+      const currentRaw = evaluations[studentId][subjectId + "_mark"] || '';
+      const parts = currentRaw.toString().split('+');
+      let wStr = parts[0] !== undefined ? parts[0] : '';
+      let oStr = parts[1] !== undefined ? parts[1] : '';
+      
+      if (type === 'w') { wStr = val.trim(); } else { oStr = val.trim(); }
+      
+      let wVal = wStr === '' ? 0 : parseFloat(wStr);
+      let oVal = oStr === '' ? 0 : parseFloat(oStr);
+      
+      if (wVal > cfg.saWrittenMax) { wVal = cfg.saWrittenMax; wStr = cfg.saWrittenMax.toString(); if (inputEl) inputEl.value = wStr; }
+      if (oVal > cfg.saOralMax) { oVal = cfg.saOralMax; oStr = cfg.saOralMax.toString(); if (inputEl) inputEl.value = oStr; }
+      
+      const actualTotal = wVal + oVal;
+      
+      if (wStr === '' && oStr === '') {
+        evaluations[studentId][subjectId + "_mark"] = '';
+        evaluations[studentId][subjectId + "_grade"] = '-';
+      } else {
+        evaluations[studentId][subjectId + "_mark"] = `${wStr}+${oStr}`;
+        const gradeVal = determineGradeByScale(actualTotal, 50);
+        evaluations[studentId][subjectId + "_grade"] = gradeVal;
+      }
+      
+      const totalEl = document.getElementById(`sa-total-${studentId}-${subjectId}`);
+      if (totalEl) {
+        totalEl.innerText = (wStr === '' && oStr === '') ? '-' : ((actualTotal / 50) * cfg.saMax).toFixed(1);
+      }
+      
+      const gradeEl = document.getElementById(`grade-${studentId}-${subjectId}`);
+      if (gradeEl) gradeEl.innerText = evaluations[studentId][subjectId + "_grade"];
+      updateTotals();
+    }
+
+    function updateTotals() {
+      let grandTotalA = 0; let grandTotalOthers = 0;
+      students.forEach(student => {
+        const sId = student.id;
+        const evalData = evaluations[sId] || {};
+        let rowA = 0; let rowOthers = 0;
+
+        currentSubjects.forEach(s => {
+          const g = evalData[s.id + "_grade"] || '-';
+          if (g === '-') return;
+          if (['A+', 'A'].includes(g)) { rowA++; } else { rowOthers++; }
+        });
+
+        const rowTotalAEl = document.getElementById(`row-total-a-${sId}`);
+        const rowTotalBEl = document.getElementById(`row-total-b-${sId}`);
+        if (rowTotalAEl) rowTotalAEl.innerText = rowA;
+        if (rowTotalBEl) rowTotalBEl.innerText = rowOthers;
+
+        grandTotalA += rowA; grandTotalOthers += rowOthers;
+      });
+
+      document.getElementById('stat-total-students').innerText = students.length;
+      document.getElementById('stat-total-a').innerText = grandTotalA;
+      document.getElementById('stat-total-b').innerText = grandTotalOthers;
+    }
+
+    function setMode(editing) {
+      isEditing = editing;
+      const modeTag = document.getElementById('grid-mode-tag');
+      if (editing) {
+        if(modeTag) {
+          modeTag.innerText = "Edit Mode";
+          modeTag.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold uppercase tracking-wider text-[10px]";
+          modeTag.classList.remove('hidden');
+        }
+        document.getElementById('btn-edit').classList.add('hidden');
+        document.getElementById('btn-save').classList.remove('hidden');
+        document.getElementById('btn-cancel').classList.remove('hidden');
+      } else {
+        if(modeTag) {
+          modeTag.innerText = "View Mode";
+          modeTag.className = "px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[10px]";
+          modeTag.classList.remove('hidden');
+        }
+        document.getElementById('btn-edit').classList.remove('hidden');
+        document.getElementById('btn-save').classList.add('hidden');
+        document.getElementById('btn-cancel').classList.add('hidden');
+      }
+    }
+
+    function hideActionButtons() {
+      const modeTag = document.getElementById('grid-mode-tag');
+      if(modeTag) modeTag.classList.add('hidden');
+      document.getElementById('btn-edit').classList.add('hidden');
+      document.getElementById('btn-save').classList.add('hidden');
+      document.getElementById('btn-cancel').classList.add('hidden');
+    }
+
+    function resetToEmptyState() {
+      document.getElementById('empty-state').classList.remove('hidden');
+      document.getElementById('competency-table').classList.add('hidden');
+      document.getElementById('grid-subtitle').innerText = "à²¯à²¾à²µà³à²¦à³‡ à²¤à²°à²—à²¤à²¿à²¯à²¨à³à²¨à³ à²†à²°à²¿à²¸à²²à²¾à²—à²¿à²²à³à²²";
+      hideActionButtons();
+      document.getElementById('stats-bar').classList.add('hidden');
+      document.getElementById('btn-export-pdf').classList.add('hidden');
+      document.getElementById('btn-export-excel').classList.add('hidden');
+      document.getElementById('btn-print').classList.add('hidden');
+      document.getElementById('rules-note-card').classList.add('hidden');
+    }
+
+    function enableEditing() { setMode(true); renderGrid(); }
+    function cancelEditing() {
+      evaluations = JSON.parse(JSON.stringify(originalEvaluations));
+      setMode(Object.keys(originalEvaluations).length === 0);
+      renderGrid();
+    }
+
+    function saveData() {
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      if (!className || !examType) return;
+      document.getElementById('loading-overlay').classList.remove('hidden');
+
+      const records = students.map(student => {
+        const sId = student.id;
+        const evalData = evaluations[sId] || {};
+        const record = { studentId: sId, studentName: student.name, fatherName: student.father };
+        currentSubjects.forEach(s => {
+          const subKey = getBackendSubjectKey(s.name);
+          record[subKey + "_mark"] = evalData[s.id + "_mark"];
+          record[subKey + "_grade"] = evalData[s.id + "_grade"];
+        });
+        return record;
+      });
+
+      setTimeout(() => { saveLocalMockData(className, examType, records); }, 300);
+    }
+
+    function saveLocalMockData(className, examType, records) {
+      const mockKey = `cce_eval_${className}_${examType}`;
+      const evalData = {};
+      records.forEach(r => {
+        evalData[r.studentId] = {};
+        currentSubjects.forEach(s => {
+          const subKey = getBackendSubjectKey(s.name);
+          evalData[r.studentId][subKey + "_mark"] = r[subKey + "_mark"];
+          evalData[r.studentId][subKey + "_grade"] = r[subKey + "_grade"];
+        });
+      });
+      localStorage.setItem(mockKey, JSON.stringify(evalData));
+      onDataSaved();
+    }
+
+    function onDataSaved() {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      showToast("à²®à²¾à²¹à²¿à²¤à²¿ à²¯à²¶à²¸à³à²µà²¿à²¯à²¾à²—à²¿ à²‰à²³à²¿à²¸à²²à²¾à²—à²¿à²¦à³†!", "success");
+      originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+      setMode(false);
+      renderGrid();
+    }
+
+    function onDataSaveFailed() {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      showToast("à²¦à³‹à²·: à²¡à³‡à²Ÿà²¾ à²‰à²³à²¿à²¸à²²à³ à²¸à²¾à²§à³à²¯à²µà²¾à²—à²²à²¿à²²à³à²².", "error");
+    }
+
+    function printPage() {
+      const selectedSub = subjectFilter.value;
+      const isAllSubjects = (selectedSub === "ALL");
+      const sigEl = document.getElementById('print-teacher-sig');
+      if (sigEl) {
+        sigEl.innerHTML = isAllSubjects ? `à²¤à²°à²—à²¤à²¿ à²¶à²¿à²•à³à²·à²•à²° à²¸à²¹à²¿<br>(Class Teacher)` : `à²µà²¿à²·à²¯ à²¶à²¿à²•à³à²·à²•à²° à²¸à²¹à²¿<br>(Subject Teacher)`;
+      }
+      document.getElementById('print-class-lbl').innerText = `à²¤à²°à²—à²¤à²¿ / Class: ${classFilter.value}`;
+      document.getElementById('print-exam-lbl').innerText = `à²ªà²°à³€à²•à³à²·à³† / Exam: ${examTypeFilter.value}`;
+      document.getElementById('print-date-lbl').innerText = `à²¦à²¿à²¨à²¾à²‚à²• / Date: ${new Date().toLocaleDateString('kn-IN')}`;
+      window.print();
+    }
+
+    function exportToPdf() {
+      if (typeof html2pdf === 'undefined') { alert("PDF à²²à³ˆà²¬à³à²°à²°à²¿ à²²à³‹à²¡à³ à²†à²—à²¿à²²à³à²²."); return; }
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const selectedSub = subjectFilter.value;
+      const isAllSubjects = (selectedSub === "ALL");
+
+      const disabledStyles = [];
+      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(tag => {
+        if (!tag.disabled) { tag.disabled = true; disabledStyles.push(tag); }
+      });
+
+      const printContainer = document.createElement('div');
+      printContainer.style.backgroundColor = '#ffffff'; printContainer.style.color = '#000000';
+      printContainer.style.fontFamily = "'Inter', 'Noto Sans Kannada', sans-serif";
+      printContainer.style.width = '100%'; printContainer.style.padding = '10px';
+
+      const fontSize = isAllSubjects ? '7.5px' : '9px';
+      const cellPadding = isAllSubjects ? '3px 2px' : '6px 4px';
+      const styleEl = document.createElement('style');
+      styleEl.innerText = `
+        .print-header-title { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: ${fontSize}; border: 1px solid #000000; }
+        th, td { border: 1px solid #000000; padding: ${cellPadding}; text-align: center; }
+        th { font-weight: bold; }
+      `;
+      printContainer.appendChild(styleEl);
+
+      const headerHtml = `
+        <div class="print-header-title">
+          <h1 style="font-size:16px; font-weight:800;">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
+          <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:10px;">
+            <span>Class: ${className}</span><span>Exam: ${examType}</span><span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
+          </div>
+        </div>
+      `;
+      printContainer.innerHTML += headerHtml;
+
+      const tableClone = document.getElementById('competency-table').cloneNode(true);
+      tableClone.classList.remove('hidden');
+      tableClone.querySelectorAll('input').forEach(input => {
+        const span = document.createElement('span'); span.innerText = input.value !== '' ? input.value : '-';
+        input.parentNode.replaceChild(span, input);
+      });
+      tableClone.querySelectorAll('*').forEach(el => { el.removeAttribute('class'); el.style.backgroundColor='transparent'; el.style.color='#000'; });
+      printContainer.appendChild(tableClone);
+
+      const opt = {
+        margin: 10, filename: `CCE_Report_${className}_${examType}.pdf`, image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 1.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+
+      html2pdf().set(opt).from(printContainer).save().then(() => {
+        disabledStyles.forEach(tag => tag.disabled = false);
+      });
+    }
+
+    function exportToExcel() {
+      if (students.length === 0) { alert("à²¯à²¾à²µà³à²¦à³‡ à²¡à³‡à²Ÿà²¾ à²²à²­à³à²¯à²µà²¿à²²à³à²²"); return; }
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const isSA = examType.startsWith("SA");
+
+      const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+      const row2 = ["", "", "", ""];
+
+      currentSubjects.forEach(sub => {
+        if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+        if (isSA) { row1.push(sub.name, "", "", ""); row2.push("Written", "Oral", "Total", "Grade"); } 
+        else { row1.push(sub.name, ""); row2.push("Mark", "Grade"); }
+      });
+      row1.push("Total A+,A", "Others"); row2.push("", "");
+
+      const aoa = [row1, row2];
+      students.forEach((student, index) => {
+        const sId = student.id; const evalData = evaluations[sId] || {};
+        const row = [index + 1, student.adminNo || student.id, student.name, student.father || ''];
+        let rowA = 0; let rowOthers = 0;
+
+        currentSubjects.forEach(sub => {
+          if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+          const m = evalData[sub.id + "_mark"] !== undefined ? evalData[sub.id + "_mark"] : '';
+          const g = evalData[sub.id + "_grade"] || '-';
+          if (isSA) {
+            const parts = m.toString().split('+');
+            const w = parts[0] || ''; const o = parts[1] || '';
+            const tot = w !== '' || o !== '' ? (parseFloat(w)||0)+(parseFloat(o)||0) : '';
+            row.push(w, o, tot, g);
+          } else { row.push(m, g); }
+          if (g !== '-') { if (['A+', 'A'].includes(g)) { rowA++; } else { rowOthers++; } }
+        });
+        row.push(rowA, rowOthers); aoa.push(row);
+      });
+
+      const sheet = XLSX.utils.aoa_to_sheet(aoa);
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, sheet, "CCE");
+      XLSX.writeFile(wb, `CCE_${className}_${examType}.xlsx`);
+    }
+
+    function buildAnalytics() {
+      const emptyState = document.getElementById('ana-empty-state');
+      if (students.length === 0) { if(emptyState) emptyState.classList.remove('hidden'); return; }
+      if(emptyState) emptyState.classList.add('hidden');
+
+      switchAnalyticsSubTab(currentAnalyticsSubTab);
+      document.getElementById('ana-subtitle').innerText = `${classFilter.value} | Exam: ${examTypeFilter.value}`;
+
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const maxMarks = examType.startsWith("SA") ? cfg.saMax : cfg.faMax;
+
+      let grandTotalObtained = 0; let grandTotalMax = 0;
+      let highestScore = -1; let lowestScore = Infinity;
+
+      sortedRosterData = students.map(student => {
+        const sId = student.id; const evalData = evaluations[sId] || {};
+        let studentTotal = 0; let subjectsCount = 0;
+
+        currentSubjects.forEach(sub => {
+          if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+          const m = evalData[sub.id + "_mark"];
+          if (m !== '' && m !== undefined && m !== null) {
+            if (m.toString().includes('+')) {
+              const parts = m.toString().split('+');
+              studentTotal += (((parseFloat(parts[0]) || 0) + (parseFloat(parts[1]) || 0)) / 50) * cfg.saMax;
+            } else { studentTotal += parseFloat(m); }
+            subjectsCount++;
+          }
+        });
+
+        const studentMax = subjectsCount * maxMarks;
+        const percentage = studentMax > 0 ? (studentTotal / studentMax) * 100 : 0;
+        const overallGrade = studentMax > 0 ? determineGradeByScale(percentage, 100) : '-';
+
+        grandTotalObtained += studentTotal; grandTotalMax += studentMax;
+        if (studentMax > 0) {
+          if (studentTotal > highestScore) highestScore = studentTotal;
+          if (studentTotal < lowestScore) lowestScore = studentTotal;
+        }
+        return {
+          id: sId, adminNo: student.adminNo || student.id, name: student.name, father: student.father || '',
+          total: studentTotal, max: studentMax, percentage: percentage.toFixed(1), grade: overallGrade
+        };
+      });
+
+      document.getElementById('ana-total-students').innerText = students.length;
+      document.getElementById('ana-class-avg').innerText = grandTotalMax > 0 ? ((grandTotalObtained / grandTotalMax) * 100).toFixed(1) + "%" : "0%";
+      document.getElementById('ana-highest').innerText = highestScore > -1 ? highestScore.toFixed(1) : "0";
+      document.getElementById('ana-lowest').innerText = lowestScore !== Infinity ? lowestScore.toFixed(1) : "0";
+      sortRoster('desc');
+    }
+
+    function sortRoster(dir) {
+      if (dir === 'desc') { sortedRosterData.sort((a, b) => b.total - a.total); } 
+      else { sortedRosterData.sort((a, b) => a.total - b.total); }
+      renderRankTable();
+    }
+
+    function renderRankTable() {
+      const tbody = document.getElementById('rank-table-body'); if(!tbody) return;
+      tbody.innerHTML = '';
+      sortedRosterData.forEach((student, index) => {
+        const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50 transition";
+        let badgeClass = (['A+', 'A'].includes(student.grade)) ? "bg-emerald-100 text-emerald-800 rounded px-1.5 py-0.5" : "bg-slate-100 text-slate-700 rounded px-1.5 py-0.5";
+        tr.innerHTML = `
+          <td class="p-3 text-center border-r border-slate-200 font-medium font-mono">${index + 1}</td>
+          <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold">${student.adminNo}</td>
+          <td class="p-3 border-r border-slate-200 font-semibold text-slate-800">${student.name}</td>
+          <td class="p-3 border-r border-slate-200 text-center font-bold text-slate-700">${student.total.toFixed(1)} / ${student.max}</td>
+          <td class="p-3 border-r border-slate-200 text-center font-bold text-indigo-600">${student.percentage}%</td>
+          <td class="p-3 border-r border-slate-200 text-center font-bold"><span class="${badgeClass}">${student.grade}</span></td>
+          <td class="p-3 text-center no-print">
+            <button onclick="viewReportCard('${student.id}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-3 rounded-lg text-[10px] border-0 cursor-pointer">Card</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    let currentAnalyticsSubTab = 'ranklist';
+    function switchAnalyticsSubTab(subTab) {
+      currentAnalyticsSubTab = subTab;
+      const rankTabBtn = document.getElementById('sub-tab-ranklist');
+      const subReportTabBtn = document.getElementById('sub-tab-subjectreport');
+      const rankContainer = document.getElementById('ranklist-container');
+      const subReportContainer = document.getElementById('subjectreport-container');
+
+      if (subTab === 'ranklist') {
+        if(rankTabBtn) rankTabBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-white text-slate-800 shadow";
+        if(subReportTabBtn) subReportTabBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800";
+        if(rankContainer) rankContainer.classList.remove('hidden'); 
+        if(subReportContainer) subReportContainer.classList.add('hidden');
+      } else {
+        if(rankTabBtn) rankTabBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800";
+        if(subReportTabBtn) subReportTabBtn.className = "text-[10px] font-bold px-3 py-1.5 rounded-lg border-0 cursor-pointer bg-white text-slate-800 shadow";
+        if(rankContainer) rankContainer.classList.add('hidden'); 
+        if(subReportContainer) subReportContainer.classList.remove('hidden');
+        populateSubjectReportSelect(); loadSubjectExamReport();
+      }
+    }
+
+    function populateSubjectReportSelect() {
+      const select = document.getElementById('subreport-subject-select'); if (!select) return;
+      const prevVal = select.value; select.innerHTML = '';
+      currentSubjects.forEach(sub => { select.innerHTML += `<option value="${sub.id}">${sub.name}</option>`; });
+      if (prevVal && [...select.options].some(o => o.value === prevVal)) select.value = prevVal;
+    }
+
+    function loadSubjectExamReport() {
+      const className = classFilter.value;
+      const subSelect = document.getElementById('subreport-subject-select'); if (!subSelect) return;
+      const printArea = document.getElementById('subjectreport-print-area'); if (!printArea) return;
+      printArea.innerHTML = `<div class="p-8 text-center text-xs text-slate-500 font-medium font-sans">à²²à³‹à²¡à³ à²†à²—à³à²¤à³à²¤à²¿à²¦à³†...</div>`;
+      renderSubjectExamReport([]);
+    }
+
+    function renderSubjectExamReport(evaluationsArray) {
+      const subSelect = document.getElementById('subreport-subject-select');
+      const subject = currentSubjects.find(s => s.id === subSelect.value); if (!subject) return;
+
+      let tableHtml = `<table class="w-full border-collapse border border-slate-300 text-center font-sans"><thead><tr class="bg-slate-100"><th>Sl.No</th><th>Student Name</th><th>FA1</th><th>SA1</th></tr></thead><tbody>`;
+      students.forEach((student, idx) => {
+        tableHtml += `<tr><td>${idx + 1}</td><td class="text-left p-2 font-bold">${student.name}</td><td>-</td><td>-</td></tr>`;
+      });
+      tableHtml += `</tbody></table>`;
+      document.getElementById('subjectreport-print-area').innerHTML = tableHtml;
+    }
+
+    let activeReportCardStudent = null;
+    function viewReportCard(studentId) {
+      const student = students.find(s => s.id === studentId); if (!student) return;
+      activeReportCardStudent = student;
+      document.getElementById('report-card-print-area').innerHTML = `<p class="p-4 font-bold text-center">à²µà²°à²¦à²¿ à²²à²­à³à²¯à²µà²¿à²¦à³†: ${student.name}</p>`;
+      document.getElementById('report-card-modal').classList.remove('hidden');
+    }
+    function closeReportCardModal() { document.getElementById('report-card-modal').classList.add('hidden'); }
+    
+    function goToDashboard() {
+      window.location.href = "dashboard.html";
+    }
+    
+    function triggerImport() { document.getElementById('import-file-input').click(); }
+    function getBackendSubjectKey(name) { return name.toLowerCase().includes("à²•à²¨à³à²¨à²¡") ? "kannada" : "english"; }
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById('toast-notif');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.innerText = msg;
+      toast.className = `fixed bottom-5 right-5 px-5 py-3 rounded-2xl shadow-xl transition transform z-[100] ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 2500);
+    }
+  
+    // Sidebar & Theme helpers
+    
+
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+      localStorage.setItem('portal_theme', themeName);
+    }
+
+    async function initUserAndTheme() {
+      // 1. Theme
+      const savedTheme = localStorage.getItem('portal_theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      const selector = document.getElementById('themeSelector');
+      if (selector) selector.value = savedTheme;
+
+
+
+      // 3. User info
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          const user = session.user;
+          const name = user.user_metadata?.name || user.email;
+          const headerUser = document.getElementById('headerUser');
+          if (headerUser) headerUser.innerText = name;
+        }
+      } catch (e) {
+        console.error("Error loading user session for header:", e);
+      }
+    }
+</script>
+</body>
+</html>

@@ -1,18 +1,20 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GHPS Marched - Dashboard</title>
+  <title>APAAR / Aadhaar Detail Collector - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
-    .rotate-90 {
-      transform: rotate(90deg);
-    }
+    .rotate-90 { transform: rotate(90deg); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
   
         /* Sidebar Hover Collapsed Styles */
     @media (min-width: 768px) {
@@ -292,166 +294,163 @@
       </aside>
 
       <!-- Main Contents Container -->
-      <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
+      <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
         
-        <!-- Welcome banner -->
-        <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
-          <div>
-            <h2 class="text-xl font-bold flex items-center gap-2">
-              <span>👋 ನಮಸ್ಕಾರ,</span>
-              <span id="liveUser" class="text-indigo-300">Loading...</span>
+        <div class="flex flex-col lg:flex-row gap-6">
+          
+          <!-- LEFT PANEL: Class Selector & Student List -->
+          <div class="w-full lg:w-1/3 bg-white p-4 rounded-xl border border-slate-200 flex flex-col max-h-[500px]">
+            <h2 class="text-sm font-bold text-slate-800 mb-3 pb-2 border-b flex items-center gap-2">
+              <i class="fa-solid fa-users text-sky-600"></i> ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ / Student List
             </h2>
-            <p class="text-xs text-indigo-200/80 mt-1 font-medium">ದಾಖಲಾತಿ, ಶಿಕ್ಷಕರು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಮೌಲ್ಯಮಾಪನ ಪೋರ್ಟಲ್‌ಗೆ ಸುಸ್ವಾಗತ.</p>
-          </div>
-          <div class="flex gap-2 text-xs font-bold no-print">
-            <a href="NewAdmission.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl shadow transition text-center no-underline">
-              <i class="fa-solid fa-plus mr-1"></i> ಹೊಸ ದಾಖಲಾತಿ
-            </a>
-            <a href="CceAssessmet.html" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl shadow transition text-center no-underline">
-              <i class="fa-solid fa-graduation-cap mr-1"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ
-            </a>
-          </div>
-        </div>
-
-        <!-- 4 Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <!-- Card 1 -->
-          <div class="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-sky-500 text-white rounded-xl flex items-center justify-center text-xl shadow">
-              <i class="fa-solid fa-users"></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold text-sky-600 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ</p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <h3 id="totalStudents" class="text-lg font-extrabold text-sky-950">Loading...</h3>
-                <a href="StudentList.html?status=pending" id="pendingBadge" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full transition no-underline" title="Review pending admissions"></a>
-              </div>
-            </div>
-          </div>
-          <!-- Card 2 -->
-          <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
-              <i class="fa-solid fa-venus-mars"></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">ಲಿಂಗಾವಾರು ವಿವರ</p>
-              <p id="genderStats" class="text-xs font-bold text-indigo-950 mt-0.5">Loading...</p>
-            </div>
-          </div>
-          <!-- Card 3 -->
-          <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
-              <i class="fa-solid fa-chart-bar"></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">ವರ್ಗಾವಾರು ವಿವರ</p>
-              <p id="casteStats" class="text-[11px] font-bold text-emerald-950 mt-0.5">Loading...</p>
-            </div>
-          </div>
-          <!-- Card 4 -->
-          <div class="bg-purple-50 border border-purple-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-purple-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
-              <i class="fa-solid fa-award"></i>
-            </div>
-            <div>
-              <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider">ಶಾಲೆಯ ಶ್ರೇಣಿ (LBA)</p>
-              <p class="text-xs font-bold text-purple-950 mt-0.5">A+ ಗ್ರೇಡ್ (ಉನ್ನತ)</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Two Columns Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          <!-- Class Wise Enrollment (Left 7 Columns) -->
-          <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
-            <div class="flex justify-between items-center pb-2 border-b">
-              <h3 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
-                <i class="fa-solid fa-table text-indigo-600"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
-              </h3>
-              <span class="text-[10px] text-slate-400 font-semibold italic">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</span>
-            </div>
             
-            <div class="overflow-x-auto border rounded-xl">
-              <table class="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr class="bg-slate-800 text-slate-200 font-semibold uppercase">
-                    <th class="py-2.5 px-4">Class</th>
-                    <th class="py-2.5 px-4 text-center">Boys</th>
-                    <th class="py-2.5 px-4 text-center">Girls</th>
-                    <th class="py-2.5 px-4 text-center">Total</th>
-                  </tr>
-                </thead>
-                <tbody id="classTableBody" class="divide-y font-medium text-slate-700 bg-white">
-                  <tr>
-                    <td colspan="4" class="text-center py-8 text-slate-400">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಂಕಿ-ಅಂಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          <!-- Quick Tools & Recent Activities (Right 5 Columns) -->
-          <div class="lg:col-span-5 space-y-6">
-            <!-- Quick Tools -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
-              <h3 class="text-xs font-bold text-slate-800 uppercase pb-2 border-b flex items-center gap-2">
-                <i class="fa-solid fa-screwdriver-wrench text-sky-600"></i> ಕ್ವಿಕ್ ಲಿಂಕ್‌ಗಳು / Quick Tools
-              </h3>
-              <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
-                <a href="StudentList.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-address-book text-sky-500 text-lg"></i>
-                  <span>ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
-                </a>
-                <a href="teachers.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-chalkboard-user text-emerald-500 text-lg"></i>
-                  <span>ಶಿಕ್ಷಕರ ವಿವರ</span>
-                </a>
-                <a href="BridgeCourse.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-book text-pink-500 text-lg"></i>
-                  <span>ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
-                </a>
-                <a href="StudentUpdate.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-user-pen text-amber-500 text-lg"></i>
-                  <span>ವಿವರ ತಿದ್ದುಪಡಿ</span>
-                </a>
-              </div>
+            <div class="mb-3">
+              <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">ತರಗತಿ / Select Class</label>
+              <select id="class-filter" onchange="onClassChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
+                <option value="">-- তರಗತಿ ಆಯ್ಕೆಮಾಡಿ --</option>
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
             </div>
 
-            <!-- Recent Activities -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
-              <h3 class="text-xs font-bold text-slate-800 uppercase pb-2 border-b flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i> ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ಸ್ / Portal Updates
-              </h3>
-              <div class="space-y-3 text-[11px] font-semibold text-slate-600">
-                <div class="flex items-start gap-2.5 pb-2 border-b border-dashed">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-850 font-bold text-xs">CSV ಆಮದು ಪೋರ್ಟಲ್ ಸಕ್ರಿಯವಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">Just Now</span>
-                  </div>
-                </div>
-                <div class="flex items-start gap-2.5 pb-2 border-b border-dashed">
-                  <span class="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-850 font-bold text-xs">CCE ಅಂಕಗಳ ಗ್ರಿಡ್ ಸ್ಥಳಾವಕಾಶ ಸುಧಾರಿಸಲಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">10 mins ago</span>
-                  </div>
-                </div>
-                <div class="flex items-start gap-2.5">
-                  <span class="w-2 h-2 rounded-full bg-sky-500 mt-1.5 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-850 font-bold text-xs">ಹೊಸ ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2026-27 ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">1 hour ago</span>
-                  </div>
-                </div>
+            <div class="relative mb-3">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+              </span>
+              <input type="text" id="search-input" oninput="filterStudentList()" placeholder="ಹುಡುಕಿ / Search student name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+            </div>
+
+            <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-100 rounded-xl relative max-h-[300px]" id="list-container">
+              <div id="loading-overlay" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center z-10 hidden">
+                <i class="fa-solid fa-circle-notch fa-spin text-lg text-sky-600 mb-2"></i>
+                <p class="text-[10px] font-bold text-slate-600">ಪಟ್ಟಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
               </div>
+
+              <div id="empty-list" class="h-full flex flex-col items-center justify-center text-center p-6">
+                <i class="fa-solid fa-user-slash text-lg text-slate-300 mb-2"></i>
+                <p class="text-xs text-slate-500">ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ</p>
+              </div>
+
+              <ul id="student-ul" class="divide-y divide-slate-100 hidden p-0 m-0 list-none">
+                <!-- populated dynamically -->
+              </ul>
             </div>
           </div>
-          
+
+          <!-- RIGHT PANEL: Aadhaar / APAAR Form Editor -->
+          <div class="flex-1 bg-white rounded-xl border border-slate-200 flex flex-col">
+            <div class="bg-slate-50 p-3 border-b flex justify-between items-center rounded-t-xl">
+              <h2 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-id-card text-slate-600"></i> ಮಾಹಿತಿ ವಿವರ / Aadhaar & APAAR Editor
+              </h2>
+              <span id="edit-mode-indicator" class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-600 font-bold uppercase tracking-wider text-[9px] hidden">ವೀಕ್ಷಣೆ / View Mode</span>
+            </div>
+
+            <div class="flex-1 p-5" id="form-wrapper">
+              <div id="form-placeholder" class="text-center p-8 max-w-sm mx-auto">
+                <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 mb-3 shadow-inner mx-auto">
+                  <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                <h3 class="text-xs font-bold text-slate-700 mb-1">ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</h3>
+                <p class="text-[10px] text-slate-500 leading-relaxed">ಎಡಭಾಗದಲ್ಲಿರುವ ಪಟ್ಟಿಯಿಂದ ಒಬ್ಬ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆರಿಸಿ ಆಧಾರ್ ಮತ್ತು APAAR ವಿವರಗಳನ್ನು ಮಾರ್ಪಡಿಸಲು.</p>
+              </div>
+
+              <form id="apaar-form" class="space-y-4 hidden" onsubmit="event.preventDefault(); saveStudentDetails();">
+                <input type="hidden" id="student-id-input">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Student Name</label>
+                    <input type="text" id="student-name-kn" readonly class="w-full bg-slate-100 border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs focus:outline-none cursor-not-allowed">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">ತಂದೆಯ ಹೆಸರು / Father's Name</label>
+                    <input type="text" id="father-name" readonly class="w-full bg-slate-100 border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs focus:outline-none cursor-not-allowed">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">ಜನ್ಮ ದಿನಾಂಕ / Date of Birth</label>
+                    <input type="text" id="dob-input" readonly class="w-full bg-slate-100 border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs focus:outline-none cursor-not-allowed">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1 uppercase">ತರಗತಿ ಮತ್ತು ಲಿಂಗ / Class & Gender</label>
+                    <input type="text" id="class-gender-input" readonly class="w-full bg-slate-100 border border-slate-200 text-slate-500 rounded-xl px-3 py-2 text-xs focus:outline-none cursor-not-allowed">
+                  </div>
+                </div>
+
+                <hr class="border-slate-100 my-4">
+
+                <div class="space-y-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase flex justify-between">
+                      <span>ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar Number (12 Digits)</span>
+                      <span id="aadhaar-validation-msg" class="text-red-500 font-semibold normal-case hidden"><i class="fa-solid fa-circle-exclamation"></i> 12 ಅಂಕಿಗಳು ಇರಬೇಕು</span>
+                    </label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-fingerprint text-xs"></i>
+                      </span>
+                      <input type="text" id="aadhaar-input" maxlength="12" oninput="validateAadhaarInput(this)" placeholder="0000 0000 0000" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-semibold tracking-wider text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase">APAAR ಸಂಖ್ಯೆ / APAAR Number (12 Digits)</label>
+                    <div class="relative">
+                      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-address-card text-xs"></i>
+                      </span>
+                      <input type="text" id="apaar-input" maxlength="12" oninput="this.value = this.value.replace(/\D/g, '')" placeholder="APAAR Number" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs font-semibold tracking-wider text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-700 mb-1 uppercase">ವಿಳಾಸ / Permanent Address</label>
+                    <div class="relative">
+                      <span class="absolute top-3 left-3 text-slate-400">
+                        <i class="fa-solid fa-map-location-dot text-xs"></i>
+                      </span>
+                      <textarea id="address-input" rows="2" placeholder="Address Details" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition"></textarea>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-3 flex items-center gap-3 justify-end">
+                  <button type="button" onclick="closeFormEditor()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-xl transition cursor-pointer border-0 text-xs">
+                    ಮುಚ್ಚು / Close
+                  </button>
+                  <button type="submit" id="btn-submit-form" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-5 rounded-xl shadow-md transition cursor-pointer border-0 text-xs">
+                    <i class="fa-solid fa-floppy-disk mr-1"></i> ವಿವರ ಉಳಿಸಿ / Save Details
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
         </div>
+
       </main>
 
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center" id="toast-icon">
+      <i class="fa-solid fa-check text-sm"></i>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold" id="toast-title">Success!</h4>
+      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Data saved successfully.</p>
     </div>
   </div>
 
@@ -475,7 +474,6 @@
     }
     setInterval(updateClock, 1000); updateClock();
 
-    // Accordion sidebar helper functions
     function toggleAccordion(menuId) {
       const menu = document.getElementById(menuId);
       const arrow = document.getElementById(menuId + '-arrow');
@@ -492,10 +490,7 @@
       const path = window.location.pathname.split('/').pop();
       if (path === 'dashboard.html' || path === '') {
         const dashLink = document.getElementById('nav-Dashboard');
-        if (dashLink) {
-          dashLink.classList.remove('text-slate-600');
-          dashLink.classList.add('bg-indigo-50', 'text-indigo-800');
-        }
+        if (dashLink) dashLink.classList.add('bg-indigo-50', 'text-indigo-800');
       } else if (path === 'teachers.html') {
         expandMenu('menu-teachers');
         highlightSubItem('menu-teachers', 'teachers.html');
@@ -545,157 +540,259 @@
       }
     }
 
-    window.onload = async function() {
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+
+    let allStudents = [];
+
+    document.addEventListener("DOMContentLoaded", async function() {
       await initUserAndTheme();
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
         window.location.href = "index.html";
         return;
       }
-
-      // Display username
-      const user = session.user;
-      const name = user.user_metadata.name || user.email;
-      document.getElementById('liveUser').innerText = name;
-
-      // Initialize responsive accordion sidebar
       initSidebar();
+    });
 
-      // Load data from Supabase
-      loadDashboardData();
-    };
+    async function onClassChange() {
+      const className = document.getElementById("class-filter").value;
+      const tbody = document.getElementById("student-ul");
+      const emptyList = document.getElementById("empty-list");
+      const loading = document.getElementById("loading-overlay");
 
-    async function handleLogout() {
-      await supabaseClient.auth.signOut();
-      window.location.href = "index.html";
-    }
+      closeFormEditor();
+      
+      if (!className) {
+        tbody.classList.add("hidden");
+        emptyList.classList.remove("hidden");
+        return;
+      }
 
-    async function loadDashboardData() {
+      loading.classList.remove("hidden");
+      emptyList.classList.add("hidden");
+
       try {
-        const { data: admissions, error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('admissions')
-          .select('enroll_class, gender, caste, is_admitted');
+          .select('id, student_name, dob, gender, enroll_class, student_aadhaar, address, father_name_kn')
+          .eq('enroll_class', className);
 
-        if (error) {
-          console.error("Error fetching admissions:", error);
-          return;
-        }
+        if (error) throw error;
 
-        const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-        const classLabels = {
-          'LKG': 'LKG', 'UKG': 'UKG',
-          '1': '1', '2': '2', '3': '3', '4': '4',
-          '5': '5', '6': '6', '7': '7', '8': '8',
-          '9': '9', '10': '10'
-        };
-
-        const admittedList = admissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false');
-        const pendingList = admissions.filter(s => s.is_admitted === false || s.is_admitted === 'false');
-
-        let totalStudents = admittedList.length;
-        let pendingCount = pendingList.length;
-        let boys = 0;
-        let girls = 0;
-        let castes = { 'SC': 0, 'ST': 0, 'OBC': 0, 'Others': 0 };
-
-        const classData = {};
-        classes.forEach(c => {
-          classData[c] = { b: 0, g: 0 };
+        allStudents = (data || []).map(s => {
+          const storedApaar = localStorage.getItem(`apaar_${s.id}`) || "";
+          
+          return {
+            id: s.id,
+            nameKn: s.student_name,
+            fatherName: s.father_name_kn,
+            dob: s.dob,
+            classStudying: s.enroll_class,
+            gender: s.gender,
+            aadhaarNo: s.student_aadhaar,
+            apaarNo: storedApaar,
+            address: s.address
+          };
         });
 
-        function normalizeClass(classStr) {
-          if (!classStr) return "";
-          let clean = classStr.toString().trim().toLowerCase();
-          
-          if (!clean.includes("lkg")) {
-            clean = clean.replace(/l/g, "i");
-          }
-          
-          if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
-          if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
-          
-          if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
-          if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
-          if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
-          if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
-          if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
-          if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
-          if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
-          if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
-          if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
-          if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
-          
-          return classStr.toString().trim();
-        }
-
-        admittedList.forEach(student => {
-          const gLower = (student.gender || '').toLowerCase().trim();
-          const isBoy = gLower === 'boy' || gLower === 'boys' || gLower === 'male' || gLower === 'ಗಂಡು' || gLower === 'ಗಂಡು (male)';
-          const isGirl = gLower === 'girl' || gLower === 'girls' || gLower === 'female' || gLower === 'ಹೆಣ್ಣು' || gLower === 'ಹೆಣ್ಣು (female)';
-
-          if (isBoy) {
-            boys++;
-          } else if (isGirl) {
-            girls++;
-          }
-
-          let cls = normalizeClass(student.enroll_class);
-          if (cls && classData[cls]) {
-            if (isBoy) classData[cls].b++;
-            else if (isGirl) classData[cls].g++;
-          }
-
-          const cst = (student.caste || '').toUpperCase();
-          if (cst.includes('SC')) castes['SC']++;
-          else if (cst.includes('ST')) castes['ST']++;
-          else if (cst.includes('OBC') || cst.includes('C1') || cst.includes('2A') || cst.includes('3A') || cst.includes('3B')) castes['OBC']++;
-          else castes['Others']++;
-        });
-
-        document.getElementById('totalStudents').innerText = totalStudents;
-        document.getElementById('genderStats').innerHTML = `<span class="text-sky-600">Boys: ${boys}</span> | <span class="text-amber-500">Girls: ${girls}</span>`;
-        document.getElementById('casteStats').innerText = `SC: ${castes['SC']} | ST: ${castes['ST']} | OBC: ${castes['OBC']} | Others: ${castes['Others']}`;
-
-        const pendingBadge = document.getElementById('pendingBadge');
-        if (pendingBadge) {
-          if (pendingCount > 0) {
-            pendingBadge.innerText = `${pendingCount} ಹೊಸದು`;
-            pendingBadge.classList.remove('hidden');
-          } else {
-            pendingBadge.classList.add('hidden');
-          }
-        }
-
-        const tbody = document.getElementById('classTableBody');
-        tbody.innerHTML = '';
-        classes.forEach(c => {
-          const bCount = classData[c].b;
-          const gCount = classData[c].g;
-          const total = bCount + gCount;
-
-          const row = document.createElement('tr');
-          row.className = 'hover:bg-slate-50';
-          row.innerHTML = `
-            <td class="px-4 py-1.5 font-semibold text-slate-900">${classLabels[c]}</td>
-            <td class="text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" class="text-sky-600 font-bold px-2">${bCount}</button>
-            </td>
-            <td class="text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" class="text-amber-600 font-bold px-2">${gCount}</button>
-            </td>
-            <td class="text-center font-bold">${total}</td>
-          `;
-          tbody.appendChild(row);
-        });
-
+        loading.classList.add("hidden");
+        tbody.classList.remove("hidden");
+        filterStudentList();
       } catch (err) {
-        console.error("Dashboard calculation error:", err);
+        console.error("Load error:", err);
+        loading.classList.add("hidden");
+        alert("Error loading roster: " + err.message);
       }
     }
 
-    function handleGenderClick(c, g) {
-      const genderVal = (g === 'Boys') ? 'Boy' : 'Girl';
-      window.location.href = `StudentList.html?class=${c}&gender=${genderVal}`;
+    function filterStudentList() {
+      const query = document.getElementById("search-input").value.trim().toUpperCase();
+      const filtered = allStudents.filter(s => {
+        return (s.nameKn || '').toUpperCase().includes(query) || (s.id || '').toUpperCase().includes(query);
+      });
+      renderStudentList(filtered);
+    }
+
+    function renderStudentList(students) {
+      const ul = document.getElementById("student-ul");
+      ul.innerHTML = "";
+      
+      if(students.length === 0) {
+        ul.innerHTML = '<li class="p-4 text-center text-xs text-slate-400 font-medium">ವಿದ್ಯಾರ್ಥಿ ಇಲ್ಲ / No students</li>';
+        return;
+      }
+
+      students.forEach((s, index) => {
+        const li = document.createElement("li");
+        li.id = `li-${s.id}`;
+        li.className = "p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 border-l-4 border-l-transparent text-xs transition";
+        li.onclick = () => loadStudentForm(s.id);
+        
+        let badgeClass = "bg-slate-100 text-slate-600";
+        let badgeText = "Pending";
+        if (s.aadhaarNo && s.apaarNo) {
+          badgeClass = "bg-emerald-50 text-emerald-700 font-bold";
+          badgeText = "Complete";
+        } else if (s.aadhaarNo) {
+          badgeClass = "bg-amber-50 text-amber-700 font-semibold";
+          badgeText = "No APAAR";
+        }
+
+        li.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-400 min-w-[18px] text-right">${index + 1}.</span>
+            <div>
+              <div class="font-bold text-slate-800 uppercase">${s.nameKn}</div>
+              <div class="text-[10px] text-slate-400 mt-0.5">ತಂದೆ: ${s.fatherName || '-'}</div>
+            </div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider ${badgeClass}">${badgeText}</span>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    function loadStudentForm(studentId) {
+      document.querySelectorAll("#student-ul li").forEach(li => {
+        li.classList.remove("bg-sky-50", "border-l-sky-600", "font-bold");
+      });
+
+      const li = document.getElementById(`li-${studentId}`);
+      if(li) li.classList.add("bg-sky-50", "border-l-sky-600", "font-bold");
+
+      const student = allStudents.find(s => s.id === studentId);
+      if(!student) return;
+
+      document.getElementById("form-placeholder").classList.add("hidden");
+      const form = document.getElementById("apaar-form");
+      form.classList.remove("hidden");
+
+      document.getElementById("student-id-input").value = student.id;
+      document.getElementById("student-name-kn").value = student.nameKn;
+      document.getElementById("father-name").value = student.fatherName || "";
+      document.getElementById("dob-input").value = student.dob || "";
+      document.getElementById("class-gender-input").value = `${student.classStudying} / ${student.gender}`;
+      
+      document.getElementById("aadhaar-input").value = formatAadhaar(student.aadhaarNo || "");
+      document.getElementById("apaar-input").value = student.apaarNo || "";
+      document.getElementById("address-input").value = student.address || "";
+
+      document.getElementById("edit-mode-indicator").classList.remove("hidden");
+    }
+
+    function formatAadhaar(str) {
+      return str.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
+    }
+
+    function validateAadhaarInput(input) {
+      input.value = input.value.replace(/\D/g, '');
+      const msg = document.getElementById("aadhaar-validation-msg");
+      if (input.value.length > 0 && input.value.length < 12) {
+        msg.classList.remove("hidden");
+      } else {
+        msg.classList.add("hidden");
+      }
+    }
+
+    async function saveStudentDetails() {
+      const studentId = document.getElementById("student-id-input").value;
+      if (!studentId) return;
+
+      const aadhaar = document.getElementById("aadhaar-input").value.replace(/\s+/g, '');
+      const apaar = document.getElementById("apaar-input").value.trim();
+      const address = document.getElementById("address-input").value.trim();
+
+      if (aadhaar && aadhaar.length !== 12) {
+        alert("ಆಧಾರ್ ಸಂಖ್ಯೆ 12 ಅಂಕಿಗಳು ಇರಬೇಕು / Aadhaar must be 12 digits");
+        return;
+      }
+      if (apaar && apaar.length !== 12) {
+        alert("APAAR ಸಂಖ್ಯೆ 12 ಅಂಕಿಗಳು ಇರಬೇಕು / APAAR must be 12 digits");
+        return;
+      }
+
+      const btnSubmit = document.getElementById("btn-submit-form");
+      btnSubmit.disabled = true;
+      btnSubmit.innerText = "Saving...";
+
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({
+            student_aadhaar: aadhaar,
+            address: address
+          })
+          .eq('id', studentId);
+
+        if (error) throw error;
+
+        if (apaar) {
+          localStorage.setItem(`apaar_${studentId}`, apaar);
+        } else {
+          localStorage.removeItem(`apaar_${studentId}`);
+        }
+
+        const idx = allStudents.findIndex(s => s.id === studentId);
+        if (idx !== -1) {
+          allStudents[idx].aadhaarNo = aadhaar;
+          allStudents[idx].apaarNo = apaar;
+          allStudents[idx].address = address;
+        }
+
+        showToast("ಯಶಸ್ಸು!", "ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ.", "success");
+        renderStudentList(allStudents);
+        
+        const activeLi = document.getElementById(`li-${studentId}`);
+        if (activeLi) {
+          activeLi.classList.add("bg-sky-50", "border-l-sky-600", "font-bold");
+        }
+      } catch (err) {
+        console.error("Save error:", err);
+        showToast("ದೋಷ / Error", "ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.innerText = "ವಿವರ ಉಳಿಸಿ / Save Details";
+      }
+    }
+
+    function closeFormEditor() {
+      document.getElementById("form-placeholder").classList.remove("hidden");
+      document.getElementById("apaar-form").classList.add("hidden");
+      document.getElementById("edit-mode-indicator").classList.add("hidden");
+      document.getElementById("student-id-input").value = "";
+      
+      document.querySelectorAll("#student-ul li").forEach(li => {
+        li.classList.remove("bg-sky-50", "border-l-sky-600", "font-bold");
+      });
+    }
+
+    function showToast(title, message, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+
+      toastTitle.innerText = title;
+      toastMsg.innerText = message;
+
+      if (type === "success") {
+        toastIcon.className = "w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-check text-sm"></i>';
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i>';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
     }
   
     // Sidebar & Theme helpers

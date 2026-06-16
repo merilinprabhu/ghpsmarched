@@ -70,6 +70,39 @@
     </form>
 
     <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" class="hidden space-y-4">
+      <!-- Registration Type Selection -->
+      <div>
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">I want to / ನನ್ನ ಆಯ್ಕೆ</label>
+        <select id="regType" onchange="toggleRegFields(this.value)" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
+          <option value="new_school">Register a New School / ಹೊಸ ಶಾಲೆ ನೋಂದಾಯಿಸಿ</option>
+          <option value="join_school">Join an Existing School / ಹಾಲಿ ಶಾಲೆಗೆ ಸೇರಿ</option>
+        </select>
+      </div>
+
+      <!-- New School Input Fields -->
+      <div id="newSchoolFields" class="space-y-3">
+        <div>
+          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">School Name (English) *</label>
+          <input type="text" id="schoolNameEn" placeholder="e.g. GHPS MARCHED" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
+        </div>
+        <div>
+          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+          <input type="text" id="schoolNameKn" placeholder="ಉದಾ. ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
+        </div>
+        <div>
+          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">School UDISE Code *</label>
+          <input type="text" id="schoolUdise" placeholder="e.g. 29060709801" maxlength="11" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
+        </div>
+      </div>
+
+      <!-- Join Existing School Fields -->
+      <div id="joinSchoolFields" class="hidden">
+        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Select School / ಶಾಲೆ ಆರಿಸಿ *</label>
+        <select id="regSchoolSelect" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
+          <option value="">-- Select a School / ಶಾಲೆ ಆರಿಸಿ --</option>
+        </select>
+      </div>
+
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Full Name</label>
@@ -92,7 +125,7 @@
         <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Password</label>
         <input type="password" id="regPassword" placeholder="••••••••" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
       </div>
-      <div>
+      <div id="roleSelectionField">
         <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Role</label>
         <select id="regRole" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
           <option value="Teacher">Teacher</option>
@@ -136,6 +169,48 @@
       }
     };
 
+    function toggleRegFields(val) {
+      const newSchool = document.getElementById('newSchoolFields');
+      const joinSchool = document.getElementById('joinSchoolFields');
+      const roleSel = document.getElementById('roleSelectionField');
+      const regRole = document.getElementById('regRole');
+
+      if (val === 'new_school') {
+        newSchool.classList.remove('hidden');
+        joinSchool.classList.add('hidden');
+        roleSel.classList.add('hidden'); // Force Admin role for new school creators
+        regRole.value = 'Admin';
+      } else {
+        newSchool.classList.add('hidden');
+        joinSchool.classList.remove('hidden');
+        roleSel.classList.remove('hidden');
+        regRole.value = 'Teacher';
+        loadExistingSchoolsList();
+      }
+    }
+
+    async function loadExistingSchoolsList() {
+      const select = document.getElementById('regSchoolSelect');
+      select.innerHTML = '<option value="">-- Loading Schools... --</option>';
+      try {
+        const { data, error } = await supabaseClient
+          .from('schools')
+          .select('id, school_name_en, school_name_kn, udise_code')
+          .order('school_name_en', { ascending: true });
+        
+        if (error) throw error;
+        
+        let html = '<option value="">-- Select a School / ಶಾಲೆ ಆರಿಸಿ --</option>';
+        (data || []).forEach(s => {
+          html += `<option value="${s.id}">${s.school_name_en} (${s.school_name_kn}) [${s.udise_code}]</option>`;
+        });
+        select.innerHTML = html;
+      } catch (err) {
+        console.error("Error loading schools list:", err);
+        select.innerHTML = '<option value="">Failed to load schools list / ಶಾಲೆ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</option>';
+      }
+    }
+
     function toggleForm(type) {
       document.getElementById('message').classList.add('hidden');
       
@@ -146,6 +221,8 @@
       if (type === 'register') {
         document.getElementById('registerForm').classList.remove('hidden');
         document.getElementById('formTitle').innerText = "Register Account";
+        document.getElementById('regType').value = "new_school";
+        toggleRegFields("new_school");
       } else if (type === 'forgot') {
         document.getElementById('forgotForm').classList.remove('hidden');
         document.getElementById('formTitle').innerText = "Reset Password";
@@ -204,6 +281,7 @@
     }
 
     async function handleRegister() {
+      const regType = document.getElementById('regType').value;
       const name = document.getElementById('regName').value;
       const username = document.getElementById('regUsername').value;
       const phone = document.getElementById('regPhone').value;
@@ -214,6 +292,59 @@
       if(!name || !username || !phone || !email || !pass) {
         showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false);
         return;
+      }
+
+      let schoolId = null;
+
+      if (regType === 'new_school') {
+        const schEn = document.getElementById('schoolNameEn').value.trim();
+        const schKn = document.getElementById('schoolNameKn').value.trim();
+        const schUdise = document.getElementById('schoolUdise').value.trim();
+
+        if (!schEn || !schKn || !schUdise) {
+          showMessage("ದಯವಿಟ್ಟು ಹೊಸ ಶಾಲೆಯ ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false);
+          return;
+        }
+
+        showMessage("ಹೊಸ ಶಾಲೆಯನ್ನು ನಮೂದಿಸಲಾಗುತ್ತಿದೆ...", true);
+        try {
+          // Check if UDISE code already exists
+          const { data: existingSch, error: checkErr } = await supabaseClient
+            .from('schools')
+            .select('id')
+            .eq('udise_code', schUdise)
+            .maybeSingle();
+
+          if (checkErr) throw checkErr;
+          if (existingSch) {
+            showMessage("ಈ UDISE ಕೋಡ್ ಹೊಂದಿರುವ ಶಾಲೆ ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲ್ಪಟ್ಟಿದೆ.", false);
+            return;
+          }
+
+          // Insert school
+          const { data: newSch, error: insertSchErr } = await supabaseClient
+            .from('schools')
+            .insert({
+              school_name_en: schEn,
+              school_name_kn: schKn,
+              udise_code: schUdise
+            })
+            .select('id')
+            .single();
+
+          if (insertSchErr) throw insertSchErr;
+          schoolId = newSch.id;
+
+        } catch (err) {
+          showMessage("ಶಾಲೆ ನೋಂದಣಿ ದೋಷ: " + err.message, false);
+          return;
+        }
+      } else {
+        schoolId = document.getElementById('regSchoolSelect').value;
+        if (!schoolId) {
+          showMessage("ದಯವಿಟ್ಟು ನಿಮ್ಮ ಶಾಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.", false);
+          return;
+        }
       }
 
       showMessage("ಖಾತೆಯನ್ನು ಸೃಷ್ಟಿಸಲಾಗುತ್ತಿದೆ...", true);
@@ -227,7 +358,8 @@
               name: name,
               username: username,
               phone: phone,
-              role: role
+              role: role,
+              school_id: schoolId
             }
           }
         });
@@ -247,14 +379,15 @@
               name: name,
               username: username,
               phone: phone,
-              role: role
+              role: role,
+              school_id: schoolId
             });
 
           if (profileErr) {
             console.error("Profiles insertion error:", profileErr);
           }
 
-          showMessage("ಖಾತೆ ಸೃಷ್ಟಿ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಯವಿಟ್ಟು ಇಮೇಲ್ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಲಾಗಿನ್ ಮಾಡಿ.", true);
+          showMessage("ನೋಂದಣಿ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಯವಿಟ್ಟು ಲಾಗಿನ್ ಮಾಡಿ.", true);
           setTimeout(() => toggleForm('login'), 2000);
         }
       } catch (err) {
