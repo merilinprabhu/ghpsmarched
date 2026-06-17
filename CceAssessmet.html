@@ -265,6 +265,18 @@
                   <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
                 </ul>
               </div>
+              <!-- Incentives -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
+                  </span>
+                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
+                </ul>
+              </div>
 
               <!-- Attendance -->
               <div class="nav-item">
@@ -1501,34 +1513,11 @@
       if (!className || !examType) return;
       document.getElementById('loading-overlay').classList.remove('hidden');
 
-      const records = students.map(student => {
-        const sId = student.id;
-        const evalData = evaluations[sId] || {};
-        const record = { studentId: sId, studentName: student.name, fatherName: student.father };
-        currentSubjects.forEach(s => {
-          const subKey = getBackendSubjectKey(s.name);
-          record[subKey + "_mark"] = evalData[s.id + "_mark"];
-          record[subKey + "_grade"] = evalData[s.id + "_grade"];
-        });
-        return record;
-      });
-
-      setTimeout(() => { saveLocalMockData(className, examType, records); }, 300);
-    }
-
-    function saveLocalMockData(className, examType, records) {
-      const mockKey = `cce_eval_${className}_${examType}`;
-      const evalData = {};
-      records.forEach(r => {
-        evalData[r.studentId] = {};
-        currentSubjects.forEach(s => {
-          const subKey = getBackendSubjectKey(s.name);
-          evalData[r.studentId][subKey + "_mark"] = r[subKey + "_mark"];
-          evalData[r.studentId][subKey + "_grade"] = r[subKey + "_grade"];
-        });
-      });
-      localStorage.setItem(mockKey, JSON.stringify(evalData));
-      onDataSaved();
+      setTimeout(() => {
+        const mockKey = `cce_eval_${className}_${examType}`;
+        localStorage.setItem(mockKey, JSON.stringify(evaluations));
+        onDataSaved();
+      }, 300);
     }
 
     function onDataSaved() {

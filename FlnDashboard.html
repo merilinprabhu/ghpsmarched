@@ -274,6 +274,18 @@
                   <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
                 </ul>
               </div>
+              <!-- Incentives -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
+                  </span>
+                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
+                </ul>
+              </div>
 
               <!-- Attendance -->
               <div class="nav-item">
@@ -920,7 +932,7 @@
           if (isEditing) {
             rowHtml += `
               <td class="p-1.5 border-r border-slate-200 text-center">
-                <input type="number" min="0" max="10" step="0.5" value="${m}" oninput="onMarkChange('${sId}', ${i}, this.value)" class="w-12 bg-slate-50 border border-slate-200 rounded px-1 py-1 text-center font-bold focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                <input type="number" min="0" max="10" step="0.5" value="${m}" oninput="onMarkChange('${sId}', ${i}, this.value, this)" class="w-12 bg-slate-50 border border-slate-200 rounded px-1 py-1 text-center font-bold focus:outline-none focus:ring-1 focus:ring-emerald-500">
               </td>
               <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-slate-50/50">
                 <span id="grade-${sId}-${i}" class="text-xs text-slate-600 font-bold">${g}</span>
@@ -950,12 +962,12 @@
       updateTotals();
     }
 
-    function onMarkChange(studentId, lessonIdx, val) {
+    function onMarkChange(studentId, lessonIdx, val, inputEl) {
       let markVal = val.trim() === '' ? '' : parseFloat(val);
       
       if (markVal > 10) {
         markVal = 10;
-        event.target.value = 10; 
+        if (inputEl) inputEl.value = 10; 
       }
 
       const gradeVal = determineGrade(markVal);
@@ -1051,32 +1063,16 @@
       if (!className || !subjectName) return;
       document.getElementById('loading-overlay').classList.remove('hidden');
 
-      const records = students.map(student => {
-        const sId = student.id;
-        const evalData = evaluations[sId] || {};
-        const record = { studentId: sId, studentName: student.name, fatherName: student.father };
-        currentLessons.forEach((_, i) => {
-          record["les_" + i + "_mark"] = evalData["les_" + i + "_mark"];
-          record["les_" + i + "_grade"] = evalData["les_" + i + "_grade"];
-        });
-        return record;
-      });
-
-      setTimeout(() => { saveLocalMockData(className, subjectName, records); }, 300);
-    }
-
-    function saveLocalMockData(className, subjectName, records) {
-      const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-      const evalData = {};
-      records.forEach(r => {
-        evalData[r.studentId] = {};
-        currentLessons.forEach((_, i) => {
-          evalData[r.studentId]["les_" + i + "_mark"] = r["les_" + i + "_mark"];
-          evalData[r.studentId]["les_" + i + "_grade"] = r["les_" + i + "_grade"];
-        });
-      });
-      localStorage.setItem(mockKey, JSON.stringify(evalData));
-      onDataSaved();
+      setTimeout(() => {
+        try {
+          const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+          localStorage.setItem(mockKey, JSON.stringify(evaluations));
+          onDataSaved();
+        } catch (e) {
+          console.error("Error saving LBA marks:", e);
+          onDataSaveFailed();
+        }
+      }, 300);
     }
 
     function onDataSaved() {

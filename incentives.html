@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHPS Marched - Incentives Module</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .rotate-90 { transform: rotate(90deg); }
+
+    /* Sidebar Hover Collapsed Styles */
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text,
+      aside i.fa-chevron-right,
+      aside ul,
+      aside span.uppercase,
+      aside nav span,
+      aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text,
+      aside:hover i.fa-chevron-right,
+      aside:hover span.uppercase,
+      aside:hover nav span,
+      aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) {
+        display: block !important;
+      }
+      aside:hover .nav-item button {
+        justify-content: space-between !important;
+      }
+      aside:hover nav a {
+        justify-content: flex-start !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      aside .nav-item button {
+        justify-content: center !important;
+      }
+      aside nav a {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+
+    /* Theme Overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] aside,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .section-block {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] td,
+    body[data-theme="dark"] th { color: #cbd5e1 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-700,
+    body[data-theme="dark"] .text-slate-800,
+    body[data-theme="dark"] .text-slate-600,
+    body[data-theme="dark"] .text-slate-500,
+    body[data-theme="dark"] label { color: #cbd5e1 !important; }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea { background-color: #0f172a !important; color: #ffffff !important; border-color: #475569 !important; }
+    body[data-theme="dark"] .bg-slate-50,
+    body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
+
+    /* Theme colors */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white, body[data-theme="gray"] aside, body[data-theme="gray"] main, body[data-theme="gray"] .section-block { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white, body[data-theme="blue"] aside, body[data-theme="blue"] main, body[data-theme="blue"] .section-block { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white, body[data-theme="green"] aside, body[data-theme="green"] main, body[data-theme="green"] .section-block { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    /* Print styling overrides */
+    @media print {
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      aside, header, .no-print { display: none !important; }
+      main { width: 100% !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+      th { background-color: #000000 !important; color: #ffffff !important; font-weight: bold !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      td { background-color: #ffffff !important; color: #000000 !important; border: 1px solid #000000 !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div>
+    <!-- Dark Header Bar -->
+    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0 z-50">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🎁</span>
+        <div>
+          <h1 id="schoolHeaderTitle" class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
+          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
+        </div>
+      </div>
+      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Theme Selector -->
+        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1 no-print">
+          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
+          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="gray">Gray</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
+          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
+          <span id="liveUser" class="font-semibold text-slate-200">User</span>
+        </div>
+        <div>
+          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
+          <span id="liveClock" class="font-bold text-emerald-400"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Outer Container -->
+    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
+      
+      <!-- Aside Menu -->
+      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px] no-print">
+        <div class="space-y-6">
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
+            <nav class="space-y-1 text-xs" id="sidebarNav">
+              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
+              </a>
+              
+              <!-- Accordion Items -->
+              <!-- Teachers -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
+                  </span>
+                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Students -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
+                  </span>
+                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
+                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
+                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
+                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
+                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Academic -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
+                  </span>
+                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
+                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
+                  <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Incentives -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
+                  </span>
+                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Attendance -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-attendance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-amber-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Attendance</span>
+                  </span>
+                  <i id="menu-attendance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-attendance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-amber-600 font-semibold transition"><span class="sidebar-text">Manage Attendance</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Finance -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-finance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-wallet text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Finance</span>
+                  </span>
+                  <i id="menu-finance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-finance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-rose-600 font-semibold transition"><span class="sidebar-text">Exam Fee Collection</span></a></li>
+                </ul>
+              </div>
+
+              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
+            </nav>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Govt Portals</span>
+            <div class="space-y-1.5 text-[11px] font-semibold">
+              <a href="https://sts.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-globe text-indigo-400 w-4 text-center"></i> <span class="sidebar-text">SATS / STS Portal</span></a>
+              <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-utensils text-orange-400 w-4 text-center"></i> <span class="sidebar-text">Mid-Day Meals Login</span></a>
+              <a href="https://choas.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-file-invoice text-emerald-400 w-4 text-center"></i> <span class="sidebar-text">Shikshana Kirana</span></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
+          <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
+          <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
+        </div>
+      </aside>
+
+      <!-- Main Contents Container -->
+      <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
+        
+        <!-- Saving Indicator (Floating Toast) -->
+        <div id="savingToast" class="fixed top-5 right-5 bg-slate-900/90 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 z-50">
+          <i class="fa-solid fa-circle-notch fa-spin text-indigo-400" id="toastSpinner"></i>
+          <span id="toastText">Saving...</span>
+        </div>
+
+        <!-- Dashboard View (No Template Selected) -->
+        <div id="dashboardView" class="space-y-6">
+          <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
+            <div>
+              <h2 class="text-xl font-bold flex items-center gap-2">
+                ಇನ್ಸೆಂಟಿವ್ಸ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Incentives Module
+              </h2>
+              <p class="text-xs text-indigo-200/80 mt-1">ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಿಸುವ ಸೌಲಭ್ಯಗಳ ಉಸ್ತುವಾರಿ (ಪಠ್ಯಪುಸ್ತಕ, ಸಮವಸ್ತ್ರ ಇತ್ಯಾದಿ)</p>
+            </div>
+            <button onclick="showCreateForm()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2 border-none cursor-pointer">
+              <i class="fa-solid fa-plus"></i> ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚಿಸಿ / Create Incentive
+            </button>
+          </div>
+
+          <!-- Overall Stats grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ಒಟ್ಟು ವಿಭಾಗಗಳು / Active Categories</span>
+                <span id="statCategories" class="text-2xl font-black text-slate-800 mt-1 block">0</span>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500"><i class="fa-solid fa-gift text-lg"></i></div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Students</span>
+                <span id="statStudents" class="text-2xl font-black text-slate-800 mt-1 block">0</span>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500"><i class="fa-solid fa-users text-lg"></i></div>
+            </div>
+            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ವಿತರಣಾ ಪ್ರಗತಿ / Overall Completion</span>
+                <span id="statCompletion" class="text-2xl font-black text-indigo-600 mt-1 block">0%</span>
+              </div>
+              <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500"><i class="fa-solid fa-circle-check text-lg"></i></div>
+            </div>
+          </div>
+
+          <!-- Created Templates List Grid -->
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">ಸೃಜಿಸಲಾದ ಪುಟಗಳು / Created Incentive Pages</h3>
+            <div id="templatesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- JS builds cards here -->
+              <div class="col-span-full text-center py-10 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-slate-400 text-sm font-semibold">
+                ಯಾವುದೇ ಇನ್ಸೆಂಟಿವ್ಸ್ ಪುಟಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಹೊಸ ಪುಟ ಸೃಜಿಸಿ.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create Template Form Modal / Block -->
+        <div id="createFormContainer" class="hidden space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <h3 class="text-base font-bold text-slate-800">ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚನೆ / Create Incentive Page</h3>
+            <button onclick="hideCreateForm()" class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-full cursor-pointer transition border-none"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <form onsubmit="event.preventDefault(); handleCreateTemplate();" class="space-y-4 max-w-xl bg-slate-50/50 p-6 rounded-2xl border border-slate-200/60">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪುಟದ ಹೆಸರು / Incentive Name *</label>
+              <input type="text" id="templateName" placeholder="e.g. Text Books / ಪಠ್ಯಪುಸ್ತಕಗಳು" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ವಿತರಣಾ ಆಯ್ಕೆ ವಿಧಾನ / Input Type *</label>
+              <select id="templateValueType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                <option value="boolean">ಸರಿ ಗುರುತು (Checkbox / Tick Mark) - Yes/No distribution tracking</option>
+                <option value="number">ಸಂಖ್ಯೆ ನಮೂದಿಸು (Number / Size input) - e.g. Size, Quantity</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ವಿಭಾಗಗಳು (ಕಾಲಮ್‌ಗಳು) / Columns separated by commas *</label>
+              <textarea id="templateColumns" placeholder="e.g. Kannada, English, Hindi, Mathematics, Science, Social" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required></textarea>
+              <span class="text-[10px] text-slate-450 block mt-1">ಸೂಚನೆ: ಪ್ರತಿ ಐಟಂ ಅನ್ನು ಅರ್ಪವಿರಾಮದಿಂದ (comma `,`) ಬೇರ್ಪಡಿಸಿ ನಮೂದಿಸಿ.</span>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+              <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition cursor-pointer border-none">ಕ್ರಿಯೇಟ್ ಪುಟ / Create Page</button>
+              <button type="button" onclick="hideCreateForm()" class="bg-slate-200 hover:bg-slate-350 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer border-none">ರದ್ದುಗೊಳಿಸಿ / Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Detail View (Template Selected) -->
+        <div id="detailView" class="hidden space-y-6">
+          
+          <!-- Banner Header -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
+            <div>
+              <button onclick="exitDetailView()" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 flex items-center gap-1.5 mb-2 border-none bg-transparent cursor-pointer no-print">
+                <i class="fa-solid fa-arrow-left"></i> ಬ್ಯಾಕ್ ಟು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Back
+              </button>
+              <h2 id="detailTitle" class="text-lg font-black text-slate-800">Incentive Category</h2>
+              <p id="detailSubtitle" class="text-xs text-slate-500 mt-1">ವಿತರಣೆ ನಿರ್ವಹಣೆ ಮತ್ತು ವರದಿ</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 no-print">
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
+                <i class="fa-solid fa-file-excel text-sm"></i> Excel ರಫ್ತು
+              </button>
+              <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
+                <i class="fa-solid fa-print text-sm"></i> ಮುದ್ರಿಸು / Print
+              </button>
+            </div>
+          </div>
+
+          <!-- Class Filter and Progress Panel -->
+          <div class="bg-slate-50/70 border border-slate-200/50 p-5 rounded-2xl grid grid-cols-1 md:grid-cols-3 gap-6 items-center no-print">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ತರಗತಿ ಆರಿಸಿ / Filter Class</label>
+              <select id="classSelector" onchange="loadClassData()" class="w-full bg-white border border-slate-250 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ / Select Class --</option>
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+                <option value="1">ತರಗತಿ 1 / Class 1</option>
+                <option value="2">ತರಗತಿ 2 / Class 2</option>
+                <option value="3">ತರಗತಿ 3 / Class 3</option>
+                <option value="4">ತರಗತಿ 4 / Class 4</option>
+                <option value="5">ತರಗತಿ 5 / Class 5</option>
+                <option value="6">ತರಗತಿ 6 / Class 6</option>
+                <option value="7">ತರಗತಿ 7 / Class 7</option>
+                <option value="8">ತರಗತಿ 8 / Class 8</option>
+                <option value="9">ತರಗತಿ 9 / Class 9</option>
+                <option value="10">ತರಗತಿ 10 / Class 10</option>
+              </select>
+            </div>
+
+            <div>
+              <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಈ ತರಗತಿಯ ಪ್ರಗತಿ / Class Progress</span>
+              <div class="flex items-center gap-3">
+                <div class="flex-grow bg-slate-200 h-3 rounded-full overflow-hidden">
+                  <div id="classProgressBar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <span id="classProgressPct" class="text-xs font-black text-slate-800">0%</span>
+              </div>
+            </div>
+
+            <!-- Bulk actions -->
+            <div class="flex gap-2 justify-end self-end">
+              <button onclick="handleBulkAction(true)" id="bulkCheckBtn" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 border border-indigo-500/20 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                <i class="fa-solid fa-square-check mr-1 text-sm"></i> ಎಲ್ಲರಿಗೂ ವಿತರಿಸು / Mark All
+              </button>
+              <button onclick="handleBulkAction(false)" id="bulkClearBtn" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 border border-rose-500/20 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer">
+                <i class="fa-solid fa-square-xmark mr-1 text-sm"></i> ಎಲ್ಲ ತೆರವುಗೊಳಿಸು / Clear All
+              </button>
+            </div>
+          </div>
+
+          <!-- Mini Dashboard Statistics and Chart -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
+            <div class="bg-slate-50/50 border border-slate-200/50 p-5 rounded-2xl flex flex-col justify-between">
+              <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider">ವರ್ಗಾವಾರು ಹಂಚಿಕೆ ವರದಿ / Analytics</h4>
+              <div class="py-4 space-y-3">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-500">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು (ತರಗತಿ):</span>
+                  <span id="detailClassTotalStudents" class="font-black text-slate-800">0</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-500">ವಿತರಿಸಲಾದ ಒಟ್ಟು ಐಟಮ್ಸ್:</span>
+                  <span id="detailClassTotalDistributed" class="font-black text-emerald-600">0</span>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-500">ಬಾಕಿ ಇರುವ ಒಟ್ಟು ಐಟಮ್ಸ್:</span>
+                  <span id="detailClassTotalPending" class="font-black text-amber-500">0</span>
+                </div>
+              </div>
+              <div class="text-[10px] text-indigo-400 font-semibold bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 flex items-center gap-1.5">
+                <i class="fa-solid fa-info-circle"></i> ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಾಲಮ್‌ನ ಡೇಟಾ ಬದಲಾಯಿಸಿದರೆ ಅದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್ ಆಗುತ್ತದೆ.
+              </div>
+            </div>
+
+            <!-- Chart Panel -->
+            <div class="bg-slate-50/50 border border-slate-200/50 p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between min-h-[220px]">
+              <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">ತರಗತಿವಾರು ಪ್ರಗತಿ ನಕ್ಷೆ / Progress Chart by Class</h4>
+              <div class="relative w-full h-[150px]">
+                <canvas id="progressChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Student grid area -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between no-print">
+              <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">ತರಗತಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / Student Distribution Roster</h3>
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full border">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                <span>Active Connection - Autosaver Active</span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm bg-white min-h-[150px]">
+              <table id="distributionTable" class="w-full text-left border-collapse text-xs whitespace-nowrap">
+                <thead>
+                  <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
+                    <th class="p-3 border-r border-slate-800 w-12">Sl.No</th>
+                    <th class="p-3 border-r border-slate-800 w-24">App No</th>
+                    <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
+                    <!-- Dynamic column headers insert here -->
+                  </tr>
+                </thead>
+                <tbody id="distributionTableBody" class="divide-y divide-slate-200 text-slate-700 font-medium">
+                  <tr>
+                    <td colspan="3" class="p-8 text-center text-slate-400 font-bold text-sm">ತರಗತಿಯನ್ನು ಆರಿಸಿ ವಿದ್ಯಾರ್ಥಿ ಲಿಸ್ಟ್ ವೀಕ್ಷಿಸಿ. / Please select a class above.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <footer class="mt-8 text-center text-slate-400 text-[10px] tracking-wider py-4 border-t border-slate-200/50 no-print flex-shrink-0">
+    <p class="font-light">Designed & Developed by <span class="font-medium text-slate-600 hover:text-indigo-600 transition cursor-pointer border-b border-slate-300 pb-0.5">Marilin Prabhu</span></p>
+  </footer>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Live Date/Clock Setup
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; h = h ? h : 12;
+      m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
+      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    // Accordion Control
+    function toggleAccordion(menuId) {
+      const menu = document.getElementById(menuId);
+      const arrow = document.getElementById(menuId + '-arrow');
+      if (menu) {
+        menu.classList.toggle('hidden');
+        if (arrow) arrow.classList.toggle('rotate-90');
+      }
+    }
+
+    // Theme Config
+    function changeTheme(themeVal) {
+      document.body.setAttribute('data-theme', themeVal);
+      localStorage.setItem('theme', themeVal);
+    }
+
+    async function initUserAndTheme() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      document.body.setAttribute('data-theme', currentTheme);
+      const sel = document.getElementById('themeSelector');
+      if (sel) sel.value = currentTheme;
+      
+      const sEn = localStorage.getItem('school_name_en');
+      if (sEn) {
+        document.getElementById('schoolHeaderTitle').innerText = sEn;
+      }
+    }
+
+    // Global state
+    let templates = [];
+    let selectedTemplate = null;
+    let students = [];
+    let incentiveData = {}; // student_id -> template values dictionary
+    let chartInstance = null;
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      await initUserAndTheme();
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const user = session.user;
+      const name = user.user_metadata.name || user.email;
+      document.getElementById('liveUser').innerText = name;
+
+      // Expand Incentives sidebar accordion and highlight active page
+      toggleAccordion('menu-incentives');
+      const links = document.getElementById('menu-incentives').getElementsByTagName('a');
+      for (let link of links) {
+        if (link.getAttribute('href') === 'incentives.html') {
+          link.classList.remove('text-slate-500');
+          link.classList.add('text-indigo-600', 'font-bold');
+        }
+      }
+
+      loadIncentiveTemplates();
+    });
+
+    async function loadIncentiveTemplates() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+        
+        let query = supabaseClient.from('incentive_templates').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data, error } = await query.order('created_at', { ascending: false });
+
+        if (error) throw error;
+        templates = data || [];
+
+        // Fetch counts for dashboard
+        let studentsCount = 0;
+        let distributedItemsCount = 0;
+        
+        // 1. Get total students count
+        let studQuery = supabaseClient.from('admissions').select('id', { count: 'exact' }).eq('is_admitted', true);
+        if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
+        const { count: sCount } = await studQuery;
+        studentsCount = sCount || 0;
+
+        // 2. Get total distributed records
+        let incQuery = supabaseClient.from('student_incentives').select('values');
+        if (schoolId) incQuery = incQuery.eq('school_id', schoolId);
+        const { data: iData } = await incQuery;
+
+        (iData || []).forEach(row => {
+          if (row.values) {
+            Object.values(row.values).forEach(val => {
+              if (val === true || val === 'true' || (typeof val === 'number' && val > 0) || (typeof val === 'string' && val.trim() !== '' && val !== 'false')) {
+                distributedItemsCount++;
+              }
+            });
+          }
+        });
+
+        document.getElementById('statCategories').innerText = templates.length;
+        document.getElementById('statStudents').innerText = studentsCount;
+
+        // Calculate a simple overall completion score (distributed / possible distributions)
+        let totalPossibleDistributions = templates.reduce((acc, t) => acc + (t.columns.length * studentsCount), 0);
+        let completionPct = totalPossibleDistributions > 0 ? Math.round((distributedItemsCount / totalPossibleDistributions) * 100) : 0;
+        document.getElementById('statCompletion').innerText = completionPct + '%';
+
+        renderTemplatesGrid();
+      } catch (err) {
+        console.error("Error loading templates:", err);
+        alert("ಡೇಟಾಬೇಸ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    function showCreateForm() {
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('createFormContainer').classList.remove('hidden');
+    }
+
+    function hideCreateForm() {
+      document.getElementById('createFormContainer').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+    }
+
+    async function handleCreateTemplate() {
+      const name = document.getElementById('templateName').value.trim();
+      const valueType = document.getElementById('templateValueType').value;
+      const columnsInput = document.getElementById('templateColumns').value;
+      
+      const columns = columnsInput.split(',')
+        .map(c => c.trim())
+        .filter(c => c !== '');
+
+      if (!name || columns.length === 0) {
+        alert("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕಡ್ಡಾಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.");
+        return;
+      }
+
+      showSavingToast("Creating page...");
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        if (!schoolId) {
+          throw new Error("No active school session found.");
+        }
+
+        const { data, error } = await supabaseClient
+          .from('incentive_templates')
+          .insert({
+            school_id: schoolId,
+            name: name,
+            columns: columns,
+            value_type: valueType
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        hideSavingToast("Created successfully!");
+        document.getElementById('templateName').value = '';
+        document.getElementById('templateColumns').value = '';
+        
+        hideCreateForm();
+        loadIncentiveTemplates();
+      } catch (err) {
+        console.error("Create template error:", err);
+        hideSavingToast("Error creating page", true);
+        alert("ರಚಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      }
+    }
+
+    function renderTemplatesGrid() {
+      const grid = document.getElementById('templatesList');
+      grid.innerHTML = '';
+
+      if (templates.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-10 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-slate-400 text-sm font-semibold">
+            ಯಾವುದೇ ಇನ್ಸೆಂಟಿವ್ಸ್ ಪುಟಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಹೊಸ ಪುಟ ಸೃಜಿಸಿ.
+          </div>
+        `;
+        return;
+      }
+
+      templates.forEach(t => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200/60 p-5 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4";
+        
+        const colsBadge = t.columns.map(c => `<span class="bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded text-[10px] font-semibold">${c}</span>`).join(' ');
+        const typeLabel = t.value_type === 'boolean' ? '✓ Checkbox' : '🔢 Numbers';
+
+        card.innerHTML = `
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest bg-indigo-50/70 px-2 py-0.5 rounded-lg">${typeLabel}</span>
+              <button onclick="handleDeleteTemplate('${t.id}', '${t.name.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition border-none bg-transparent cursor-pointer">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+            <h4 class="text-sm font-bold text-slate-800">${t.name}</h4>
+            <div class="flex flex-wrap gap-1.5 pt-2 max-h-[60px] overflow-y-auto custom-scrollbar">
+              ${colsBadge}
+            </div>
+          </div>
+          <button onclick="enterDetailView('${t.id}')" class="w-full bg-slate-900 hover:bg-indigo-950 text-white py-2 rounded-xl text-[11px] font-bold shadow-sm transition border-none cursor-pointer">
+            ಪುಟಕ್ಕೆ ಹೋಗಿ / Go to Page <i class="fa-solid fa-arrow-right ml-1"></i>
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function handleDeleteTemplate(id, name) {
+      if (!confirm(`Are you sure you want to delete "${name}" page?\nAll student records in this template will be permanently removed!`)) {
+        return;
+      }
+
+      showSavingToast("Deleting page...");
+      try {
+        const { error } = await supabaseClient
+          .from('incentive_templates')
+          .delete()
+          .eq('id', id);
+
+        if (error) throw error;
+        hideSavingToast("Page deleted");
+        loadIncentiveTemplates();
+      } catch (err) {
+        console.error("Delete template error:", err);
+        hideSavingToast("Delete failed", true);
+        alert("ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    // Detail View Actions
+    async function enterDetailView(id) {
+      selectedTemplate = templates.find(t => t.id === id);
+      if (!selectedTemplate) return;
+
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('detailView').classList.remove('hidden');
+      
+      document.getElementById('detailTitle').innerText = selectedTemplate.name;
+      document.getElementById('detailSubtitle').innerText = `${selectedTemplate.value_type === 'boolean' ? 'ಹಂಚಿಕೆ ಟಿಕ್ ಮಾರ್ಕ್ ಸಿಸ್ಟಮ್' : 'ಹಂಚಿಕೆ ಮೌಲ್ಯಗಳು/ಸಂಖ್ಯೆ ನಮೂದು'} - (${selectedTemplate.columns.join(', ')})`;
+
+      document.getElementById('classSelector').value = '';
+      
+      // Clear data and table
+      students = [];
+      incentiveData = {};
+      const tbody = document.getElementById('distributionTableBody');
+      tbody.innerHTML = `<tr><td colspan="${3 + selectedTemplate.columns.length}" class="p-8 text-center text-slate-400 font-bold text-sm">ತರಗತಿಯನ್ನು ಆರಿಸಿ ವಿದ್ಯಾರ್ಥಿ ಲಿಸ್ಟ್ ವೀಕ್ಷಿಸಿ. / Please select a class above.</td></tr>`;
+      
+      updateClassProgressStats(0, 0);
+
+      // Load Analytics Chart for the template
+      loadProgressChartData();
+    }
+
+    function exitDetailView() {
+      document.getElementById('detailView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+      selectedTemplate = null;
+      loadIncentiveTemplates();
+    }
+
+    async function loadClassData() {
+      const cls = document.getElementById('classSelector').value;
+      const tbody = document.getElementById('distributionTableBody');
+
+      if (!cls) {
+        tbody.innerHTML = `<tr><td colspan="${3 + selectedTemplate.columns.length}" class="p-8 text-center text-slate-400 font-bold text-sm">ತರಗತಿಯನ್ನು ಆರಿಸಿ ವಿದ್ಯಾರ್ಥಿ ಲಿಸ್ಟ್ ವೀಕ್ಷಿಸಿ. / Please select a class above.</td></tr>`;
+        updateClassProgressStats(0, 0);
+        return;
+      }
+
+      tbody.innerHTML = `<tr><td colspan="${3 + selectedTemplate.columns.length}" class="p-8 text-center text-slate-500 font-bold text-xs"><i class="fa-solid fa-circle-notch fa-spin text-indigo-500 text-base mr-2"></i> ಲೋಡ್ ಆಗುತ್ತಿದೆ... / Loading...</td></tr>`;
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        // 1. Fetch students admitted in this school and class
+        const { data: studList, error: studErr } = await supabaseClient
+          .from('admissions')
+          .select('id, app_no, student_name')
+          .eq('school_id', schoolId)
+          .eq('enroll_class', cls)
+          .eq('is_admitted', true)
+          .order('student_name', { ascending: true });
+
+        if (studErr) throw studErr;
+        students = studList || [];
+
+        if (students.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="${3 + selectedTemplate.columns.length}" class="p-8 text-center text-slate-400 font-bold text-sm">ಈ ತರಗತಿಯಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ನೋಂದಣಿಯಾಗಿಲ್ಲ. / No students in this class.</td></tr>`;
+          updateClassProgressStats(0, 0);
+          return;
+        }
+
+        // 2. Fetch existing distribution records for these students
+        const studentIds = students.map(s => s.id);
+        const { data: incRecords, error: incErr } = await supabaseClient
+          .from('student_incentives')
+          .select('student_id, values')
+          .eq('template_id', selectedTemplate.id)
+          .in('student_id', studentIds);
+
+        if (incErr) throw incErr;
+
+        incentiveData = {};
+        (incRecords || []).forEach(rec => {
+          incentiveData[rec.student_id] = rec.values || {};
+        });
+
+        renderDistributionTable();
+      } catch (err) {
+        console.error("Error loading class data:", err);
+        alert("ತರಗತಿಯ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    function renderDistributionTable() {
+      const tbody = document.getElementById('distributionTableBody');
+      const theadTr = document.querySelector('#distributionTable thead tr');
+      
+      // 1. Rebuild headers
+      theadTr.innerHTML = `
+        <th class="p-3 border-r border-slate-800 w-12 no-print">Sl.No</th>
+        <th class="p-3 border-r border-slate-800 w-24">App No</th>
+        <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
+      `;
+      
+      selectedTemplate.columns.forEach(col => {
+        const th = document.createElement('th');
+        th.className = "p-3 border-r border-slate-800 text-center";
+        th.innerText = col;
+        theadTr.appendChild(th);
+      });
+
+      // 2. Build rows
+      tbody.innerHTML = '';
+      
+      let distributedCount = 0;
+      const totalPossible = students.length * selectedTemplate.columns.length;
+
+      students.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 border-b border-slate-200 text-center";
+        
+        let colsHtml = '';
+        const studVals = incentiveData[student.id] || {};
+
+        selectedTemplate.columns.forEach(col => {
+          const val = studVals[col];
+          const hasVal = val === true || val === 'true' || (selectedTemplate.value_type === 'number' && val !== undefined && val !== null && val.toString().trim() !== '');
+
+          if (hasVal) {
+            distributedCount++;
+          }
+
+          if (selectedTemplate.value_type === 'boolean') {
+            const checked = val === true || val === 'true' ? 'checked' : '';
+            colsHtml += `
+              <td class="p-3 border-r border-slate-200 text-center">
+                <input type="checkbox" onchange="autoSaveValue('${student.id}', '${col.replace(/'/g, "\\'")}', this.checked)" class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer" ${checked}>
+              </td>
+            `;
+          } else {
+            const numVal = val !== undefined && val !== null ? val : '';
+            colsHtml += `
+              <td class="p-2 border-r border-slate-200 text-center">
+                <input type="text" value="${numVal}" onblur="autoSaveValue('${student.id}', '${col.replace(/'/g, "\\'")}', this.value)" placeholder="Size/Qty" class="w-20 text-center border border-slate-200 rounded-lg px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs">
+              </td>
+            `;
+          }
+        });
+
+        tr.innerHTML = `
+          <td class="p-3 border-r border-slate-200 text-center text-slate-400 no-print">${index + 1}</td>
+          <td class="p-3 border-r border-slate-200 font-mono text-slate-500">${student.app_no}</td>
+          <td class="p-3 border-r border-slate-200 text-left font-semibold text-slate-800">${student.student_name}</td>
+          ${colsHtml}
+        `;
+        
+        tbody.appendChild(tr);
+      });
+
+      updateClassProgressStats(distributedCount, totalPossible);
+    }
+
+    function updateClassProgressStats(distributed, totalPossible) {
+      const pct = totalPossible > 0 ? Math.round((distributed / totalPossible) * 100) : 0;
+      
+      document.getElementById('classProgressBar').style.width = pct + '%';
+      document.getElementById('classProgressPct').innerText = pct + '%';
+      
+      document.getElementById('detailClassTotalStudents').innerText = students.length;
+      document.getElementById('detailClassTotalDistributed').innerText = distributed;
+      document.getElementById('detailClassTotalPending').innerText = Math.max(0, totalPossible - distributed);
+    }
+
+    async function autoSaveValue(studentId, colName, value) {
+      showSavingToast("Saving...");
+
+      // Update local state immediately
+      if (!incentiveData[studentId]) {
+        incentiveData[studentId] = {};
+      }
+      incentiveData[studentId][colName] = value;
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        // Upsert record: unique on (student_id, template_id)
+        const { error } = await supabaseClient
+          .from('student_incentives')
+          .upsert({
+            school_id: schoolId,
+            student_id: studentId,
+            template_id: selectedTemplate.id,
+            values: incentiveData[studentId],
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'student_id, template_id'
+          });
+
+        if (error) throw error;
+        hideSavingToast("Saved");
+        
+        // Recalculate class stats in UI without full reload
+        recalcTableStats();
+      } catch (err) {
+        console.error("Autosave failed:", err);
+        hideSavingToast("Failed to save", true);
+      }
+    }
+
+    function recalcTableStats() {
+      let distributedCount = 0;
+      const totalPossible = students.length * selectedTemplate.columns.length;
+
+      students.forEach(student => {
+        const studVals = incentiveData[student.id] || {};
+        selectedTemplate.columns.forEach(col => {
+          const val = studVals[col];
+          const hasVal = val === true || val === 'true' || (selectedTemplate.value_type === 'number' && val !== undefined && val !== null && val.toString().trim() !== '');
+          if (hasVal) distributedCount++;
+        });
+      });
+
+      updateClassProgressStats(distributedCount, totalPossible);
+    }
+
+    async function handleBulkAction(isCheck) {
+      if (students.length === 0) return;
+      const actionText = isCheck ? "Mark all as distributed" : "Clear all fields";
+      if (!confirm(`Are you sure you want to ${actionText} for this class?`)) {
+        return;
+      }
+
+      showSavingToast("Processing bulk action...");
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        // Update local state and prepare upsert promises
+        const promises = students.map(student => {
+          if (!incentiveData[student.id]) {
+            incentiveData[student.id] = {};
+          }
+          
+          selectedTemplate.columns.forEach(col => {
+            if (selectedTemplate.value_type === 'boolean') {
+              incentiveData[student.id][col] = isCheck;
+            } else {
+              incentiveData[student.id][col] = isCheck ? '1' : '';
+            }
+          });
+
+          return supabaseClient
+            .from('student_incentives')
+            .upsert({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: incentiveData[student.id],
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'student_id, template_id'
+            });
+        });
+
+        const results = await Promise.all(promises);
+        const err = results.find(r => r.error);
+        if (err) throw err.error;
+
+        hideSavingToast("Bulk action finished");
+        renderDistributionTable();
+      } catch (err) {
+        console.error("Bulk action failed:", err);
+        hideSavingToast("Failed", true);
+        alert("ಕ್ರಿಯೆ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      }
+    }
+
+    // Chart.js Panel
+    async function loadProgressChartData() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        const classCompletionRates = [];
+
+        // 1. Fetch total student counts per class in this school
+        let studQuery = supabaseClient.from('admissions').select('id, enroll_class').eq('is_admitted', true);
+        if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
+        const { data: allStudents } = await studQuery;
+
+        const classStudentMap = {};
+        classes.forEach(c => classStudentMap[c] = []);
+        
+        (allStudents || []).forEach(s => {
+          if (classStudentMap[s.enroll_class] !== undefined) {
+            classStudentMap[s.enroll_class].push(s.id);
+          }
+        });
+
+        // 2. Fetch all student incentives for this template
+        let incQuery = supabaseClient.from('student_incentives').select('student_id, values').eq('template_id', selectedTemplate.id);
+        if (schoolId) incQuery = incQuery.eq('school_id', schoolId);
+        const { data: allIncs } = await incQuery;
+
+        const incentiveValuesMap = {};
+        (allIncs || []).forEach(rec => {
+          incentiveValuesMap[rec.student_id] = rec.values || {};
+        });
+
+        // 3. Calculate percentages
+        classes.forEach(c => {
+          const classStudIds = classStudentMap[c];
+          if (classStudIds.length === 0) {
+            classCompletionRates.push(0);
+            return;
+          }
+
+          let distributedCount = 0;
+          const totalPossible = classStudIds.length * selectedTemplate.columns.length;
+
+          classStudIds.forEach(id => {
+            const vals = incentiveValuesMap[id] || {};
+            selectedTemplate.columns.forEach(col => {
+              const val = vals[col];
+              const hasVal = val === true || val === 'true' || (selectedTemplate.value_type === 'number' && val !== undefined && val !== null && val.toString().trim() !== '');
+              if (hasVal) distributedCount++;
+            });
+          });
+
+          const classPct = totalPossible > 0 ? Math.round((distributedCount / totalPossible) * 100) : 0;
+          classCompletionRates.push(classPct);
+        });
+
+        renderChart(classes, classCompletionRates);
+      } catch (err) {
+        console.error("Chart load failed:", err);
+      }
+    }
+
+    function renderChart(labels, data) {
+      const ctx = document.getElementById('progressChart').getContext('2d');
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Completion %',
+            data: data,
+            backgroundColor: 'rgba(99, 102, 241, 0.65)',
+            borderColor: 'rgb(99, 102, 241)',
+            borderWidth: 1.5,
+            borderRadius: 6,
+            barThickness: 12
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 9, weight: 'bold' } }
+            },
+            y: {
+              min: 0,
+              max: 100,
+              ticks: { font: { size: 9, weight: 'bold' }, callback: value => value + '%' },
+              grid: { color: 'rgba(0, 0, 0, 0.05)' }
+            }
+          }
+        }
+      });
+    }
+
+    // Saving Toast UI Helpers
+    function showSavingToast(text) {
+      const toast = document.getElementById('savingToast');
+      const textEl = document.getElementById('toastText');
+      const spinner = document.getElementById('toastSpinner');
+      
+      textEl.innerText = text;
+      spinner.className = "fa-solid fa-circle-notch fa-spin text-indigo-400";
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+    }
+
+    function hideSavingToast(text, isError = false) {
+      const toast = document.getElementById('savingToast');
+      const textEl = document.getElementById('toastText');
+      const spinner = document.getElementById('toastSpinner');
+
+      textEl.innerText = text;
+      if (isError) {
+        spinner.className = "fa-solid fa-triangle-exclamation text-rose-500 animate-bounce";
+      } else {
+        spinner.className = "fa-solid fa-circle-check text-emerald-500 animate-pulse";
+      }
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 1500);
+    }
+
+    // Excel Export
+    function exportToExcel() {
+      if (students.length === 0) return;
+      const cls = document.getElementById('classSelector').value;
+      
+      // Build dataset
+      const dataRows = students.map((s, index) => {
+        const row = {
+          'Sl.No': index + 1,
+          'App No': s.app_no,
+          'Student Name': s.student_name
+        };
+        selectedTemplate.columns.forEach(col => {
+          const val = (incentiveData[s.id] || {})[col];
+          if (selectedTemplate.value_type === 'boolean') {
+            row[col] = (val === true || val === 'true') ? 'Distributed' : 'Pending';
+          } else {
+            row[col] = val !== undefined && val !== null ? val : '';
+          }
+        });
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(dataRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, `Class ${cls}`);
+      
+      const fileName = `${selectedTemplate.name.replace(/\s+/g, '_')}_Class_${cls}_Distribution.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
