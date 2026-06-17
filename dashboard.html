@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -572,9 +572,15 @@
 
     async function loadDashboardData() {
       try {
-        const { data: admissions, error } = await supabaseClient
-          .from('admissions')
-          .select('enroll_class, gender, caste, is_admitted');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('admissions').select('enroll_class, gender, caste, is_admitted');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { data: admissions, error } = await query;
 
         if (error) {
           console.error("Error fetching admissions:", error);

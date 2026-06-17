@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -536,10 +536,15 @@
       tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-1.5"></i> Loading roster database...</td></tr>`;
 
       try {
-        const { data, error } = await supabaseClient
-          .from('admissions')
-          .select('*')
-          .eq('enroll_class', className);
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('admissions').select('*').eq('enroll_class', className);
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
 

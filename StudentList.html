@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -696,9 +696,15 @@
     async function fetchStudentsDatabase() {
       const tbody = document.getElementById('students-table-body');
       try {
-        const { data, error } = await supabaseClient
-          .from('admissions')
-          .select('id, app_no, student_name, enroll_class, gender, dob, father_name_kn, mother_name_kn, student_aadhaar, mobile_number, is_admitted, special_need');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('admissions').select('id, app_no, student_name, enroll_class, gender, dob, father_name_kn, mother_name_kn, student_aadhaar, mobile_number, is_admitted, special_need');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
 

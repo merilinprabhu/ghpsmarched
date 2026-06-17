@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -843,9 +843,15 @@
 
     async function fetchDashboardMetrics() {
       try {
-        const { count, error } = await supabaseClient
-          .from('admissions')
-          .select('*', { count: 'exact', head: true });
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('admissions').select('*', { count: 'exact', head: true });
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { count, error } = await query;
         
         if (!error && count !== null) {
           document.getElementById('dash-total-students').innerText = `${count} Pupils`;
@@ -1104,9 +1110,15 @@
 
       try {
         // Retrieve all student admissions to filter in-memory via normalizeClass to handle database discrepancies
-        const { data, error } = await supabaseClient
-          .from('admissions')
-          .select('id, student_name, father_name_kn, app_no, enroll_class');
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('admissions').select('id, student_name, father_name_kn, app_no, enroll_class');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
 

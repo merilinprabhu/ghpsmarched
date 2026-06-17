@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -6,9 +6,50 @@
   <title>GHPS Marched - Teachers Management</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <!-- Diagnostic Overlay for Runtime Errors -->
+  <script>
+    (function() {
+      const errors = [];
+      function showErrors() {
+        if (!document.body) return;
+        errors.forEach(err => {
+          const div = document.createElement('div');
+          div.style.position = 'fixed';
+          div.style.bottom = err.type === 'promise' ? '100px' : '10px';
+          div.style.right = '10px';
+          div.style.backgroundColor = err.type === 'promise' ? '#ea580c' : '#dc2626';
+          div.style.color = '#ffffff';
+          div.style.padding = '15px';
+          div.style.borderRadius = '12px';
+          div.style.zIndex = '999999';
+          div.style.fontFamily = 'monospace';
+          div.style.fontSize = '12px';
+          div.style.maxWidth = '90%';
+          div.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.3)';
+          div.style.border = '1px solid rgba(255,255,255,0.2)';
+          div.innerHTML = err.html;
+          document.body.appendChild(div);
+        });
+        errors.length = 0;
+      }
+      window.onerror = function(message, source, lineno, colno, error) {
+        const html = `<strong>JS Error:</strong> ${message}<br>at ${source.split('/').pop()}:${lineno}:${colno}`;
+        errors.push({ type: 'error', html: html });
+        showErrors();
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        const html = `<strong>Promise Rejected:</strong> ${event.reason?.message || event.reason}`;
+        errors.push({ type: 'promise', html: html });
+        showErrors();
+      };
+      window.addEventListener('DOMContentLoaded', showErrors);
+    })();
+  </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   
@@ -856,42 +897,47 @@
     }
 
     // Load Check
-    window.onload = async function() {
-      await initUserAndTheme();
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      // Display name
-      const user = session.user;
-      document.getElementById('liveUser').innerText = user.user_metadata.name || user.email;
-
-      // Initialize responsive accordion sidebar
-      initSidebar();
-
-      // Load column visibility from localStorage if exists
-      const savedVisibility = localStorage.getItem('teachers_column_visibility');
-      if (savedVisibility) {
-        try {
-          const parsed = JSON.parse(savedVisibility);
-          for (const key in parsed) {
-            if (key in columnVisibility) {
-              columnVisibility[key] = parsed[key];
-            }
-          }
-        } catch (e) {
-          console.error("Error parsing column visibility from localStorage:", e);
+    document.addEventListener("DOMContentLoaded", async function() {
+      try {
+        await initUserAndTheme();
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
         }
+
+        // Display name
+        const user = session.user;
+        document.getElementById('liveUser').innerText = (user.user_metadata && user.user_metadata.name) || user.email;
+
+        // Initialize responsive accordion sidebar
+        initSidebar();
+
+        // Load column visibility from localStorage if exists
+        const savedVisibility = localStorage.getItem('teachers_column_visibility');
+        if (savedVisibility) {
+          try {
+            const parsed = JSON.parse(savedVisibility);
+            for (const key in parsed) {
+              if (key in columnVisibility) {
+                columnVisibility[key] = parsed[key];
+              }
+            }
+          } catch (e) {
+            console.error("Error parsing column visibility from localStorage:", e);
+          }
+        }
+
+        // Render column visibility checkboxes
+        renderColumnCheckboxes();
+
+        // Fetch teachers list
+        await loadTeachers();
+      } catch (err) {
+        alert("Teachers Page Load Error: " + err.message + "\nStack: " + err.stack);
+        console.error("Teachers Page Load Error:", err);
       }
-
-      // Render column visibility checkboxes
-      renderColumnCheckboxes();
-
-      // Fetch teachers list
-      loadTeachers();
-    };
+    });
 
     // Render checkbox options for column toggle
     function renderColumnCheckboxes() {
@@ -976,10 +1022,15 @@
     // Fetch from Supabase
     async function loadTeachers() {
       try {
-        const { data, error } = await supabaseClient
-          .from('teachers')
-          .select('*')
-          .order('teacher_id', { ascending: true });
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+
+        let query = supabaseClient.from('teachers').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+
+        const { data, error } = await query.order('teacher_id', { ascending: true });
 
         if (error) throw error;
 
@@ -1014,6 +1065,10 @@
     }
 
     function renderCharts() {
+      if (typeof Chart === 'undefined') {
+        console.warn("Chart.js is not loaded. Skipping chart rendering.");
+        return;
+      }
       if (genderChartInstance) genderChartInstance.destroy();
       if (designationChartInstance) designationChartInstance.destroy();
 
@@ -1516,7 +1571,7 @@
 
       const opt = {
         margin:       [15, 15, 15, 15],
-        filename:     \`Teachers_List_\${new Date().toISOString().slice(0,10)}.pdf\`,
+        filename:     `Teachers_List_${new Date().toISOString().slice(0,10)}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 1.5, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
