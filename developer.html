@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Admin Console - School Management System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0f172a; }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between">
+
+  <!-- Top Dark Header Bar -->
+  <div class="w-full bg-slate-900/90 border-b border-slate-800 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center shadow-lg backdrop-blur-md flex-shrink-0 z-50">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🛠️</span>
+      <div>
+        <h1 class="text-base font-bold uppercase tracking-wider text-indigo-300">Developer Control Panel</h1>
+        <p class="text-[10px] text-indigo-400/70 font-semibold tracking-widest uppercase">Portal Multi-Tenant Master Console</p>
+      </div>
+    </div>
+    <div class="text-right text-xs mt-2 sm:mt-0 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700/50 flex items-center gap-3 flex-wrap justify-end">
+      <div id="activeSchoolSection" class="hidden flex items-center gap-1.5 border-r border-slate-700 pr-3 mr-1 text-amber-400 font-semibold">
+        <i class="fa-solid fa-ghost"></i>
+        <span id="activeSchoolName" class="truncate max-w-[150px]">School</span>
+        <button onclick="exitSchoolMode()" class="bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded text-[9px] font-bold cursor-pointer transition">Exit</button>
+      </div>
+      <div class="flex items-center gap-2 border-r border-slate-700 pr-3 mr-1 text-slate-300">
+        <i class="fa-solid fa-user-shield text-indigo-400"></i>
+        <span id="headerUser" class="font-bold text-slate-200">Developer Mode</span>
+      </div>
+      <div>
+        <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
+        <span id="liveClock" class="font-bold text-emerald-400"></span>
+      </div>
+      <button onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 rounded-md text-[10px] font-bold transition flex items-center gap-1 border-0 cursor-pointer ml-2">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex-grow flex flex-col gap-6">
+    
+    <!-- Analytics Header Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="glass-card p-5 rounded-2xl flex items-center justify-between shadow-md">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total Schools</span>
+          <span id="stat-total-schools" class="text-2xl font-black text-white mt-1 block">0</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+          <i class="fa-solid fa-school text-xl"></i>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl flex items-center justify-between shadow-md">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Pending Approval</span>
+          <span id="stat-pending-schools" class="text-2xl font-black text-amber-400 mt-1 block">0</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <i class="fa-solid fa-clock-rotate-left text-xl animate-pulse"></i>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl flex items-center justify-between shadow-md">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total System Students</span>
+          <span id="stat-total-students" class="text-2xl font-black text-sky-400 mt-1 block">0</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+          <i class="fa-solid fa-graduation-cap text-xl"></i>
+        </div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl flex items-center justify-between shadow-md">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total System Teachers</span>
+          <span id="stat-total-teachers" class="text-2xl font-black text-emerald-400 mt-1 block">0</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-chalkboard-user text-xl"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table Container -->
+    <div class="glass-card p-6 rounded-2xl flex-grow flex flex-col relative min-h-[450px]">
+      
+      <!-- Loading Overlay -->
+      <div id="loading-overlay" class="absolute inset-0 bg-slate-900/80 z-20 flex flex-col items-center justify-center rounded-2xl">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-500 mb-2"></i>
+        <p class="text-xs font-bold text-slate-400">ಶಾಲೆಯ ನೋಂದಣಿ ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
+      </div>
+
+      <!-- Controls & Filter Bar -->
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-shield-halved text-indigo-400"></i> ಶಾಲೆಗಳ ನೋಂದಣಿ ನಿರ್ವಹಣೆ / School Registration Directory
+          </h2>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <!-- Search input -->
+          <div class="relative w-full md:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+            <input type="text" id="school-search" oninput="filterGrid()" placeholder="Search Name or UDISE..." class="w-full bg-slate-800/85 border border-slate-700/60 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-inner">
+          </div>
+          
+          <!-- Filter Buttons -->
+          <div class="bg-slate-800/60 border border-slate-700/50 p-1 rounded-xl flex gap-1 text-xs">
+            <button onclick="setFilter('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg font-bold border-0 cursor-pointer transition bg-indigo-600 text-white">ಎಲ್ಲಾ / All</button>
+            <button onclick="setFilter('pending')" id="btn-filter-pending" class="px-3 py-1.5 rounded-lg font-bold border-0 cursor-pointer transition text-slate-400 hover:text-white">ಅನುಮೋದನೆ ಬಾಕಿ / Pending</button>
+            <button onclick="setFilter('approved')" id="btn-filter-approved" class="px-3 py-1.5 rounded-lg font-bold border-0 cursor-pointer transition text-slate-400 hover:text-white">ಅನುಮೋದಿತ / Approved</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div class="overflow-x-auto border border-slate-800 rounded-xl custom-scrollbar flex-grow bg-slate-900/40">
+        <table id="schools-table" class="w-full text-left border-collapse text-xs whitespace-nowrap">
+          <thead>
+            <tr class="bg-slate-800/90 text-slate-300 font-bold uppercase tracking-wider text-center border-b border-slate-800">
+              <th class="p-3 border-r border-slate-800 w-12">Sl.No</th>
+              <th class="p-3 border-r border-slate-800 w-32">UDISE Code</th>
+              <th class="p-3 border-r border-slate-800 text-left">School Name (English / ಕನ್ನಡ)</th>
+              <th class="p-3 border-r border-slate-800 w-28">Registered Date</th>
+              <th class="p-3 border-r border-slate-800 w-24">Teachers</th>
+              <th class="p-3 border-r border-slate-800 w-24">Students</th>
+              <th class="p-3 border-r border-slate-800 w-28">Status</th>
+              <th class="p-3 w-40">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="schools-grid-body" class="divide-y divide-slate-800/80 text-slate-300 font-medium">
+            <!-- JS dynamically fills -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Toast system -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900/95 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white" id="toast-icon">
+      <i class="fa-solid fa-check text-sm"></i>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Record saved successfully.</p>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; h = h ? h : 12;
+      m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
+      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    let allSchools = [];
+    let currentFilter = 'all'; // 'all', 'pending', 'approved'
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+      
+      // Verify Developer permissions
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('role, school_id')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (!profile || profile.role !== 'developer') {
+        alert("ಅನಧಿಕೃತ ಪ್ರವೇಶ! / Unauthorized Access!");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Check if impersonating/managing a school
+      if (profile.school_id) {
+        const { data: school } = await supabaseClient
+          .from('schools')
+          .select('school_name_en')
+          .eq('id', profile.school_id)
+          .single();
+        if (school) {
+          document.getElementById('activeSchoolName').innerText = school.school_name_en;
+          document.getElementById('activeSchoolSection').classList.remove('hidden');
+        }
+      }
+
+      loadSchoolsData();
+    });
+
+    async function loadSchoolsData() {
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      try {
+        // Fetch all schools
+        const { data: schools, error: schErr } = await supabaseClient
+          .from('schools')
+          .select('id, school_name_en, school_name_kn, udise_code, is_approved, created_at')
+          .order('created_at', { ascending: false });
+
+        if (schErr) throw schErr;
+
+        // Fetch profiles, admissions, and teachers globally to do in-memory aggregate counting
+        const { data: profiles } = await supabaseClient.from('profiles').select('school_id');
+        const { data: admissions } = await supabaseClient.from('admissions').select('school_id');
+        const { data: teachers } = await supabaseClient.from('teachers').select('school_id');
+
+        const profileMap = {};
+        const admissionMap = {};
+        const teacherMap = {};
+
+        (profiles || []).forEach(p => { if(p.school_id) profileMap[p.school_id] = (profileMap[p.school_id] || 0) + 1; });
+        (admissions || []).forEach(a => { if(a.school_id) admissionMap[a.school_id] = (admissionMap[a.school_id] || 0) + 1; });
+        (teachers || []).forEach(t => { if(t.school_id) teacherMap[t.school_id] = (teacherMap[t.school_id] || 0) + 1; });
+
+        allSchools = (schools || []).map(s => ({
+          ...s,
+          teachersCount: teacherMap[s.id] || 0,
+          studentsCount: admissionMap[s.id] || 0,
+          usersCount: profileMap[s.id] || 0
+        }));
+
+        renderStats();
+        renderGrid();
+      } catch (err) {
+        console.error("Data load failed:", err);
+        showToast("Error / ದೋಷ", "ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    function renderStats() {
+      const pendingCount = allSchools.filter(s => s.is_approved === false).length;
+      let totalStudents = 0;
+      let totalTeachers = 0;
+
+      allSchools.forEach(s => {
+        totalStudents += s.studentsCount;
+        totalTeachers += s.teachersCount;
+      });
+
+      document.getElementById('stat-total-schools').innerText = allSchools.length;
+      document.getElementById('stat-pending-schools').innerText = pendingCount;
+      document.getElementById('stat-total-students').innerText = totalStudents;
+      document.getElementById('stat-total-teachers').innerText = totalTeachers;
+    }
+
+    function setFilter(filterVal) {
+      currentFilter = filterVal;
+      
+      const buttons = ['all', 'pending', 'approved'];
+      buttons.forEach(b => {
+        const btn = document.getElementById(`btn-filter-${b}`);
+        if (b === filterVal) {
+          btn.className = "px-3 py-1.5 rounded-lg font-bold border-0 cursor-pointer transition bg-indigo-600 text-white";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg font-bold border-0 cursor-pointer transition text-slate-400 hover:text-white";
+        }
+      });
+
+      renderGrid();
+    }
+
+    function filterGrid() {
+      renderGrid();
+    }
+
+    function renderGrid() {
+      const tbody = document.getElementById('schools-grid-body');
+      tbody.innerHTML = '';
+
+      const searchQuery = document.getElementById('school-search').value.toLowerCase().trim();
+
+      const filteredSchools = allSchools.filter(s => {
+        // Apply status filter
+        if (currentFilter === 'pending' && s.is_approved !== false) return false;
+        if (currentFilter === 'approved' && s.is_approved !== true) return false;
+
+        // Apply text search filter
+        if (searchQuery) {
+          const nameEn = (s.school_name_en || '').toLowerCase();
+          const nameKn = (s.school_name_kn || '').toLowerCase();
+          const udise = (s.udise_code || '').toLowerCase();
+          return nameEn.includes(searchQuery) || nameKn.includes(searchQuery) || udise.includes(searchQuery);
+        }
+
+        return true;
+      });
+
+      if (filteredSchools.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500 font-bold text-sm">ಯಾವುದೇ ಶಾಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ / No schools registered</td></tr>`;
+        return;
+      }
+
+      filteredSchools.forEach((school, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 border-b border-slate-800/60 transition text-center";
+        
+        const dateStr = school.created_at ? new Date(school.created_at).toLocaleDateString('kn-IN') : '-';
+        const badgeClass = school.is_approved ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+        const statusLabel = school.is_approved ? "Approved / ಅನುಮೋದಿತ" : "Pending / ಪ್ರಗತಿಯಲ್ಲಿದೆ";
+
+        let actionButtons = '';
+        if (school.is_approved) {
+          actionButtons = `<button onclick="manageSchool('${school.id}', '${school.school_name_en.replace(/'/g, "\\'")}', '${school.school_name_kn.replace(/'/g, "\\'")}', '${school.udise_code || ''}')" class="bg-indigo-600/20 hover:bg-indigo-600/35 border border-indigo-600/40 text-indigo-400 hover:text-indigo-300 px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition mr-2"><i class="fa-solid fa-laptop-code"></i> Manage</button>` +
+                          `<button onclick="updateSchoolApproval('${school.id}', false)" class="bg-amber-600/20 hover:bg-amber-600/35 border border-amber-600/40 text-amber-400 hover:text-amber-300 px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition mr-2"><i class="fa-solid fa-ban"></i> Suspend</button>`;
+        } else {
+          actionButtons = `<button onclick="updateSchoolApproval('${school.id}', true)" class="bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-600/40 text-emerald-400 hover:text-emerald-300 px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition mr-2"><i class="fa-solid fa-check"></i> Approve</button>`;
+        }
+
+        actionButtons += `<button onclick="deleteSchool('${school.id}', '${school.school_name_en}')" class="bg-rose-600/20 hover:bg-rose-600/35 border border-rose-600/40 text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-lg text-[10px] font-bold cursor-pointer transition"><i class="fa-solid fa-trash-can"></i> Delete</button>`;
+
+        tr.innerHTML = `
+          <td class="p-3 text-center border-r border-slate-800/60 font-medium text-slate-500">${index + 1}</td>
+          <td class="p-3 border-r border-slate-800/60 font-mono text-slate-300 font-bold">${school.udise_code || '-'}</td>
+          <td class="p-3 border-r border-slate-800/60 text-left font-semibold text-slate-200">
+            <span class="block text-slate-200">${school.school_name_en}</span>
+            <span class="block text-slate-400 text-[10px] mt-0.5">${school.school_name_kn}</span>
+          </td>
+          <td class="p-3 border-r border-slate-800/60 text-slate-400 font-bold text-center">${dateStr}</td>
+          <td class="p-3 border-r border-slate-800/60 font-black text-slate-200 text-center">${school.teachersCount}</td>
+          <td class="p-3 border-r border-slate-800/60 font-black text-slate-200 text-center">${school.studentsCount}</td>
+          <td class="p-3 border-r border-slate-800/60 text-center">
+            <span class="px-2.5 py-1 rounded-full text-[9px] font-bold tracking-wider uppercase ${badgeClass}">${statusLabel}</span>
+          </td>
+          <td class="p-3 text-center flex items-center justify-center gap-1.5">${actionButtons}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function updateSchoolApproval(schoolId, isApproved) {
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      try {
+        const { error } = await supabaseClient
+          .from('schools')
+          .update({ is_approved: isApproved })
+          .eq('id', schoolId);
+
+        if (error) throw error;
+
+        showToast(
+          isApproved ? "Approved / ಅನುಮೋದಿತ" : "Suspended / ಅಮಾನತು",
+          isApproved ? "ಶಾಲೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅನುಮೋದಿಸಲಾಗಿದೆ." : "ಶಾಲೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಮಾನತುಗೊಳಿಸಲಾಗಿದೆ.",
+          "success"
+        );
+        
+        loadSchoolsData();
+      } catch (err) {
+        console.error("Failed to update status:", err);
+        showToast("Error / ದೋಷ", "ಸ್ಥಿತಿ ನವೀಕರಣ ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    async function deleteSchool(schoolId, schoolName) {
+      if (!confirm(`Are you sure you want to delete ${schoolName}?\nThis will permanently delete all student admissions and teachers associated with this school!`)) {
+        return;
+      }
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      try {
+        const { error } = await supabaseClient
+          .from('schools')
+          .delete()
+          .eq('id', schoolId);
+
+        if (error) throw error;
+
+        showToast("Deleted / ಅಳಿಸಲಾಗಿದೆ", "ಶಾಲೆಯ ಖಾತೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ.", "success");
+        loadSchoolsData();
+      } catch (err) {
+        console.error("Delete failed:", err);
+        showToast("Error / ದೋಷ", "ಶಾಲೆಯನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    async function manageSchool(schoolId, nameEn, nameKn, udise) {
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 1. Update developer's active school_id in public.profiles
+        const { error: profileErr } = await supabaseClient
+          .from('profiles')
+          .update({ school_id: schoolId })
+          .eq('id', session.user.id);
+
+        if (profileErr) throw profileErr;
+
+        // 2. Update user_metadata inside session
+        const { error: authErr } = await supabaseClient.auth.updateUser({
+          data: { school_id: schoolId }
+        });
+
+        if (authErr) throw authErr;
+
+        // 3. Save school names and udise code to localStorage
+        localStorage.setItem('school_name_en', nameEn || '');
+        localStorage.setItem('school_name_kn', nameKn || '');
+        localStorage.setItem('school_udise', udise || '');
+
+        showToast("Success", "Entering school dashboard...", "success");
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      } catch (err) {
+        console.error("Failed to set active school:", err);
+        showToast("Error", "ಶಾಲೆಯ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    async function exitSchoolMode() {
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 1. Update profiles set school_id = null
+        const { error: profileErr } = await supabaseClient
+          .from('profiles')
+          .update({ school_id: null })
+          .eq('id', session.user.id);
+
+        if (profileErr) throw profileErr;
+
+        // 2. Update user_metadata inside session
+        const { error: authErr } = await supabaseClient.auth.updateUser({
+          data: { school_id: null }
+        });
+
+        if (authErr) throw authErr;
+
+        // 3. Clear localStorage
+        localStorage.removeItem('school_name_en');
+        localStorage.removeItem('school_name_kn');
+        localStorage.removeItem('school_udise');
+
+        document.getElementById('activeSchoolSection').classList.add('hidden');
+        showToast("Exit", "Exited school management mode.", "success");
+        loadSchoolsData();
+      } catch (err) {
+        console.error("Failed to exit school mode:", err);
+        showToast("Error", "ನಿರ್ಗಮಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+
+    function showToast(title, message, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+
+      toastTitle.innerText = title;
+      toastMsg.innerText = message;
+
+      if (type === "success") {
+        toastIcon.className = "w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-check text-sm"></i>';
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i>';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

@@ -18,18 +18,18 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     
     @media print {
-      body { background: white !important; color: black !important; }
-      #standalone-header, aside, footer, #toast, #toast-notif, #grid-header, #stats-bar, .no-print, button { display: none !important; }
-      main { display: block !important; padding: 0 !important; margin: 0 !important; height: auto !important; overflow: visible !important; }
-      section { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; height: auto !important; overflow: visible !important; }
-      #table-container { overflow: visible !important; height: auto !important; }
-      #competency-table { display: table !important; width: 100% !important; border-collapse: collapse !important; font-size: 9px !important; color: black !important; border: 1px solid black !important; }
-      #competency-table th, #competency-table td { border: 1px solid black !important; padding: 5px 4px !important; color: black !important; background: transparent !important; }
-      th { background-color: transparent !important; color: black !important; font-weight: bold !important; }
-      .bg-emerald-50, .bg-emerald-100, .bg-blue-50, .bg-blue-100 { background: transparent !important; color: black !important; }
-      #competency-table td span { background: transparent !important; color: black !important; padding: 0 !important; font-weight: bold !important; }
-      #competency-table tfoot td { background: transparent !important; color: black !important; font-weight: bold !important; }
-      select { border: none !important; background: transparent !important; appearance: none !important; font-weight: bold !important; text-align: center !important; color: black !important; }
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 9px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 6px 4px !important; text-align: center !important; }
+      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
     }
   
         /* Sidebar Hover Collapsed Styles */
@@ -173,7 +173,7 @@
   <!-- Printable Area (Hidden in browser) -->
   <div id="printArea" class="hidden">
     <div class="text-center mb-6">
-      <h2 class="text-lg font-bold uppercase tracking-wider text-black">Government Higher Primary School, Marched</h2>
+      <h2 class="text-lg font-bold uppercase tracking-wider text-black" id="print-school-name">Government Higher Primary School, Marched</h2>
       <p class="text-sm font-semibold uppercase text-black mt-1" id="print-title">Bridge Course Competency Report</p>
       <div class="print-meta-row mt-2 flex justify-between text-xs font-bold text-black border-b pb-2">
         <span id="print-class-meta">Class: LKG</span>
@@ -444,7 +444,7 @@
                 <tbody id="student-grid-body" class="divide-y divide-slate-200 text-slate-700 bg-white font-semibold">
                   <!-- JS dynamically fills -->
                 </tbody>
-                <tfoot>
+                <tbody id="student-grid-footer" class="bg-slate-50 border-t-2 border-slate-300 font-black text-center">
                   <tr class="bg-slate-50 border-t-2 border-slate-300 font-black text-center">
                     <td colspan="4" class="p-3 border-r border-slate-200 text-right uppercase">ಒಟ್ಟು ಶ್ರೇಣಿ 'A' / Total 'A'</td>
                     <td id="c1-a" class="border-r border-slate-200 text-emerald-700">0</td>
@@ -475,7 +475,7 @@
                     <td class="bg-slate-200 border-r border-slate-200 text-slate-400">-</td>
                     <td id="total-rows-b" class="bg-blue-100 text-blue-900 font-bold text-center">0</td>
                   </tr>
-                </tfoot>
+                </tbody>
               </table>
             </div>
 
@@ -638,7 +638,7 @@
       let clean = classStr.toString().trim().toLowerCase();
       
       if (!clean.includes("lkg")) {
-        clean = clean.replace(/l/g, "i");
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
       }
       
       if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
@@ -690,23 +690,25 @@
 
       document.getElementById('loading-overlay').classList.remove('hidden');
       document.getElementById('empty-state').classList.add('hidden');
-      document.getElementById('competency-table').classList.add('hidden');
+      document.getElementById('table-container').classList.add('hidden');
       hideActionButtons();
 
       try {
+        // Retrieve all student admissions to filter in-memory via normalizeClass to handle database discrepancies
         const { data, error } = await supabaseClient
           .from('admissions')
-          .select('id, student_name, father_name_kn, app_no')
-          .eq('enroll_class', className);
+          .select('id, student_name, father_name_kn, app_no, enroll_class');
 
         if (error) throw error;
 
-        const roster = (data || []).map(s => ({
-          id: s.id,
-          name: s.student_name,
-          father: s.father_name_kn,
-          adminNo: s.app_no
-        }));
+        const roster = (data || [])
+          .filter(s => normalizeClass(s.enroll_class) === normalizeClass(className))
+          .map(s => ({
+            id: s.id,
+            name: s.student_name,
+            father: s.father_name_kn,
+            adminNo: s.app_no
+          }));
 
         const mockKey = `cce_mock_bc_${className}_${subjectName}_${testType}`;
         const savedEval = getMockItem(mockKey);
@@ -753,7 +755,7 @@
       const testTypeStr = testTypeFilter.value === 'PRE_TEST' ? 'Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ' : 'Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ';
       
       document.getElementById('grid-subtitle').innerText = `${className} | ${subjectName} | ${testTypeStr}`;
-      document.getElementById('competency-table').classList.remove('hidden');
+      document.getElementById('table-container').classList.remove('hidden');
       document.getElementById('stats-bar').classList.remove('hidden');
       document.getElementById('grid-header').classList.remove('hidden');
       document.getElementById('export-bar').classList.remove('hidden');
@@ -795,7 +797,7 @@
 
     function resetToEmptyState() {
       document.getElementById('empty-state').classList.remove('hidden');
-      document.getElementById('competency-table').classList.add('hidden');
+      document.getElementById('table-container').classList.add('hidden');
       document.getElementById('grid-subtitle').innerText = "ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ / No standard selected";
       hideActionButtons();
       document.getElementById('stats-bar').classList.add('hidden');
@@ -1037,10 +1039,56 @@
       const testType = testTypeFilter.value;
       const testTypeStr = testType === 'PRE_TEST' ? 'Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ' : 'Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ';
       
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
+      document.getElementById('print-school-name').innerText = schoolNameEn;
       document.getElementById('print-class-meta').innerText = "ತರಗತಿ / Class: " + className;
       document.getElementById('print-subject-meta').innerText = "ವಿಷಯ / Subject: " + subjectName;
       document.getElementById('print-test-meta').innerText = "ಪರೀಕ್ಷೆಯ ವಿಧ / Test Type: " + testTypeStr;
       document.getElementById('print-date-meta').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
+      
+      // Clean up previous print content
+      const existingTable = document.getElementById('printArea').querySelector('table');
+      if (existingTable) existingTable.remove();
+      const existingSigs = document.getElementById('printArea').querySelector('.print-signatures-row');
+      if (existingSigs) existingSigs.remove();
+      
+      // Clone competency table
+      const originalTable = document.getElementById('competency-table');
+      const tableClone = originalTable.cloneNode(true);
+      tableClone.removeAttribute('id');
+      tableClone.classList.remove('hidden');
+      
+      // Sync select values to cloned table
+      const originalSelects = originalTable.querySelectorAll('select');
+      const clonedSelects = tableClone.querySelectorAll('select');
+      originalSelects.forEach((origSelect, index) => {
+        if (clonedSelects[index]) {
+          clonedSelects[index].value = origSelect.value;
+        }
+      });
+      
+      // Replace select dropdowns with spans in cloned table
+      const selects = tableClone.querySelectorAll('select');
+      selects.forEach(select => {
+        const parent = select.parentNode;
+        const val = select.value;
+        const span = document.createElement('span');
+        span.innerText = val;
+        span.style.fontWeight = 'bold';
+        parent.replaceChild(span, select);
+      });
+      
+      // Append cloned table
+      document.getElementById('printArea').appendChild(tableClone);
+      
+      // Add signature block
+      const sigRow = document.createElement('div');
+      sigRow.className = 'print-signatures-row';
+      sigRow.innerHTML = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
+      document.getElementById('printArea').appendChild(sigRow);
       
       window.print();
     }
@@ -1075,21 +1123,23 @@
       
       const styleEl = document.createElement('style');
       styleEl.innerText = `
-        .print-header-title { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .print-header-title { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
         .print-title-h1 { font-size: 16px; font-weight: bold; margin: 0; }
         .print-title-h2 { font-size: 13px; font-weight: bold; margin: 5px 0 0 0; }
         .print-meta-row { display: flex; justify-content: space-between; font-size: 10px; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 8px; margin-top: 15px; border: 1px solid #000; }
-        th, td { border: 1px solid #000; padding: 5px 3px; text-align: center; }
-        th { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; font-size: 8px; margin-top: 15px; border: 1px solid #000000; background-color: #ffffff; }
+        th, td { border: 1px solid #000000; padding: 5px 3px; text-align: center; }
+        th { font-weight: bold; background-color: #000000 !important; color: #ffffff !important; }
+        td { background-color: #ffffff !important; color: #000000 !important; }
         .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
       `;
       printContainer.appendChild(styleEl);
 
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
       const testTypeStr = testType === 'PRE_TEST' ? 'Pre-Test' : 'Post-Test';
       printContainer.innerHTML += `
         <div class="print-header-title">
-          <h1 class="print-title-h1">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
+          <h1 class="print-title-h1">${schoolNameEn}</h1>
           <h2 class="print-title-h2">ಸೇತುಬಂಧ ಕೋರ್ಸ್ ಮೌಲ್ಯಮಾಪನ / Bridge Course Competency Evaluation</h2>
           <div class="print-meta-row">
             <span>Class: ${className}</span>
@@ -1248,6 +1298,91 @@
           const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
           if (headerUser) headerUser.innerText = name;
+
+                    // Fetch user profile from database to check for developer role
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (profile && profile.role === 'developer') {
+            if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;
+            
+            const sidebarNav = document.getElementById('sidebarNav');
+            if (sidebarNav && !document.getElementById('nav-DeveloperConsole')) {
+              const devLink = document.createElement('a');
+              devLink.href = "developer.html";
+              devLink.id = "nav-DeveloperConsole";
+              devLink.className = "flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-indigo-600 hover:bg-indigo-50 transition border border-indigo-200/50 bg-indigo-50/30";
+              devLink.innerHTML = `<i class="fa-solid fa-screwdriver-wrench text-indigo-600 text-sm w-5 text-center"></i> <span class="sidebar-text">Developer Console</span>`;
+              sidebarNav.insertBefore(devLink, sidebarNav.firstChild);
+            }
+          }
+
+          // Fetch school details and apply dynamically to DOM
+          let schoolNameEn = localStorage.getItem('school_name_en');
+          let schoolNameKn = localStorage.getItem('school_name_kn');
+          
+          if (!schoolNameEn && user.user_metadata?.school_id) {
+            try {
+              const { data: school } = await supabaseClient
+                .from('schools')
+                .select('school_name_en, school_name_kn')
+                .eq('id', user.user_metadata.school_id)
+                .single();
+              if (school) {
+                schoolNameEn = school.school_name_en || '';
+                schoolNameKn = school.school_name_kn || '';
+                localStorage.setItem('school_name_en', schoolNameEn);
+                localStorage.setItem('school_name_kn', schoolNameKn);
+              }
+            } catch (schErr) {
+              console.error("Failed to load school details inside initUserAndTheme:", schErr);
+            }
+          }
+
+          if (schoolNameEn) {
+            // Replace hardcoded English school name in text nodes
+            const walkerEn = document.createTreeWalker(
+              document.body,
+              NodeFilter.SHOW_TEXT,
+              null,
+              false
+            );
+            let nodeEn;
+            while (nodeEn = walkerEn.nextNode()) {
+              const val = nodeEn.nodeValue;
+              if (val.includes("Government Higher Primary School, Marched")) {
+                nodeEn.nodeValue = val.replace(/Government Higher Primary School, Marched/g, schoolNameEn);
+              } else if (val.includes("GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED")) {
+                nodeEn.nodeValue = val.replace(/GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED/g, schoolNameEn.toUpperCase());
+              } else if (val.includes("GHPS MARCHED")) {
+                nodeEn.nodeValue = val.replace(/GHPS MARCHED/g, schoolNameEn.toUpperCase());
+              } else if (val.includes("GHPS Marched")) {
+                nodeEn.nodeValue = val.replace(/GHPS Marched/g, schoolNameEn);
+              }
+            }
+
+            if (schoolNameKn) {
+              // Replace hardcoded Kannada school name in text nodes
+              const walkerKn = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+              );
+              let nodeKn;
+              while (nodeKn = walkerKn.nextNode()) {
+                const val = nodeKn.nodeValue;
+                if (val.includes("ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್")) {
+                  nodeKn.nodeValue = val.replace(/ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್/g, schoolNameKn);
+                } else if (val.includes("ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್")) {
+                  nodeKn.nodeValue = val.replace(/ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್/g, schoolNameKn);
+                }
+              }
+            }
+          }
         }
       } catch (e) {
         console.error("Error loading user session for header:", e);

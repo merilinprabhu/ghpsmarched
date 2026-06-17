@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -608,7 +608,7 @@
           let clean = classStr.toString().trim().toLowerCase();
           
           if (!clean.includes("lkg")) {
-            clean = clean.replace(/l/g, "i");
+            clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
           }
           
           if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
@@ -723,6 +723,91 @@
           const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
           if (headerUser) headerUser.innerText = name;
+
+                    // Fetch user profile from database to check for developer role
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (profile && profile.role === 'developer') {
+            if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;
+            
+            const sidebarNav = document.getElementById('sidebarNav');
+            if (sidebarNav && !document.getElementById('nav-DeveloperConsole')) {
+              const devLink = document.createElement('a');
+              devLink.href = "developer.html";
+              devLink.id = "nav-DeveloperConsole";
+              devLink.className = "flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-indigo-600 hover:bg-indigo-50 transition border border-indigo-200/50 bg-indigo-50/30";
+              devLink.innerHTML = `<i class="fa-solid fa-screwdriver-wrench text-indigo-600 text-sm w-5 text-center"></i> <span class="sidebar-text">Developer Console</span>`;
+              sidebarNav.insertBefore(devLink, sidebarNav.firstChild);
+            }
+          }
+
+          // Fetch school details and apply dynamically to DOM
+          let schoolNameEn = localStorage.getItem('school_name_en');
+          let schoolNameKn = localStorage.getItem('school_name_kn');
+          
+          if (!schoolNameEn && user.user_metadata?.school_id) {
+            try {
+              const { data: school } = await supabaseClient
+                .from('schools')
+                .select('school_name_en, school_name_kn')
+                .eq('id', user.user_metadata.school_id)
+                .single();
+              if (school) {
+                schoolNameEn = school.school_name_en || '';
+                schoolNameKn = school.school_name_kn || '';
+                localStorage.setItem('school_name_en', schoolNameEn);
+                localStorage.setItem('school_name_kn', schoolNameKn);
+              }
+            } catch (schErr) {
+              console.error("Failed to load school details inside initUserAndTheme:", schErr);
+            }
+          }
+
+          if (schoolNameEn) {
+            // Replace hardcoded English school name in text nodes
+            const walkerEn = document.createTreeWalker(
+              document.body,
+              NodeFilter.SHOW_TEXT,
+              null,
+              false
+            );
+            let nodeEn;
+            while (nodeEn = walkerEn.nextNode()) {
+              const val = nodeEn.nodeValue;
+              if (val.includes("Government Higher Primary School, Marched")) {
+                nodeEn.nodeValue = val.replace(/Government Higher Primary School, Marched/g, schoolNameEn);
+              } else if (val.includes("GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED")) {
+                nodeEn.nodeValue = val.replace(/GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED/g, schoolNameEn.toUpperCase());
+              } else if (val.includes("GHPS MARCHED")) {
+                nodeEn.nodeValue = val.replace(/GHPS MARCHED/g, schoolNameEn.toUpperCase());
+              } else if (val.includes("GHPS Marched")) {
+                nodeEn.nodeValue = val.replace(/GHPS Marched/g, schoolNameEn);
+              }
+            }
+
+            if (schoolNameKn) {
+              // Replace hardcoded Kannada school name in text nodes
+              const walkerKn = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                null,
+                false
+              );
+              let nodeKn;
+              while (nodeKn = walkerKn.nextNode()) {
+                const val = nodeKn.nodeValue;
+                if (val.includes("ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್")) {
+                  nodeKn.nodeValue = val.replace(/ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್/g, schoolNameKn);
+                } else if (val.includes("ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್")) {
+                  nodeKn.nodeValue = val.replace(/ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್/g, schoolNameKn);
+                }
+              }
+            }
+          }
         }
       } catch (e) {
         console.error("Error loading user session for header:", e);

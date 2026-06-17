@@ -1876,92 +1876,145 @@
 
             // Write to Supabase first
             if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-                const data = window.admissionData || {};
+                const submitBtn = document.getElementById("btn-submit-app");
+                const lblSubmit = document.getElementById("lbl-submit");
                 
-                let formattedDob = null;
-                if (data.dob) {
-                    try { formattedDob = new Date(data.dob).toISOString().split('T')[0]; } catch (e) {}
-                }
-                let formattedTransferDate = null;
-                if (data.transferDate) {
-                    try { formattedTransferDate = new Date(data.transferDate).toISOString().split('T')[0]; } catch (e) {}
-                }
-                
-                const payload = {
-                    academic_year: data.academicYear || '',
-                    medium: data.medium || '',
-                    enroll_class: data.enrollClass || '',
-                    app_no: data.appNo || '',
-                    student_name: data.studentName || '',
-                    name_english: data.nameEnglish || '',
-                    dob: formattedDob,
-                    gender: data.gender || '',
-                    student_aadhaar: data.studentAadhaar || '',
-                    religion: data.religion || '',
-                    caste: data.caste || '',
-                    social_class: data.socialClass || '',
-                    student_caste: data.subCaste || '',
-                    mother_tongue: data.motherTongue || '',
-                    mobile_number: data.mobileNumber || '',
-                    special_need: data.specialNeed || '',
-                    special_category: data.specialCategory || '',
-                    bhagyalakshmi_bond: data.bhagyalakshmiBond || '',
-                    age_reason: data.ageReason || '',
-                    address: data.address || '',
-                    district: data.district || '',
-                    taluk: data.taluk || '',
-                    bank_acc_no: data.bankAccNo || '',
-                    ifsc_code: data.ifscCode || '',
-                    bank_address: data.bankAddress || '',
-                    scholarship_no: data.scholarshipNo || '',
-                    student_caste_cert: data.studentCasteCert || '',
-                    student_income_cert: data.studentIncomeCert || '',
-                    bpl_card_no: data.bplCardNo || '',
-                    father_name_kn: data.fatherNameKn || '',
-                    father_aadhaar: data.fatherAadhaar || '',
-                    father_occupation: data.fatherOccupation || '',
-                    mother_name_kn: data.motherNameKn || '',
-                    mother_aadhaar: data.motherAadhaar || '',
-                    mother_occupation: data.motherOccupation || '',
-                    preschool_board: data.preschoolBoard || '',
-                    preschool_type: data.preschoolType || '',
-                    preschool_name: data.preschoolName || '',
-                    transfer_no: data.transferNo || '',
-                    transfer_date: formattedTransferDate,
-                    student_sts: data.studentSts || ''
-                };
+                supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                    const data = window.admissionData || {};
+                    
+                    let formattedDob = null;
+                    if (data.dob) {
+                        try { formattedDob = new Date(data.dob).toISOString().split('T')[0]; } catch (e) {}
+                    }
+                    let formattedTransferDate = null;
+                    if (data.transferDate) {
+                        try { formattedTransferDate = new Date(data.transferDate).toISOString().split('T')[0]; } catch (e) {}
+                    }
+                    
+                    const payload = {
+                        academic_year: data.academicYear || '',
+                        medium: data.medium || '',
+                        enroll_class: data.enrollClass || '',
+                        app_no: data.appNo || '',
+                        student_name: data.studentName || '',
+                        name_english: data.nameEnglish || '',
+                        dob: formattedDob,
+                        gender: data.gender || '',
+                        student_aadhaar: data.studentAadhaar || '',
+                        religion: data.religion || '',
+                        caste: data.caste || '',
+                        social_class: data.socialClass || '',
+                        student_caste: data.subCaste || '',
+                        mother_tongue: data.motherTongue || '',
+                        mobile_number: data.mobileNumber || '',
+                        special_need: data.specialNeed || '',
+                        special_category: data.specialCategory || '',
+                        bhagyalakshmi_bond: data.bhagyalakshmiBond || '',
+                        age_reason: data.ageReason || '',
+                        address: data.address || '',
+                        district: data.district || '',
+                        taluk: data.taluk || '',
+                        bank_acc_no: data.bankAccNo || '',
+                        ifsc_code: data.ifscCode || '',
+                        bank_address: data.bankAddress || '',
+                        scholarship_no: data.scholarshipNo || '',
+                        student_caste_cert: data.studentCasteCert || '',
+                        student_income_cert: data.studentIncomeCert || '',
+                        bpl_card_no: data.bplCardNo || '',
+                        father_name_kn: data.fatherNameKn || '',
+                        father_aadhaar: data.fatherAadhaar || '',
+                        father_occupation: data.fatherOccupation || '',
+                        mother_name_kn: data.motherNameKn || '',
+                        mother_aadhaar: data.motherAadhaar || '',
+                        mother_occupation: data.motherOccupation || '',
+                        preschool_board: data.preschoolBoard || '',
+                        preschool_type: data.preschoolType || '',
+                        preschool_name: data.preschoolName || '',
+                        transfer_no: data.transferNo || '',
+                        transfer_date: formattedTransferDate,
+                        student_sts: data.studentSts || ''
+                    };
 
-                supabaseClient
-                    .from('admissions')
-                    .insert([payload])
-                    .then(result => {
-                        if (result.error) {
-                            console.error("Supabase insert error:", result.error);
-                            alert(currentLang === 'kn' 
-                                ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
-                                : "Failed to save to Supabase: " + result.error.message);
+                    if (session && session.user) {
+                        payload.school_id = session.user.user_metadata?.school_id || null;
+                        payload.created_by = session.user.id || null;
+                    }
+
+                    supabaseClient
+                        .from('admissions')
+                        .insert([payload])
+                        .then(result => {
+                            if (result.error) {
+                                console.error("Supabase insert error:", result.error);
+                                alert(currentLang === 'kn' 
+                                    ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
+                                    : "Failed to save to Supabase: " + result.error.message);
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = "1";
+                                lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
+                            } else {
+                                console.log("Supabase insert success:", result);
+                                proceedToAppsScriptSubmit();
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Supabase save exception:", err);
+                            alert("Supabase Error: " + err.message);
                             submitBtn.disabled = false;
                             submitBtn.style.opacity = "1";
                             lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
-                        } else {
-                            console.log("Supabase insert success:", result);
-                            proceedToAppsScriptSubmit();
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Supabase save exception:", err);
-                        alert("Supabase Error: " + err.message);
-                        submitBtn.disabled = false;
-                        submitBtn.style.opacity = "1";
-                        lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
-                    });
+                        });
+                }).catch(err => {
+                    console.error("Auth session fetch error:", err);
+                    alert("Auth error: " + err.message);
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                    lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
+                });
             } else {
                 proceedToAppsScriptSubmit();
             }
         }
 
+        async function loadSchoolDetailsAndApply() {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    const schoolId = session.user.user_metadata?.school_id;
+                    if (schoolId) {
+                        const { data: school, error } = await supabaseClient
+                            .from('schools')
+                            .select('school_name_en, school_name_kn, udise_code')
+                            .eq('id', schoolId)
+                            .single();
+                        
+                        if (error) throw error;
+                        if (school) {
+                            const nameEn = school.school_name_en || "GHPS Marched";
+                            const nameKn = school.school_name_kn || "ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್";
+                            const udise = school.udise_code || "";
+
+                            // Update translations dictionary
+                            translations.en.school_name = nameEn.toUpperCase();
+                            translations.kn.school_name = nameKn;
+                            translations.en.school_footer = `${nameEn}${udise ? ', UDISE: ' + udise : ''}`;
+                            translations.kn.school_footer = `${nameKn}${udise ? ', UDISE: ' + udise : ''}`;
+
+                            // Update document title
+                            document.title = "Admission Form Preview - " + nameEn;
+
+                            // Re-apply translations
+                            updateTranslations();
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load dynamic school details:", err);
+            }
+        }
+
         // Load data on window load/SPA view injection
-        function initPreview() {
+        async function initPreview() {
             // First check template parameters (live environment)
             if (templateAppNo && templateAcademicYear && templateMedium) {
                 if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -2000,6 +2053,9 @@
             
             togglePreviewLanguage(currentLang);
             adjustZoom(0);
+            
+            // Load and apply active school details
+            await loadSchoolDetailsAndApply();
 
             // Auto-PDF download handler
             const urlParams = new URLSearchParams(window.location.search);

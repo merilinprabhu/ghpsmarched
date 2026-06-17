@@ -165,6 +165,32 @@
     window.onload = async function() {
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
+        try {
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('role, school_id')
+            .eq('id', session.user.id)
+            .single();
+          if (profile) {
+            if (profile.role === 'developer') {
+              window.location.href = "developer.html";
+              return;
+            }
+            if (profile.school_id) {
+              const { data: school } = await supabaseClient
+                .from('schools')
+                .select('is_approved')
+                .eq('id', profile.school_id)
+                .single();
+              if (school && school.is_approved === false) {
+                await supabaseClient.auth.signOut();
+                return;
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Session check error:", e);
+        }
         window.location.href = "dashboard.html";
       }
     };
@@ -262,12 +288,47 @@
           return;
         }
 
-        // Fetch user profile from the database
+        // Fetch user profile from the database (including role)
         const { data: profile, error: profileErr } = await supabaseClient
           .from('profiles')
-          .select('name')
+          .select('name, school_id, role')
           .eq('id', data.user.id)
           .single();
+
+        if (profile && profile.role === 'developer') {
+          showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", true);
+          setTimeout(() => {
+            window.location.href = "developer.html";
+          }, 1200);
+          return;
+        }
+
+        if (profile && profile.school_id) {
+          try {
+            const { data: school } = await supabaseClient
+              .from('schools')
+              .select('school_name_en, school_name_kn, udise_code, is_approved')
+              .eq('id', profile.school_id)
+              .single();
+            
+            if (school) {
+              if (school.is_approved === false) {
+                await supabaseClient.auth.signOut();
+                showMessage("ನಿಮ್ಮ ಶಾಲೆಯು ಇನ್ನೂ ಡೆವಲಪರ್‌ನಿಂದ ಅನುಮೋದಿಸಲ್ಪಟ್ಟಿಲ್ಲ. ದಯವಿಟ್ಟು ಅನುಮೋದನೆಗಾಗಿ ಕಾಯಿರಿ.", false);
+                return;
+              }
+              localStorage.setItem('school_name_en', school.school_name_en || '');
+              localStorage.setItem('school_name_kn', school.school_name_kn || '');
+              localStorage.setItem('school_udise', school.udise_code || '');
+            }
+          } catch (schErr) {
+            console.error("Error fetching school details:", schErr);
+          }
+        } else {
+          localStorage.removeItem('school_name_en');
+          localStorage.removeItem('school_name_kn');
+          localStorage.removeItem('school_udise');
+        }
 
         const name = profile ? profile.name : (data.user.user_metadata.name || "ಬಳಕೆದಾರ");
         showMessage("ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ! ಸುಸ್ವಾಗತ " + name, true);
