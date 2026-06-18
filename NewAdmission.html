@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -674,8 +674,13 @@
     checkForEditMode();
   }
 
-  function updateAppNo() {
+  async function updateAppNo() {
     if (window.isFormLoadingData) return;
+    
+    // Do not generate a new app number if we are in edit mode
+    const isEditMode = new URLSearchParams(window.location.search).get('appNo') || (localStorage.getItem("editMode") === "true");
+    if (isEditMode) return;
+    
     let year = document.getElementById("academicYear").value;
     let medium = document.getElementById("medium").value;
     let appNoInput = document.getElementById("appNo");
@@ -687,21 +692,46 @@
     
     appNoInput.value = "\u0CB2\u0CC6\u0C95\u0CCD\u0C95\u0CB9\u0CBE\u0C95\u0CB2\u0CBE\u0C97\u0CC1\u0CA4\u0CCD\u0CAF\u0CBF\u0CA6\u0CC6 / Calculating...";
     
-    if (typeof google !== "undefined" && google.script && google.script.run) {
-      google.script.run
-        .withSuccessHandler(function(nextSerial) {
-           appNoInput.value = nextSerial;
-        })
-        .withFailureHandler(function(err) {
-           console.error("Error fetching serial number:", err);
-           appNoInput.value = "Error";
-        })
-        .getNextSerialNumber(year, medium);
-    } else {
-      setTimeout(function() {
-        const randNum = Math.floor(1000 + Math.random() * 9000);
-        appNoInput.value = "MOCK-" + (medium === "\u0C95\u0CA8\u0CCD\u0CA8\u0CA1" ? "KN" : "EN") + "-" + randNum;
-      }, 500);
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const schoolId = session?.user?.user_metadata?.school_id;
+      
+      let query = supabaseClient
+        .from('admissions')
+        .select('app_no');
+      
+      if (schoolId) {
+        query = query.eq('school_id', schoolId);
+      }
+      
+      const { data: list, error } = await query
+        .eq('academic_year', year)
+        .eq('medium', medium);
+        
+      if (error) throw error;
+      
+      let maxNum = 0;
+      const prefix = (medium === "ಕನ್ನಡ") ? "KN-" : "EN-";
+      
+      (list || []).forEach(row => {
+        const appNo = row.app_no;
+        if (appNo && appNo.startsWith(prefix)) {
+          const numPart = appNo.substring(prefix.length).trim();
+          const num = parseInt(numPart, 10);
+          if (!isNaN(num) && num > maxNum) {
+            maxNum = num;
+          }
+        }
+      });
+      
+      const nextNum = maxNum + 1;
+      const paddedNum = nextNum < 10 ? '0' + nextNum : nextNum;
+      appNoInput.value = prefix + paddedNum;
+    } catch (err) {
+      console.error("Error generating serial number:", err);
+      // Fallback in case of network issue
+      const randNum = Math.floor(100 + Math.random() * 900);
+      appNoInput.value = (medium === "ಕನ್ನಡ" ? "KN-" : "EN-") + randNum;
     }
   }
 
