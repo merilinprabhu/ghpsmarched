@@ -144,7 +144,7 @@
         </div>
         <div class="col">
           <label>ಮಾತೃ ಭಾಷೆ / Mother Language <span class="required">*</span></label>
-          <select id="motherTongue" name="motherTongue" class="form-select" required></select>
+          <select id="motherTongue" name="motherTongue" class="form-select" onchange="checkLanguageSelection()" required></select>
         </div>
         <div class="col">
           <label>ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile Number <span class="required">*</span></label>
@@ -666,6 +666,7 @@
       const mockData = getMockDropdownData();
       saveDropdownData(mockData);
     }
+    setDefaultDates();
   };
 
   async function saveDropdownData(data) {
@@ -736,15 +737,72 @@
     }
   }
 
+  let lastSelectedLanguage = "";
+  function checkLanguageSelection() {
+    let select = document.getElementById("motherTongue");
+    if (select.value === "ADD_NEW_LANGUAGE") {
+      let newLang = prompt(select.options[0].text === "ಆರಿಸಿ" ? "ಹೊಸ ಮಾತೃಭಾಷೆಯನ್ನು ನಮೂದಿಸಿ:" : "Enter new mother tongue:");
+      if (newLang && newLang.trim() !== "") {
+        newLang = newLang.trim();
+        if (!globalDropdownData.motherTongue) {
+          globalDropdownData.motherTongue = [];
+        }
+        globalDropdownData.motherTongue.push([newLang, newLang.toUpperCase()]);
+        
+        let medium = document.getElementById("medium").value;
+        let mode = (medium === "ಕನ್ನಡ") ? "KN" : "EN";
+        fillStandardSelect("motherTongue", globalDropdownData.motherTongue, mode);
+        
+        let lOpt = document.createElement("option");
+        lOpt.value = "ADD_NEW_LANGUAGE";
+        lOpt.text = (medium === "ಕನ್ನಡ") ? "+ ಹೊಸ ಭಾಷೆ ಸೇರಿಸಿ / + Add Language" : "+ Add Language";
+        lOpt.style.fontWeight = "bold";
+        lOpt.style.color = "#0056b3";
+        document.getElementById("motherTongue").add(lOpt);
+        
+        select.value = newLang;
+        lastSelectedLanguage = newLang;
+      } else {
+        select.value = lastSelectedLanguage;
+      }
+    } else {
+      lastSelectedLanguage = select.value;
+    }
+  }
+
+  function setDefaultDates() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlAppNo = urlParams.get("appNo");
+    const isEditMode = urlAppNo || (localStorage.getItem("editMode") === "true");
+    
+    if (!isEditMode) {
+      let today = new Date();
+      let year = today.getFullYear();
+      let month = (today.getMonth() + 1).toString().padStart(2, "0");
+      let day = today.getDate().toString().padStart(2, "0");
+      let dateString = `${year}-${month}-${day}`;
+      
+      let formDateInput = document.getElementsByName("formDate")[0];
+      if (formDateInput) {
+        formDateInput.value = dateString;
+      }
+      
+      let enrolmentDateInput = document.getElementById("enrolmentDate");
+      if (enrolmentDateInput) {
+        enrolmentDateInput.value = dateString;
+      }
+    }
+  }
+
   function getMockDropdownData() {
     return {
       academicYear: [["2026-27"]],
       medium: [["\u0C95\u0CA8\u0CCD\u0CA8\u0CA1", "\u0C95\u0CA8\u0CCD\u0CA8\u0CA1"], ["ENGLISH", "ENGLISH"]],
       classes: [["LKG", "LKG"], ["UKG", "UKG"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["10", "10"]],
-      religion: [["\u0CB9\u0CBF\u0C82\u0CA6\u0CC2", "HINDU"], ["\u0C87\u0CB8\u0CCD\u0CB2\u0CBE\u0C82", "ISLAM"], ["\u0C95\u0CCD\u0CB0\u0CC8\u0CB8\u0CCD\u0CAF", "CHRISTIAN"], ["\u0C87\u0CA4\u0CB0\u0CC6", "OTHERS"]],
+      religion: [["ಹಿಂದೂ", "HINDU"], ["ಇಸ್ಲಾಂ", "ISLAM"], ["ಕ್ರೈಸ್ತ", "CHRISTIAN"], ["ಪಾರ್ಸಿ", "PARSI"], ["ಜೈನ್", "JAIN"], ["ಬೌದ್ಧ", "BUDDHIST"], ["ಸಿಖ್", "SIKH"], ["ಇತರೆ", "OTHERS"]],
       motherTongue: [["\u0C95\u0CA8\u0CCD\u0CA8\u0CA1", "KANNADA"], ["\u0C89\u0CB0\u0CCD\u0CA6\u0CC1", "URDU"], ["\u0CA4\u0CC6\u0CB2\u0CC1\u0C97\u0CC1", "TELUGU"], ["\u0C87\u0CA4\u0CB0\u0CC6", "OTHERS"]],
       specialNeed: [["ಯಾವುದೂ ಅಲ್ಲ", "NONE"], ["ಶ್ರವಣ ದೋಷ", "HEARING"], ["ಕಲಿಕಾ ದೌರ್ಬಲ್ಯ", "LEARNING"], ["ಸ್ನಾಯು ದೌರ್ಬಲ್ಯ", "MUSCLE"], ["ಬುದ್ಧಿ ಮಾಂದ್ಯತೆ", "MENTAL"], ["ಬಹು ದೌರ್ಬಲ್ಯ", "MULTIPLE"], ["ವಾಕ್ ದೋಷ", "SPEECH"], ["ಅಂಧತ್ವ", "BLIND"], ["ಅಲ್ಪ ದೃಷ್ಟಿ ದೋಷ", "LOWVISION"], ["ಸಿರಿಬ್ರಲ್ ಪಾಲ್ಸಿ", "CP"], ["ಆಟಿಸಂ/ ಸ್ಪ್ಯಾಸ್ಟಿಕ್", "AUTISM"], ["ದೈಹಿಕ ಅಂಗವಿಕಲತೆ", "PHYSICAL"], ["ಇತರೆ", "OTHERS"]],
-      specialGroup: [["\u0CAF\u0CBE\u0CB5\u0CC1\u0CA6\u0CC2 \u0C87\u0CB2\u0CCD\u0CB2", "NONE"], ["\u0C85\u0CA8\u0CBE\u0CA5", "ORPHAN"], ["\u0CA8\u0CBF\u0CB0\u0CCD\u0C97\u0CA4\u0CBF\u0C95", "DESTITUTE"]],
+      specialGroup: [["ಯಾವುದು ಇಲ್ಲ", "NONE"], ["ನಿರ್ಗತಿಕ", "DESTITUTE"], ["ಹೆಚ್.ಐ.ವಿ. ಪೀಡಿತ", "HIV_AFFECTED"], ["ಅನಾಥ", "ORPHAN"], ["ಇತರೆ", "OTHERS"]],
       occupation: [["\u0CB5\u0CCD\u0CAF\u0CB5\u0CB8\u0CBE\u0CAF", "AGRICULTURE"], ["\u0C95\u0CC2\u0CB2\u0CBF", "LABOUR"], ["\u0CA8\u0CC4\u0C95\u0CB0\u0CBF", "EMPLOYEE"], ["\u0C87\u0CA4\u0CB0\u0CC6", "OTHERS"]],
       board: [["ರಾಜ್ಯ ಮಂಡಳಿ", "STATE BOARD"], ["ಸಿ.ಬಿ.ಎಸ್.ಸಿ.", "CBSE"], ["ಐ.ಸಿ.ಎಸ್.ಸಿ.", "ICSE"], ["ಇತರೆ", "OTHERS"]],
             districtsKN: {
@@ -849,6 +907,12 @@
     fillStandardSelect("enrollClass", globalDropdownData.classes, mode);
     fillStandardSelect("religion", globalDropdownData.religion, mode);
     fillStandardSelect("motherTongue", globalDropdownData.motherTongue, mode);
+    let lOpt = document.createElement("option");
+    lOpt.value = "ADD_NEW_LANGUAGE";
+    lOpt.text = (medium === "ಕನ್ನಡ") ? "+ ಹೊಸ ಭಾಷೆ ಸೇರಿಸಿ / + Add Language" : "+ Add Language";
+    lOpt.style.fontWeight = "bold";
+    lOpt.style.color = "#0056b3";
+    document.getElementById("motherTongue").add(lOpt);
     fillStandardSelect("specialNeed", globalDropdownData.specialNeed, mode);
     fillStandardSelect("specialCategory", globalDropdownData.specialGroup, mode);
     fillStandardSelect("fatherOccupation", globalDropdownData.occupation, mode);
@@ -1429,6 +1493,25 @@
         }
       }
     }
+
+    // 4.6. Handle custom motherTongue value not in list
+    if (data.motherTongue) {
+      const val = data.motherTongue;
+      const el = document.getElementById("motherTongue");
+      if (el && val) {
+        let exists = false;
+        for (let i = 0; i < el.options.length; i++) {
+          if (el.options[i].value === val) { exists = true; break; }
+        }
+        if (!exists) {
+          let opt = document.createElement("option");
+          opt.value = val;
+          opt.text = val;
+          el.add(opt, el.options[el.options.length - 1]); // Add before "+ Add Language"
+        }
+      }
+    }
+
 
     // 5. Populate other fields by name attribute
     for (let key in data) {

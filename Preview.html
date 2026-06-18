@@ -1456,6 +1456,11 @@
             if (!window.admissionData) return;
             const data = window.admissionData;
 
+            // Update document title for native print PDF filename
+            if (typeof getAdmissionPdfFilename === 'function') {
+                document.title = getAdmissionPdfFilename();
+            }
+
             // App No
             document.getElementById('preview_app_no').textContent = data.appNo || '';
             document.getElementById('preview_footer_app_no').textContent = `${data.appNo || '______'}/${ACADEMIC_YEAR}`;
@@ -1767,51 +1772,33 @@
             window.print();
         }
 
+        function getAdmissionPdfFilename() {
+            const data = window.admissionData || {};
+            const appNo = (data.appNo || '').trim();
+            const enrollClass = (data.enrollClass || '').trim();
+            const studentName = (data.nameEnglish || data.studentName || '').trim();
+            const fatherName = (data.fatherNameAz || data.fatherNameKn || '').trim();
+            
+            let parts = [];
+            if (appNo) parts.push(appNo);
+            if (enrollClass) parts.push(enrollClass);
+            if (studentName) parts.push(studentName);
+            if (fatherName) parts.push(fatherName);
+            
+            return parts.length > 0 ? parts.join(' ') : 'admission_form';
+        }
+
         function downloadPdf() {
-            const element = document.getElementById('pages-wrapper');
-            const pages = element.querySelectorAll('.page');
-            const studentName = (window.admissionData && window.admissionData.studentName) ? window.admissionData.studentName : 'admission_form';
+            // Update document title so browser print dialog picks up the correct custom filename
+            document.title = getAdmissionPdfFilename();
             
-            // Temporarily reset zoom transform and page margin to avoid layout distortion/empty pages in html2canvas
-            const originalTransform = element.style.transform;
-            const originalMargins = [];
-            pages.forEach(p => {
-                originalMargins.push(p.style.marginBottom);
-                p.style.marginBottom = '0px';
-            });
-            element.style.transform = 'none';
+            // Alert user about printing as PDF to preserve copyable text and avoid screenshotting
+            const msg = currentLang === 'kn'
+                ? "ಕಾಪಿಯಬಲ್ (Selectable) ಪಠ್ಯವಿರುವ ನೈಜ PDF ಅನ್ನು ಪಡೆಯಲು, ಮುಂದಿನ ಮುದ್ರಣ ವಿಂಡೋದಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' (PDF ಆಗಿ ಉಳಿಸಿ) ಎಂದು ಆಯ್ಕೆ ಮಾಡಿಕೊಳ್ಳಿ."
+                : "To get a pure PDF with selectable/copyable text, please select 'Save as PDF' as the Destination in the print dialog.";
             
-            const opt = {
-                margin:       0,
-                filename:     studentName + '.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'] }
-            };
-            
-            const btn = document.querySelector('.btn-danger');
-            const originalText = document.getElementById('lbl-pdf').textContent;
-            document.getElementById('lbl-pdf').textContent = 'Downloading...';
-            btn.disabled = true;
-            
-            html2pdf().set(opt).from(element).save().then(function() {
-                element.style.transform = originalTransform;
-                pages.forEach((p, idx) => {
-                    p.style.marginBottom = originalMargins[idx];
-                });
-                document.getElementById('lbl-pdf').textContent = originalText;
-                btn.disabled = false;
-            }).catch(function(err) {
-                console.error("PDF generation failed", err);
-                element.style.transform = originalTransform;
-                pages.forEach((p, idx) => {
-                    p.style.marginBottom = originalMargins[idx];
-                });
-                document.getElementById('lbl-pdf').textContent = originalText;
-                btn.disabled = false;
-                alert("PDF generation failed. Please use Print Form option instead.");
-            });
+            alert(msg);
+            window.print();
         }
         
         // Submit form data from Preview page
@@ -2065,7 +2052,7 @@
                 setTimeout(() => {
                     const element = document.getElementById('pages-wrapper');
                     const pages = element.querySelectorAll('.page');
-                    const studentName = (window.admissionData && window.admissionData.studentName) ? window.admissionData.studentName : 'admission_form';
+                    const pdfName = getAdmissionPdfFilename();
                     
                     // Temporarily reset zoom transform
                     const originalTransform = element.style.transform;
@@ -2078,7 +2065,7 @@
 
                     const opt = {
                         margin:       0,
-                        filename:     studentName + '.pdf',
+                        filename:     pdfName + '.pdf',
                         image:        { type: 'jpeg', quality: 0.98 },
                         html2canvas:  { scale: 2, useCORS: true, logging: false },
                         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
