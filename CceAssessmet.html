@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -1137,7 +1137,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = session?.user?.user_metadata?.school_id;
 
-        let query = supabaseClient.from('admissions').select('id, student_name, father_name_kn, app_no, enroll_class');
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -1150,36 +1150,77 @@
           .filter(s => className === "ALL" || normalizeClass(s.enroll_class) === normalizeClass(className))
           .map(s => ({
             id: s.id,
-            name: s.student_name,
-            father: s.father_name_kn,
+            student_name_kn: s.student_name || '',
+            name_english: s.name_english || '',
+            father_name_kn: s.father_name_kn || '',
+            father_name_az: s.father_name_az || '',
             adminNo: s.app_no,
             enrollClass: s.enroll_class
-          }));
+          }))
+          .sort((a, b) => {
+            const nameA = (a.name_english || a.student_name_kn || '').trim().toUpperCase();
+            const nameB = (b.name_english || b.student_name_kn || '').trim().toUpperCase();
+            return nameA.localeCompare(nameB);
+          });
 
         let allEvaluations = {};
-        if (className === "ALL") {
-          const classes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-          classes.forEach((cName) => {
-            const mockKey = `cce_eval_${cName}_${examType}`;
+        
+        // Helper to load from localStorage
+        const loadLocal = () => {
+          let localData = {};
+          if (className === "ALL") {
+            const classes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+            classes.forEach((cName) => {
+              const mockKey = `cce_eval_${cName}_${examType}`;
+              let saved = localStorage.getItem(mockKey);
+              if (saved) {
+                try {
+                  Object.assign(localData, JSON.parse(saved));
+                } catch (e) {
+                  console.error("Failed to parse local CCE evaluations for " + cName, e);
+                }
+              }
+            });
+          } else {
+            const mockKey = `cce_eval_${className}_${examType}`;
             let saved = localStorage.getItem(mockKey);
             if (saved) {
               try {
-                Object.assign(allEvaluations, JSON.parse(saved));
+                localData = JSON.parse(saved) || {};
               } catch (e) {
-                console.error("Failed to parse local CCE evaluations for " + cName, e);
+                localData = {};
               }
             }
-          });
-        } else {
-          const mockKey = `cce_eval_${className}_${examType}`;
-          let saved = localStorage.getItem(mockKey);
-          if (saved) {
-            try {
-              allEvaluations = JSON.parse(saved);
-            } catch (e) {
-              allEvaluations = {};
-            }
           }
+          return localData;
+        };
+
+        try {
+          let dbQuery = supabaseClient
+            .from('cce_evaluations')
+            .select('student_id, marks')
+            .eq('exam_type', examType);
+          
+          if (className !== "ALL") {
+            dbQuery = dbQuery.eq('class_name', className);
+          }
+
+          const { data: dbRecords, error: dbError } = await dbQuery;
+
+          if (dbError) {
+            console.warn("Supabase fetch for CCE evaluations failed, falling back to local storage:", dbError);
+            allEvaluations = loadLocal();
+          } else if (dbRecords && dbRecords.length > 0) {
+            dbRecords.forEach(r => {
+              allEvaluations[r.student_id] = r.marks || {};
+            });
+            console.log("Loaded CCE evaluations from Supabase");
+          } else {
+            allEvaluations = loadLocal();
+          }
+        } catch (e) {
+          console.warn("Exception loading CCE evaluations from Supabase, fallback to localStorage:", e);
+          allEvaluations = loadLocal();
         }
 
         onDataLoaded({
@@ -1300,11 +1341,29 @@
         }
         
         const evalData = evaluations[sId];
+        const nameEn = (student.name_english || '').trim().toUpperCase();
+        const nameKn = (student.student_name_kn || '').trim();
+        let nameHtml = '';
+        if (nameEn && nameKn) {
+          nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-550 font-medium">${nameKn}</div>`;
+        } else {
+          nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+        }
+
+        const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        const fatherKn = (student.father_name_kn || '').trim();
+        let fatherHtml = '';
+        if (fatherEn && fatherKn) {
+          fatherHtml = `<div class="font-bold text-slate-700 text-[11px]">${fatherEn}</div><div class="text-[10px] text-slate-500 font-medium">${fatherKn}</div>`;
+        } else {
+          fatherHtml = `<span class="font-semibold text-slate-700 text-[11px]">${fatherEn || fatherKn || '-'}</span>`;
+        }
+
         let rowHtml = `
           <td class="p-3 text-center border-r border-slate-200 font-medium">${index + 1}</td>
           <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold">${student.adminNo || student.id}</td>
-          <td class="p-3 border-r border-slate-200 font-semibold text-slate-800">${student.name}</td>
-          <td class="p-3 border-r border-slate-200 text-slate-600">${student.father || ''}</td>
+          <td class="p-3 border-r border-slate-200">${nameHtml}</td>
+          <td class="p-3 border-r border-slate-200">${fatherHtml}</td>
         `;
 
         currentSubjects.forEach(sub => {
@@ -1527,11 +1586,38 @@
       if (!className || !examType) return;
       document.getElementById('loading-overlay').classList.remove('hidden');
 
-      setTimeout(() => {
-        const mockKey = `cce_eval_${className}_${examType}`;
-        localStorage.setItem(mockKey, JSON.stringify(evaluations));
-        onDataSaved();
-      }, 300);
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        const schoolId = session?.user?.user_metadata?.school_id || null;
+
+        const payload = students.map(student => {
+          const sId = student.id;
+          const marks = evaluations[sId] || {};
+          return {
+            school_id: schoolId,
+            student_id: sId,
+            class_name: className,
+            exam_type: examType,
+            marks: marks
+          };
+        });
+
+        supabaseClient
+          .from('cce_evaluations')
+          .upsert(payload, { onConflict: 'student_id,exam_type' })
+          .then(({ error }) => {
+            if (error) {
+              console.warn("Supabase upsert for CCE evaluations failed, saving to localStorage as fallback:", error);
+            } else {
+              console.log("Supabase CCE evaluations upsert successful");
+            }
+            
+            // Replicate/backup to localStorage
+            const mockKey = `cce_eval_${className}_${examType}`;
+            localStorage.setItem(mockKey, JSON.stringify(evaluations));
+
+            onDataSaved();
+          });
+      });
     }
 
     function onDataSaved() {

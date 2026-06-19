@@ -15,6 +15,46 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    @keyframes premium-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .skeleton-badge {
+      width: 48px;
+      height: 18px;
+      border-radius: 9999px;
+      background-color: #e2e8f0;
+      animation: premium-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .skeleton-line {
+      height: 12px;
+      border-radius: 4px;
+      background-color: #e2e8f0;
+      animation: premium-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .premium-input {
+      border: 1.5px solid #cbd5e1;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      transition: all 0.2s ease-in-out;
+    }
+    .premium-input:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15), inset 0 1px 2px rgba(0,0,0,0.05);
+      background-color: #ffffff;
+    }
+    .roster-row-interactive {
+      border-left: 4px solid transparent;
+      transition: all 0.2s ease-in-out;
+    }
+    .roster-row-interactive:hover {
+      background-color: #f0f9ff;
+    }
+    .roster-row-active {
+      background-color: #e0f2fe !important;
+      border-left-color: #0284c7 !important;
+      font-weight: 700;
+    }
   
         /* Sidebar Hover Collapsed Styles */
     @media (min-width: 768px) {
@@ -149,6 +189,110 @@
     body[data-theme="green"] .section-block {
       background-color: #f0fdf4 !important;
       border-color: #86efac !important;
+    }
+
+    /* Premium Ultra Modern Styling */
+    .ultra-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .ultra-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Interactive Row Hover and Active glow */
+    .roster-row-interactive {
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .roster-row-interactive::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: linear-gradient(to bottom, #0284c7, #0ea5e9);
+      transition: width 0.2s ease;
+    }
+    .roster-row-interactive:hover::after {
+      width: 4px;
+    }
+    .roster-row-interactive:hover {
+      background-color: #f8fafc;
+      transform: scale(1.01);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.04);
+      z-index: 5;
+    }
+    .roster-row-active {
+      background-color: rgba(224, 242, 254, 0.5) !important;
+      border-left: 4px solid #0284c7 !important;
+      font-weight: 600;
+      box-shadow: inset 0 0 0 1px rgba(14, 165, 233, 0.2);
+    }
+    
+    /* Input Glow Focus */
+    .premium-input {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .premium-input:focus {
+      outline: none;
+      border-color: #0ea5e9 !important;
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15) !important;
+      background-color: #ffffff !important;
+      transform: translateY(-1px);
+    }
+
+    /* Skeleton Loader */
+    @keyframes skeleton-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .skeleton-line {
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 6px;
+      animation: skeleton-pulse 1.5s infinite ease-in-out;
+    }
+    .skeleton-badge {
+      height: 18px;
+      width: 48px;
+      background-color: #e2e8f0;
+      border-radius: 9999px;
+      animation: skeleton-pulse 1.5s infinite ease-in-out;
+    }
+    body[data-theme="dark"] .skeleton-line,
+    body[data-theme="dark"] .skeleton-badge {
+      background-color: #334155;
+    }
+
+    /* Tooltip styling helper */
+    [tooltip] {
+      position: relative;
+    }
+    [tooltip]::after {
+      content: attr(tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.95);
+      background-color: #1e293b;
+      color: #ffffff;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.15s ease-out;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    [tooltip]:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
     }
 </style>
 </head>
@@ -327,7 +471,7 @@
               <div class="grid grid-cols-2 gap-2">
                 <div>
                   <label for="class-filter" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Class / ತರಗತಿ</label>
-                  <select id="class-filter" onchange="fetchRosterByClass(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
+                  <select id="class-filter" onchange="fetchRosterByClass(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs focus:outline-none premium-input text-slate-700 font-semibold cursor-pointer">
                     <option value="ALL">-- All Classes --</option>
                     <option value="LKG">LKG/KG1</option>
                     <option value="UKG">UKG/KG2</option>
@@ -345,7 +489,7 @@
                 </div>
                 <div>
                   <label for="gender-filter" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Gender / ಲಿಂಗ</label>
-                  <select id="gender-filter" onchange="applyRosterFiltersAndSort()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
+                  <select id="gender-filter" onchange="applyRosterFiltersAndSort()" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs focus:outline-none premium-input text-slate-700 font-semibold cursor-pointer">
                     <option value="ALL">-- All --</option>
                     <option value="Boy">Boy / ಗಂಡು</option>
                     <option value="Girl">Girl / ಹೆಣ್ಣು</option>
@@ -357,10 +501,10 @@
                   <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
                   </span>
-                  <input type="text" id="roster-search" oninput="applyRosterFiltersAndSort()" placeholder="Search name/father/STS no..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50">
+                  <input type="text" id="roster-search" oninput="applyRosterFiltersAndSort()" placeholder="Search name/father/STS no..." class="w-full pl-9 pr-4 py-2 border border-slate-350 rounded-xl text-xs focus:outline-none premium-input bg-slate-50/50">
                 </div>
-                <button type="button" onclick="prepareNewStudent()" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-3 py-2 rounded-xl shadow-md hover:shadow-indigo-500/20 text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer border-0" title="Add Student directly">
-                  <i class="fa-solid fa-plus text-xs"></i> <span>Add</span>
+                <button type="button" onclick="prepareNewStudent()" class="bg-gradient-to-tr from-sky-550 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white w-9 h-9 rounded-xl shadow-md hover:shadow-sky-500/25 transition-all duration-300 flex items-center justify-center active:scale-[0.95] cursor-pointer border-0" tooltip="Add Student Directly / ಹೊಸ ದಾಖಲೆ ಸೇರಿಸಿ">
+                  <i class="fa-solid fa-user-plus text-sm"></i>
                 </button>
               </div>
             </div>
@@ -370,14 +514,14 @@
                 <thead>
                   <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider sticky top-0 z-10 text-center">
                     <th class="p-2.5 w-12 text-center select-none">Sl.No</th>
-                    <th class="p-2.5 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('class')">
-                      Class <i id="sort-icon-class" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
-                    </th>
                     <th class="p-2.5 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('app_no')">
                       STS No <i id="sort-icon-app_no" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
                     </th>
                     <th class="p-2.5 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('name')">
-                      Student / Father Name <i id="sort-icon-name" class="fa-solid fa-sort text-[10px] ml-1 text-sky-400"></i>
+                      Student Name <i id="sort-icon-name" class="fa-solid fa-sort text-[10px] ml-1 text-sky-400"></i>
+                    </th>
+                    <th class="p-2.5 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('father_name')">
+                      Father Name <i id="sort-icon-father_name" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
                     </th>
                     <th class="p-2.5 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('gender')">
                       Gender <i id="sort-icon-gender" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
@@ -404,12 +548,21 @@
                   <span>ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳ ಸಂಪಾದಕ / Student Record Editor</span>
                 </h2>
               </div>
-              <div id="save-btn-container" class="hidden flex gap-2">
-                <button id="delete-record-btn" onclick="deleteActiveStudent()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0">
-                  <i class="fa-solid fa-trash text-sm"></i> ಅಳಿಸಿ / Delete
+              <div id="save-btn-container" class="hidden flex items-center gap-2">
+                <!-- Auto-Save status badge -->
+                <div id="autosave-status" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] md:text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-250 transition-all duration-300 shadow-sm">
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span id="autosave-text">Saved / ಉಳಿಸಲಾಗಿದೆ</span>
+                </div>
+                
+                <button type="button" onclick="openFieldsManager()" class="bg-slate-50 hover:bg-slate-100 text-slate-700 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-[0.95] cursor-pointer border border-slate-300 shadow-sm" tooltip="Manage Columns / ಕಾಲಮ್ಗಳ ನಿರ್ವಹಣೆ">
+                  <i class="fa-solid fa-list-check text-sky-600 text-sm"></i>
                 </button>
-                <button id="save-changes-btn" onclick="saveActiveStudent()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
-                  <i class="fa-solid fa-circle-check text-sm"></i> ವಿವರಗಳನ್ನು ಉಳಿಸಿ / Save
+                <button id="delete-record-btn" onclick="deleteActiveStudent()" class="bg-gradient-to-tr from-rose-50 to-pink-100 hover:from-rose-600 hover:to-pink-500 text-rose-600 hover:text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 shadow-sm active:scale-[0.95] cursor-pointer border border-rose-200 hover:border-transparent" tooltip="Delete Record / ದಾಖಲೆಯನ್ನು ಅಳಿಸಿ">
+                  <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
               </div>
             </div>
@@ -439,6 +592,31 @@
 
       </main>
 
+    </div>
+  </div>
+
+  <!-- Manage Columns/Fields Modal -->
+  <div id="manage-fields-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[85vh] overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-sky-600"></i> Manage Editor Fields
+        </h3>
+        <button onclick="closeFieldsManager()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar space-y-4">
+        <p class="text-xs text-slate-500 font-medium">Select which fields you want to display in the Student Record Editor:</p>
+        
+        <!-- Field List Checkboxes -->
+        <div id="fields-list-container" class="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar">
+          <!-- Checkbox items will be rendered dynamically -->
+        </div>
+      </div>
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
+        <button onclick="closeFieldsManager()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">Close</button>
+      </div>
     </div>
   </div>
 
@@ -584,7 +762,21 @@
         className = "ALL";
       }
 
-      tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-1.5"></i> Loading roster database...</td></tr>`;
+      tbody.innerHTML = Array(5).fill(0).map((_, i) => `
+        <tr class="border-b border-slate-150">
+          <td class="p-3 text-center"><div class="skeleton-badge mx-auto"></div></td>
+          <td class="p-3 text-left"><div class="skeleton-line w-20"></div></td>
+          <td class="p-3 text-left">
+            <div class="skeleton-line w-32 mb-1.5"></div>
+            <div class="skeleton-line w-24"></div>
+          </td>
+          <td class="p-3 text-left">
+            <div class="skeleton-line w-28 mb-1.5"></div>
+            <div class="skeleton-line w-20"></div>
+          </td>
+          <td class="p-3 text-center"><div class="skeleton-badge mx-auto"></div></td>
+        </tr>
+      `).join('');
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -604,17 +796,17 @@
 
         activeRosterHeaders = [
           "ID", "STS No", "Academic Year", "Medium", 
-          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ", 
           "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್", 
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ", 
           "Class", "Date of Birth", "Gender", "Aadhaar Number", 
           "Religion", "Social Class", "Student's Caste", "Sub-Caste", "Mother Tongue", "Mobile Number", "Special Need", "Special Category", 
           "Bhagyalakshmi Bond", "Age Reason", "Address", "District", "Taluk", "Bank Account No", "IFSC Code", "Bank Address", "Scholarship No", 
           "Student Caste Cert", "Student Income Cert", "BPL Card No", 
-          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ", 
           "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", 
+          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ", 
           "Father Aadhaar", "Father Occupation", 
-          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ", 
           "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", 
+          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ", 
           "Mother Aadhaar", "Mother Occupation", "Preschool Board", "Preschool Type", "Preschool Name", 
           "Transfer No", "Transfer Date", "Student STS"
         ];
@@ -684,28 +876,39 @@
       students.forEach((student, index) => {
         const idVal = student["ID"];
         const appNo = student["STS No"] || '-';
-        const nameVal = student["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || "";
-        const fatherVal = student["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || student["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || "";
+        
+        const nameKn = student["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || "";
+        const nameEn = student["Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್"] || "";
+        const fatherKn = student["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || "";
+        const fatherEn = student["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || "";
+        
         const genderVal = student["Gender"] || "";
-        const classVal = student["Class"] || "-";
         
         // Gender badge
         const isBoy = (genderVal.toUpperCase() === 'BOY' || genderVal.toUpperCase() === 'MALE' || genderVal === 'ಗಂಡು');
         const genderBadge = isBoy 
-          ? `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold">Boy</span>` 
-          : `<span class="bg-pink-50 text-pink-600 px-1.5 py-0.5 rounded text-[10px] font-bold">Girl</span>`;
+          ? `<span class="bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Boy / ಗಂಡು</span>` 
+          : `<span class="bg-pink-50 text-pink-700 border border-pink-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Girl / ಹೆಣ್ಣು</span>`;
 
-        // Class badge
-        const classBadge = `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${classVal}</span>`;
+        let nameHtml = `<div class="font-bold text-slate-800 uppercase text-xs">${nameEn || nameKn || '-'}</div>`;
+        if (nameKn && nameKn !== nameEn) {
+          nameHtml += `<div class="text-[10px] text-slate-500 font-semibold mt-0.5">${nameKn}</div>`;
+        }
+
+        let fatherHtml = `<div class="text-slate-700 uppercase text-xs font-semibold">${fatherEn || fatherKn || '-'}</div>`;
+        if (fatherKn && fatherKn !== fatherEn) {
+          fatherHtml += `<div class="text-[10px] text-slate-500 font-semibold mt-0.5">${fatherKn}</div>`;
+        }
 
         rowsHtml += `
-          <tr id="roster-row-${idVal}" onclick="loadStudentForEditing('${idVal}')" class="hover:bg-sky-50 transition-colors cursor-pointer border-l-4 border-l-transparent text-center border-b border-slate-100">
+          <tr id="roster-row-${idVal}" onclick="loadStudentForEditing('${idVal}')" class="roster-row-interactive cursor-pointer border-b border-slate-100">
             <td class="p-2 text-center text-slate-400 font-medium">${index + 1}</td>
-            <td class="p-2 text-center">${classBadge}</td>
             <td class="p-2 font-mono text-slate-500 font-semibold text-left">${appNo}</td>
             <td class="p-2 text-left">
-              <div class="font-bold text-slate-800 uppercase text-xs">${nameVal}</div>
-              ${fatherVal ? `<div class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">S/O: ${fatherVal}</div>` : ''}
+              ${nameHtml}
+            </td>
+            <td class="p-2 text-left">
+              ${fatherHtml}
             </td>
             <td class="p-2 text-center">${genderBadge}</td>
           </tr>
@@ -735,7 +938,7 @@
         currentSortDir = 'asc';
       }
       
-      const cols = ['class', 'app_no', 'name', 'gender'];
+      const cols = ['class', 'app_no', 'name', 'father_name', 'gender'];
       cols.forEach(c => {
         const icon = document.getElementById(`sort-icon-${c}`);
         if (icon) {
@@ -793,14 +996,15 @@
         } else if (currentSortCol === 'gender') {
           valA = a["Gender"] || '';
           valB = b["Gender"] || '';
+        } else if (currentSortCol === 'father_name') {
+          valA = a["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || a["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || '';
+          valB = b["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || b["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || '';
         } else { // 'name'
-          valA = a["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
-          valB = b["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
+          valA = a["Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್"] || a["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
+          valB = b["Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್"] || b["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
         }
         
-        if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
-        if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
-        return 0;
+        return valA.toString().localeCompare(valB.toString(), undefined, { sensitivity: 'base', numeric: true }) * (currentSortDir === 'asc' ? 1 : -1);
       });
       
       renderStudentList(filtered);
@@ -809,8 +1013,8 @@
     function calculateFieldSortOrder() {
       const pinned = [
         "STS No",
-        "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
         "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್",
+        "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
         "Class",
         "Date of Birth",
         "Gender",
@@ -861,12 +1065,12 @@
       selectedStudentId = studentId;
 
       document.querySelectorAll('#student-roster-body tr').forEach(row => {
-        row.classList.remove('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
+        row.classList.remove('roster-row-active');
       });
 
       const clickedRow = document.getElementById(`roster-row-${studentId}`);
       if (clickedRow) {
-        clickedRow.classList.add('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
+        clickedRow.classList.add('roster-row-active');
       }
 
       const emptyState = document.getElementById('empty-editor-state');
@@ -884,9 +1088,17 @@
       fieldsGrid.innerHTML = "";
       const { finalOrder, fillRates } = calculateFieldSortOrder();
       
+      const editorVis = getEditorFieldsVisibility();
+
       finalOrder.forEach(header => {
         const wrapper = document.createElement("div");
         wrapper.className = "flex flex-col space-y-1";
+
+        // Hide field if toggled off in Manage Columns
+        const isFieldVisible = editorVis[header] !== false; // default to true
+        if (!isFieldVisible) {
+          wrapper.className += " hidden";
+        }
 
         const label = document.createElement("label");
         label.className = "text-[11px] font-bold text-slate-500 uppercase tracking-tight flex items-center justify-between";
@@ -918,41 +1130,231 @@
           label.appendChild(badgeSpan);
         }
 
-        const input = document.createElement("input");
+        let input;
+        if (header === "Medium") {
+          input = document.createElement("select");
+          input.innerHTML = `<option value="ಕನ್ನಡ">ಕನ್ನಡ</option><option value="ENGLISH">ENGLISH</option>`;
+        } else if (header === "Academic Year") {
+          input = document.createElement("select");
+          input.innerHTML = `<option value="2026-27">2026-27</option><option value="2025-26">2025-26</option>`;
+        } else {
+          input = document.createElement("input");
+          if (header.includes("Date") || header.includes("DOB")) {
+            input.type = "date";
+          } else {
+            input.type = "text";
+          }
+        }
+
         input.name = header;
-        input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
+        input.className = "w-full p-2 border border-slate-350 rounded-xl text-xs font-semibold bg-slate-50/40 focus:bg-white premium-input transition focus:outline-none";
 
         if (header === "ID") {
           input.readOnly = true;
           input.className += " bg-slate-100 text-slate-500 font-mono";
         }
-        if (header.includes("Date") || header.includes("DOB")) {
-          input.type = "date";
-        } else {
-          input.type = "text";
-        }
 
         input.value = student[header] !== undefined ? student[header] : "";
 
-        if (input.type === "text" && !input.readOnly) {
-          input.style.textTransform = "uppercase";
-          input.addEventListener("blur", function() {
-            input.value = input.value.toUpperCase();
+        // Bind auto-save triggers for all editable fields
+        if (!input.readOnly) {
+          input.addEventListener("input", function() {
+            triggerAutoSave(true); // show "typing" status
           });
+          
+          input.addEventListener("change", function() {
+            triggerAutoSave(false); // save immediately on dropdown/date changes
+          });
+
+          if (input.type === "text") {
+            input.style.textTransform = "uppercase";
+            
+            let initialValue = "";
+            input.addEventListener("focus", function() {
+              initialValue = input.value;
+            });
+
+            input.addEventListener("blur", async function() {
+              input.value = input.value.toUpperCase();
+              const hasChanged = input.value !== initialValue;
+              
+              if (hasChanged) {
+                if (header === "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್") {
+                  await autoTransliterateEditor("Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್", "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ", true);
+                } else if (header === "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)") {
+                  await autoTransliterateEditor("Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ", true);
+                } else if (header === "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)") {
+                  await autoTransliterateEditor("Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ", true);
+                }
+              }
+              
+              triggerAutoSave(false); // save changes after blur/transliterate
+            });
+          } else {
+            // for date or other input types on blur
+            input.addEventListener("blur", function() {
+              triggerAutoSave(false);
+            });
+          }
         }
 
         wrapper.appendChild(label);
-        wrapper.appendChild(input);
+
+        // Add transliterate button for Kannada name fields
+        const isKannadaName = [
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
+          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ",
+          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ"
+        ].includes(header);
+
+        if (isKannadaName) {
+          const inputGroup = document.createElement("div");
+          inputGroup.className = "flex gap-1.5";
+          
+          input.className += " flex-1";
+          
+          const transBtn = document.createElement("button");
+          transBtn.type = "button";
+          transBtn.id = `trans-btn-${header.replace(/[^a-zA-Z]/g, '')}`;
+          transBtn.className = "px-3 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl flex items-center justify-center transition cursor-pointer";
+          transBtn.title = "Google Input Tools Transliterate from English";
+          transBtn.innerHTML = `<i class="fa-solid fa-language text-sky-600"></i>`;
+          
+          let engField = "";
+          if (header === "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ") {
+            engField = "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್";
+          } else if (header === "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ") {
+            engField = "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)";
+          } else if (header === "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ") {
+            engField = "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)";
+          }
+          
+          transBtn.onclick = () => transliterateField(engField, header);
+          
+          inputGroup.appendChild(input);
+          inputGroup.appendChild(transBtn);
+          wrapper.appendChild(inputGroup);
+        } else {
+          wrapper.appendChild(input);
+        }
+
         fieldsGrid.appendChild(wrapper);
       });
 
       document.getElementById('editor-wrapper').scrollTop = 0;
+      updateAutoSaveStatus("saved");
     }
 
-    async function saveActiveStudent() {
+    function updateRosterRowDOM(studentId, nameEnglish, nameKannada, appNo, fatherNameEn, fatherNameKn, gender) {
+      const row = document.getElementById(`roster-row-${studentId}`);
+      if (!row) return;
+      
+      // Update app_no
+      const appNoCell = row.cells[1];
+      if (appNoCell) appNoCell.textContent = appNo;
+      
+      // Update student_name / name_english
+      const nameCell = row.cells[2];
+      if (nameCell) {
+        nameCell.innerHTML = `
+          <div class="font-bold text-slate-800">${nameEnglish || ''}</div>
+          <div class="text-[10px] text-slate-500 font-medium">${nameKannada || ''}</div>
+        `;
+      }
+      
+      // Update father_name
+      const fatherCell = row.cells[3];
+      if (fatherCell) {
+        fatherCell.innerHTML = `
+          <div class="font-bold text-slate-800">${fatherNameEn || ''}</div>
+          <div class="text-[10px] text-slate-500 font-medium">${fatherNameKn || ''}</div>
+        `;
+      }
+      
+      // Update gender
+      const genderCell = row.cells[4];
+      if (genderCell) {
+        const genderStr = (gender || "").toString().toUpperCase().trim();
+        const isBoy = (genderStr === 'BOY' || genderStr === 'MALE' || genderStr === 'ಗಂಡು');
+        const badgeClass = isBoy ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-pink-50 text-pink-700 border border-pink-200';
+        const genderDisplay = isBoy ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು';
+        genderCell.innerHTML = `
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${genderDisplay}</span>
+        `;
+      }
+    }
+
+    function updateAutoSaveStatus(state, message = "") {
+      const statusEl = document.getElementById("autosave-status");
+      const textEl = document.getElementById("autosave-text");
+      if (!statusEl || !textEl) return;
+
+      statusEl.className = "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] md:text-xs font-bold transition-all duration-305 shadow-sm border";
+
+      switch (state) {
+        case "saved":
+          statusEl.className += " bg-emerald-50 text-emerald-700 border-emerald-200";
+          statusEl.innerHTML = `
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span id="autosave-text">Saved / ಉಳಿಸಲಾಗಿದೆ</span>
+          `;
+          break;
+        case "saving":
+          statusEl.className += " bg-sky-50 text-sky-700 border-sky-200";
+          statusEl.innerHTML = `
+            <i class="fa-solid fa-circle-notch animate-spin text-sky-600 text-[10px]"></i>
+            <span id="autosave-text">Saving... / ಉಳಿಸಲಾಗುತ್ತಿದೆ...</span>
+          `;
+          break;
+        case "editing":
+          statusEl.className += " bg-amber-50 text-amber-700 border-amber-200";
+          statusEl.innerHTML = `
+            <span class="relative flex h-2 w-2">
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            <span id="autosave-text">Typing... / ಟೈಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</span>
+          `;
+          break;
+        case "error":
+          statusEl.className += " bg-rose-50 text-rose-700 border-rose-200";
+          statusEl.innerHTML = `
+            <i class="fa-solid fa-circle-exclamation text-rose-600 text-xs"></i>
+            <span id="autosave-text" tooltip="${message}">Error / ದೋಷ</span>
+          `;
+          break;
+      }
+    }
+
+    let autoSaveTimeout = null;
+
+    function triggerAutoSave(isTyping = false) {
+      if (!selectedStudentId || selectedStudentId === "NEW") return;
+
+      if (isTyping) {
+        updateAutoSaveStatus("editing");
+        return;
+      }
+
+      updateAutoSaveStatus("saving");
+
+      if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(async () => {
+        try {
+          await autoSaveStudentData();
+          updateAutoSaveStatus("saved");
+        } catch (err) {
+          console.error("AutoSave failed:", err);
+          updateAutoSaveStatus("error", err.message);
+        }
+      }, 600);
+    }
+
+    async function autoSaveStudentData() {
       if (!selectedStudentId) return;
 
-      const saveBtn = document.getElementById('save-changes-btn');
       const form = document.getElementById('dynamic-edit-form');
       const formData = new FormData(form);
       
@@ -1014,220 +1416,156 @@
         }
       });
 
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i> Saving...`;
+      const { error } = await supabaseClient
+        .from('admissions')
+        .update(payload)
+        .eq('id', selectedStudentId);
 
-      try {
-        let responseError;
-        if (selectedStudentId === "NEW") {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user) {
-            payload.school_id = session.user.user_metadata?.school_id || null;
-            payload.created_by = session.user.id || null;
+      if (error) throw error;
+
+      // Update local roster array
+      const studentIdx = activeRosterStudents.findIndex(s => s["ID"] === selectedStudentId);
+      if (studentIdx !== -1) {
+        activeRosterHeaders.forEach(header => {
+          if (header !== "ID") {
+            activeRosterStudents[studentIdx][header] = formData.get(header) || "";
           }
-          const className = document.getElementById('class-filter').value;
-          payload.enroll_class = className;
-          payload.is_admitted = true;
-
-          const { data, error } = await supabaseClient
-            .from('admissions')
-            .insert([payload])
-            .select();
-
-          responseError = error;
-
-          if (!error && data && data.length > 0) {
-            const newStudent = data[0];
-            const newRosterStudent = {
-              "ID": newStudent.id,
-              "STS No": newStudent.app_no,
-              "Academic Year": newStudent.academic_year,
-              "Medium": newStudent.medium,
-              "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": newStudent.student_name,
-              "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": newStudent.name_english,
-              "Class": newStudent.enroll_class,
-              "Date of Birth": newStudent.dob,
-              "Gender": newStudent.gender,
-              "Aadhaar Number": newStudent.student_aadhaar,
-              "Religion": newStudent.religion,
-              "Social Class": newStudent.social_class,
-              "Student's Caste": newStudent.caste,
-              "Sub-Caste": newStudent.student_caste,
-              "Mother Tongue": newStudent.mother_tongue,
-              "Mobile Number": newStudent.mobile_number,
-              "Special Need": newStudent.special_need,
-              "Special Category": newStudent.special_category,
-              "Bhagyalakshmi Bond": newStudent.bhagyalakshmi_bond,
-              "Age Reason": newStudent.age_reason,
-              "Address": newStudent.address,
-              "District": newStudent.district,
-              "Taluk": newStudent.taluk,
-              "Bank Account No": newStudent.bank_acc_no,
-              "IFSC Code": newStudent.ifsc_code,
-              "Bank Address": newStudent.bank_address,
-              "Scholarship No": newStudent.scholarship_no,
-              "Student Caste Cert": newStudent.student_caste_cert,
-              "Student Income Cert": newStudent.student_income_cert,
-              "BPL Card No": newStudent.bpl_card_no,
-              "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": newStudent.father_name_kn,
-              "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.father_name_az,
-              "Father Aadhaar": newStudent.father_aadhaar,
-              "Father Occupation": newStudent.father_occupation,
-              "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": newStudent.mother_name_kn,
-              "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.mother_name_az,
-              "Mother Aadhaar": newStudent.mother_aadhaar,
-              "Mother Occupation": newStudent.mother_occupation,
-              "Preschool Board": newStudent.preschool_board,
-              "Preschool Type": newStudent.preschool_type,
-              "Preschool Name": newStudent.preschool_name,
-              "Transfer No": newStudent.transfer_no,
-              "Transfer Date": newStudent.transfer_date,
-              "Student STS": newStudent.student_sts
-            };
-            activeRosterStudents.push(newRosterStudent);
-            renderStudentList(activeRosterStudents);
-            
-            selectedStudentId = newStudent.id;
-            loadStudentForEditing(selectedStudentId);
-          }
-        } else {
-          const { error } = await supabaseClient
-            .from('admissions')
-            .update(payload)
-            .eq('id', selectedStudentId);
-          responseError = error;
-        }
-
-        if (responseError) throw responseError;
-
-        showToast(selectedStudentId === "NEW" ? "ಹೊಸ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ." : "ವಿದ್ಯಾರ್ಥಿ ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "fa-circle-check", "text-emerald-400");
-        
-        if (selectedStudentId !== "NEW") {
-          const studentIdx = activeRosterStudents.findIndex(s => s["ID"] === selectedStudentId);
-          if (studentIdx !== -1) {
-            activeRosterHeaders.forEach(header => {
-              if (header !== "ID") {
-                activeRosterStudents[studentIdx][header] = formData.get(header) || "";
-              }
-            });
-            renderStudentList(activeRosterStudents);
-            const row = document.getElementById(`roster-row-${selectedStudentId}`);
-            if (row) row.classList.add('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
-          }
-        }
-      } catch (err) {
-        console.error("Save error:", err);
-        showToast("ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "fa-circle-xmark", "text-red-400");
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i> ವಿವರಗಳನ್ನು ಉಳಿಸಿ / Save Student`;
+        });
       }
+
+      // Live update Left Panel row DOM directly
+      const nameEnglish = formData.get("Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್") || "";
+      const nameKannada = formData.get("Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ") || "";
+      const appNo = formData.get("STS No") || "";
+      const fatherNameEn = formData.get("Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)") || "";
+      const fatherNameKn = formData.get("Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ") || "";
+      const gender = formData.get("Gender") || "";
+
+      updateRosterRowDOM(selectedStudentId, nameEnglish, nameKannada, appNo, fatherNameEn, fatherNameKn, gender);
     }
 
-    function prepareNewStudent() {
-      selectedStudentId = "NEW";
+    async function prepareNewStudent() {
+      showToast("ಹೊಸ ದಾಖಲೆ ರಚಿಸಲಾಗುತ್ತಿದೆ... / Creating draft record...", "fa-circle-notch animate-spin", "text-sky-400");
       
-      // Highlight none of the rows in student sidebar
-      document.querySelectorAll('#student-roster-body tr').forEach(row => {
-        row.classList.remove('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
-      });
-
-      // Show editor
-      document.getElementById('empty-editor-state').classList.add('hidden');
-      document.getElementById('dynamic-edit-form').classList.remove('hidden');
-      document.getElementById('save-btn-container').classList.remove('hidden');
-      
-      const fieldsGrid = document.getElementById('dynamic-fields-grid');
-      fieldsGrid.innerHTML = "";
-      
-      const { finalOrder, fillRates } = calculateFieldSortOrder();
-      const currentFilterClass = document.getElementById('class-filter').value;
-      
-      finalOrder.forEach(header => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "flex flex-col space-y-1";
-
-        const label = document.createElement("label");
-        label.className = "text-[11px] font-bold text-slate-500 uppercase tracking-tight flex items-center justify-between";
-        
-        const labelTextSpan = document.createElement("span");
-        labelTextSpan.textContent = header;
-        label.appendChild(labelTextSpan);
-
-        const pinnedList = [
-          "STS No",
-          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
-          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್",
-          "Class",
-          "Date of Birth",
-          "Gender",
-          "Student STS",
-          "Aadhaar Number"
-        ];
-        if (header !== "ID") {
-          const badgeSpan = document.createElement("span");
-          if (pinnedList.includes(header)) {
-            badgeSpan.className = "text-[8px] text-sky-500 bg-sky-50 px-1 py-0.2 rounded font-bold tracking-widest uppercase flex items-center gap-0.5";
-            badgeSpan.innerHTML = `<i class="fa-solid fa-thumbtack text-[7px]"></i> Pinned`;
-          } else {
-            const pct = Math.round((fillRates[header] || 0) * 100);
-            badgeSpan.className = `text-[8px] font-bold px-1 py-0.2 rounded ${pct > 75 ? 'text-emerald-600 bg-emerald-50' : pct > 30 ? 'text-amber-600 bg-amber-50' : 'text-slate-400 bg-slate-50'}`;
-            badgeSpan.textContent = `${pct}% filled`;
-          }
-          label.appendChild(badgeSpan);
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        let schoolId = null;
+        let createdBy = null;
+        if (session && session.user) {
+          schoolId = session.user.user_metadata?.school_id || null;
+          createdBy = session.user.id || null;
         }
 
-        let input;
-        if (header === "Medium") {
-          input = document.createElement("select");
-          input.name = header;
-          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
-          input.innerHTML = `<option value="ಕನ್ನಡ">ಕನ್ನಡ</option><option value="ENGLISH">ENGLISH</option>`;
-        } else if (header === "Academic Year") {
-          input = document.createElement("select");
-          input.name = header;
-          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
-          input.innerHTML = `<option value="2026-27">2026-27</option><option value="2025-26">2025-26</option>`;
-        } else {
-          input = document.createElement("input");
-          input.name = header;
-          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
+        // Get class from filter (or default to 1)
+        let enrollClass = document.getElementById('class-filter').value;
+        if (enrollClass === "ALL") enrollClass = "1";
+
+        // Get gender from filter (or default to Boy)
+        let gender = document.getElementById('gender-filter').value;
+        if (gender === "ALL") gender = "Boy";
+
+        // Generate temporary STS Number
+        const tempSts = "STS-" + Math.floor(100000000 + Math.random() * 900000000);
+
+        const draftPayload = {
+          academic_year: "2026-27",
+          medium: "Kannada",
+          enroll_class: enrollClass,
+          app_no: tempSts,
+          student_name: "ಹೊಸ ವಿದ್ಯಾರ್ಥಿ",
+          name_english: "NEW STUDENT",
+          dob: "2019-06-01",
+          gender: gender,
+          student_aadhaar: "000000000000",
+          father_name_kn: "ತಂದೆ",
+          father_name_az: "FATHER",
+          mother_name_kn: "ತಾಯಿ",
+          mother_name_az: "MOTHER",
+          school_id: schoolId,
+          created_by: createdBy,
+          is_admitted: true
+        };
+
+        const { data, error } = await supabaseClient
+          .from('admissions')
+          .insert([draftPayload])
+          .select();
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          const newStudent = data[0];
           
-          if (header === "ID") {
-            input.readOnly = true;
-            input.value = "AUTO-GENERATED";
-            input.className += " bg-slate-100 text-slate-500 font-mono";
-          } else if (header === "STS No") {
-            input.placeholder = "e.g. 9-digit STS No";
-          } else if (header === "Class") {
-            if (currentFilterClass && currentFilterClass !== "ALL") {
-              input.value = currentFilterClass;
-            }
-          } else if (header.includes("Date") || header.includes("DOB")) {
-            input.type = "date";
-            if (!header.includes("DOB") && !header.includes("Birth")) {
-              let today = new Date();
-              let dateString = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
-              input.value = dateString;
-            }
-          } else {
-            input.type = "text";
-          }
+          // Map to local roster format
+          const newRosterStudent = {
+            "ID": newStudent.id,
+            "STS No": newStudent.app_no,
+            "Academic Year": newStudent.academic_year,
+            "Medium": newStudent.medium,
+            "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": newStudent.student_name,
+            "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": newStudent.name_english,
+            "Class": newStudent.enroll_class,
+            "Date of Birth": newStudent.dob,
+            "Gender": newStudent.gender,
+            "Aadhaar Number": newStudent.student_aadhaar,
+            "Religion": newStudent.religion,
+            "Social Class": newStudent.social_class,
+            "Student's Caste": newStudent.caste,
+            "Sub-Caste": newStudent.student_caste,
+            "Mother Tongue": newStudent.mother_tongue,
+            "Mobile Number": newStudent.mobile_number,
+            "Special Need": newStudent.special_need,
+            "Special Category": newStudent.special_category,
+            "Bhagyalakshmi Bond": newStudent.bhagyalakshmi_bond,
+            "Age Reason": newStudent.age_reason,
+            "Address": newStudent.address,
+            "District": newStudent.district,
+            "Taluk": newStudent.taluk,
+            "Bank Account No": newStudent.bank_acc_no,
+            "IFSC Code": newStudent.ifsc_code,
+            "Bank Address": newStudent.bank_address,
+            "Scholarship No": newStudent.scholarship_no,
+            "Student Caste Cert": newStudent.student_caste_cert,
+            "Student Income Cert": newStudent.student_income_cert,
+            "BPL Card No": newStudent.bpl_card_no,
+            "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": newStudent.father_name_kn,
+            "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.father_name_az,
+            "Father Aadhaar": newStudent.father_aadhaar,
+            "Father Occupation": newStudent.father_occupation,
+            "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": newStudent.mother_name_kn,
+            "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.mother_name_az,
+            "Mother Aadhaar": newStudent.mother_aadhaar,
+            "Mother Occupation": newStudent.mother_occupation,
+            "Preschool Board": newStudent.preschool_board,
+            "Preschool Type": newStudent.preschool_type,
+            "Preschool Name": newStudent.preschool_name,
+            "Transfer No": newStudent.transfer_no,
+            "Transfer Date": newStudent.transfer_date,
+            "Student STS": newStudent.student_sts
+          };
+
+          activeRosterStudents.push(newRosterStudent);
+          applyRosterFiltersAndSort(); // Re-filter and sort list
           
-          if (input.type === "text" && !input.readOnly) {
-            input.style.textTransform = "uppercase";
-            input.addEventListener("blur", function() {
-              input.value = input.value.toUpperCase();
-            });
-          }
+          showToast("ಹೊಸ ದಾಖಲೆ ರಚಿಸಲಾಗಿದೆ! / Draft created successfully!", "fa-circle-check", "text-emerald-400");
+          
+          // Select and load it
+          selectedStudentId = newStudent.id;
+          loadStudentForEditing(selectedStudentId);
+
+          // Focus the name english field so they can start typing
+          setTimeout(() => {
+            const nameInput = document.getElementsByName("Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್")[0];
+            if (nameInput) {
+              nameInput.focus();
+              nameInput.select();
+            }
+          }, 300);
         }
-        
-        wrapper.appendChild(label);
-        wrapper.appendChild(input);
-        fieldsGrid.appendChild(wrapper);
-      });
-      
-      document.getElementById('editor-wrapper').scrollTop = 0;
+      } catch (err) {
+        console.error("Error creating draft student:", err);
+        showToast("ದಾಖಲೆ ರಚಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "fa-circle-xmark", "text-red-400");
+      }
     }
 
     async function loadStudentDirectlyFromUrl(studentId) {
@@ -1267,7 +1605,7 @@
 
       const deleteBtn = document.getElementById('delete-record-btn');
       deleteBtn.disabled = true;
-      deleteBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i> Deleting...`;
+      deleteBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i>`;
 
       try {
         const { error } = await supabaseClient
@@ -1302,7 +1640,7 @@
         const dBtn = document.getElementById('delete-record-btn');
         if (dBtn) {
           dBtn.disabled = false;
-          dBtn.innerHTML = `<i class="fa-solid fa-trash text-sm"></i> ಅಳಿಸಿ / Delete`;
+          dBtn.innerHTML = `<i class="fa-solid fa-trash-can text-sm"></i>`;
         }
       }
     }
@@ -1441,7 +1779,114 @@
         console.error("Error loading user session for header:", e);
       }
     }
+
+    // Fields Manager Modal Config
+    function openFieldsManager() {
+      renderFieldSettingsList();
+      document.getElementById('manage-fields-modal').classList.remove('hidden');
+    }
+    
+    function closeFieldsManager() {
+      document.getElementById('manage-fields-modal').classList.add('hidden');
+    }
+    
+    function getEditorFieldsVisibility() {
+      const saved = localStorage.getItem('editor_visible_fields');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          // ignore
+        }
+      }
+      return {};
+    }
+    
+    function toggleEditorFieldVisibility(field, isVisible) {
+      const vis = getEditorFieldsVisibility();
+      vis[field] = isVisible;
+      localStorage.setItem('editor_visible_fields', JSON.stringify(vis));
+      if (selectedStudentId) {
+        loadStudentForEditing(selectedStudentId);
+      }
+    }
+    
+    function renderFieldSettingsList() {
+      const container = document.getElementById('fields-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      const visibility = getEditorFieldsVisibility();
+      const fields = activeRosterHeaders.filter(h => h !== "ID");
+      
+      fields.forEach(field => {
+        const div = document.createElement('div');
+        div.className = "flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition";
+        const isChecked = visibility[field] !== false;
+        
+        const displayLabel = field.split(" / ")[0];
+        
+        div.innerHTML = `
+          <span class="text-xs font-bold text-slate-700">${displayLabel}</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleEditorFieldVisibility('${field}', this.checked)" class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
+          </label>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function transliterateField(englishField, kannadaField) {
+      const englishInput = document.getElementsByName(englishField)[0];
+      const kannadaInput = document.getElementsByName(kannadaField)[0];
+      if (!englishInput || !kannadaInput) return;
+      const text = englishInput.value.trim();
+      if (!text) {
+        showToast("English input is empty!", "error");
+        return;
+      }
+      
+      const btnId = `trans-btn-${kannadaField.replace(/[^a-zA-Z]/g, '')}`;
+      const btn = document.getElementById(btnId);
+      
+      try {
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sky-600 text-xs"></i>`;
+        
+        const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=kn-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+        const response = await fetch(url);
+        const json = await response.json();
+        if (json && json[0] === "SUCCESS" && json[1] && json[1][0] && json[1][0][1] && json[1][0][1][0]) {
+          const transliterated = json[1][0][1][0];
+          kannadaInput.value = transliterated;
+          showToast("Transliterated successfully!", "success");
+          
+          // Trigger auto-save immediately to persist the change!
+          triggerAutoSave(false);
+        } else {
+          throw new Error("Transliteration service returned empty result.");
+        }
+      } catch (err) {
+        console.error("Transliteration failed", err);
+        showToast("Transliteration failed: " + err.message, "error");
+      } finally {
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-language text-sky-600"></i>`;
+      }
+    }
+
+    async function autoTransliterateEditor(englishField, kannadaField, force = false) {
+      const englishInput = document.getElementsByName(englishField)[0];
+      const kannadaInput = document.getElementsByName(kannadaField)[0];
+      if (!englishInput || !kannadaInput) return;
+      
+      const text = englishInput.value.trim();
+      if (!text) return;
+      
+      // Only auto-transliterate if Kannada field is currently empty OR if force is true
+      if (!force && kannadaInput.value.trim() !== "") return;
+      
+      await transliterateField(englishField, kannadaField);
+    }
 </script>
 </body>
 </html>
-

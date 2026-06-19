@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -812,7 +812,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = session?.user?.user_metadata?.school_id;
 
-        let query = supabaseClient.from('admissions').select('id, student_name, father_name_kn, app_no, enroll_class');
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -825,20 +825,49 @@
           .filter(s => normalizeClass(s.enroll_class) === normalizeClass(className))
           .map(s => ({
             id: s.id,
-            name: s.student_name,
-            father: s.father_name_kn,
+            student_name_kn: s.student_name || '',
+            name_english: s.name_english || '',
+            father_name_kn: s.father_name_kn || '',
+            father_name_az: s.father_name_az || '',
             adminNo: s.app_no
-          }));
+          }))
+          .sort((a, b) => {
+            const nameA = (a.name_english || a.student_name_kn || '').trim().toUpperCase();
+            const nameB = (b.name_english || b.student_name_kn || '').trim().toUpperCase();
+            return nameA.localeCompare(nameB);
+          });
 
-        const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-        let saved = localStorage.getItem(mockKey);
         let parsedEval = {};
-        if (saved) {
-          try {
-            parsedEval = JSON.parse(saved);
-          } catch (e) {
-            parsedEval = {};
+        const loadLocal = () => {
+          const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+          let saved = localStorage.getItem(mockKey);
+          if (saved) {
+            try { return JSON.parse(saved); } catch (e) { return {}; }
           }
+          return {};
+        };
+
+        try {
+          const { data: dbRecords, error: dbError } = await supabaseClient
+            .from('lba_evaluations')
+            .select('student_id, marks')
+            .eq('class_name', className)
+            .eq('subject_name', subjectName);
+          
+          if (dbError) {
+            console.warn("Supabase fetch for LBA evaluations failed, using local storage:", dbError);
+            parsedEval = loadLocal();
+          } else if (dbRecords && dbRecords.length > 0) {
+            dbRecords.forEach(r => {
+              parsedEval[r.student_id] = r.marks || {};
+            });
+            console.log("Loaded LBA evaluations from Supabase");
+          } else {
+            parsedEval = loadLocal();
+          }
+        } catch (e) {
+          console.warn("Exception loading LBA evaluations from Supabase, using local storage:", e);
+          parsedEval = loadLocal();
         }
 
         onDataLoaded({
@@ -929,11 +958,29 @@
         }
         
         const evalData = evaluations[sId];
+        const nameEn = (student.name_english || '').trim().toUpperCase();
+        const nameKn = (student.student_name_kn || '').trim();
+        let nameHtml = '';
+        if (nameEn && nameKn) {
+          nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-550 font-medium">${nameKn}</div>`;
+        } else {
+          nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+        }
+
+        const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        const fatherKn = (student.father_name_kn || '').trim();
+        let fatherHtml = '';
+        if (fatherEn && fatherKn) {
+          fatherHtml = `<div class="font-bold text-slate-700 text-[11px]">${fatherEn}</div><div class="text-[10px] text-slate-500 font-medium">${fatherKn}</div>`;
+        } else {
+          fatherHtml = `<span class="font-semibold text-slate-700 text-[11px]">${fatherEn || fatherKn || '-'}</span>`;
+        }
+
         let rowHtml = `
           <td class="p-3 text-center border-r border-slate-200 font-medium">${index + 1}</td>
           <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold">${student.adminNo || student.id}</td>
-          <td class="p-3 border-r border-slate-200 font-semibold text-slate-800">${student.name}</td>
-          <td class="p-3 border-r border-slate-200 text-slate-600">${student.father || ''}</td>
+          <td class="p-3 border-r border-slate-200">${nameHtml}</td>
+          <td class="p-3 border-r border-slate-200">${fatherHtml}</td>
         `;
 
         currentLessons.forEach((_, i) => {
@@ -1075,16 +1122,42 @@
       if (!className || !subjectName) return;
       document.getElementById('loading-overlay').classList.remove('hidden');
 
-      setTimeout(() => {
-        try {
-          const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-          localStorage.setItem(mockKey, JSON.stringify(evaluations));
-          onDataSaved();
-        } catch (e) {
-          console.error("Error saving LBA marks:", e);
-          onDataSaveFailed();
-        }
-      }, 300);
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        const schoolId = session?.user?.user_metadata?.school_id || null;
+
+        const payload = students.map(student => {
+          const sId = student.id;
+          const marks = evaluations[sId] || {};
+          return {
+            school_id: schoolId,
+            student_id: sId,
+            class_name: className,
+            subject_name: subjectName,
+            marks: marks
+          };
+        });
+
+        supabaseClient
+          .from('lba_evaluations')
+          .upsert(payload, { onConflict: 'student_id,subject_name' })
+          .then(({ error }) => {
+            if (error) {
+              console.warn("Supabase upsert for LBA evaluations failed, saving to localStorage as fallback:", error);
+            } else {
+              console.log("Supabase LBA evaluations upsert successful");
+            }
+            
+            // Replicate/backup to localStorage
+            const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            try {
+              localStorage.setItem(mockKey, JSON.stringify(evaluations));
+            } catch (e) {
+              console.error("Failed to write to localStorage:", e);
+            }
+
+            onDataSaved();
+          });
+      });
     }
 
     function onDataSaved() {
@@ -1104,9 +1177,9 @@
       const mockKey = `lba_mock_${className}_${subjectName.replace(/[^a-zA-Z0-9]/g, '_')}`;
       let saved = localStorage.getItem(mockKey);
       const roster = [
-        { id: "GHPS001", name: "ಅಭಿಷೇಕ್ ಎಂ / Abhishek M", father: "ಮಹಾದೇವಪ್ಪ / Mahadevappa", adminNo: "STS202601" },
-        { id: "GHPS002", name: "ಚೈತ್ರಾ ಕೆ / Chaitra K", father: "ಕೃಷ್ಣಪ್ಪ / Krishnappa", adminNo: "STS202602" },
-        { id: "GHPS003", name: "ದರ್ಶನ್ ಎಲ್ / Darshan L", father: "ಲಕ್ಷ್ಮಣ್ / Lakshman", adminNo: "STS202603" }
+        { id: "GHPS001", student_name_kn: "ಅಭಿಷೇಕ್ ಎಂ", name_english: "Abhishek M", father_name_kn: "ಮಹಾದೇವಪ್ಪ", father_name_az: "Mahadevappa", adminNo: "STS202601" },
+        { id: "GHPS002", student_name_kn: "ಚೈತ್ರಾ ಕೆ", name_english: "Chaitra K", father_name_kn: "ಕೃಷ್ಣಪ್ಪ", father_name_az: "Krishnappa", adminNo: "STS202602" },
+        { id: "GHPS003", student_name_kn: "ದರ್ಶನ್ ಎಲ್", name_english: "Darshan L", father_name_kn: "ಲಕ್ಷ್ಮಣ್", father_name_az: "Lakshman", adminNo: "STS202603" }
       ];
       onDataLoaded({ success: true, students: roster, evaluations: saved ? JSON.parse(saved) : {} });
     }

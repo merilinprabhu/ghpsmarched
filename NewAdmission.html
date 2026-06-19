@@ -106,12 +106,15 @@
           </select>
         </div>
         <div class="col">
-          <label>ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Name <span class="required">*</span></label>
-          <input type="text" name="studentName" class="form-control" required>
+          <label>ಇಂಗ್ಲೀಷಿನಲ್ಲಿ ಹೆಸರು / Name in English <span class="required">*</span></label>
+          <input type="text" name="nameEnglish" class="form-control" onblur="autoTransliterateAdmission('nameEnglish', 'studentName')" required>
         </div>
         <div class="col">
-          <label>ಇಂಗ್ಲೀಷಿನಲ್ಲಿ ಹೆಸರು / Name in English <span class="required">*</span></label>
-          <input type="text" name="nameEnglish" class="form-control" required>
+          <label>ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Name <span class="required">*</span></label>
+          <div class="input-group">
+            <input type="text" name="studentName" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary border-slate-300 bg-slate-50 hover:bg-slate-100" onclick="transliterateAdmissionField('nameEnglish', 'studentName')" title="Transliterate from English Name"><i class="fa-solid fa-language text-sky-600"></i></button>
+          </div>
         </div>
         <div class="col">
           <label>ಆಧಾರ್‌ನಲ್ಲಿರುವಂತೆ ಹೆಸರು / Name per Aadhaar</label>
@@ -235,12 +238,15 @@
       <p class="text-primary fw-bold mb-1">● ತಂದೆಯ ವಿವರಗಳು / Father's Details:</p>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mb-3">
         <div class="col">
-          <label>ತಂದೆಯ ಹೆಸರು / Father Name (KN) <span class="required">*</span></label>
-          <input type="text" name="fatherNameKn" class="form-control" required>
+          <label>ಹೆಸರು / Name (As Per Aadhaar)</label>
+          <input type="text" name="fatherNameAz" class="form-control" onblur="autoTransliterateAdmission('fatherNameAz', 'fatherNameKn')">
         </div>
         <div class="col">
-          <label>ಹೆಸರು / Name (As Per Aadhaar)</label>
-          <input type="text" name="fatherNameAz" class="form-control">
+          <label>ತಂದೆಯ ಹೆಸರು / Father Name (KN) <span class="required">*</span></label>
+          <div class="input-group">
+            <input type="text" name="fatherNameKn" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary border-slate-300 bg-slate-50 hover:bg-slate-100" onclick="transliterateAdmissionField('fatherNameAz', 'fatherNameKn')" title="Transliterate from Aadhaar Name"><i class="fa-solid fa-language text-sky-600"></i></button>
+          </div>
         </div>
         <div class="col">
           <label>ತಂದೆಯ ಉದ್ಯೋಗ / Occupation <span class="required">*</span></label>
@@ -271,12 +277,15 @@
       <p class="text-primary fw-bold mb-1 pt-2">● ತಾಯಿಯ ವಿವರಗಳು / Mother's Details:</p>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
         <div class="col">
-          <label>ತಾಯಿಯ ಹೆಸರು / Mother Name (KN) <span class="required">*</span></label>
-          <input type="text" name="motherNameKn" class="form-control" required>
+          <label>ಹೆಸರು / Name (As Per Aadhaar)</label>
+          <input type="text" name="motherNameAz" class="form-control" onblur="autoTransliterateAdmission('motherNameAz', 'motherNameKn')">
         </div>
         <div class="col">
-          <label>ಹೆಸರು / Name (As Per Aadhaar)</label>
-          <input type="text" name="motherNameAz" class="form-control">
+          <label>ತಾಯಿಯ ಹೆಸರು / Mother Name (KN) <span class="required">*</span></label>
+          <div class="input-group">
+            <input type="text" name="motherNameKn" class="form-control" required>
+            <button type="button" class="btn btn-outline-secondary border-slate-300 bg-slate-50 hover:bg-slate-100" onclick="transliterateAdmissionField('motherNameAz', 'motherNameKn')" title="Transliterate from Aadhaar Name"><i class="fa-solid fa-language text-sky-600"></i></button>
+          </div>
         </div>
         <div class="col">
           <label>ತಾಯಿಯ ಉದ್ಯೋಗ / Occupation <span class="required">*</span></label>
@@ -1543,6 +1552,59 @@
     }
 
     window.isFormLoadingData = false;
+  }
+
+  async function transliterateAdmissionField(englishFieldName, kannadaFieldName) {
+    const englishInput = document.getElementsByName(englishFieldName)[0];
+    const kannadaInput = document.getElementsByName(kannadaFieldName)[0];
+    if (!englishInput || !kannadaInput) return;
+    
+    const text = englishInput.value.trim();
+    if (!text) {
+      alert("English/Aadhaar name field is empty! / ಇಂಗ್ಲಿಷ್/ಆಧಾರ್ ಹೆಸರು ಖಾಲಿ ಇದೆ!");
+      return;
+    }
+    
+    const btn = kannadaInput.nextElementSibling;
+    const originalHtml = btn ? btn.innerHTML : "";
+    
+    try {
+      if (btn) {
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sky-600"></i>`;
+        btn.disabled = true;
+      }
+      
+      const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=kn-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+      const response = await fetch(url);
+      const json = await response.json();
+      if (json && json[0] === "SUCCESS" && json[1] && json[1][0] && json[1][0][1] && json[1][0][1][0]) {
+        kannadaInput.value = json[1][0][1][0];
+      } else {
+        throw new Error("Transliteration service returned empty result.");
+      }
+    } catch (err) {
+      console.error("Transliteration failed", err);
+      alert("Transliteration failed: " + err.message);
+    } finally {
+      if (btn) {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }
+    }
+  }
+
+  function autoTransliterateAdmission(englishFieldName, kannadaFieldName) {
+    const englishInput = document.getElementsByName(englishFieldName)[0];
+    const kannadaInput = document.getElementsByName(kannadaFieldName)[0];
+    if (!englishInput || !kannadaInput) return;
+    
+    const text = englishInput.value.trim();
+    if (!text) return;
+    
+    // Only auto-transliterate if Kannada field is currently empty
+    if (kannadaInput.value.trim() !== "") return;
+    
+    transliterateAdmissionField(englishFieldName, kannadaFieldName);
   }
 </script>
 </body>

@@ -442,13 +442,17 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 no-print">
+              <!-- Recover Backup -->
+              <button id="recoverBackupBtn" onclick="importRecoveredHeightWeight()" class="hidden bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-orange-500/20 active:scale-[0.98] cursor-pointer border-0">
+                Recover Local Backup <i class="fa-solid fa-rotate-left text-sm"></i>
+              </button>
               <!-- Excel -->
               <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
                 Export <i class="fa-solid fa-file-excel text-sm"></i>
               </button>
               <!-- Print -->
               <button onclick="printPage()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
-                Export <i class="fa-solid fa-print text-sm"></i>
+                Print <i class="fa-solid fa-print text-sm"></i>
               </button>
             </div>
           </div>
@@ -714,7 +718,7 @@
         let distributedItemsCount = 0;
         
         // 1. Get total students count
-        let studQuery = supabaseClient.from('admissions').select('id', { count: 'exact' }).eq('is_admitted', true);
+        let studQuery = supabaseClient.from('admissions').select('id', { count: 'exact' });
         if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
         const { count: sCount } = await studQuery;
         studentsCount = sCount || 0;
@@ -1252,6 +1256,17 @@
       
       document.getElementById('detailTitle').innerText = selectedTemplate.name;
 
+      // Toggle recover backup button for height/weight template
+      const isHeightWeight = selectedTemplate.name.toLowerCase().includes("height") || 
+                             selectedTemplate.name.toLowerCase().includes("hight") || 
+                             selectedTemplate.name.toLowerCase().includes("ಎತ್ತರ") ||
+                             selectedTemplate.name.toLowerCase().includes("ತೂಕ");
+      if (isHeightWeight) {
+        document.getElementById('recoverBackupBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('recoverBackupBtn').classList.add('hidden');
+      }
+
       const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
       const colNames = cols.map(c => c.name).join(', ');
       document.getElementById('detailSubtitle').innerText = `ಹಂಚಿಕೆ ನಿರ್ವಹಣೆ ಮತ್ತು ವರದಿ - (${colNames})`;
@@ -1282,6 +1297,94 @@
       document.getElementById('dashboardView').classList.remove('hidden');
       selectedTemplate = null;
       loadIncentiveTemplates();
+    }
+
+    async function importRecoveredHeightWeight() {
+      if (!confirm("ನಿಮ್ಮ ಲೋಕಲ್ ಎಕ್ಸೆಲ್ ಬ್ಯಾಕಪ್‌ನಿಂದ ಒಟ್ಟು 186 ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕದ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು ಬಯಸುವಿರಾ?\nDo you want to recover 186 student Height & Weight records from the local backup?")) {
+        return;
+      }
+      
+      showSavingToast("ಮರುಪಡೆಯಲಾಗುತ್ತಿದೆ / Recovering...");
+      try {
+        const session = await supabaseClient.auth.getSession();
+        const schoolId = session?.data?.session?.user?.user_metadata?.school_id;
+        if (!schoolId) {
+          alert("School ID is missing. Please log in again.");
+          return;
+        }
+
+        // Fetch all admissions for mapping app_no/sts_no
+        const { data: admissions, error: admErr } = await supabaseClient
+          .from('admissions')
+          .select('id, app_no, student_name')
+          .eq('school_id', schoolId);
+          
+        if (admErr) throw admErr;
+        if (!admissions || admissions.length === 0) {
+          alert("No student admissions found for this school in database.");
+          return;
+        }
+
+        const backupData = [{"sts_no":"241716392","name":"AKSHAYA","father_name":"RAMAPPA","gender":"BOY","class":"1","height_cm":"112","weight_bg":"17"},{"sts_no":"243598549","name":"ALIYA MOHAMMADI","father_name":"MEHABOOB","gender":"GIRL","class":"1","height_cm":"112","weight_bg":"17"},{"sts_no":"239447152","name":"AYATI","father_name":"ANJINAYYA","gender":"GIRL","class":"1","height_cm":"117","weight_bg":"17"},{"sts_no":"241810251","name":"BIBI AYESHA","father_name":"NIJAMUDDIN","gender":"GIRL","class":"1","height_cm":"17","weight_bg":"118"},{"sts_no":"239925436","name":"HAJMAT ALI","father_name":"LAL AHAMAD","gender":"BOY","class":"1","height_cm":"117","weight_bg":"17"},{"sts_no":"240157017","name":"HARSHITA","father_name":"BALARAM","gender":"GIRL","class":"1","height_cm":"116","weight_bg":"18"},{"sts_no":"239216574","name":"MADIHA MEHAREEN","father_name":"FAROOQ","gender":"GIRL","class":"1","height_cm":"118","weight_bg":"15"},{"sts_no":"239211319","name":"MAHESHWARI","father_name":"NAGAPPA","gender":"GIRL","class":"1","height_cm":"116","weight_bg":"16"},{"sts_no":"244709149","name":"MANOJ KUMAR","father_name":"NAGESH","gender":"BOY","class":"1","height_cm":"105","weight_bg":"16"},{"sts_no":"246193521","name":"SHIVALINGA","father_name":"BIRAPPA","gender":"BOY","class":"1","height_cm":"106","weight_bg":"13"},{"sts_no":"240156466","name":"VAISHNAVI","father_name":"VENKATESH","gender":"GIRL","class":"1","height_cm":"117","weight_bg":"17"},{"sts_no":"229318699","name":"ABHILASH","father_name":"BHEMAYYA","gender":"BOY","class":"2","height_cm":"119","weight_bg":"21"},{"sts_no":"228117954","name":"ALFIYA MOHAMADI","father_name":"MAHEBOOB","gender":"GIRL","class":"2","height_cm":"119","weight_bg":"21"},{"sts_no":"236300449","name":"ANUSHREE","father_name":"TAYAPPA","gender":"GIRL","class":"2","height_cm":"117","weight_bg":"20"},{"sts_no":"225834913","name":"ARIVANANDAN","father_name":"RAJAPPA","gender":"BOY","class":"2","height_cm":"117","weight_bg":"17"},{"sts_no":"212384457","name":"AMEENA BEGUM","father_name":"SHALAM","gender":"GIRL","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"212453274","name":"ANIRUDH KUMAR","father_name":"YALLAPPA","gender":"BOY","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"214880877","name":"ANURADHA","father_name":"HUSENAPPA","gender":"GIRL","class":"3","height_cm":"121","weight_bg":"19"},{"sts_no":"219150905","name":"BABA FAKRUDIN","father_name":"HUSEN BASHA","gender":"BOY","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"245913529","name":"BHEEMESH","father_name":"RAJAPPA","gender":"BOY","class":"3","height_cm":"122","weight_bg":"22"},{"sts_no":"212490387","name":"BHOMIKA","father_name":"YALLAPPA","gender":"GIRL","class":"3","height_cm":"124","weight_bg":"18"},{"sts_no":"212057386","name":"CHARAN","father_name":"MALLESH","gender":"BOY","class":"3","height_cm":"132","weight_bg":"23"},{"sts_no":"212141672","name":"DEEPA","father_name":"MOBELLAPPA","gender":"GIRL","class":"3","height_cm":"130","weight_bg":"23"},{"sts_no":"215025373","name":"DEVENDRA","father_name":"HUSENAPPA","gender":"BOY","class":"3","height_cm":"133","weight_bg":"30"},{"sts_no":"212385245","name":"DEVRAJA","father_name":"RAMLINGA","gender":"BOY","class":"3","height_cm":"129","weight_bg":"27"},{"sts_no":"213403854","name":"EASWAR","father_name":"JINDAPPA","gender":"BOY","class":"3","height_cm":"131","weight_bg":"21"},{"sts_no":"212093072","name":"GANESH","father_name":"KUMARASWAMY","gender":"BOY","class":"3","height_cm":"126","weight_bg":"22"},{"sts_no":"215835248","name":"GOUTAMI","father_name":"NAGESH","gender":"GIRL","class":"3","height_cm":"118","weight_bg":"17"},{"sts_no":"211629111","name":"GOUTHAM","father_name":"DHARMENDRA","gender":"BOY","class":"3","height_cm":"133","weight_bg":"30"},{"sts_no":"213417141","name":"HUSSAINAMMA","father_name":"LAXMAYYA","gender":"GIRL","class":"3","height_cm":"135","weight_bg":"22"},{"sts_no":"214554098","name":"INDU","father_name":"HANUMANTHA","gender":"GIRL","class":"3","height_cm":"131","weight_bg":"22"},{"sts_no":"218772365","name":"JAFARHUSAIN","father_name":"JAMSHER VALI","gender":"BOY","class":"3","height_cm":"122","weight_bg":"20"},{"sts_no":"212139725","name":"KEERTHI","father_name":"SHANKRAPPA","gender":"GIRL","class":"3","height_cm":"132","weight_bg":"30"},{"sts_no":"214074139","name":"KRISHNA","father_name":"HUSAINAPPA","gender":"BOY","class":"3","height_cm":"132","weight_bg":"25"},{"sts_no":"214555371","name":"LAKSHMANA","father_name":"THAYAPPA","gender":"BOY","class":"3","height_cm":"122","weight_bg":"20"},{"sts_no":"211626591","name":"LAXMI SHREE","father_name":"BHEEMAPPA","gender":"GIRL","class":"3","height_cm":"129","weight_bg":"20"},{"sts_no":"212047363","name":"MADHUSUDHAN M G","father_name":"MAHADEVA","gender":"GIRL","class":"3","height_cm":"140","weight_bg":"25"},{"sts_no":"217478121","name":"MAHENDRA","father_name":"YALLAPPA","gender":"BOY","class":"3","height_cm":"127","weight_bg":"27"},{"sts_no":"215387961","name":"MAHESH","father_name":"SANNA HANUMANTHA","gender":"BOY","class":"3","height_cm":"122","weight_bg":"20"},{"sts_no":"245913709","name":"MAHESHWARI","father_name":"ANJINEYA","gender":"GIRL","class":"3","height_cm":"134","weight_bg":"30"},{"sts_no":"213392964","name":"MALLIKARJUN","father_name":"NARASIMALU","gender":"BOY","class":"3","height_cm":"132","weight_bg":"29"},{"sts_no":"212091485","name":"MOHAMMADI BUSHRA","father_name":"FAROOK","gender":"GIRL","class":"3","height_cm":"140","weight_bg":"32"},{"sts_no":"211364522","name":"MUNISWAMY","father_name":"HUSENAPPA","gender":"BOY","class":"3","height_cm":"130","weight_bg":"28"},{"sts_no":"212383581","name":"NAGESH","father_name":"JINDAPPA","gender":"BOY","class":"3","height_cm":"128","weight_bg":"22"},{"sts_no":"211638717","name":"NANDASHREE","father_name":"YALLAPPA","gender":"GIRL","class":"3","height_cm":"120","weight_bg":"19"},{"sts_no":"212685619","name":"NANDU","father_name":"RAVI","gender":"BOY","class":"3","height_cm":"131","weight_bg":"22"},{"sts_no":"211640258","name":"NAVEEN","father_name":"RAMASWAMY","gender":"BOY","class":"3","height_cm":"130","weight_bg":"26"},{"sts_no":"214553378","name":"NAVEENKUMAR","father_name":"NAGESH","gender":"BOY","class":"3","height_cm":"127","weight_bg":"25"},{"sts_no":"212079537","name":"NIKIL TEJ","father_name":"MAREPPA","gender":"BOY","class":"3","height_cm":"127","weight_bg":"22"},{"sts_no":"215116609","name":"NIRNJAN KUMAR","father_name":"MAHADEV","gender":"BOY","class":"3","height_cm":"120","weight_bg":"19"},{"sts_no":"212684978","name":"PALLAVI","father_name":"DEVENDRA","gender":"GIRL","class":"3","height_cm":"118","weight_bg":"19"},{"sts_no":"220135445","name":"POOJA","father_name":"SHUBHASHA","gender":"GIRL","class":"3","height_cm":"118","weight_bg":"18"},{"sts_no":"215768244","name":"PRAMOD","father_name":"THIMAPPA","gender":"BOY","class":"3","height_cm":"132","weight_bg":"30"},{"sts_no":"216565688","name":"PRIYA M","father_name":"MAHADEVA","gender":"GIRL","class":"3","height_cm":"132","weight_bg":"26"},{"sts_no":"213044978","name":"PRIYANKA","father_name":"JANARDHAN","gender":"GIRL","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"212683101","name":"PUSHPANJALI","father_name":"YALLAPPA","gender":"GIRL","class":"3","height_cm":"119","weight_bg":"20"},{"sts_no":"219111586","name":"RAGHU","father_name":"SHANTHAPPA","gender":"BOY","class":"3","height_cm":"130","weight_bg":"30"},{"sts_no":"214554831","name":"RAMANNA","father_name":"TAYAPPA","gender":"BOY","class":"3","height_cm":"128","weight_bg":"26"},{"sts_no":"211356646","name":"RENUKA DEVI","father_name":"NARASIMHALU","gender":"GIRL","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"212094962","name":"REVATHI","father_name":"BHEERAPPA","gender":"GIRL","class":"3","height_cm":"127","weight_bg":"20"},{"sts_no":"212083778","name":"SAGAR","father_name":"JINDAPPA","gender":"BOY","class":"3","height_cm":"122","weight_bg":"20"},{"sts_no":"245913169","name":"SAHIL HUSSAIN","father_name":"MD RAFI","gender":"BOY","class":"3","height_cm":"130","weight_bg":"30"},{"sts_no":"212053731","name":"SANJANA","father_name":"EARANNA","gender":"GIRL","class":"3","height_cm":"130","weight_bg":"20"},{"sts_no":"212684192","name":"SHARANABASAVA","father_name":"BASAVARAJ","gender":"BOY","class":"3","height_cm":"125","weight_bg":"23"},{"sts_no":"211361809","name":"SHIFA PARVEEN","father_name":"SALEEM","gender":"GIRL","class":"3","height_cm":"120","weight_bg":"20"},{"sts_no":"213417973","name":"SHRAVANI","father_name":"PARASHURAM","gender":"GIRL","class":"3","height_cm":"130","weight_bg":"30"},{"sts_no":"213627561","name":"SHRAVANTI","father_name":"SHANKARLINGA","gender":"GIRL","class":"3","height_cm":"129","weight_bg":"22"},{"sts_no":"212382804","name":"SUMITRA","father_name":"RAJA","gender":"GIRL","class":"3","height_cm":"126","weight_bg":"25"},{"sts_no":"212090157","name":"SURENDRA","father_name":"ANIL KUMAR","gender":"BOY","class":"3","height_cm":"126","weight_bg":"26"},{"sts_no":"216626708","name":"THAYAMMA","father_name":"SANNA THAYAPPA","gender":"GIRL","class":"3","height_cm":"122","weight_bg":"20"},{"sts_no":"217341567","name":"UDAYKUMAR","father_name":"NARSIMALU","gender":"BOY","class":"3","height_cm":"125","weight_bg":"23"},{"sts_no":"212137835","name":"ULLAS KUMAR","father_name":"DURGESH","gender":"BOY","class":"3","height_cm":"120","weight_bg":"23"},{"sts_no":"216565238","name":"VAISHALI","father_name":"EARANNA","gender":"GIRL","class":"3","height_cm":"127","weight_bg":"26"},{"sts_no":"219111946","name":"VEERESH","father_name":"NARASIMHALU","gender":"BOY","class":"3","height_cm":"130","weight_bg":"28"},{"sts_no":"211086545","name":"VIKAS","father_name":"ANJINANAYYA","gender":"BOY","class":"3","height_cm":"125","weight_bg":"22"},{"sts_no":"212355578","name":"VINAY KUMAR","father_name":"SUGANNA","gender":"BOY","class":"3","height_cm":"126","weight_bg":"23"},{"sts_no":"212050546","name":"YASHODA","father_name":"MAREPPA","gender":"GIRL","class":"3","height_cm":"122","weight_bg":"19"},{"sts_no":"216479154","name":"YASHVANTH","father_name":"MALLESH","gender":"BOY","class":"3","height_cm":"143","weight_bg":"27"},{"sts_no":"191822012","name":"AKSHATHA","father_name":"GOURISHA","gender":"GIRL","class":"5","height_cm":"130","weight_bg":"25"},{"sts_no":"190604301","name":"BHARATHI","father_name":"HANUMANTHA","gender":"GIRL","class":"5","height_cm":"135","weight_bg":"27"},{"sts_no":"189555395","name":"BHARATI","father_name":"NARASIMHALU","gender":"GIRL","class":"5","height_cm":"134","weight_bg":"24"},{"sts_no":"185103484","name":"BHAVANI","father_name":"VENKATESH","gender":"GIRL","class":"5","height_cm":"138","weight_bg":"35"},{"sts_no":"189558038","name":"BHOOMIKA","father_name":"YALLAPPA","gender":"GIRL","class":"5","height_cm":"131","weight_bg":"31"},{"sts_no":"189563394","name":"CHARAN","father_name":"MALLESH","gender":"BOY","class":"5","height_cm":"131","weight_bg":"30"},{"sts_no":"189562066","name":"EARESH","father_name":"RAMAPPA","gender":"BOY","class":"5","height_cm":"130","weight_bg":"29"},{"sts_no":"189558894","name":"GANESH","father_name":"MALLESH","gender":"BOY","class":"5","height_cm":"134","weight_bg":"30"},{"sts_no":"189654744","name":"GANGAPPA","father_name":"MALLESH","gender":"BOY","class":"5","height_cm":"133","weight_bg":"31"},{"sts_no":"195758509","name":"GOUTHAM H HEMAGADDI","father_name":"HUSENAPPA","gender":"BOY","class":"5","height_cm":"132","weight_bg":"34"},{"sts_no":"189345921","name":"GOVINDA RAJ","father_name":"HANUMANTU","gender":"BOY","class":"5","height_cm":"130","weight_bg":"33"},{"sts_no":"189994685","name":"IRFAN ALI","father_name":"MOHAMMED RIYAZ","gender":"BOY","class":"5","height_cm":"132","weight_bg":"32"},{"sts_no":"191820662","name":"KARIYAMMA","father_name":"BHEEMAPPA","gender":"GIRL","class":"5","height_cm":"142","weight_bg":"33"},{"sts_no":"189860012","name":"LAKSHMI","father_name":"NARASIMHA","gender":"GIRL","class":"5","height_cm":"132","weight_bg":"32"},{"sts_no":"192565625","name":"LAXMI","father_name":"PAGUNTAPPA","gender":"GIRL","class":"5","height_cm":"130","weight_bg":"31"},{"sts_no":"196481753","name":"MADHUSUDHAN","father_name":"RAJU","gender":"BOY","class":"5","height_cm":"124","weight_bg":"30"},{"sts_no":"189560659","name":"MAHADEVA","father_name":"NAGAPPA","gender":"BOY","class":"5","height_cm":"132","weight_bg":"32"},{"sts_no":"189663542","name":"MAHAMMED MALIK","father_name":"MAHAMMED ISMAIL","gender":"BOY","class":"5","height_cm":"130","weight_bg":"33"},{"sts_no":"189651019","name":"MAHESHWARI","father_name":"MALLESH","gender":"GIRL","class":"5","height_cm":"130","weight_bg":"30"},{"sts_no":"189994055","name":"MIRJA SULTHANA","father_name":"BASHA","gender":"GIRL","class":"5","height_cm":"134","weight_bg":"27"},{"sts_no":"189666163","name":"MOHAMMED MUNAF","father_name":"SHAMSHU","gender":"BOY","class":"5","height_cm":"135","weight_bg":"32"},{"sts_no":"189556431","name":"NAGARAJ","father_name":"MARIGANGAPPA","gender":"BOY","class":"5","height_cm":"134","weight_bg":"31"},{"sts_no":"183671043","name":"NAGAVENI","father_name":"MALLAPPA","gender":"GIRL","class":"5","height_cm":"123","weight_bg":"23"},{"sts_no":"189554372","name":"NAVEEN KUMAR","father_name":"VIRUPAKSHI","gender":"BOY","class":"5","height_cm":"130","weight_bg":"30"},{"sts_no":"189206588","name":"NETHRA","father_name":"RAMASWAMY","gender":"GIRL","class":"5","height_cm":"140","weight_bg":"27"},{"sts_no":"189997947","name":"NIJABA","father_name":"MAHIBOOB SAB","gender":"GIRL","class":"5","height_cm":"130","weight_bg":"23"},{"sts_no":"190604132","name":"NIKHITA","father_name":"VIRUPAKSHI","gender":"GIRL","class":"5","height_cm":"133","weight_bg":"30"},{"sts_no":"190604593","name":"PAVITRA","father_name":"NARASIMHALU","gender":"GIRL","class":"5","height_cm":"136","weight_bg":"32"},{"sts_no":"189553573","name":"PAVITRA","father_name":"DEVENDRA","gender":"GIRL","class":"5","height_cm":"137","weight_bg":"25"},{"sts_no":"189860956","name":"PRAJWAL","father_name":"ADIVAPPA","gender":"BOY","class":"5","height_cm":"133","weight_bg":"25"},{"sts_no":"189362514","name":"PRAVEEN KUMAR","father_name":"YALLAPPA","gender":"BOY","class":"5","height_cm":"132","weight_bg":"25"},{"sts_no":"189561469","name":"PRAVEEN KUMAR","father_name":"JINADAPPA","gender":"BOY","class":"5","height_cm":"133","weight_bg":"23"},{"sts_no":"189351488","name":"PREETHI","father_name":"MAHESHA","gender":"GIRL","class":"5","height_cm":"138","weight_bg":"28"},{"sts_no":"189514309","name":"PRIYADARSHANI","father_name":"ANJINAYYA","gender":"GIRL","class":"5","height_cm":"119","weight_bg":"20"},{"sts_no":"192565658","name":"PUSHPALATHA","father_name":"PAGUNTAPPA","gender":"GIRL","class":"5","height_cm":"126","weight_bg":"26"},{"sts_no":"247651014","name":"RAHUL","father_name":"DODDA LAXMAN","gender":"BOY","class":"5","height_cm":"135","weight_bg":"35"},{"sts_no":"190603625","name":"ROJA","father_name":"RAMALINGA","gender":"GIRL","class":"5","height_cm":"133","weight_bg":"30"},{"sts_no":"189859358","name":"SANDHYA","father_name":"RAMESH","gender":"GIRL","class":"5","height_cm":"129","weight_bg":"25"},{"sts_no":"189559704","name":"SANGEETHA","father_name":"HUSENAPPA","gender":"GIRL","class":"5","height_cm":"127","weight_bg":"25"},{"sts_no":"189557263","name":"SHAILAJA","father_name":"MALLESH","gender":"BOY","class":"5","height_cm":"132","weight_bg":"33"},{"sts_no":"189375057","name":"SHASHIKUMAR","father_name":"MANTHESH","gender":"BOY","class":"5","height_cm":"128","weight_bg":"26"},{"sts_no":"189565341","name":"SHRAVANI","father_name":"SHANKARLINGA","gender":"GIRL","class":"5","height_cm":"126","weight_bg":"23"},{"sts_no":"194807031","name":"SHREYA","father_name":"DHANANJAY","gender":"GIRL","class":"5","height_cm":"133","weight_bg":"32"},{"sts_no":"189210831","name":"SHWETA","father_name":"BASSAPPA","gender":"GIRL","class":"5","height_cm":"130","weight_bg":"30"},{"sts_no":"189552627","name":"SINDHU","father_name":"VASANTH","gender":"GIRL","class":"5","height_cm":"123","weight_bg":"24"},{"sts_no":"189998678","name":"SYED AYAN","father_name":"SYED MOULA ALI","gender":"BOY","class":"5","height_cm":"135","weight_bg":"30"},{"sts_no":"189997126","name":"SYED MUSTAFA","father_name":"SYED LAL AHMED","gender":"BOY","class":"5","height_cm":"130","weight_bg":"31"},{"sts_no":"190000085","name":"THARAN","father_name":"BASAVARAJ","gender":"BOY","class":"5","height_cm":"142","weight_bg":"28"},{"sts_no":"189564586","name":"URUKUNDAMMA","father_name":"HUSENAPPA","gender":"GIRL","class":"5","height_cm":"134","weight_bg":"33"},{"sts_no":"189860552","name":"USHA","father_name":"RANGAPP","gender":"GIRL","class":"5","height_cm":"142","weight_bg":"34"},{"sts_no":"189551929","name":"VAISHNAVI","father_name":"NARASAPPA","gender":"GIRL","class":"5","height_cm":"135","weight_bg":"32"},{"sts_no":"189861496","name":"YESU","father_name":"MAREPP","gender":"BOY","class":"5","height_cm":"133","weight_bg":"31"},{"sts_no":"196815398","name":"AISHWARY","father_name":"BHEEMANNA","gender":"GIRL","class":"6","height_cm":"140","weight_bg":"27"},{"sts_no":"089550264","name":"ABDUL SAB","father_name":"SABJALI","gender":"BOY","class":"8","height_cm":"154","weight_bg":""},{"sts_no":"088337086","name":"AISHWARYA","father_name":"EARANNA","gender":"GIRL","class":"8","height_cm":"153","weight_bg":""},{"sts_no":"089710734","name":"ANJAMMA","father_name":"TIMMAPPA","gender":"GIRL","class":"8","height_cm":"154","weight_bg":""},{"sts_no":"089530914","name":"ANKITHA","father_name":"RAMESH","gender":"GIRL","class":"8","height_cm":"153","weight_bg":""},{"sts_no":"089537089","name":"ANKUSH","father_name":"MAREPPA","gender":"BOY","class":"8","height_cm":"143","weight_bg":""},{"sts_no":"089182491","name":"ASHMITHA","father_name":"RAJU","gender":"GIRL","class":"8","height_cm":"153","weight_bg":""},{"sts_no":"089568861","name":"ASHWINI","father_name":"VENKATESH","gender":"GIRL","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089567195","name":"BHAGYA","father_name":"KAREPPA","gender":"GIRL","class":"8","height_cm":"150","weight_bg":"34"},{"sts_no":"089534029","name":"BHAGYAVATHI","father_name":"SHARANABASAV","gender":"GIRL","class":"8","height_cm":"151","weight_bg":""},{"sts_no":"135048583","name":"CHANNABASAVA","father_name":"BASAVARAJ","gender":"BOY","class":"8","height_cm":"145","weight_bg":""},{"sts_no":"093083787","name":"CHAYA","father_name":"HUSAINAPPA","gender":"GIRL","class":"8","height_cm":"141","weight_bg":""},{"sts_no":"093082832","name":"D TULASI","father_name":"D PEDDA ERANNA","gender":"GIRL","class":"8","height_cm":"142","weight_bg":""},{"sts_no":"089652752","name":"EERAMMA","father_name":"NAGESH","gender":"GIRL","class":"8","height_cm":"143","weight_bg":""},{"sts_no":"089562897","name":"HANUMESH","father_name":"ANJINAYYA","gender":"BOY","class":"8","height_cm":"144","weight_bg":""},{"sts_no":"089514848","name":"KALPANA","father_name":"ANJINAYYA","gender":"GIRL","class":"8","height_cm":"145","weight_bg":""},{"sts_no":"089181793","name":"KARTHIK","father_name":"NARASIMHALU","gender":"BOY","class":"8","height_cm":"145","weight_bg":""},{"sts_no":"089545022","name":"KASTURI","father_name":"KALLAPPA","gender":"GIRL","class":"8","height_cm":"155","weight_bg":""},{"sts_no":"089642479","name":"KAVITHA","father_name":"DODDA DANAPPA","gender":"GIRL","class":"8","height_cm":"140","weight_bg":""},{"tokens":10368,"used_tokens":2229,"remaining_tokens":8139}-->{"sts_no":"092997433","name":"KRISHNA","father_name":"HANUMANTA","gender":"BOY","class":"8","height_cm":"144","weight_bg":""},{"sts_no":"089180105","name":"KUSHAL","father_name":"MARI GANGAPPA","gender":"GIRL","class":"8","height_cm":"139","weight_bg":""},{"sts_no":"089180487","name":"MAHENDRA","father_name":"GANGARAYA","gender":"BOY","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089180713","name":"MALINGARAYA","father_name":"YALLAPPA","gender":"BOY","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"093078703","name":"MANJUNATH","father_name":"SWAMY","gender":"BOY","class":"8","height_cm":"149","weight_bg":""},{"sts_no":"089561132","name":"MARUTHI","father_name":"KARIYAPPA","gender":"BOY","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"093084878","name":"MAYA","father_name":"HUSAINAPPA","gender":"GIRL","class":"8","height_cm":"146","weight_bg":""},{"sts_no":"089276203","name":"MOHAMMAD UBED ALI","father_name":"VAAZEED ALI","gender":"BOY","class":"8","height_cm":"154","weight_bg":""},{"sts_no":"089286608","name":"MOHAMMED MUNAF","father_name":"MOHAMMED","gender":"BOY","class":"8","height_cm":"155","weight_bg":""},{"sts_no":"089184368","name":"NAGARAJ","father_name":"CHANDAPPA","gender":"BOY","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089183031","name":"NARESH","father_name":"YALLAPPA","gender":"BOY","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089516975","name":"NARESH","father_name":"MALLESH","gender":"BOY","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"093008896","name":"NAVEEN","father_name":"SHANTAPPA","gender":"BOY","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"089335974","name":"NAYANATARA","father_name":"NARASIMHALU","gender":"GIRL","class":"8","height_cm":"159","weight_bg":""},{"sts_no":"093080751","name":"NIKHITA","father_name":"AMBARESH","gender":"GIRL","class":"8","height_cm":"158","weight_bg":""},{"sts_no":"089184987","name":"PARVATHI","father_name":"LAKSHAMAYYA","gender":"GIRL","class":"8","height_cm":"149","weight_bg":""},{"sts_no":"089522691","name":"PAVITRA","father_name":"NARASAPPA","gender":"GIRL","class":"8","height_cm":"148","weight_bg":""},{"sts_no":"089558983","name":"PAVITRA","father_name":"HUSAINAPPA","gender":"GIRL","class":"8","height_cm":"148","weight_bg":"45"},{"sts_no":"093080301","name":"PRAKASH","father_name":"PAGUNTAPPA","gender":"BOY","class":"8","height_cm":"146","weight_bg":""},{"sts_no":"089179723","name":"PRAVEEN KUMAR","father_name":"KRISHNA","gender":"BOY","class":"8","height_cm":"155","weight_bg":""},{"sts_no":"093081458","name":"PUSHPANJALI","father_name":"ESHAPPA","gender":"GIRL","class":"8","height_cm":"154","weight_bg":""},{"sts_no":"089181229","name":"RADHA","father_name":"RAJASHEKHAR","gender":"GIRL","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"089174424","name":"REKHA","father_name":"RAVIKUMAR","gender":"GIRL","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089181984","name":"SANDEEP","father_name":"TIPPAYYA","gender":"BOY","class":"8","height_cm":"140","weight_bg":""},{"sts_no":"089184548","name":"SANDEEP","father_name":"TIMMAPPA","gender":"BOY","class":"8","height_cm":"149","weight_bg":""},{"sts_no":"089519405","name":"SANIYA","father_name":"MAHEBOOB","gender":"GIRL","class":"8","height_cm":"145","weight_bg":"35"},{"sts_no":"011754191","name":"SANNA","father_name":"NARASINGA","gender":"GIRL","class":"8","height_cm":"146","weight_bg":""},{"sts_no":"089185156","name":"SANTOSH KUMAR","father_name":"SURESH","gender":"BOY","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"089305701","name":"SHIVU KAMAR","father_name":"RAJAPPA","gender":"BOY","class":"8","height_cm":"155","weight_bg":""},{"bytes":3387,"used_bytes":1018,"remaining_bytes":2369}-->{"sts_no":"066527667","name":"SINDHUJA RASHMI","father_name":"DHANUNJAYA","gender":"GIRL","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089182232","name":"SRIDEVI","father_name":"SHANKRAPPA","gender":"GIRL","class":"8","height_cm":"152","weight_bg":"48"},{"sts_no":"089283155","name":"SRUSTI","father_name":"MALLAPPA","gender":"GIRL","class":"8","height_cm":"150","weight_bg":""},{"sts_no":"089564945","name":"SUSHMITHA","father_name":"GOPAN GOUDA","gender":"GIRL","class":"8","height_cm":"152","weight_bg":""},{"sts_no":"089181016","name":"TAMANNA","father_name":"SHAMSHU","gender":"GIRL","class":"8","height_cm":"140","weight_bg":""},{"sts_no":"089347437","name":"UMASHRI","father_name":"YALLAPPA","gender":"GIRL","class":"8","height_cm":"159","weight_bg":""},{"sts_no":"093001011","name":"UMESH","father_name":"SRINIVAS","gender":"BOY","class":"8","height_cm":"154","weight_bg":""},{"sts_no":"089357394","name":"USHA","father_name":"YALLAPPA","gender":"GIRL","class":"8","height_cm":"150","weight_bg":""}];
+
+        // Create lookup map of admissions by normalized app_no
+        const studentMap = {};
+        admissions.forEach(s => {
+          if (s.app_no) {
+            const key = s.app_no.trim();
+            studentMap[key] = s;
+          }
+        });
+
+        const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+        const heightCol = cols.find(c => c.name.toLowerCase().includes("height") || c.name.includes("ಎತ್ತರ"));
+        const weightCol = cols.find(c => c.name.toLowerCase().includes("weight") || c.name.includes("ತೂಕ"));
+        const dateCol = cols.find(c => c.name.toLowerCase().includes("date") || c.name.includes("ದಿನಾಂಕ"));
+
+        const upsertPayloads = [];
+        backupData.forEach(item => {
+          const key = item.sts_no.trim();
+          const student = studentMap[key];
+          if (student) {
+            const vals = {};
+            if (heightCol) vals[heightCol.name] = item.height_cm ? parseFloat(item.height_cm) : null;
+            if (weightCol) vals[weightCol.name] = item.weight_bg ? parseFloat(item.weight_bg) : null;
+            if (dateCol) vals[dateCol.name] = '19-06-2026';
+
+            upsertPayloads.push({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: vals,
+              updated_at: new Date().toISOString()
+            });
+          }
+        });
+
+        if (upsertPayloads.length === 0) {
+          hideSavingToast("No matches found", true);
+          alert("ಬ್ಯಾಕಪ್‌ನಲ್ಲಿರುವ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ನಿಮ್ಮ ಹಾಲಿ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯಲ್ಲಿ ಹೊಂದಾಣಿಕೆಯಾಗಲಿಲ್ಲ.\nNo matching students found in current list.");
+          return;
+        }
+
+        const { error: upsertErr } = await supabaseClient
+          .from('student_incentives')
+          .upsert(upsertPayloads, { onConflict: 'student_id,template_id' });
+
+        if (upsertErr) throw upsertErr;
+
+        hideSavingToast("Recovery successful");
+        alert(`ಒಟ್ಟು ${upsertPayloads.length} ವಿದ್ಯಾರ್ಥಿಗಳ ಡೇಟಾವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಮರುಪಡೆಯಲಾಗಿದೆ!\nSuccessfully recovered data for ${upsertPayloads.length} students.`);
+        
+        // Reload current view
+        if (document.getElementById('classSelector').value) {
+          loadClassData();
+        }
+      } catch (err) {
+        console.error("Recovery failed:", err);
+        hideSavingToast("Recovery failed", true);
+        alert("ಮರುಪಡೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
     }
 
     function getSubjectId(enrollClass, linkSubject) {
@@ -1417,12 +1520,16 @@
           .from('admissions')
           .select('*')
           .eq('school_id', schoolId)
-          .eq('enroll_class', cls)
-          .eq('is_admitted', true)
-          .order('student_name', { ascending: true });
+          .eq('enroll_class', cls);
 
         if (studErr) throw studErr;
-        students = studList || [];
+        
+        // Sort students alphabetically by English name (fallback to student_name)
+        students = (studList || []).sort((a, b) => {
+          const nameA = (a.name_english || a.student_name || '').trim().toUpperCase();
+          const nameB = (b.name_english || b.student_name || '').trim().toUpperCase();
+          return nameA.localeCompare(nameB);
+        });
 
         if (students.length === 0) {
           tbody.innerHTML = `<tr><td colspan="${3 + cols.length}" class="p-8 text-center text-slate-400 font-bold text-sm">ಈ ತರಗತಿಯಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ನೋಂದಣಿಯಾಗಿಲ್ಲ. / No students in this class.</td></tr>`;
@@ -1534,12 +1641,28 @@
           colsHtml += `<td class="p-2 border-r border-slate-200 text-center align-middle">${inputFieldHtml}</td>`;
         });
 
-        const fatherText = student.father_name_kn ? ` <span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${student.father_name_kn})</span>` : '';
+        const nameEn = (student.name_english || '').trim().toUpperCase();
+        const nameKn = (student.student_name || '').trim();
+        let nameHtml = '';
+        if (nameEn && nameKn) {
+          nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 font-medium">${nameKn}</div>`;
+        } else {
+          nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+        }
+
+        const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        const fatherKn = (student.father_name_kn || '').trim();
+        let fatherHtml = '';
+        if (fatherEn && fatherKn) {
+          fatherHtml = `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherEn} / ${fatherKn})</span>`;
+        } else {
+          fatherHtml = fatherEn || fatherKn ? `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherEn || fatherKn})</span>` : '';
+        }
 
         tr.innerHTML = `
           <td class="p-3 text-center border-r border-slate-200 font-medium no-print">${index + 1}</td>
           <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold text-center">${student.app_no}</td>
-          <td class="p-3 border-r border-slate-200 font-semibold text-slate-800 text-left">${student.student_name}${fatherText}</td>
+          <td class="p-3 border-r border-slate-200 text-left">${nameHtml}${fatherHtml}</td>
           ${colsHtml}
         `;
         
@@ -1702,7 +1825,7 @@
         const classCompletionRates = [];
 
         // 1. Fetch total student counts per class in this school
-        let studQuery = supabaseClient.from('admissions').select('id, enroll_class').eq('is_admitted', true);
+        let studQuery = supabaseClient.from('admissions').select('id, enroll_class');
         if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
         const { data: allStudents } = await studQuery;
 
@@ -1980,6 +2103,17 @@
               { name: 'STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ', linked: true, linkSource: 'admissions', linkColumn: 'student_sts' },
               { name: 'Bicycle Sl.No / ಸೈಕಲ್ ಸಂಖ್ಯೆ', type: 'text' },
               { name: 'Received Acknowledgment / ಸ್ವೀಕೃತಿ ಪತ್ರ', type: 'boolean' }
+            ]
+          },
+          {
+            school_id: schoolId,
+            name: "Height & Weight / ಎತ್ತರ ಮತ್ತು ತೂಕ",
+            print_header: "STUDENTS HEIGHT & WEIGHT REPORT",
+            print_footer: "Signature of Head Master / Physical Education Teacher",
+            columns: [
+              { name: 'Height (cm) / ಎತ್ತರ (ಸೆಂ.ಮೀ.)', type: 'number' },
+              { name: 'Weight (kg) / ತೂಕ (ಕೆ.ಜಿ.)', type: 'number' },
+              { name: 'Date Checked / ತಪಾಸಣೆ ದಿನಾಂಕ', type: 'text' }
             ]
           }
         ];

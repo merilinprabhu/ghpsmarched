@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -787,11 +787,17 @@
           const mapped = { ...s };
           mapped.realId = s.id;
           mapped.id = s.app_no || s.id;
-          mapped.name = s.student_name;
+          mapped.name = s.name_english || s.student_name || '';
+          mapped.student_name_kn = s.student_name || '';
+          mapped.name_english = s.name_english || '';
           mapped.className = s.enroll_class;
           mapped.gender = (s.gender && (s.gender.toUpperCase() === 'BOY' || s.gender.toUpperCase() === 'MALE' || s.gender.toUpperCase() === 'BOYS' || s.gender === 'ಗಂಡು')) ? 'Boy' : 'Girl';
-          mapped.father = s.father_name_kn;
-          mapped.mother = s.mother_name_kn;
+          mapped.father = s.father_name_az || s.father_name_kn || '';
+          mapped.father_name_kn = s.father_name_kn || '';
+          mapped.father_name_az = s.father_name_az || '';
+          mapped.mother = s.mother_name_az || s.mother_name_kn || '';
+          mapped.mother_name_kn = s.mother_name_kn || '';
+          mapped.mother_name_az = s.mother_name_az || '';
           mapped.aadhaar = s.student_aadhaar;
           mapped.mobile = s.mobile_number;
           mapped.isAdmitted = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
@@ -882,19 +888,19 @@
           valA = a.id || '';
           valB = b.id || '';
         } else if (columnKey === 'name' || columnKey === 'student_name') {
-          valA = a.name || '';
-          valB = b.name || '';
+          valA = a.name_english || a.student_name_kn || '';
+          valB = b.name_english || b.student_name_kn || '';
         } else if (columnKey === 'class' || columnKey === 'enroll_class') {
           const classOrder = { 'LKG': 0, 'UKG': 1, '1': 2, '2': 3, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9, '9': 10, '10': 11 };
           const orderA = classOrder[a.className] !== undefined ? classOrder[a.className] : 99;
           const orderB = classOrder[b.className] !== undefined ? classOrder[b.className] : 99;
           return (orderA - orderB) * multiplier;
         } else if (columnKey === 'father' || columnKey === 'father_name_kn') {
-          valA = a.father || '';
-          valB = b.father || '';
+          valA = a.father_name_az || a.father_name_kn || '';
+          valB = b.father_name_az || b.father_name_kn || '';
         } else if (columnKey === 'mother' || columnKey === 'mother_name_kn') {
-          valA = a.mother || '';
-          valB = b.mother || '';
+          valA = a.mother_name_az || a.mother_name_kn || '';
+          valB = b.mother_name_az || b.mother_name_kn || '';
         } else if (columnKey === 'aadhaar' || columnKey === 'student_aadhaar') {
           valA = a.aadhaar || '';
           valB = b.aadhaar || '';
@@ -922,15 +928,15 @@
         return ' <i class="fa-solid fa-sort ml-1 opacity-40"></i>';
       };
 
-      let headersHtml = `<th class="p-3 text-center w-12">Sl.No / ಕ್ರ.ಸಂ</th>`;
+      let headersHtml = `<th class="p-3 text-center w-12">Sl.No</th>`;
       
       standardColumns.forEach(col => {
         if (visibility[col.id] !== false) {
-          headersHtml += `<th class="p-3 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('${col.id}')">${col.labelEn} / ${col.labelKn}${sortIcon(col.id)}</th>`;
+          headersHtml += `<th class="p-3 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('${col.id}')">${col.labelEn}${sortIcon(col.id)}</th>`;
         }
       });
       
-      headersHtml += `<th class="p-3 text-center no-print">Actions / ಕ್ರಿಯೆಗಳು</th>`;
+      headersHtml += `<th class="p-3 text-center no-print">Actions</th>`;
       theadRow.innerHTML = headersHtml;
     }
 
@@ -974,13 +980,46 @@
             } else if (col.id === 'app_no') {
               cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${s.id}</td>`;
             } else if (col.id === 'student_name') {
-              cellsHtml += `<td class="p-3 font-medium text-slate-900 uppercase text-left">${s.name}</td>`;
+              const nameEn = (s.name_english || '').trim().toUpperCase();
+              const nameKn = (s.student_name_kn || '').trim();
+              if (nameEn && nameKn) {
+                cellsHtml += `
+                  <td class="p-3 text-left">
+                    <div class="font-bold text-slate-800 text-[11px]">${nameEn}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${nameKn}</div>
+                  </td>
+                `;
+              } else {
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${nameEn || nameKn || '-'}</td>`;
+              }
             } else if (col.id === 'enroll_class') {
               cellsHtml += `<td class="p-3 text-center">${s.className}</td>`;
             } else if (col.id === 'father_name_kn') {
-              cellsHtml += `<td class="p-3 uppercase text-left">${s.father || '-'}</td>`;
+              const fatherEn = (s.father_name_az || '').trim().toUpperCase();
+              const fatherKn = (s.father_name_kn || '').trim();
+              if (fatherEn && fatherKn) {
+                cellsHtml += `
+                  <td class="p-3 text-left">
+                    <div class="font-bold text-slate-800 text-[11px]">${fatherEn}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${fatherKn}</div>
+                  </td>
+                `;
+              } else {
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${fatherEn || fatherKn || '-'}</td>`;
+              }
             } else if (col.id === 'mother_name_kn') {
-              cellsHtml += `<td class="p-3 uppercase text-left">${s.mother || '-'}</td>`;
+              const motherEn = (s.mother_name_az || '').trim().toUpperCase();
+              const motherKn = (s.mother_name_kn || '').trim();
+              if (motherEn && motherKn) {
+                cellsHtml += `
+                  <td class="p-3 text-left">
+                    <div class="font-bold text-slate-800 text-[11px]">${motherEn}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${motherKn}</div>
+                  </td>
+                `;
+              } else {
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${motherEn || motherKn || '-'}</td>`;
+              }
             } else if (col.id === 'student_aadhaar') {
               cellsHtml += `<td class="p-3 font-mono text-center">${s.aadhaar || '-'}</td>`;
             } else if (col.id === 'mobile_number') {
@@ -1294,7 +1333,7 @@
         const isChecked = visibility[col.id] !== false; // default to true
         
         div.innerHTML = `
-          <span class="text-xs font-bold text-slate-700">${col.labelKn} / ${col.labelEn}</span>
+          <span class="text-xs font-bold text-slate-700">${col.labelEn}</span>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleColumnVisibility('${col.id}', this.checked)" class="sr-only peer">
             <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
@@ -1376,9 +1415,9 @@
       const visibility = getColumnVisibility();
       const visibleCols = standardColumns.filter(col => visibility[col.id] !== false);
 
-      const headers = ["Sl.No / ಕ್ರ.ಸಂ"];
+      const headers = ["Sl.No"];
       visibleCols.forEach(col => {
-        headers.push(`${col.labelEn} / ${col.labelKn}`);
+        headers.push(col.labelEn);
       });
 
       const dataRows = [headers];
