@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -311,20 +311,28 @@
       <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
         
         <!-- Welcome banner -->
-        <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
-          <div>
-            <h2 class="text-xl font-bold flex items-center gap-2">
-              <span>👋 ನಮಸ್ಕಾರ,</span>
-              <span id="liveUser" class="text-indigo-300">Loading...</span>
-            </h2>
-            <p class="text-xs text-indigo-200/80 mt-1 font-medium">ದಾಖಲಾತಿ, ಶಿಕ್ಷಕರು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಮೌಲ್ಯಮಾಪನ ಪೋರ್ಟಲ್‌ಗೆ ಸುಸ್ವಾಗತ.</p>
+        <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl border border-white/5">
+          <!-- Decorative radial glowing lights -->
+          <div class="absolute -left-16 -top-16 w-48 h-48 bg-indigo-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+          <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-emerald-500 rounded-full blur-3xl opacity-10 pointer-events-none"></div>
+          
+          <div class="relative z-10 flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+            <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/10 backdrop-blur-md animate-pulse">
+              👋
+            </div>
+            <div>
+              <h2 class="text-xl md:text-2xl font-bold tracking-tight">
+                ನಮಸ್ಕಾರ, <span id="liveUser" class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 font-extrabold">Loading...</span>
+              </h2>
+              <p class="text-xs text-slate-300 mt-1 font-medium tracking-wide">ದಾಖಲಾತಿ, ಶಿಕ್ಷಕರು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಮೌಲ್ಯಮಾಪನ ಪೋರ್ಟಲ್‌ಗೆ ಸುಸ್ವಾಗತ. / Welcome to School Management & Information Portal.</p>
+            </div>
           </div>
-          <div class="flex gap-2 text-xs font-bold no-print">
-            <a href="NewAdmission.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl shadow transition text-center no-underline">
-              <i class="fa-solid fa-plus mr-1"></i> ಹೊಸ ದಾಖಲಾತಿ
+          <div class="relative z-10 flex gap-2.5 text-xs font-bold no-print w-full md:w-auto justify-center">
+            <a href="NewAdmission.html" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white px-5 py-3 rounded-2xl shadow-lg shadow-indigo-650/30 transition-all duration-300 hover:scale-[1.02] no-underline">
+              <i class="fa-solid fa-plus text-sm"></i> ಹೊಸ ದಾಖಲಾತಿ
             </a>
-            <a href="CceAssessmet.html" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl shadow transition text-center no-underline">
-              <i class="fa-solid fa-graduation-cap mr-1"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ
+            <a href="CceAssessmet.html" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-50 hover:to-emerald-400 text-white px-5 py-3 rounded-2xl shadow-lg shadow-emerald-650/30 transition-all duration-300 hover:scale-[1.02] no-underline">
+              <i class="fa-solid fa-graduation-cap text-sm"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ
             </a>
           </div>
         </div>
@@ -332,46 +340,64 @@
         <!-- 4 Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Card 1 -->
-          <div class="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-sky-500 text-white rounded-xl flex items-center justify-center text-xl shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-users"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-sky-600 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ</p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <h3 id="totalStudents" class="text-lg font-extrabold text-sky-950">Loading...</h3>
+            <div class="w-12 h-12 bg-gradient-to-tr from-sky-500 to-sky-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-sky-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ / Total Students</p>
+              <div class="flex items-center gap-2 mt-1">
+                <h3 id="totalStudents" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">Loading...</h3>
                 <a href="StudentList.html?status=pending" id="pendingBadge" class="hidden bg-amber-500 hover:bg-amber-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full transition no-underline" title="Review pending admissions"></a>
               </div>
             </div>
           </div>
+          
           <!-- Card 2 -->
-          <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-indigo-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-indigo-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-venus-mars"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">ಲಿಂಗಾವಾರು ವಿವರ</p>
-              <p id="genderStats" class="text-xs font-bold text-indigo-950 mt-0.5">Loading...</p>
+            <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-indigo-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-venus-mars"></i>
+            </div>
+            <div class="z-10 w-full">
+              <p class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">ಲಿಂಗಾವಾರು ವಿವರ / Gender Profile</p>
+              <p id="genderStats" class="text-xs font-bold text-slate-700 dark:text-slate-200 mt-1 flex items-center gap-1">Loading...</p>
             </div>
           </div>
+          
           <!-- Card 3 -->
-          <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
-              <i class="fa-solid fa-chart-bar"></i>
+          <div class="group relative overflow-hidden bg-gradient-to-br from-emerald-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-emerald-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-emerald-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
+              <i class="fa-solid fa-chart-pie"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">ವರ್ಗಾವಾರು ವಿವರ</p>
-              <p id="casteStats" class="text-[11px] font-bold text-emerald-950 mt-0.5">Loading...</p>
+            <div class="w-12 h-12 bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-emerald-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div class="z-10 w-full">
+              <p class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">ವರ್ಗಾವಾರು ವಿವರ / Caste Profile</p>
+              <p id="casteStats" class="text-[11px] font-bold text-slate-700 dark:text-slate-200 mt-1 flex flex-wrap gap-1 leading-relaxed">Loading...</p>
             </div>
           </div>
+          
           <!-- Card 4 -->
-          <div class="bg-purple-50 border border-purple-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-12 h-12 bg-purple-600 text-white rounded-xl flex items-center justify-center text-xl shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-purple-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-purple-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-purple-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-award"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider">ಶಾಲೆಯ ಶ್ರೇಣಿ (LBA)</p>
-              <p class="text-xs font-bold text-purple-950 mt-0.5">A+ ಗ್ರೇಡ್ (ಉನ್ನತ)</p>
+            <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-purple-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-purple-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">ಶಾಲೆಯ ಶ್ರೇಣಿ / School Rank</p>
+              <div class="flex items-center gap-1.5 mt-1">
+                <span class="inline-flex items-center bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wide border border-purple-200 dark:border-purple-900">A+ Grade</span>
+                <span class="text-[9px] text-purple-500 font-semibold">(ಉನ್ನತ / Excellent)</span>
+              </div>
             </div>
           </div>
         </div>
@@ -380,27 +406,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           <!-- Class Wise Enrollment (Left 7 Columns) -->
-          <div class="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 space-y-4">
-            <div class="flex justify-between items-center pb-2 border-b">
-              <h3 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">
-                <i class="fa-solid fa-table text-indigo-600"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center gap-2 tracking-wider">
+                <i class="fa-solid fa-table text-indigo-500"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
               </h3>
-              <span class="text-[10px] text-slate-400 font-semibold italic">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</span>
+              <span class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</span>
             </div>
             
-            <div class="overflow-x-auto border rounded-xl">
+            <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-700/40 rounded-2xl shadow-sm">
               <table class="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr class="bg-slate-800 text-slate-200 font-semibold uppercase">
-                    <th class="py-2.5 px-4">Class</th>
-                    <th class="py-2.5 px-4 text-center">Boys</th>
-                    <th class="py-2.5 px-4 text-center">Girls</th>
-                    <th class="py-2.5 px-4 text-center">Total</th>
+                  <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
+                    <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
+                    <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
+                    <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
+                    <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
                   </tr>
                 </thead>
-                <tbody id="classTableBody" class="divide-y font-medium text-slate-700 bg-white">
+                <tbody id="classTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 bg-white dark:bg-slate-900">
                   <tr>
-                    <td colspan="4" class="text-center py-8 text-slate-400">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಂಕಿ-ಅಂಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+                    <td colspan="4" class="text-center py-8 text-slate-400 dark:text-slate-500 font-medium">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಂಕಿ-ಅಂಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
                   </tr>
                 </tbody>
               </table>
@@ -410,55 +436,87 @@
           <!-- Quick Tools & Recent Activities (Right 5 Columns) -->
           <div class="lg:col-span-5 space-y-6">
             <!-- Quick Tools -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
-              <h3 class="text-xs font-bold text-slate-800 uppercase pb-2 border-b flex items-center gap-2">
-                <i class="fa-solid fa-screwdriver-wrench text-sky-600"></i> ಕ್ವಿಕ್ ಲಿಂಕ್‌ಗಳು / Quick Tools
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
+              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
+                <i class="fa-solid fa-screwdriver-wrench text-indigo-500"></i> ಕ್ವಿಕ್ ಲಿಂಕ್‌ಗಳು / Quick Tools
               </h3>
-              <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
-                <a href="StudentList.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-address-book text-sky-500 text-lg"></i>
-                  <span>ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
+              <div class="grid grid-cols-2 gap-3 text-xs font-bold">
+                <a href="StudentList.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-sky-50/50 hover:to-white dark:hover:from-sky-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-sky-350 dark:hover:border-sky-900/50 text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-sky-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-address-book"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-sky-700 dark:group-hover:text-sky-400 font-bold">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Student Directory</span>
+                  </div>
                 </a>
-                <a href="teachers.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-chalkboard-user text-emerald-500 text-lg"></i>
-                  <span>ಶಿಕ್ಷಕರ ವಿವರ</span>
+                
+                <a href="teachers.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-emerald-350 dark:hover:border-emerald-900/50 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 font-bold">ಶಿಕ್ಷಕರ ವಿವರ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Teacher Directory</span>
+                  </div>
                 </a>
-                <a href="BridgeCourse.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-book text-pink-500 text-lg"></i>
-                  <span>ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
+
+                <a href="BridgeCourse.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-pink-50/50 hover:to-white dark:hover:from-pink-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-pink-350 dark:hover:border-pink-900/50 text-slate-700 dark:text-slate-300 hover:text-pink-700 dark:hover:text-pink-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-pink-50 dark:bg-pink-950/50 text-pink-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-book-open"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-pink-700 dark:group-hover:text-pink-400 font-bold">ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Bridge Course</span>
+                  </div>
                 </a>
-                <a href="StudentUpdate.html" class="flex items-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition border text-slate-700 no-underline">
-                  <i class="fa-solid fa-user-pen text-amber-500 text-lg"></i>
-                  <span>ವಿವರ ತಿದ್ದುಪಡಿ</span>
+
+                <a href="StudentUpdate.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-amber-50/50 hover:to-white dark:hover:from-amber-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-amber-350 dark:hover:border-amber-900/50 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-user-pen"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-amber-400 font-bold">ವಿವರ ತಿದ್ದುಪಡಿ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Update Info</span>
+                  </div>
                 </a>
               </div>
             </div>
 
             <!-- Recent Activities -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-3">
-              <h3 class="text-xs font-bold text-slate-800 uppercase pb-2 border-b flex items-center gap-2">
-                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i> ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ಸ್ / Portal Updates
+            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
+              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
+                <i class="fa-solid fa-clock-rotate-left text-purple-500"></i> ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ಸ್ / Portal Updates
               </h3>
-              <div class="space-y-3 text-[11px] font-semibold text-slate-600">
-                <div class="flex items-start gap-2.5 pb-2 border-b border-dashed">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0"></span>
+              <div class="relative pl-4 border-l border-slate-150 dark:border-slate-800 space-y-5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                
+                <div class="relative">
+                  <!-- Bullet -->
+                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50 dark:ring-emerald-950/55 flex-shrink-0"></span>
                   <div>
-                    <p class="text-slate-850 font-bold text-xs">CSV ಆಮದು ಪೋರ್ಟಲ್ ಸಕ್ರಿಯವಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">Just Now</span>
+                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CSV ಆಮದು ಪೋರ್ಟಲ್ ಸಕ್ರಿಯವಾಗಿದೆ</p>
+                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">CSV Import Tool is active for student list uploading.</p>
+                    <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">Just Now</span>
                   </div>
                 </div>
-                <div class="flex items-start gap-2.5 pb-2 border-b border-dashed">
-                  <span class="w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0"></span>
+
+                <div class="relative">
+                  <!-- Bullet -->
+                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-950/55 flex-shrink-0"></span>
                   <div>
-                    <p class="text-slate-850 font-bold text-xs">CCE ಅಂಕಗಳ ಗ್ರಿಡ್ ಸ್ಥಳಾವಕಾಶ ಸುಧಾರಿಸಲಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">10 mins ago</span>
+                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CCE ಅಂಕಗಳ ಗ್ರಿಡ್ ಸ್ಥಳಾವಕಾಶ ಸುಧಾರಿಸಲಾಗಿದೆ</p>
+                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Optimized table rendering & layout density for marks entry grid.</p>
+                    <span class="text-[9px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 block">10 mins ago</span>
                   </div>
                 </div>
-                <div class="flex items-start gap-2.5">
-                  <span class="w-2 h-2 rounded-full bg-sky-500 mt-1.5 flex-shrink-0"></span>
+
+                <div class="relative">
+                  <!-- Bullet -->
+                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-sky-500 ring-4 ring-sky-50 dark:ring-sky-950/55 flex-shrink-0"></span>
                   <div>
-                    <p class="text-slate-850 font-bold text-xs">ಹೊಸ ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2026-27 ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</p>
-                    <span class="text-[9px] text-slate-400">1 hour ago</span>
+                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">ಹೊಸ ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2026-27 ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</p>
+                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Academic session has been updated to the current year 2026-27.</p>
+                    <span class="text-[9px] text-sky-600 dark:text-sky-400 font-semibold mt-1 block">1 hour ago</span>
                   </div>
                 </div>
               </div>
@@ -675,8 +733,21 @@
         });
 
         document.getElementById('totalStudents').innerText = totalStudents;
-        document.getElementById('genderStats').innerHTML = `<span class="text-sky-600">Boys: ${boys}</span> | <span class="text-amber-500">Girls: ${girls}</span>`;
-        document.getElementById('casteStats').innerText = `SC: ${castes['SC']} | ST: ${castes['ST']} | OBC: ${castes['OBC']} | Others: ${castes['Others']}`;
+        document.getElementById('genderStats').innerHTML = `
+          <span class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-md text-[11px] font-bold border border-sky-100/50 dark:border-sky-900/30">
+            <i class="fa-solid fa-mars text-[10px] opacity-75"></i> Boys: ${boys}
+          </span>
+          <span class="text-slate-300 dark:text-slate-700">/</span>
+          <span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-450 px-2 py-0.5 rounded-md text-[11px] font-bold border border-rose-100/50 dark:border-rose-900/30">
+            <i class="fa-solid fa-venus text-[10px] opacity-75"></i> Girls: ${girls}
+          </span>
+        `;
+        document.getElementById('casteStats').innerHTML = `
+          <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${castes['SC']}</span>
+          <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${castes['ST']}</span>
+          <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${castes['OBC']}</span>
+          <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${castes['Others']}</span>
+        `;
 
         const pendingBadge = document.getElementById('pendingBadge');
         if (pendingBadge) {
@@ -696,16 +767,30 @@
           const total = bCount + gCount;
 
           const row = document.createElement('tr');
-          row.className = 'hover:bg-slate-50';
+          row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors duration-150';
           row.innerHTML = `
-            <td class="px-4 py-1.5 font-semibold text-slate-900">${classLabels[c]}</td>
-            <td class="text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" class="text-sky-600 font-bold px-2">${bCount}</button>
+            <td class="px-4 py-2.5 font-bold text-slate-800 dark:text-slate-200">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-extrabold border border-slate-200/50 dark:border-slate-700/50">
+                ${classLabels[c]}
+              </span>
             </td>
-            <td class="text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" class="text-amber-600 font-bold px-2">${gCount}</button>
+            <td class="px-4 py-2.5 text-center">
+              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" 
+                      class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-bold transition border border-sky-100/50 dark:border-sky-900/30">
+                <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${bCount}
+              </button>
             </td>
-            <td class="text-center font-bold">${total}</td>
+            <td class="px-4 py-2.5 text-center">
+              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
+                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-450 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
+                <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
+              </button>
+            </td>
+            <td class="px-4 py-2.5 text-center">
+              <span class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
+                ${total}
+              </span>
+            </td>
           `;
           tbody.appendChild(row);
         });

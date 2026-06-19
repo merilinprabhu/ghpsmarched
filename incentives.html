@@ -129,6 +129,9 @@
     <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0 z-50">
       <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
         <div>
           <h1 id="schoolHeaderTitle" class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
@@ -136,6 +139,10 @@
         </div>
       </div>
       <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Dashboard Link -->
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1 no-print">
           <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
@@ -292,40 +299,73 @@
 
         <!-- Dashboard View (No Template Selected) -->
         <div id="dashboardView" class="space-y-6">
-          <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white p-6 rounded-2xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
-            <div>
-              <h2 class="text-xl font-bold flex items-center gap-2">
-                ಇನ್ಸೆಂಟಿವ್ಸ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Incentives Module
-              </h2>
-              <p class="text-xs text-indigo-200/80 mt-1">ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಿಸುವ ಸೌಲಭ್ಯಗಳ ಉಸ್ತುವಾರಿ (ಪಠ್ಯಪುಸ್ತಕ, ಸಮವಸ್ತ್ರ ಇತ್ಯಾದಿ)</p>
+          <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl border border-white/5">
+            <!-- Decorative radial glowing lights -->
+            <div class="absolute -left-16 -top-16 w-48 h-48 bg-indigo-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+            <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-emerald-500 rounded-full blur-3xl opacity-10 pointer-events-none"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-4 text-center md:text-left">
+              <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-2xl shadow-inner border border-white/10 backdrop-blur-md">
+                🎁
+              </div>
+              <div>
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight">
+                  ಇನ್ಸೆಂಟಿವ್ಸ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Incentives Portal
+                </h2>
+                <p class="text-xs text-slate-305 mt-1 font-medium tracking-wide">ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಿಸುವ ಸೌಲಭ್ಯಗಳ ಉಸ್ತುವಾರಿ (ಪಠ್ಯಪುಸ್ತಕ, ಸಮವಸ್ತ್ರ ಇತ್ಯಾದಿ) / Manage and Track Student Welfare Incentives.</p>
+              </div>
             </div>
-            <button onclick="showCreateForm()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2 border-none cursor-pointer">
-              <i class="fa-solid fa-plus"></i> ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚಿಸಿ / Create Incentive
-            </button>
+            
+            <div class="relative z-10 flex flex-wrap gap-2.5 text-xs font-bold no-print w-full md:w-auto justify-center">
+              <button onclick="seedDefaultIncentives()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl shadow-lg border border-white/10 transition-all duration-300 active:scale-[0.98] cursor-pointer flex items-center gap-2">
+                <i class="fa-solid fa-cloud-arrow-down text-indigo-400"></i> ಡಿಫಾಲ್ಟ್ ಲೋಡ್ ಮಾಡಿ / Load Defaults
+              </button>
+              <button onclick="showCreateForm()" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-5 py-3 rounded-2xl shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 active:scale-[0.98] border-none cursor-pointer flex items-center gap-2">
+                <i class="fa-solid fa-plus text-sm"></i> ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚಿಸಿ / Create Incentive
+              </button>
+            </div>
           </div>
 
           <!-- Overall Stats grid -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-              <div>
-                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ಒಟ್ಟು ವಿಭಾಗಗಳು / Active Categories</span>
-                <span id="statCategories" class="text-2xl font-black text-slate-800 mt-1 block">0</span>
+            <!-- Card 1 -->
+            <div class="group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 border border-indigo-100 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+              <div class="absolute -right-4 -bottom-4 text-indigo-100 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
+                <i class="fa-solid fa-gift"></i>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500"><i class="fa-solid fa-gift text-lg"></i></div>
+              <div class="z-10">
+                <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider block">ಒಟ್ಟು ವಿಭಾಗಗಳು / Active Categories</span>
+                <span id="statCategories" class="text-3xl font-extrabold text-slate-800 tracking-tight mt-1 block">0</span>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-indigo-200 z-10">
+                <i class="fa-solid fa-gift"></i>
+              </div>
             </div>
-            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-              <div>
-                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Students</span>
-                <span id="statStudents" class="text-2xl font-black text-slate-800 mt-1 block">0</span>
+            <!-- Card 2 -->
+            <div class="group relative overflow-hidden bg-gradient-to-br from-emerald-50/80 to-white/90 border border-emerald-100 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+              <div class="absolute -right-4 -bottom-4 text-emerald-100 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
+                <i class="fa-solid fa-users"></i>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500"><i class="fa-solid fa-users text-lg"></i></div>
+              <div class="z-10">
+                <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Students</span>
+                <span id="statStudents" class="text-3xl font-extrabold text-slate-800 tracking-tight mt-1 block">0</span>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-tr from-emerald-600 to-emerald-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-emerald-200 z-10">
+                <i class="fa-solid fa-users"></i>
+              </div>
             </div>
-            <div class="bg-slate-50 border border-slate-200/60 p-5 rounded-2xl flex items-center justify-between shadow-sm">
-              <div>
-                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">ವಿತರಣಾ ಪ್ರಗತಿ / Overall Completion</span>
-                <span id="statCompletion" class="text-2xl font-black text-indigo-600 mt-1 block">0%</span>
+            <!-- Card 3 -->
+            <div class="group relative overflow-hidden bg-gradient-to-br from-pink-50/80 to-white/90 border border-pink-100 p-5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+              <div class="absolute -right-4 -bottom-4 text-pink-100 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
+                <i class="fa-solid fa-circle-check"></i>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500"><i class="fa-solid fa-circle-check text-lg"></i></div>
+              <div class="z-10">
+                <span class="text-[10px] font-bold text-pink-600 uppercase tracking-wider block">ವಿತರಣಾ ಪ್ರಗತಿ / Overall Completion</span>
+                <span id="statCompletion" class="text-3xl font-extrabold text-pink-650 tracking-tight mt-1 block">0%</span>
+              </div>
+              <div class="w-12 h-12 bg-gradient-to-tr from-pink-600 to-pink-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-pink-200 z-10">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
             </div>
           </div>
 
@@ -375,15 +415,15 @@
               </div>
 
               <div class="mt-3">
-                <button type="button" onclick="addFieldRow()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 border border-indigo-200/50 cursor-pointer shadow-sm">
+                <button type="button" onclick="addFieldRow()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 border border-indigo-200/50 cursor-pointer shadow-sm transition duration-300 active:scale-[0.98]">
                   <i class="fa-solid fa-plus text-sm"></i> ಅಂಕಣ ಸೇರಿಸಿ / Add Field
                 </button>
               </div>
             </div>
 
             <div class="flex gap-3 pt-2">
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-md transition cursor-pointer border-none">ಕ್ರಿಯೇಟ್ ಪುಟ / Create Page</button>
-              <button type="button" onclick="hideCreateForm()" class="bg-slate-200 hover:bg-slate-350 text-slate-600 px-5 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer border-none">ರದ್ದುಗೊಳಿಸಿ / Cancel</button>
+              <button type="submit" class="bg-gradient-to-tr from-indigo-600 to-indigo-550 hover:from-indigo-700 hover:to-indigo-600 text-white px-5 py-3 rounded-2xl font-bold text-xs shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer border-none">ಕ್ರಿಯೇಟ್ ಪುಟ / Create Page</button>
+              <button type="button" onclick="hideCreateForm()" class="bg-slate-250 hover:bg-slate-300 text-slate-600 px-5 py-3 rounded-2xl font-bold text-xs transition-all duration-300 active:scale-[0.98] cursor-pointer border-none">ರದ್ದುಗೊಳಿಸಿ / Cancel</button>
             </div>
           </form>
         </div>
@@ -402,17 +442,19 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 no-print">
-              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
-                <i class="fa-solid fa-file-excel text-sm"></i> Excel ರಫ್ತು
+              <!-- Excel -->
+              <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
+                Export <i class="fa-solid fa-file-excel text-sm"></i>
               </button>
-              <button onclick="printPage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
-                <i class="fa-solid fa-print text-sm"></i> ಮುದ್ರಿಸು / Print
+              <!-- Print -->
+              <button onclick="printPage()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
+                Export <i class="fa-solid fa-print text-sm"></i>
               </button>
             </div>
           </div>
 
           <!-- Class Filter and Progress Panel -->
-          <div class="bg-slate-50/70 border border-slate-200/50 p-5 rounded-2xl grid grid-cols-1 md:grid-cols-3 gap-6 items-center no-print">
+          <div class="bg-slate-50/70 border border-slate-200/50 p-5 rounded-2xl grid grid-cols-1 md:grid-cols-4 gap-6 items-center no-print">
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ತರಗತಿ ಆರಿಸಿ / Filter Class</label>
               <select id="classSelector" onchange="loadClassData()" class="w-full bg-white border border-slate-250 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
@@ -432,6 +474,24 @@
               </select>
             </div>
 
+            <!-- Auto-Allocation Rule Selector -->
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಸ್ವಯಂ ವಿತರಣೆ / Auto-Allocate (Rule)</label>
+              <div class="flex gap-1.5">
+                <select id="autoAllocateRule" class="w-full bg-white border border-slate-250 rounded-xl px-3 py-2.5 text-[11px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                  <option value="">-- ನಿಯಮ ಆರಿಸಿ / Select Rule --</option>
+                  <option value="all">ಎಲ್ಲಾ ಮಕ್ಕಳಿಗೆ (All Students)</option>
+                  <option value="boys">ಗಂಡು ಮಕ್ಕಳಿಗೆ (Boys Only)</option>
+                  <option value="girls">ಹೆಣ್ಣು ಮಕ್ಕಳಿಗೆ (Girls Only)</option>
+                  <option value="sc_st">ಪರಿಶಿಷ್ಟ ಜಾತಿ / ಪಂಗಡ (SC / ST)</option>
+                  <option value="obc">ಇತರ ಹಿಂದುಳಿದ ವರ್ಗ (OBC)</option>
+                </select>
+                <button onclick="applyAutoAllocation()" class="bg-gradient-to-tr from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 active:scale-[0.98] border-none cursor-pointer flex items-center gap-1 shadow-sm shadow-indigo-100" title="Apply Auto-Allocation">
+                  <i class="fa-solid fa-bolt"></i>
+                </button>
+              </div>
+            </div>
+
             <div>
               <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಈ ತರಗತಿಯ ಪ್ರಗತಿ / Class Progress</span>
               <div class="flex items-center gap-3">
@@ -444,11 +504,11 @@
 
             <!-- Bulk actions -->
             <div class="flex gap-2 justify-end self-end">
-              <button onclick="handleBulkAction(true)" id="bulkCheckBtn" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 border border-indigo-500/20 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer">
+              <button onclick="handleBulkAction(true)" id="bulkCheckBtn" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 border border-indigo-500/20 px-3 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer">
                 <i class="fa-solid fa-square-check mr-1 text-sm"></i> ಎಲ್ಲರಿಗೂ ವಿತರಿಸು / Mark All
               </button>
-              <button onclick="handleBulkAction(false)" id="bulkClearBtn" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 border border-rose-500/20 px-3 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer">
-                <i class="fa-solid fa-square-xmark mr-1 text-sm"></i> ಎಲ್ಲ ತೆರವುಗೊಳಿಸು / Clear All
+              <button onclick="handleBulkAction(false)" id="bulkClearBtn" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 border border-rose-500/20 px-3 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer">
+                <i class="fa-solid fa-square-xmark mr-1 text-sm"></i> ತೆರವುಗೊಳಿಸಿ / Clear All
               </button>
             </div>
           </div>
@@ -487,11 +547,22 @@
 
           <!-- Student grid area -->
           <div class="space-y-3">
-            <div class="flex items-center justify-between no-print">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 no-print">
               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">ತರಗತಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / Student Distribution Roster</h3>
-              <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium bg-slate-100 px-3 py-1 rounded-full border">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                <span>Active Connection - Autosaver Active</span>
+              
+              <div class="flex flex-wrap items-center gap-3">
+                <!-- Search bar -->
+                <div class="relative min-w-[240px]">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                  </span>
+                  <input type="text" id="rosterSearchInput" oninput="filterRosterTable()" placeholder="ಹುಡುಕಿ / Search by name or STS No..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                </div>
+                
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium bg-slate-100 px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                  <span>Autosaver Active</span>
+                </div>
               </div>
             </div>
 
@@ -510,7 +581,7 @@
                 <thead>
                   <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
                     <th class="p-3 border-r border-slate-800 w-12 text-center no-print">Sl.No</th>
-                    <th class="p-3 border-r border-slate-800 w-24 text-center">App No</th>
+                    <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
                     <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
                     <!-- Dynamic column headers insert here -->
                   </tr>
@@ -1055,8 +1126,11 @@
 
       if (templates.length === 0) {
         grid.innerHTML = `
-          <div class="col-span-full text-center py-10 bg-slate-50 border border-dashed border-slate-300 rounded-2xl text-slate-400 text-sm font-semibold">
-            ಯಾವುದೇ ಇನ್ಸೆಂಟಿವ್ಸ್ ಪುಟಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಹೊಸ ಪುಟ ಸೃಜಿಸಿ.
+          <div class="col-span-full text-center py-12 bg-slate-50 border border-dashed border-slate-300 rounded-3xl text-slate-400 text-sm font-semibold flex flex-col items-center justify-center gap-4">
+            <div>ಯಾವುದೇ ಇನ್ಸೆಂಟಿವ್ಸ್ ಪುಟಗಳು ಕಂಡುಬಂದಿಲ್ಲ. / No incentive pages found.</div>
+            <button onclick="seedDefaultIncentives()" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-5 py-2.5 rounded-2xl shadow-md hover:shadow-indigo-500/20 transition-all duration-300 active:scale-[0.98] border-none cursor-pointer flex items-center gap-2 font-bold text-xs">
+              <i class="fa-solid fa-cloud-arrow-down"></i> ಡಿಫಾಲ್ಟ್ ಸ್ಕೀಮ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡಿ / Load Default Schemes
+            </button>
           </div>
         `;
         return;
@@ -1301,6 +1375,10 @@
       const cls = document.getElementById('classSelector').value;
       const tbody = document.getElementById('distributionTableBody');
 
+      // Clear search input on class load
+      const searchInput = document.getElementById('rosterSearchInput');
+      if (searchInput) searchInput.value = '';
+
       if (!cls || !selectedTemplate) {
         const cols = selectedTemplate ? (typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns) : [];
         tbody.innerHTML = `<tr><td colspan="${3 + cols.length}" class="p-8 text-center text-slate-400 font-bold text-sm">ತರಗತಿಯನ್ನು ಆರಿಸಿ ವಿದ್ಯಾರ್ಥಿ ಲಿಸ್ಟ್ ವೀಕ್ಷಿಸಿ. / Please select a class above.</td></tr>`;
@@ -1383,7 +1461,7 @@
       // 1. Rebuild headers
       theadTr.innerHTML = `
         <th class="p-3 border-r border-slate-800 w-12 no-print text-center">Sl.No</th>
-        <th class="p-3 border-r border-slate-800 w-24 text-center">App No</th>
+        <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
         <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
       `;
       
@@ -1761,7 +1839,7 @@
       const dataRows = students.map((s, index) => {
         const row = {
           'Sl.No': index + 1,
-          'App No': s.app_no,
+          'STS No': s.app_no,
           'Student Name': s.student_name,
           'Father Name': s.father_name_kn || ''
         };
@@ -1847,6 +1925,186 @@
       printArea.appendChild(sigRow);
       
       window.print();
+    }
+
+    async function seedDefaultIncentives() {
+      showSavingToast("Seeding default schemes...");
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+        if (!schoolId) throw new Error("No active school session.");
+
+        const defaults = [
+          {
+            school_id: schoolId,
+            name: "Textbooks / ಪಠ್ಯಪುಸ್ತಕಗಳು",
+            print_header: "TEXTBOOKS DISTRIBUTION REPORT",
+            print_footer: "Signature of Head Master / Class Teacher",
+            columns: [
+              { name: 'Medium / ಮಾಧ್ಯಮ', linked: true, linkSource: 'admissions', linkColumn: 'medium' },
+              { name: 'Textbooks Issued / ಪಠ್ಯಪುಸ್ತಕ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Notebooks Issued / ನೋಟ್‌ಬುಕ್ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Date Distributed / ವಿತರಿಸಿದ ದಿನಾಂಕ', type: 'text' }
+            ]
+          },
+          {
+            school_id: schoolId,
+            name: "Uniforms / ಸಮವಸ್ತ್ರಗಳು",
+            print_header: "UNIFORMS DISTRIBUTION REPORT",
+            print_footer: "Signature of Head Master / Class Teacher",
+            columns: [
+              { name: 'Gender / ಲಿಂಗ', linked: true, linkSource: 'admissions', linkColumn: 'gender' },
+              { name: 'Set 1 Issued / ಸೆಟ್ 1 ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Set 2 Issued / ಸೆಟ್ 2 ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Uniform Size / ಸಮವಸ್ತ್ರದ ಅಳತೆ', type: 'dropdown', options: ['Small', 'Medium', 'Large', 'XL'] }
+            ]
+          },
+          {
+            school_id: schoolId,
+            name: "Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್",
+            print_header: "SHOES & SOCKS DISTRIBUTION REPORT",
+            print_footer: "Signature of Head Master / Class Teacher",
+            columns: [
+              { name: 'Gender / ಲಿಂಗ', linked: true, linkSource: 'admissions', linkColumn: 'gender' },
+              { name: 'Shoes Size / ಶೂ ಅಳತೆ', type: 'dropdown', options: ['1', '2', '3', '4', '5', '6', '7'] },
+              { name: 'Shoes Issued / ಶೂ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Socks Issued / ಸಾಕ್ಸ್ ನೀಡಲಾಗಿದೆ', type: 'boolean' }
+            ]
+          },
+          {
+            school_id: schoolId,
+            name: "Bicycles / ಸೈಕಲ್ ವಿತರಣೆ",
+            print_header: "BICYCLES DISTRIBUTION REPORT",
+            print_footer: "Signature of Head Master / Class Teacher",
+            columns: [
+              { name: 'STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ', linked: true, linkSource: 'admissions', linkColumn: 'student_sts' },
+              { name: 'Bicycle Sl.No / ಸೈಕಲ್ ಸಂಖ್ಯೆ', type: 'text' },
+              { name: 'Received Acknowledgment / ಸ್ವೀಕೃತಿ ಪತ್ರ', type: 'boolean' }
+            ]
+          }
+        ];
+
+        const { error } = await supabaseClient.from('incentive_templates').insert(defaults);
+        if (error) throw error;
+
+        hideSavingToast("Default schemes loaded successfully!");
+        loadIncentiveTemplates();
+      } catch (err) {
+        console.error("Seeding failed:", err);
+        hideSavingToast("Seeding failed", true);
+        alert("ಸೀಡಿಂಗ್ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      }
+    }
+
+    function filterRosterTable() {
+      const query = document.getElementById('rosterSearchInput').value.toLowerCase().trim();
+      const rows = document.querySelectorAll('#distributionTableBody tr');
+      if (rows.length === 0 || (rows.length === 1 && rows[0].querySelector('td').colSpan > 3)) return;
+
+      rows.forEach(row => {
+        const appNo = row.cells[1] ? row.cells[1].innerText.toLowerCase() : '';
+        const name = row.cells[2] ? row.cells[2].innerText.toLowerCase() : '';
+        if (appNo.includes(query) || name.includes(query)) {
+          row.classList.remove('hidden');
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+    }
+
+    async function applyAutoAllocation() {
+      const rule = document.getElementById('autoAllocateRule').value;
+      if (!rule) {
+        alert("ದಯವಿಟ್ಟು ಮೊದಲು ನಿಯಮವನ್ನು ಆಯ್ಕೆಮಾಡಿ. / Please select a rule first.");
+        return;
+      }
+
+      if (students.length === 0) {
+        alert("ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ. / No students loaded.");
+        return;
+      }
+
+      let matchedStudents = [];
+      let ruleText = "";
+      if (rule === 'all') {
+        matchedStudents = students;
+        ruleText = "ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳು / All Students";
+      } else if (rule === 'boys') {
+        matchedStudents = students.filter(s => s.gender && (s.gender.toUpperCase() === 'MALE' || s.gender.toUpperCase() === 'BOY' || s.gender.toUpperCase() === 'BOYS' || s.gender === 'ಗಂಡು'));
+        ruleText = "ಕೇವಲ ಗಂಡು ಮಕ್ಕಳು / Boys Only";
+      } else if (rule === 'girls') {
+        matchedStudents = students.filter(s => s.gender && (s.gender.toUpperCase() === 'FEMALE' || s.gender.toUpperCase() === 'GIRL' || s.gender.toUpperCase() === 'GIRLS' || s.gender === 'ಹೆಣ್ಣು'));
+        ruleText = "ಕೇವಲ ಹೆಣ್ಣು ಮಕ್ಕಳು / Girls Only";
+      } else if (rule === 'sc_st') {
+        matchedStudents = students.filter(s => s.social_class === 'SC' || s.social_class === 'ST');
+        ruleText = "ಪರಿಶಿಷ್ಟ ಜಾತಿ / ಪಂಗಡ / SC/ST Category";
+      } else if (rule === 'obc') {
+        matchedStudents = students.filter(s => ['C1', '2A', '2B', '3A', '3B'].includes(s.social_class));
+        ruleText = "ಹಿಂದುಳಿದ ವರ್ಗಗಳು / OBC Category";
+      }
+
+      if (matchedStudents.length === 0) {
+        alert("ಈ ನಿಯಮಕ್ಕೆ ಹೊಂದುವ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಈ ತರಗತಿಯಲ್ಲಿಲ್ಲ. / No students match this rule in this class.");
+        return;
+      }
+
+      const confirmMsg = `ಆಯ್ಕೆ ಮಾಡಿದ ನಿಯಮ: "${ruleText}"\nಹೊಂದಿಕೆಯಾಗುವ ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ: ${matchedStudents.length}\n\nಈ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಣೆಯನ್ನು ನಮೂದಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?\nAre you sure you want to mark distribution for these ${matchedStudents.length} matching students?`;
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      showSavingToast("Applying auto-allocation...");
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id;
+        const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+
+        const promises = matchedStudents.map(student => {
+          if (!incentiveData[student.id]) {
+            incentiveData[student.id] = {};
+          }
+          
+          cols.forEach(col => {
+            if (col.linked === true || col.linked === 'true') {
+              return;
+            }
+            if (col.type === 'boolean') {
+              incentiveData[student.id][col.name] = true;
+            } else if (col.type === 'number') {
+              incentiveData[student.id][col.name] = '1';
+            } else if (col.type === 'dropdown') {
+              incentiveData[student.id][col.name] = col.options.length > 0 ? col.options[0] : 'Distributed';
+            } else {
+              incentiveData[student.id][col.name] = 'Distributed';
+            }
+          });
+
+          return supabaseClient
+            .from('student_incentives')
+            .upsert({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: incentiveData[student.id],
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'student_id,template_id'
+            });
+        });
+
+        const results = await Promise.all(promises);
+        const err = results.find(r => r.error);
+        if (err) throw err.error;
+
+        hideSavingToast("Auto-allocation completed");
+        renderDistributionTable();
+        document.getElementById('autoAllocateRule').value = '';
+      } catch (err) {
+        console.error("Auto-allocation failed:", err);
+        hideSavingToast("Failed", true);
+        alert("ಸ್ವಯಂ ವಿತರಣೆ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      }
     }
 
     async function handleLogout() {

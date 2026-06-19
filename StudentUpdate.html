@@ -158,6 +158,9 @@
         <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
       <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
         <div>
           <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
@@ -165,6 +168,10 @@
         </div>
       </div>
       <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Dashboard Link -->
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
           <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
@@ -315,49 +322,72 @@
         <div class="flex flex-col lg:flex-row gap-6">
           
           <!-- LEFT PANEL: Class Selector & Minimal Student List -->
-          <div class="w-full lg:w-2/5 bg-white p-4 rounded-xl border border-slate-200 flex flex-col max-h-[500px]">
+          <div class="w-full lg:w-2/5 bg-white p-4 rounded-xl border border-slate-200 flex flex-col max-h-[650px] min-h-[550px]">
             <div class="space-y-3 mb-3 pb-3 border-b">
-              <div>
-                <label for="class-filter" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Select Class / ತರಗತಿ</label>
-                <select id="class-filter" onchange="fetchRosterByClass(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
-                  <option value="">-- Choose Class --</option>
-                  <option value="LKG">LKG/KG1</option>
-                  <option value="UKG">UKG/KG2</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label for="class-filter" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Class / ತರಗತಿ</label>
+                  <select id="class-filter" onchange="fetchRosterByClass(this.value)" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
+                    <option value="ALL">-- All Classes --</option>
+                    <option value="LKG">LKG/KG1</option>
+                    <option value="UKG">UKG/KG2</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="gender-filter" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Gender / ಲಿಂಗ</label>
+                  <select id="gender-filter" onchange="applyRosterFiltersAndSort()" class="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
+                    <option value="ALL">-- All --</option>
+                    <option value="Boy">Boy / ಗಂಡು</option>
+                    <option value="Girl">Girl / ಹೆಣ್ಣು</option>
+                  </select>
+                </div>
               </div>
-
-              <div class="relative">
-                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-                </span>
-                <input type="text" id="roster-search" oninput="filterRosterList(this.value)" placeholder="Search student name..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50">
+              <div class="flex gap-2">
+                <div class="relative flex-1">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                  </span>
+                  <input type="text" id="roster-search" oninput="applyRosterFiltersAndSort()" placeholder="Search name/father/STS no..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50">
+                </div>
+                <button type="button" onclick="prepareNewStudent()" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-3 py-2 rounded-xl shadow-md hover:shadow-indigo-500/20 text-xs font-bold transition-all duration-300 flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer border-0" title="Add Student directly">
+                  <i class="fa-solid fa-plus text-xs"></i> <span>Add</span>
+                </button>
               </div>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar max-h-[300px]">
+            <div class="flex-1 overflow-y-auto custom-scrollbar max-h-[450px]">
               <table class="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider sticky top-0 z-10 text-center">
-                    <th class="p-2 w-12 text-center">Sl.No / ಕ್ರ.ಸಂ</th>
-                    <th class="p-2">ID</th>
-                    <th class="p-2 text-left">Student Name</th>
-                    <th class="p-2">Gender</th>
+                    <th class="p-2.5 w-12 text-center select-none">Sl.No</th>
+                    <th class="p-2.5 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('class')">
+                      Class <i id="sort-icon-class" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
+                    </th>
+                    <th class="p-2.5 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('app_no')">
+                      STS No <i id="sort-icon-app_no" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
+                    </th>
+                    <th class="p-2.5 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('name')">
+                      Student / Father Name <i id="sort-icon-name" class="fa-solid fa-sort text-[10px] ml-1 text-sky-400"></i>
+                    </th>
+                    <th class="p-2.5 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="toggleRosterSort('gender')">
+                      Gender <i id="sort-icon-gender" class="fa-solid fa-sort text-[10px] ml-1 opacity-45"></i>
+                    </th>
                   </tr>
                 </thead>
                 <tbody id="student-roster-body" class="divide-y divide-slate-100 text-slate-700 bg-white">
                   <tr>
-                    <td colspan="4" class="p-8 text-center text-slate-400 font-medium bg-slate-50/50">
-                      <i class="fa-solid fa-filter mr-1"></i> ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ / Select Class
+                    <td colspan="5" class="p-8 text-center text-slate-400 font-medium bg-slate-50/50">
+                      <i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-1.5"></i> Loading students list...
                     </td>
                   </tr>
                 </tbody>
@@ -375,10 +405,10 @@
                 </h2>
               </div>
               <div id="save-btn-container" class="hidden flex gap-2">
-                <button id="delete-record-btn" onclick="deleteActiveStudent()" class="bg-red-600 hover:bg-red-750 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer border-0">
+                <button id="delete-record-btn" onclick="deleteActiveStudent()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0">
                   <i class="fa-solid fa-trash text-sm"></i> ಅಳಿಸಿ / Delete
                 </button>
-                <button id="save-changes-btn" onclick="saveActiveStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer border-0">
+                <button id="save-changes-btn" onclick="saveActiveStudent()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-4 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
                   <i class="fa-solid fa-circle-check text-sm"></i> ವಿವರಗಳನ್ನು ಉಳಿಸಿ / Save
                 </button>
               </div>
@@ -512,6 +542,8 @@
     let activeRosterHeaders = [];
     let activeRosterStudents = [];
     let selectedStudentId = null;
+    let currentSortCol = 'name';
+    let currentSortDir = 'asc';
 
     document.addEventListener("DOMContentLoaded", async function() {
       await initUserAndTheme();
@@ -527,6 +559,10 @@
       const studentId = urlParams.get('id');
       if (studentId) {
         loadStudentDirectlyFromUrl(studentId);
+      } else {
+        const classFilter = document.getElementById('class-filter');
+        if (classFilter) classFilter.value = "ALL";
+        fetchRosterByClass("ALL");
       }
     });
 
@@ -544,18 +580,20 @@
       editForm.classList.add('hidden');
       saveBtn.classList.add('hidden');
 
-      if(!className) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium bg-slate-50/50"><i class="fa-solid fa-filter mr-1"></i> ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ / Select Class</td></tr>`;
-        return;
+      if (!className) {
+        className = "ALL";
       }
 
-      tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-1.5"></i> Loading roster database...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-1.5"></i> Loading roster database...</td></tr>`;
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = session?.user?.user_metadata?.school_id;
 
-        let query = supabaseClient.from('admissions').select('*').eq('enroll_class', className);
+        let query = supabaseClient.from('admissions').select('*');
+        if (className && className !== 'ALL') {
+          query = query.eq('enroll_class', className);
+        }
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -565,19 +603,30 @@
         if (error) throw error;
 
         activeRosterHeaders = [
-          "ID", "Application No", "Student Name", "Name English", "Date of Birth", "Gender", "Aadhaar Number", 
+          "ID", "STS No", "Academic Year", "Medium", 
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ", 
+          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್", 
+          "Class", "Date of Birth", "Gender", "Aadhaar Number", 
           "Religion", "Social Class", "Student's Caste", "Sub-Caste", "Mother Tongue", "Mobile Number", "Special Need", "Special Category", 
           "Bhagyalakshmi Bond", "Age Reason", "Address", "District", "Taluk", "Bank Account No", "IFSC Code", "Bank Address", "Scholarship No", 
-          "Student Caste Cert", "Student Income Cert", "BPL Card No", "Father Name KN", "Father Aadhaar", "Father Occupation", 
-          "Mother Name KN", "Mother Aadhaar", "Mother Occupation", "Preschool Board", "Preschool Type", "Preschool Name", 
+          "Student Caste Cert", "Student Income Cert", "BPL Card No", 
+          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ", 
+          "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", 
+          "Father Aadhaar", "Father Occupation", 
+          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ", 
+          "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)", 
+          "Mother Aadhaar", "Mother Occupation", "Preschool Board", "Preschool Type", "Preschool Name", 
           "Transfer No", "Transfer Date", "Student STS"
         ];
 
         activeRosterStudents = (data || []).map(s => ({
           "ID": s.id,
-          "Application No": s.app_no,
-          "Student Name": s.student_name,
-          "Name English": s.name_english,
+          "STS No": s.app_no,
+          "Academic Year": s.academic_year,
+          "Medium": s.medium,
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": s.student_name,
+          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": s.name_english,
+          "Class": s.enroll_class,
           "Date of Birth": s.dob,
           "Gender": s.gender,
           "Aadhaar Number": s.student_aadhaar,
@@ -601,10 +650,12 @@
           "Student Caste Cert": s.student_caste_cert,
           "Student Income Cert": s.student_income_cert,
           "BPL Card No": s.bpl_card_no,
-          "Father Name KN": s.father_name_kn,
+          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": s.father_name_kn,
+          "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": s.father_name_az,
           "Father Aadhaar": s.father_aadhaar,
           "Father Occupation": s.father_occupation,
-          "Mother Name KN": s.mother_name_kn,
+          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": s.mother_name_kn,
+          "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": s.mother_name_az,
           "Mother Aadhaar": s.mother_aadhaar,
           "Mother Occupation": s.mother_occupation,
           "Preschool Board": s.preschool_board,
@@ -615,9 +666,9 @@
           "Student STS": s.student_sts
         }));
 
-        renderStudentList(activeRosterStudents);
+        applyRosterFiltersAndSort();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-red-500 font-medium"><i class="fa-solid fa-circle-xmark mr-1"></i> Error: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-medium"><i class="fa-solid fa-circle-xmark mr-1"></i> Error: ${err.message}</td></tr>`;
       }
     }
 
@@ -625,36 +676,185 @@
       const tbody = document.getElementById('student-roster-body');
       
       if (!students || students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-amber-605 font-medium bg-amber-50/20"><i class="fa-solid fa-triangle-exclamation mr-1"></i> No records found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-amber-600 font-medium bg-amber-50/20"><i class="fa-solid fa-triangle-exclamation mr-1"></i> No records found</td></tr>`;
         return;
       }
 
       let rowsHtml = "";
       students.forEach((student, index) => {
         const idVal = student["ID"];
-        const nameVal = student["Student Name"] || "";
+        const appNo = student["STS No"] || '-';
+        const nameVal = student["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || "";
+        const fatherVal = student["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || student["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || "";
         const genderVal = student["Gender"] || "";
+        const classVal = student["Class"] || "-";
         
+        // Gender badge
+        const isBoy = (genderVal.toUpperCase() === 'BOY' || genderVal.toUpperCase() === 'MALE' || genderVal === 'ಗಂಡು');
+        const genderBadge = isBoy 
+          ? `<span class="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded text-[10px] font-bold">Boy</span>` 
+          : `<span class="bg-pink-50 text-pink-600 px-1.5 py-0.5 rounded text-[10px] font-bold">Girl</span>`;
+
+        // Class badge
+        const classBadge = `<span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] font-bold">${classVal}</span>`;
+
         rowsHtml += `
-          <tr id="roster-row-${idVal}" onclick="loadStudentForEditing('${idVal}')" class="hover:bg-sky-50 transition-colors cursor-pointer border-l-4 border-l-transparent text-center">
-            <td class="p-2.5 font-bold text-slate-400 text-center">${index + 1}</td>
-            <td class="p-2.5 font-semibold text-slate-500 font-mono text-left">${student["Application No"] || '-'}</td>
-            <td class="p-2.5 font-medium text-slate-800 uppercase text-left">${nameVal}</td>
-            <td class="p-2.5">${genderVal}</td>
+          <tr id="roster-row-${idVal}" onclick="loadStudentForEditing('${idVal}')" class="hover:bg-sky-50 transition-colors cursor-pointer border-l-4 border-l-transparent text-center border-b border-slate-100">
+            <td class="p-2 text-center text-slate-400 font-medium">${index + 1}</td>
+            <td class="p-2 text-center">${classBadge}</td>
+            <td class="p-2 font-mono text-slate-500 font-semibold text-left">${appNo}</td>
+            <td class="p-2 text-left">
+              <div class="font-bold text-slate-800 uppercase text-xs">${nameVal}</div>
+              ${fatherVal ? `<div class="text-[10px] text-slate-400 font-medium uppercase mt-0.5">S/O: ${fatherVal}</div>` : ''}
+            </td>
+            <td class="p-2 text-center">${genderBadge}</td>
           </tr>
         `;
       });
       tbody.innerHTML = rowsHtml;
     }
 
-    function filterRosterList(query) {
-      const q = query.trim().toUpperCase();
-      const filtered = activeRosterStudents.filter(student => {
-        const name = (student["Student Name"] || '').toUpperCase();
-        const id = (student["Application No"] || '').toUpperCase();
-        return name.includes(q) || id.includes(q);
+    function compareClasses(a, b) {
+      const getWeight = (cls) => {
+        if (!cls) return 99;
+        const clean = cls.toString().trim().toUpperCase();
+        if (clean === 'LKG') return 0;
+        if (clean === 'UKG') return 1;
+        const num = parseInt(clean);
+        if (!isNaN(num)) return num + 2;
+        return 99;
+      };
+      return getWeight(a) - getWeight(b);
+    }
+
+    function toggleRosterSort(col) {
+      if (currentSortCol === col) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortCol = col;
+        currentSortDir = 'asc';
+      }
+      
+      const cols = ['class', 'app_no', 'name', 'gender'];
+      cols.forEach(c => {
+        const icon = document.getElementById(`sort-icon-${c}`);
+        if (icon) {
+          if (c === currentSortCol) {
+            icon.className = `fa-solid fa-sort-${currentSortDir === 'asc' ? 'up' : 'down'} text-[10px] ml-1 text-sky-400`;
+            icon.style.opacity = '1';
+          } else {
+            icon.className = 'fa-solid fa-sort text-[10px] ml-1 opacity-40';
+            icon.style.opacity = '0.4';
+          }
+        }
       });
+      
+      applyRosterFiltersAndSort();
+    }
+
+    function applyRosterFiltersAndSort() {
+      const q = document.getElementById('roster-search').value.trim().toUpperCase();
+      const selectedClass = document.getElementById('class-filter').value;
+      const selectedGender = document.getElementById('gender-filter').value;
+      
+      let filtered = activeRosterStudents.filter(student => {
+        // Search match
+        const nameMatch = (student["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '').toUpperCase().includes(q) ||
+                          (student["Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್"] || '').toUpperCase().includes(q);
+        const appNoMatch = (student["STS No"] || '').toUpperCase().includes(q);
+        const fatherMatch = (student["Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ"] || '').toUpperCase().includes(q) ||
+                            (student["Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)"] || '').toUpperCase().includes(q);
+        const searchMatch = !q || nameMatch || appNoMatch || fatherMatch;
+        
+        // Class match
+        const classMatch = selectedClass === 'ALL' || !selectedClass || student["Class"] === selectedClass;
+        
+        // Gender match
+        let genderMatch = true;
+        if (selectedGender && selectedGender !== 'ALL') {
+          const isBoy = (student["Gender"] || '').toUpperCase() === 'BOY' || (student["Gender"] || '').toUpperCase() === 'MALE' || student["Gender"] === 'ಗಂಡು';
+          if (selectedGender === 'Boy') genderMatch = isBoy;
+          if (selectedGender === 'Girl') genderMatch = !isBoy;
+        }
+        
+        return searchMatch && classMatch && genderMatch;
+      });
+      
+      // Sorting
+      filtered.sort((a, b) => {
+        let valA = '', valB = '';
+        if (currentSortCol === 'class') {
+          valA = a["Class"] || '';
+          valB = b["Class"] || '';
+          return compareClasses(valA, valB) * (currentSortDir === 'asc' ? 1 : -1);
+        } else if (currentSortCol === 'app_no') {
+          valA = a["STS No"] || '';
+          valB = b["STS No"] || '';
+        } else if (currentSortCol === 'gender') {
+          valA = a["Gender"] || '';
+          valB = b["Gender"] || '';
+        } else { // 'name'
+          valA = a["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
+          valB = b["Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"] || '';
+        }
+        
+        if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+        if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+      
       renderStudentList(filtered);
+    }
+
+    function calculateFieldSortOrder() {
+      const pinned = [
+        "STS No",
+        "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
+        "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್",
+        "Class",
+        "Date of Birth",
+        "Gender",
+        "Student STS",
+        "Aadhaar Number"
+      ];
+
+      const dynamicHeaders = activeRosterHeaders.filter(h => h !== "ID" && !pinned.includes(h));
+
+      const fillRates = {};
+      dynamicHeaders.forEach(header => {
+        let filledCount = 0;
+        activeRosterStudents.forEach(student => {
+          const val = student[header];
+          if (val !== undefined && val !== null && val.toString().trim() !== "") {
+            filledCount++;
+          }
+        });
+        fillRates[header] = activeRosterStudents.length > 0 ? (filledCount / activeRosterStudents.length) : 0;
+      });
+
+      dynamicHeaders.sort((a, b) => {
+        const rateA = fillRates[a];
+        const rateB = fillRates[b];
+        if (rateB !== rateA) {
+          return rateB - rateA; // Descending
+        }
+        return activeRosterHeaders.indexOf(a) - activeRosterHeaders.indexOf(b);
+      });
+
+      const finalOrder = [];
+      if (activeRosterHeaders.includes("ID")) {
+        finalOrder.push("ID");
+      }
+      
+      pinned.forEach(h => {
+        if (activeRosterHeaders.includes(h)) {
+          finalOrder.push(h);
+        }
+      });
+
+      finalOrder.push(...dynamicHeaders);
+
+      return { finalOrder, fillRates };
     }
 
     function loadStudentForEditing(studentId) {
@@ -682,13 +882,41 @@
       if (!student) return;
 
       fieldsGrid.innerHTML = "";
-      activeRosterHeaders.forEach(header => {
+      const { finalOrder, fillRates } = calculateFieldSortOrder();
+      
+      finalOrder.forEach(header => {
         const wrapper = document.createElement("div");
         wrapper.className = "flex flex-col space-y-1";
 
         const label = document.createElement("label");
-        label.className = "text-[11px] font-bold text-slate-500 uppercase tracking-tight";
-        label.textContent = header;
+        label.className = "text-[11px] font-bold text-slate-500 uppercase tracking-tight flex items-center justify-between";
+        
+        const labelTextSpan = document.createElement("span");
+        labelTextSpan.textContent = header;
+        label.appendChild(labelTextSpan);
+
+        const pinnedList = [
+          "STS No",
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
+          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್",
+          "Class",
+          "Date of Birth",
+          "Gender",
+          "Student STS",
+          "Aadhaar Number"
+        ];
+        if (header !== "ID") {
+          const badgeSpan = document.createElement("span");
+          if (pinnedList.includes(header)) {
+            badgeSpan.className = "text-[8px] text-sky-500 bg-sky-50 px-1 py-0.2 rounded font-bold tracking-widest uppercase flex items-center gap-0.5";
+            badgeSpan.innerHTML = `<i class="fa-solid fa-thumbtack text-[7px]"></i> Pinned`;
+          } else {
+            const pct = Math.round((fillRates[header] || 0) * 100);
+            badgeSpan.className = `text-[8px] font-bold px-1 py-0.2 rounded ${pct > 75 ? 'text-emerald-600 bg-emerald-50' : pct > 30 ? 'text-amber-600 bg-amber-50' : 'text-slate-400 bg-slate-50'}`;
+            badgeSpan.textContent = `${pct}% filled`;
+          }
+          label.appendChild(badgeSpan);
+        }
 
         const input = document.createElement("input");
         input.name = header;
@@ -729,9 +957,12 @@
       const formData = new FormData(form);
       
       const dbMapping = {
-        "Application No": "app_no",
-        "Student Name": "student_name",
-        "Name English": "name_english",
+        "Academic Year": "academic_year",
+        "Medium": "medium",
+        "STS No": "app_no",
+        "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": "student_name",
+        "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": "name_english",
+        "Class": "enroll_class",
         "Date of Birth": "dob",
         "Gender": "gender",
         "Aadhaar Number": "student_aadhaar",
@@ -755,10 +986,12 @@
         "Student Caste Cert": "student_caste_cert",
         "Student Income Cert": "student_income_cert",
         "BPL Card No": "bpl_card_no",
-        "Father Name KN": "father_name_kn",
+        "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": "father_name_kn",
+        "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": "father_name_az",
         "Father Aadhaar": "father_aadhaar",
         "Father Occupation": "father_occupation",
-        "Mother Name KN": "mother_name_kn",
+        "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": "mother_name_kn",
+        "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": "mother_name_az",
         "Mother Aadhaar": "mother_aadhaar",
         "Mother Occupation": "mother_occupation",
         "Preschool Board": "preschool_board",
@@ -770,7 +1003,8 @@
       };
 
       const payload = {};
-      activeRosterHeaders.forEach(header => {
+      let headersToExtract = [...activeRosterHeaders];
+      headersToExtract.forEach(header => {
         if (header !== "ID" && dbMapping[header]) {
           let val = formData.get(header) || "";
           if ((header.includes("Date") || header.includes("DOB")) && !val) {
@@ -784,25 +1018,102 @@
       saveBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin text-sm"></i> Saving...`;
 
       try {
-        const { error } = await supabaseClient
-          .from('admissions')
-          .update(payload)
-          .eq('id', selectedStudentId);
+        let responseError;
+        if (selectedStudentId === "NEW") {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            payload.school_id = session.user.user_metadata?.school_id || null;
+            payload.created_by = session.user.id || null;
+          }
+          const className = document.getElementById('class-filter').value;
+          payload.enroll_class = className;
+          payload.is_admitted = true;
 
-        if (error) throw error;
+          const { data, error } = await supabaseClient
+            .from('admissions')
+            .insert([payload])
+            .select();
 
-        showToast("ವಿದ್ಯಾರ್ಥಿ ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "fa-circle-check", "text-emerald-400");
+          responseError = error;
+
+          if (!error && data && data.length > 0) {
+            const newStudent = data[0];
+            const newRosterStudent = {
+              "ID": newStudent.id,
+              "STS No": newStudent.app_no,
+              "Academic Year": newStudent.academic_year,
+              "Medium": newStudent.medium,
+              "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": newStudent.student_name,
+              "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": newStudent.name_english,
+              "Class": newStudent.enroll_class,
+              "Date of Birth": newStudent.dob,
+              "Gender": newStudent.gender,
+              "Aadhaar Number": newStudent.student_aadhaar,
+              "Religion": newStudent.religion,
+              "Social Class": newStudent.social_class,
+              "Student's Caste": newStudent.caste,
+              "Sub-Caste": newStudent.student_caste,
+              "Mother Tongue": newStudent.mother_tongue,
+              "Mobile Number": newStudent.mobile_number,
+              "Special Need": newStudent.special_need,
+              "Special Category": newStudent.special_category,
+              "Bhagyalakshmi Bond": newStudent.bhagyalakshmi_bond,
+              "Age Reason": newStudent.age_reason,
+              "Address": newStudent.address,
+              "District": newStudent.district,
+              "Taluk": newStudent.taluk,
+              "Bank Account No": newStudent.bank_acc_no,
+              "IFSC Code": newStudent.ifsc_code,
+              "Bank Address": newStudent.bank_address,
+              "Scholarship No": newStudent.scholarship_no,
+              "Student Caste Cert": newStudent.student_caste_cert,
+              "Student Income Cert": newStudent.student_income_cert,
+              "BPL Card No": newStudent.bpl_card_no,
+              "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": newStudent.father_name_kn,
+              "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.father_name_az,
+              "Father Aadhaar": newStudent.father_aadhaar,
+              "Father Occupation": newStudent.father_occupation,
+              "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": newStudent.mother_name_kn,
+              "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": newStudent.mother_name_az,
+              "Mother Aadhaar": newStudent.mother_aadhaar,
+              "Mother Occupation": newStudent.mother_occupation,
+              "Preschool Board": newStudent.preschool_board,
+              "Preschool Type": newStudent.preschool_type,
+              "Preschool Name": newStudent.preschool_name,
+              "Transfer No": newStudent.transfer_no,
+              "Transfer Date": newStudent.transfer_date,
+              "Student STS": newStudent.student_sts
+            };
+            activeRosterStudents.push(newRosterStudent);
+            renderStudentList(activeRosterStudents);
+            
+            selectedStudentId = newStudent.id;
+            loadStudentForEditing(selectedStudentId);
+          }
+        } else {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update(payload)
+            .eq('id', selectedStudentId);
+          responseError = error;
+        }
+
+        if (responseError) throw responseError;
+
+        showToast(selectedStudentId === "NEW" ? "ಹೊಸ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ." : "ವಿದ್ಯಾರ್ಥಿ ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "fa-circle-check", "text-emerald-400");
         
-        const studentIdx = activeRosterStudents.findIndex(s => s["ID"] === selectedStudentId);
-        if (studentIdx !== -1) {
-          activeRosterHeaders.forEach(header => {
-            if (header !== "ID") {
-              activeRosterStudents[studentIdx][header] = formData.get(header) || "";
-            }
-          });
-          renderStudentList(activeRosterStudents);
-          const row = document.getElementById(`roster-row-${selectedStudentId}`);
-          if (row) row.classList.add('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
+        if (selectedStudentId !== "NEW") {
+          const studentIdx = activeRosterStudents.findIndex(s => s["ID"] === selectedStudentId);
+          if (studentIdx !== -1) {
+            activeRosterHeaders.forEach(header => {
+              if (header !== "ID") {
+                activeRosterStudents[studentIdx][header] = formData.get(header) || "";
+              }
+            });
+            renderStudentList(activeRosterStudents);
+            const row = document.getElementById(`roster-row-${selectedStudentId}`);
+            if (row) row.classList.add('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
+          }
         }
       } catch (err) {
         console.error("Save error:", err);
@@ -811,6 +1122,112 @@
         saveBtn.disabled = false;
         saveBtn.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i> ವಿವರಗಳನ್ನು ಉಳಿಸಿ / Save Student`;
       }
+    }
+
+    function prepareNewStudent() {
+      selectedStudentId = "NEW";
+      
+      // Highlight none of the rows in student sidebar
+      document.querySelectorAll('#student-roster-body tr').forEach(row => {
+        row.classList.remove('bg-sky-50/80', 'border-l-sky-600', 'font-bold');
+      });
+
+      // Show editor
+      document.getElementById('empty-editor-state').classList.add('hidden');
+      document.getElementById('dynamic-edit-form').classList.remove('hidden');
+      document.getElementById('save-btn-container').classList.remove('hidden');
+      
+      const fieldsGrid = document.getElementById('dynamic-fields-grid');
+      fieldsGrid.innerHTML = "";
+      
+      const { finalOrder, fillRates } = calculateFieldSortOrder();
+      const currentFilterClass = document.getElementById('class-filter').value;
+      
+      finalOrder.forEach(header => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "flex flex-col space-y-1";
+
+        const label = document.createElement("label");
+        label.className = "text-[11px] font-bold text-slate-500 uppercase tracking-tight flex items-center justify-between";
+        
+        const labelTextSpan = document.createElement("span");
+        labelTextSpan.textContent = header;
+        label.appendChild(labelTextSpan);
+
+        const pinnedList = [
+          "STS No",
+          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ",
+          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್",
+          "Class",
+          "Date of Birth",
+          "Gender",
+          "Student STS",
+          "Aadhaar Number"
+        ];
+        if (header !== "ID") {
+          const badgeSpan = document.createElement("span");
+          if (pinnedList.includes(header)) {
+            badgeSpan.className = "text-[8px] text-sky-500 bg-sky-50 px-1 py-0.2 rounded font-bold tracking-widest uppercase flex items-center gap-0.5";
+            badgeSpan.innerHTML = `<i class="fa-solid fa-thumbtack text-[7px]"></i> Pinned`;
+          } else {
+            const pct = Math.round((fillRates[header] || 0) * 100);
+            badgeSpan.className = `text-[8px] font-bold px-1 py-0.2 rounded ${pct > 75 ? 'text-emerald-600 bg-emerald-50' : pct > 30 ? 'text-amber-600 bg-amber-50' : 'text-slate-400 bg-slate-50'}`;
+            badgeSpan.textContent = `${pct}% filled`;
+          }
+          label.appendChild(badgeSpan);
+        }
+
+        let input;
+        if (header === "Medium") {
+          input = document.createElement("select");
+          input.name = header;
+          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
+          input.innerHTML = `<option value="ಕನ್ನಡ">ಕನ್ನಡ</option><option value="ENGLISH">ENGLISH</option>`;
+        } else if (header === "Academic Year") {
+          input = document.createElement("select");
+          input.name = header;
+          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
+          input.innerHTML = `<option value="2026-27">2026-27</option><option value="2025-26">2025-26</option>`;
+        } else {
+          input = document.createElement("input");
+          input.name = header;
+          input.className = "w-full p-2 border border-slate-300 rounded-xl text-xs font-medium bg-slate-50/40 focus:bg-white transition focus:outline-none focus:ring-2 focus:ring-sky-500";
+          
+          if (header === "ID") {
+            input.readOnly = true;
+            input.value = "AUTO-GENERATED";
+            input.className += " bg-slate-100 text-slate-500 font-mono";
+          } else if (header === "STS No") {
+            input.placeholder = "e.g. 9-digit STS No";
+          } else if (header === "Class") {
+            if (currentFilterClass && currentFilterClass !== "ALL") {
+              input.value = currentFilterClass;
+            }
+          } else if (header.includes("Date") || header.includes("DOB")) {
+            input.type = "date";
+            if (!header.includes("DOB") && !header.includes("Birth")) {
+              let today = new Date();
+              let dateString = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, "0")}-${today.getDate().toString().padStart(2, "0")}`;
+              input.value = dateString;
+            }
+          } else {
+            input.type = "text";
+          }
+          
+          if (input.type === "text" && !input.readOnly) {
+            input.style.textTransform = "uppercase";
+            input.addEventListener("blur", function() {
+              input.value = input.value.toUpperCase();
+            });
+          }
+        }
+        
+        wrapper.appendChild(label);
+        wrapper.appendChild(input);
+        fieldsGrid.appendChild(wrapper);
+      });
+      
+      document.getElementById('editor-wrapper').scrollTop = 0;
     }
 
     async function loadStudentDirectlyFromUrl(studentId) {
@@ -841,7 +1258,7 @@
     async function deleteActiveStudent() {
       if (!selectedStudentId) return;
 
-      const nameInput = document.querySelector('[name="Student Name"]');
+      const nameInput = document.querySelector('[name="Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ"]');
       const studentName = nameInput ? nameInput.value : "ವಿದ್ಯಾರ್ಥಿ";
 
       if (!confirm(`ಎಚ್ಚರಿಕೆ! ನಿಜವಾಗಿಯೂ ${studentName} ಅವರ ದಾಖಲೆಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nWarning! Are you sure you want to permanently delete ${studentName}'s record?`)) {

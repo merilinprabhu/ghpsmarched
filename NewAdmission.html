@@ -2,7 +2,6 @@
 <html lang="kn">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="mock-backend.js"></script>
   <meta charset="UTF-8">
   <base target="_top">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -378,7 +377,7 @@
       </div>
     </div>
 
-    <button type="button" id="submitBtn" onclick="showPreviewSection(event)" class="btn btn-submit w-100 mt-4" style="background: linear-gradient(135deg, #0284c7, #0369a1);">ಮುನ್ನೋಟ / Preview</button>
+    <button type="button" id="submitBtn" onclick="showPreviewSection(event)" class="btn btn-submit w-100 mt-4" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 16px; border: 0; font-weight: 700; padding: 12px; font-size: 16px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(2, 132, 199, 0.45)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(2, 132, 199, 0.3)';" onmousedown="this.style.transform='scale(0.98)';" onmouseup="this.style.transform='scale(1.02)';">ಮುನ್ನೋಟ / Preview</button>
   </form>
 </div>
 
@@ -412,8 +411,8 @@
         <input type="text" id="modalCasteEn" class="form-control" placeholder="e.g. Kuruba">
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeCasteModal()">ರದ್ದುಮಾಡಿ / Cancel</button>
-        <button type="button" class="btn btn-primary px-4 text-xs font-bold" onclick="saveNewCaste()" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 0;">ಉಳಿಸಿ / Save</button>
+        <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeCasteModal()" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ರದ್ದುಮಾಡಿ / Cancel</button>
+        <button type="button" class="btn btn-primary px-4 text-xs font-bold" onclick="saveNewCaste()" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 0; border-radius: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ಉಳಿಸಿ / Save</button>
       </div>
     </div>
   </div>
@@ -436,8 +435,8 @@
         <input type="text" id="modalOccEn" class="form-control" placeholder="e.g. Teacher">
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
-        <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeOccupationModal()">ರದ್ದುಮಾಡಿ / Cancel</button>
-        <button type="button" class="btn btn-primary px-4 text-xs font-bold" onclick="saveNewOccupation()" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 0;">ಉಳಿಸಿ / Save</button>
+        <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeOccupationModal()" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ರದ್ದುಮಾಡಿ / Cancel</button>
+        <button type="button" class="btn btn-primary px-4 text-xs font-bold" onclick="saveNewOccupation()" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 0; border-radius: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ಉಳಿಸಿ / Save</button>
       </div>
     </div>
   </div>
@@ -1217,7 +1216,7 @@
           window.open(url, "_top");
         }).getWebAppUrl();
       } else {
-        window.location.href = "index.html";
+        window.location.href = "dashboard.html";
       }
     }
   }

@@ -130,6 +130,9 @@
     <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0 z-50">
       <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
         <div>
           <h1 id="schoolHeaderTitle" class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
@@ -137,6 +140,10 @@
         </div>
       </div>
       <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Dashboard Link -->
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1 no-print">
           <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
@@ -394,11 +401,13 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2 no-print">
-              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
-                <i class="fa-solid fa-file-excel text-sm"></i> Excel ರಫ್ತು
+              <!-- Excel -->
+              <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
+                Export <i class="fa-solid fa-file-excel text-sm"></i>
               </button>
-              <button onclick="printPage()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md transition flex items-center gap-1.5 cursor-pointer border-none">
-                <i class="fa-solid fa-print text-sm"></i> ಮುದ್ರಿಸು / Print
+              <!-- Print -->
+              <button onclick="printPage()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
+                Export <i class="fa-solid fa-print text-sm"></i>
               </button>
             </div>
           </div>
@@ -460,7 +469,7 @@
                 <thead>
                   <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
                     <th class="p-3 border-r border-slate-800 w-12 text-center no-print">Sl.No</th>
-                    <th class="p-3 border-r border-slate-800 w-24 text-center">App No</th>
+                    <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
                     <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
                     <!-- Dynamic column headers insert here -->
                   </tr>
@@ -1117,7 +1126,7 @@
       const thead = document.querySelector('#recordsTable thead tr');
       thead.innerHTML = `
         <th class="p-3 border-r border-slate-800 w-12 text-center no-print">Sl.No</th>
-        <th class="p-3 border-r border-slate-800 w-24 text-center">App No</th>
+        <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
         <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
       `;
 

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -174,6 +174,9 @@
         <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
       <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
         <div>
           <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
@@ -181,6 +184,10 @@
         </div>
       </div>
       <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Dashboard Link -->
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
           <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
@@ -379,34 +386,34 @@
         </div>
 
         <!-- Actions Row -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-4 rounded-xl border border-slate-200 no-print text-xs font-semibold">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
           <div class="flex flex-wrap items-center gap-2">
             <!-- Download Template -->
-            <button onclick="downloadCSVTemplate()" class="bg-indigo-650 hover:bg-indigo-750 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer bg-indigo-600 hover:bg-indigo-700">
-              <i class="fa-solid fa-file-arrow-down"></i> Template CSV
+            <button onclick="downloadCSVTemplate()" class="bg-gradient-to-tr from-slate-600 to-slate-500 hover:from-slate-700 hover:to-slate-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-500/20 active:scale-[0.98] cursor-pointer border-0">
+              Template CSV <i class="fa-solid fa-file-arrow-down"></i>
             </button>
             <!-- Import CSV -->
             <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
-            <button onclick="triggerCSVImport()" class="bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer">
-              <i class="fa-solid fa-file-import"></i> Import CSV
+            <button onclick="triggerCSVImport()" class="bg-gradient-to-tr from-sky-600 to-cyan-500 hover:from-sky-700 hover:to-cyan-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-sky-500/20 active:scale-[0.98] cursor-pointer border-0">
+              Import CSV <i class="fa-solid fa-file-import"></i>
             </button>
             <!-- Manage Columns -->
-            <button onclick="openManageColumnsModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer">
-              <i class="fa-solid fa-sliders"></i> Manage Columns
+            <button onclick="openManageColumnsModal()" class="bg-gradient-to-tr from-slate-700 to-slate-650 hover:from-slate-800 hover:to-slate-700 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-700/20 active:scale-[0.98] cursor-pointer border-0">
+              Manage Columns <i class="fa-solid fa-sliders"></i>
             </button>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <!-- Excel -->
-            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer">
-              <i class="fa-solid fa-file-excel"></i> Excel Export
+            <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
+              Export <i class="fa-solid fa-file-excel"></i>
             </button>
             <!-- PDF -->
-            <button onclick="exportToPdf()" class="bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer">
-              <i class="fa-solid fa-file-pdf"></i> PDF Export
+            <button onclick="exportToPdf()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0">
+              Export <i class="fa-solid fa-file-pdf"></i>
             </button>
             <!-- Print -->
-            <button onclick="printStudentList()" class="bg-slate-800 hover:bg-slate-750 text-white px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow border-0 cursor-pointer">
-              <i class="fa-solid fa-print"></i> Print
+            <button onclick="printStudentList()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
+              Export <i class="fa-solid fa-print"></i>
             </button>
           </div>
         </div>
@@ -414,43 +421,58 @@
         <!-- 4 Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 no-print">
           <!-- Card 1 -->
-          <div class="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-10 h-10 bg-sky-500 text-white rounded-xl flex items-center justify-center text-lg shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-file-invoice"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-sky-600 uppercase tracking-wider">ಒಟ್ಟು ಬಾಕಿ ಅರ್ಜಿಗಳು</p>
-              <h3 id="total-count" class="text-base font-extrabold text-sky-950 mt-0.5">0</h3>
+            <div class="w-12 h-12 bg-gradient-to-tr from-sky-500 to-sky-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-sky-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">ಒಟ್ಟು ಬಾಕಿ ಅರ್ಜಿಗಳು / Total Pending</p>
+              <h3 id="total-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
             </div>
           </div>
+          
           <!-- Card 2 -->
-          <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center text-lg shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-indigo-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-indigo-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-mars"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">ಗಂಡು ಮಕ್ಕಳ ಅರ್ಜಿ</p>
-              <h3 id="boys-count" class="text-base font-extrabold text-indigo-950 mt-0.5">0</h3>
+            <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-indigo-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-mars"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">ಗಂಡು ಮಕ್ಕಳ ಅರ್ಜಿ / Boys Applications</p>
+              <h3 id="boys-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
             </div>
           </div>
+          
           <!-- Card 3 -->
-          <div class="bg-pink-50 border border-pink-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-10 h-10 bg-pink-500 text-white rounded-xl flex items-center justify-center text-lg shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-pink-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-pink-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-pink-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-venus"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-pink-600 uppercase tracking-wider">ಹೆಣ್ಣು ಮಕ್ಕಳ ಅರ್ಜಿ</p>
-              <h3 id="girls-count" class="text-base font-extrabold text-pink-950 mt-0.5">0</h3>
+            <div class="w-12 h-12 bg-gradient-to-tr from-pink-600 to-pink-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-pink-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-venus"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider">ಹೆಣ್ಣು ಮಕ್ಕಳ ಅರ್ಜಿ / Girls Applications</p>
+              <h3 id="girls-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
             </div>
           </div>
+          
           <!-- Card 4 -->
-          <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-            <div class="w-10 h-10 bg-amber-500 text-white rounded-xl flex items-center justify-center text-lg shadow">
+          <div class="group relative overflow-hidden bg-gradient-to-br from-amber-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-amber-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="absolute -right-4 -bottom-4 text-amber-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-wheelchair"></i>
             </div>
-            <div>
-              <p class="text-[10px] font-bold text-amber-600 uppercase tracking-wider">ವಿಶೇಷ ಅಗತ್ಯವುಳ್ಳ ಮಕ್ಕಳು</p>
-              <h3 id="cwsn-count" class="text-base font-extrabold text-amber-950 mt-0.5">0</h3>
+            <div class="w-12 h-12 bg-gradient-to-tr from-amber-600 to-amber-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-amber-200 dark:shadow-none z-10">
+              <i class="fa-solid fa-wheelchair"></i>
+            </div>
+            <div class="z-10">
+              <p class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">ವಿಶೇಷ ಅಗತ್ಯವುಳ್ಳ ಮಕ್ಕಳು / CWSN</p>
+              <h3 id="cwsn-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
             </div>
           </div>
         </div>
@@ -565,14 +587,46 @@
 
     const standardColumns = [
       { id: 'app_no', labelKn: 'ವಿದ್ಯಾರ್ಥಿ ಐಡಿ / App No', labelEn: 'Student ID / App No' },
-      { id: 'student_name', labelKn: 'ಹೆಸರು', labelEn: 'Student Name' },
-      { id: 'enroll_class', labelKn: 'ತರಗತಿ', labelEn: 'Class' },
-      { id: 'gender', labelKn: 'ಲಿಂಗ', labelEn: 'Gender' },
-      { id: 'dob', labelKn: 'ಜನ್ಮ ದಿನಾಂಕ', labelEn: 'DOB' },
-      { id: 'father_name', labelKn: 'ತಂದೆಯ ಹೆಸರು', labelEn: 'Father Name' },
-      { id: 'mother_name', labelKn: 'ತಾಯಿಯ ಹೆಸರು', labelEn: 'Mother Name' },
-      { id: 'student_aadhaar', labelKn: 'ಆಧಾರ್ ಸಂಖ್ಯೆ', labelEn: 'Aadhaar' },
-      { id: 'mobile_number', labelKn: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ', labelEn: 'Mobile No' }
+      { id: 'student_name', labelKn: 'ಹೆಸರು / Student Name', labelEn: 'Student Name' },
+      { id: 'name_english', labelKn: 'ಹೆಸರು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ / Name English', labelEn: 'Name English' },
+      { id: 'enroll_class', labelKn: 'ತರಗತಿ / Class', labelEn: 'Class' },
+      { id: 'gender', labelKn: 'ಲಿಂಗ / Gender', labelEn: 'Gender' },
+      { id: 'dob', labelKn: 'ಹುಟ್ಟಿದ ದಿನಾಂಕ / DOB', labelEn: 'DOB' },
+      { id: 'student_aadhaar', labelKn: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar', labelEn: 'Aadhaar' },
+      { id: 'religion', labelKn: 'ಧರ್ಮ / Religion', labelEn: 'Religion' },
+      { id: 'social_class', labelKn: 'ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category', labelEn: 'Social Category' },
+      { id: 'student_caste', labelKn: 'ಜಾತಿ / Caste', labelEn: 'Caste' },
+      { id: 'caste', labelKn: 'ಉಪಜಾತಿ / Sub-Caste', labelEn: 'Sub-Caste' },
+      { id: 'mother_tongue', labelKn: 'ಮಾತೃಭಾಷೆ / Mother Tongue', labelEn: 'Mother Tongue' },
+      { id: 'mobile_number', labelKn: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile No', labelEn: 'Mobile No' },
+      { id: 'special_need', labelKn: 'ವಿಶೇಷ ಅಗತ್ಯತೆ / Special Need', labelEn: 'Special Need' },
+      { id: 'special_category', labelKn: 'ವಿಶೇಷ ವರ್ಗ / Special Category', labelEn: 'Special Category' },
+      { id: 'bhagyalakshmi_bond', labelKn: 'ಭಾಗ್ಯಲಕ್ಷ್ಮಿ ಬಾಂಡ್ ಸಂಖ್ಯೆ / Bhagyalakshmi Bond', labelEn: 'Bhagyalakshmi Bond' },
+      { id: 'age_reason', labelKn: 'ವಯಸ್ಸಿನ ವಿನಾಯಿತಿ ಕಾರಣ / Age Reason', labelEn: 'Age Reason' },
+      { id: 'address', labelKn: 'ವಿಳಾಸ / Address', labelEn: 'Address' },
+      { id: 'district', labelKn: 'ಜಿಲ್ಲೆ / District', labelEn: 'District' },
+      { id: 'taluk', labelKn: 'ತಾಲ್ಲೂಕು / Taluk', labelEn: 'Taluk' },
+      { id: 'bank_acc_no', labelKn: 'ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂ / Bank Account No', labelEn: 'Bank Account No' },
+      { id: 'ifsc_code', labelKn: 'ಐಎಫ್‌ಎಸ್ಸಿ ಕೋಡ್ / IFSC Code', labelEn: 'IFSC Code' },
+      { id: 'bank_address', labelKn: 'ಬ್ಯಾಂಕ್ ವಿಳಾಸ / Bank Address', labelEn: 'Bank Address' },
+      { id: 'scholarship_no', labelKn: 'ಶಿಷ್ಯವೇತನ ಸಂಖ್ಯೆ / Scholarship No', labelEn: 'Scholarship No' },
+      { id: 'student_caste_cert', labelKn: 'ಜಾತಿ ಪ್ರಮಾಣ ಪತ್ರ ಸಂಖ್ಯೆ / Caste Cert No', labelEn: 'Caste Cert No' },
+      { id: 'student_income_cert', labelKn: 'ಆದಾಯ ಪ್ರಮಾಣ ಪತ್ರ ಸಂಖ್ಯೆ / Income Cert No', labelEn: 'Income Cert No' },
+      { id: 'bpl_card_no', labelKn: 'ಬಿಪಿಎಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ / BPL Card No', labelEn: 'BPL Card No' },
+      { id: 'father_name_kn', labelKn: 'ತಂದೆಯ ಹೆಸರು / Father Name', labelEn: 'Father Name' },
+      { id: 'father_aadhaar', labelKn: 'ತಂದೆಯ ಆಧಾರ್ ಸಂಖ್ಯೆ / Father Aadhaar', labelEn: 'Father Aadhaar' },
+      { id: 'father_occupation', labelKn: 'ತಂದೆಯ ವೃತ್ತಿ / Father Occupation', labelEn: 'Father Occupation' },
+      { id: 'mother_name_kn', labelKn: 'ತಾಯಿಯ ಹೆಸರು / Mother Name', labelEn: 'Mother Name' },
+      { id: 'mother_aadhaar', labelKn: 'ತಾಯಿಯ ಆಧಾರ್ ಸಂಖ್ಯೆ / Mother Aadhaar', labelEn: 'Mother Aadhaar' },
+      { id: 'mother_occupation', labelKn: 'ತಾಯಿಯ ವೃತ್ತಿ / Mother Occupation', labelEn: 'Mother Occupation' },
+      { id: 'preschool_board', labelKn: 'ಪ್ರಿ ಸ್ಕೂಲ್ ಬೋರ್ಡ್ / Preschool Board', labelEn: 'Preschool Board' },
+      { id: 'preschool_type', labelKn: 'ಪ್ರಿ ಸ್ಕೂಲ್ ವಿಧ / Preschool Type', labelEn: 'Preschool Type' },
+      { id: 'preschool_name', labelKn: 'ಪ್ರಿ ಸ್ಕೂಲ್ ಹೆಸರು / Preschool Name', labelEn: 'Preschool Name' },
+      { id: 'transfer_no', labelKn: 'ವರ್ಗಾವಣೆ ಪತ್ರ ಸಂಖ್ಯೆ / Transfer No', labelEn: 'Transfer No' },
+      { id: 'transfer_date', labelKn: 'ವರ್ಗಾವಣೆ ದಿನಾಂಕ / Transfer Date', labelEn: 'Transfer Date' },
+      { id: 'student_sts', labelKn: 'ಎಸ್ ಟಿ ಎಸ್ ಸಂಖ್ಯೆ / STS Number', labelEn: 'STS Number' },
+      { id: 'medium', labelKn: 'ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium', labelEn: 'Medium' },
+      { id: 'academic_year', labelKn: 'ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Academic Year', labelEn: 'Academic Year' }
     ];
 
     function getColumnVisibility() {
@@ -582,9 +636,10 @@
           return JSON.parse(stored);
         } catch (e) {}
       }
+      const defVisible = ['app_no', 'student_name', 'enroll_class', 'gender', 'dob', 'father_name_kn', 'mother_name_kn', 'student_aadhaar', 'mobile_number'];
       const def = {};
       standardColumns.forEach(col => {
-        def[col.id] = true;
+        def[col.id] = defVisible.includes(col.id);
       });
       return def;
     }
@@ -719,7 +774,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = session?.user?.user_metadata?.school_id;
 
-        let query = supabaseClient.from('admissions').select('id, app_no, student_name, enroll_class, gender, dob, father_name_kn, mother_name_kn, student_aadhaar, mobile_number, is_admitted, special_need');
+        let query = supabaseClient.from('admissions').select('*');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -728,25 +783,29 @@
 
         if (error) throw error;
 
-        allStudentsData = (data || []).map(s => ({
-          realId: s.id,
-          id: s.app_no || s.id,
-          name: s.student_name,
-          className: s.enroll_class,
-          gender: (s.gender === 'ಗಂಡು' || s.gender === 'Male' || s.gender === 'Boys' || s.gender === 'MALE' || s.gender === 'Boy') ? 'Boy' : 'Girl',
-          dob: s.dob,
-          father: s.father_name_kn,
-          mother: s.mother_name_kn,
-          aadhaar: s.student_aadhaar,
-          mobile: s.mobile_number,
-          isAdmitted: s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted,
-          specialNeed: s.special_need
-        }));
+        allStudentsData = (data || []).map(s => {
+          const mapped = { ...s };
+          mapped.realId = s.id;
+          mapped.id = s.app_no || s.id;
+          mapped.name = s.student_name;
+          mapped.className = s.enroll_class;
+          mapped.gender = (s.gender && (s.gender.toUpperCase() === 'BOY' || s.gender.toUpperCase() === 'MALE' || s.gender.toUpperCase() === 'BOYS' || s.gender === 'ಗಂಡು')) ? 'Boy' : 'Girl';
+          mapped.father = s.father_name_kn;
+          mapped.mother = s.mother_name_kn;
+          mapped.aadhaar = s.student_aadhaar;
+          mapped.mobile = s.mobile_number;
+          mapped.isAdmitted = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
+          mapped.specialNeed = s.special_need;
+          return mapped;
+        });
 
         applyUrlParameters();
         applyFilters();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="${10 + getCustomColumns().length}" class="p-8 text-center text-red-500 font-bold"><i class="fa-solid fa-circle-xmark mr-1.5"></i> Error loading database: ${err.message}</td></tr>`;
+        const visibility = getColumnVisibility();
+        let colCount = 2; // Sl.No + Actions
+        standardColumns.forEach(c => { if (visibility[c.id] !== false) colCount++; });
+        tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-8 text-center text-red-500 font-bold"><i class="fa-solid fa-circle-xmark mr-1.5"></i> Error loading database: ${err.message}</td></tr>`;
       }
     }
 
@@ -816,49 +875,32 @@
       const multiplier = currentSortOrder === 'asc' ? 1 : -1;
       
       allStudentsData.sort((a, b) => {
-        let valA = '';
-        let valB = '';
+        let valA = a[columnKey] !== undefined && a[columnKey] !== null ? a[columnKey] : '';
+        let valB = b[columnKey] !== undefined && b[columnKey] !== null ? b[columnKey] : '';
         
-        switch (columnKey) {
-          case 'id':
-            valA = a.id || '';
-            valB = b.id || '';
-            break;
-          case 'name':
-            valA = a.name || '';
-            valB = b.name || '';
-            break;
-          case 'class':
-            const classOrder = { 'LKG': 0, 'UKG': 1, '1': 2, '2': 3, '3': 4, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9, '9': 10, '10': 11 };
-            const orderA = classOrder[a.className] !== undefined ? classOrder[a.className] : 99;
-            const orderB = classOrder[b.className] !== undefined ? classOrder[b.className] : 99;
-            return (orderA - orderB) * multiplier;
-          case 'gender':
-            valA = a.gender || '';
-            valB = b.gender || '';
-            break;
-          case 'dob':
-            valA = a.dob || '';
-            valB = b.dob || '';
-            break;
-          case 'father':
-            valA = a.father || '';
-            valB = b.father || '';
-            break;
-          case 'mother':
-            valA = a.mother || '';
-            valB = b.mother || '';
-            break;
-          case 'aadhaar':
-            valA = a.aadhaar || '';
-            valB = b.aadhaar || '';
-            break;
-          case 'mobile':
-            valA = a.mobile || '';
-            valB = b.mobile || '';
-            break;
-          default:
-            return 0;
+        if (columnKey === 'id' || columnKey === 'app_no') {
+          valA = a.id || '';
+          valB = b.id || '';
+        } else if (columnKey === 'name' || columnKey === 'student_name') {
+          valA = a.name || '';
+          valB = b.name || '';
+        } else if (columnKey === 'class' || columnKey === 'enroll_class') {
+          const classOrder = { 'LKG': 0, 'UKG': 1, '1': 2, '2': 3, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9, '9': 10, '10': 11 };
+          const orderA = classOrder[a.className] !== undefined ? classOrder[a.className] : 99;
+          const orderB = classOrder[b.className] !== undefined ? classOrder[b.className] : 99;
+          return (orderA - orderB) * multiplier;
+        } else if (columnKey === 'father' || columnKey === 'father_name_kn') {
+          valA = a.father || '';
+          valB = b.father || '';
+        } else if (columnKey === 'mother' || columnKey === 'mother_name_kn') {
+          valA = a.mother || '';
+          valB = b.mother || '';
+        } else if (columnKey === 'aadhaar' || columnKey === 'student_aadhaar') {
+          valA = a.aadhaar || '';
+          valB = b.aadhaar || '';
+        } else if (columnKey === 'mobile' || columnKey === 'mobile_number') {
+          valA = a.mobile || '';
+          valB = b.mobile || '';
         }
         
         return valA.toString().localeCompare(valB.toString(), undefined, { sensitivity: 'base', numeric: true }) * multiplier;
@@ -882,15 +924,11 @@
 
       let headersHtml = `<th class="p-3 text-center w-12">Sl.No / ಕ್ರ.ಸಂ</th>`;
       
-      if (visibility['app_no']) headersHtml += `<th class="p-3 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('id')">Student ID / PEN${sortIcon('id')}</th>`;
-      if (visibility['student_name']) headersHtml += `<th class="p-3 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('name')">Student Name (ಹೆಸರು)${sortIcon('name')}</th>`;
-      if (visibility['enroll_class']) headersHtml += `<th class="p-3 cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('class')">Class (ತರಗತಿ)${sortIcon('class')}</th>`;
-      if (visibility['gender']) headersHtml += `<th class="p-3 cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('gender')">Gender (ಲಿಂಗ)${sortIcon('gender')}</th>`;
-      if (visibility['dob']) headersHtml += `<th class="p-3 cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('dob')">DOB (ಹುಟ್ಟಿದ ದಿನಾಂಕ)${sortIcon('dob')}</th>`;
-      if (visibility['father_name']) headersHtml += `<th class="p-3 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('father')">Father Name (ತಂದೆಯ ಹೆಸರು)${sortIcon('father')}</th>`;
-      if (visibility['mother_name']) headersHtml += `<th class="p-3 text-left cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('mother')">Mother Name (ತಾಯಿಯ ಹೆಸರು)${sortIcon('mother')}</th>`;
-      if (visibility['student_aadhaar']) headersHtml += `<th class="p-3 cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('aadhaar')">Aadhaar (ಆಧಾರ್ ಸಂಖ್ಯೆ)${sortIcon('aadhaar')}</th>`;
-      if (visibility['mobile_number']) headersHtml += `<th class="p-3 cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('mobile')">Mobile No (ಮೊಬೈಲ್)${sortIcon('mobile')}</th>`;
+      standardColumns.forEach(col => {
+        if (visibility[col.id] !== false) {
+          headersHtml += `<th class="p-3 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('${col.id}')">${col.labelEn} / ${col.labelKn}${sortIcon(col.id)}</th>`;
+        }
+      });
       
       headersHtml += `<th class="p-3 text-center no-print">Actions / ಕ್ರಿಯೆಗಳು</th>`;
       theadRow.innerHTML = headersHtml;
@@ -926,15 +964,32 @@
       students.forEach((s, index) => {
         let cellsHtml = `<td class="p-3 font-semibold text-slate-500 font-mono text-center">${index + 1}</td>`;
         
-        if (visibility['app_no']) cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${s.id}</td>`;
-        if (visibility['student_name']) cellsHtml += `<td class="p-3 font-medium text-slate-900 uppercase text-left">${s.name}</td>`;
-        if (visibility['enroll_class']) cellsHtml += `<td class="p-3">${s.className}</td>`;
-        if (visibility['gender']) cellsHtml += `<td class="p-3">${s.gender === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು'}</td>`;
-        if (visibility['dob']) cellsHtml += `<td class="p-3 font-mono">${s.dob || '-'}</td>`;
-        if (visibility['father_name']) cellsHtml += `<td class="p-3 uppercase text-left">${s.father || '-'}</td>`;
-        if (visibility['mother_name']) cellsHtml += `<td class="p-3 uppercase text-left">${s.mother || '-'}</td>`;
-        if (visibility['student_aadhaar']) cellsHtml += `<td class="p-3 font-mono">${s.aadhaar || '-'}</td>`;
-        if (visibility['mobile_number']) cellsHtml += `<td class="p-3 font-mono">${s.mobile || '-'}</td>`;
+        standardColumns.forEach(col => {
+          if (visibility[col.id] !== false) {
+            let val = s[col.id] !== undefined && s[col.id] !== null ? s[col.id] : '';
+            if (col.id === 'gender') {
+              cellsHtml += `<td class="p-3 text-center">${val === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು'}</td>`;
+            } else if (col.id === 'is_admitted') {
+              cellsHtml += `<td class="p-3 text-center">${val === true || val === 'true' ? 'Admitted' : 'Pending'}</td>`;
+            } else if (col.id === 'app_no') {
+              cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${s.id}</td>`;
+            } else if (col.id === 'student_name') {
+              cellsHtml += `<td class="p-3 font-medium text-slate-900 uppercase text-left">${s.name}</td>`;
+            } else if (col.id === 'enroll_class') {
+              cellsHtml += `<td class="p-3 text-center">${s.className}</td>`;
+            } else if (col.id === 'father_name_kn') {
+              cellsHtml += `<td class="p-3 uppercase text-left">${s.father || '-'}</td>`;
+            } else if (col.id === 'mother_name_kn') {
+              cellsHtml += `<td class="p-3 uppercase text-left">${s.mother || '-'}</td>`;
+            } else if (col.id === 'student_aadhaar') {
+              cellsHtml += `<td class="p-3 font-mono text-center">${s.aadhaar || '-'}</td>`;
+            } else if (col.id === 'mobile_number') {
+              cellsHtml += `<td class="p-3 font-mono text-center">${s.mobile || '-'}</td>`;
+            } else {
+              cellsHtml += `<td class="p-3 text-center">${val || '-'}</td>`;
+            }
+          }
+        });
 
         let actionsCellHtml = `
             <td class="p-3 text-center no-print">
@@ -1318,9 +1373,13 @@
     }
 
     function exportToExcel() {
-      const headers = ["Student ID / PEN", "Student Name", "Class", "Gender", "DOB", "Father Name", "Mother Name", "Aadhaar", "Mobile No"];
-      const customCols = getCustomColumns();
-      customCols.forEach(col => headers.push(col));
+      const visibility = getColumnVisibility();
+      const visibleCols = standardColumns.filter(col => visibility[col.id] !== false);
+
+      const headers = ["Sl.No / ಕ್ರ.ಸಂ"];
+      visibleCols.forEach(col => {
+        headers.push(`${col.labelEn} / ${col.labelKn}`);
+      });
 
       const dataRows = [headers];
       
@@ -1346,21 +1405,31 @@
         return searchMatch && classMatch && genderMatch;
       });
 
-      filtered.forEach(s => {
-        const row = [
-          s.id,
-          s.name,
-          s.className,
-          s.gender === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು',
-          s.dob || '',
-          s.father || '',
-          s.mother || '',
-          s.aadhaar || '',
-          s.mobile || ''
-        ];
-        customCols.forEach(col => {
-          const val = localStorage.getItem(`student_custom_val_${s.realId}_${col}`) || '';
-          row.push(val);
+      filtered.forEach((s, idx) => {
+        const row = [idx + 1];
+        visibleCols.forEach(col => {
+          let val = s[col.id] !== undefined && s[col.id] !== null ? s[col.id] : '';
+          if (col.id === 'gender') {
+            row.push(val === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು');
+          } else if (col.id === 'is_admitted') {
+            row.push(val === true || val === 'true' ? 'Admitted' : 'Pending');
+          } else if (col.id === 'app_no') {
+            row.push(s.id || '');
+          } else if (col.id === 'student_name') {
+            row.push(s.name || '');
+          } else if (col.id === 'enroll_class') {
+            row.push(s.className || '');
+          } else if (col.id === 'father_name_kn') {
+            row.push(s.father || '');
+          } else if (col.id === 'mother_name_kn') {
+            row.push(s.mother || '');
+          } else if (col.id === 'student_aadhaar') {
+            row.push(s.aadhaar || '');
+          } else if (col.id === 'mobile_number') {
+            row.push(s.mobile || '');
+          } else {
+            row.push(val);
+          }
         });
         dataRows.push(row);
       });

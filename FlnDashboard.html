@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -186,6 +186,9 @@
         <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
       <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
         <div>
           <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
@@ -193,6 +196,10 @@
         </div>
       </div>
       <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Dashboard Link -->
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
         <!-- Theme Selector -->
         <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
           <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
@@ -461,19 +468,17 @@
                 <p id="grid-subtitle" class="text-[11px] text-slate-500 mt-0.5">ಯಾವುದೇ ತರಗತಿ ಅಥವಾ ವಿಷಯವನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ</p>
               </div>
               <div id="grid-actions" class="text-xs font-medium text-slate-500 flex items-center gap-2 no-print">
-                <button onclick="toggleSettingsPanel()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs">
-                  <i class="fa-solid fa-gear"></i> ಪಾಠಗಳ ನಿರ್ವಹಣೆ / Lesson Settings
+                <button onclick="toggleSettingsPanel()" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-amber-500/20 active:scale-[0.98] cursor-pointer border-0 text-xs">
+                  <i class="fa-solid fa-gear"></i> Lesson Settings
                 </button>
-                <button id="btn-export-excel" onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-file-excel"></i> Excel Export
+                <button id="btn-export-excel" onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
+                  Export <i class="fa-solid fa-file-excel"></i>
                 </button>
-                
-                <button id="btn-save-pdf" onclick="exportToPdf()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-file-pdf"></i> Save as PDF
+                <button id="btn-save-pdf" onclick="exportToPdf()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
+                  Export <i class="fa-solid fa-file-pdf"></i>
                 </button>
-                
-                <button id="btn-print-report" onclick="triggerPrint()" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 shadow-md cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-print"></i> Print Report
+                <button id="btn-print-report" onclick="triggerPrint()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
+                  Export <i class="fa-solid fa-print"></i>
                 </button>
                 <span id="grid-mode-tag" class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[10px] hidden">View Mode</span>
               </div>
@@ -521,9 +526,9 @@
                 <h1 class="text-xl font-bold uppercase text-slate-800">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
                 <h2 class="text-sm font-bold text-slate-700 mt-1">ಪಾಠ ಆಧಾರಿತ ಪ್ರಗತಿ ಪಟ್ಟಿ (Lesson Based Assessment Report)</h2>
                 <div class="flex justify-between text-xs font-semibold text-slate-600 mt-4 px-2">
-                  <span id="print-class-meta">Class: </span>
-                  <span id="print-subject-meta">Subject: </span>
-                  <span id="print-date-meta">Date: </span>
+                  <span>Class: </span>
+                  <span>Subject: </span>
+                  <span>Date: </span>
                 </div>
               </div>
 
@@ -793,6 +798,7 @@
       document.getElementById('btn-save-pdf').classList.add('hidden');
       document.getElementById('btn-print-report').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
+      if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.add('hidden');
       hideActionButtons();
 
       if (lessonConfigData[className] && lessonConfigData[className][subjectName]) {
@@ -861,6 +867,7 @@
       document.getElementById('btn-save-pdf').classList.remove('hidden');
       document.getElementById('btn-print-report').classList.remove('hidden');
       document.getElementById('btn-export-excel').classList.remove('hidden');
+      if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.remove('hidden');
       
       const hasSavedData = Object.keys(evaluations).length > 0;
       setMode(!hasSavedData);
@@ -1050,6 +1057,7 @@
       document.getElementById('btn-save-pdf').classList.add('hidden');
       document.getElementById('btn-print-report').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
+      if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.add('hidden');
       document.getElementById('rules-note-card').classList.add('hidden');
     }
 
