@@ -11,15 +11,39 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
     .rotate-90 { transform: rotate(90deg); }
+    .rotate-180 { transform: rotate(180deg); }
+    .drag-handle { cursor: grab; }
+    .drag-handle:active { cursor: grabbing; }
+    .field-card.dragging {
+      opacity: 0.5;
+      border: 2px dashed rgb(99, 102, 241) !important;
+      background: rgba(99, 102, 241, 0.05) !important;
+    }
+
+    /* Custom scrollbars */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.5);
+    }
 
     /* Sidebar Hover Collapsed Styles */
     @media (min-width: 768px) {
       aside {
         width: 70px !important;
         min-width: 70px !important;
-        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
         overflow-x: hidden;
       }
       aside:hover {
@@ -62,7 +86,45 @@
       }
     }
 
+    /* Modern Glass Cards and Effects */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .neon-glow-indigo {
+      box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.15);
+    }
+    .neon-glow-emerald {
+      box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.15);
+    }
+    .neon-glow-pink {
+      box-shadow: 0 0 40px -10px rgba(236, 72, 153, 0.15);
+    }
+
     /* Theme Overrides */
+    body[data-theme="light"] { background-color: #f8fafc !important; color: #334155 !important; }
+    body[data-theme="light"] .bg-white,
+    body[data-theme="light"] aside,
+    body[data-theme="light"] main {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      border-color: #e2e8f0 !important;
+    }
+    body[data-theme="light"] td,
+    body[data-theme="light"] th { color: #475569 !important; border-color: #e2e8f0 !important; }
+    body[data-theme="light"] .text-slate-700,
+    body[data-theme="light"] .text-slate-800,
+    body[data-theme="light"] .text-slate-600,
+    body[data-theme="light"] .text-slate-500,
+    body[data-theme="light"] label { color: #475569 !important; }
+    body[data-theme="light"] input,
+    body[data-theme="light"] select,
+    body[data-theme="light"] textarea { background-color: #ffffff !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+    body[data-theme="light"] .bg-slate-50,
+    body[data-theme="light"] .bg-slate-100 { background-color: #f1f5f9 !important; }
+
     body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
     body[data-theme="dark"] .bg-white,
     body[data-theme="dark"] aside,
@@ -86,14 +148,15 @@
     body[data-theme="dark"] .bg-slate-50,
     body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
 
-    /* Theme colors */
+    /* Other Theme overrides for colors */
     body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
-    body[data-theme="gray"] .bg-white, body[data-theme="gray"] aside, body[data-theme="gray"] main, body[data-theme="gray"] .section-block { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    body[data-theme="gray"] .bg-white, body[data-theme="gray"] aside, body[data-theme="gray"] main { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
     body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
-    body[data-theme="blue"] .bg-white, body[data-theme="blue"] aside, body[data-theme="blue"] main, body[data-theme="blue"] .section-block { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    body[data-theme="blue"] .bg-white, body[data-theme="blue"] aside, body[data-theme="blue"] main { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
     body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
-    body[data-theme="green"] .bg-white, body[data-theme="green"] aside, body[data-theme="green"] main, body[data-theme="green"] .section-block { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+    body[data-theme="green"] .bg-white, body[data-theme="green"] aside, body[data-theme="green"] main { background-color: #f0fdf4 !important; border-color: #86efac !important; }
 
+    /* Print styling overrides */
     /* Print styling overrides */
     @media print {
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
@@ -104,10 +167,57 @@
       body > *:not(#printArea) { display: none !important; }
       #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
       #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 10px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
-      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 6px 4px !important; text-align: center !important; }
-      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea th, #printArea td { 
+        border: 1px solid #000000 !important; 
+        padding: 6px 4px !important; 
+        text-align: center !important; 
+        min-width: 0 !important;
+        width: auto !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+      }
+      #printArea th { font-weight: bold !important; background-color: #e2e8f0 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
+      
+      /* Print Column Width Settings */
+      #printArea th:nth-child(1), #printArea td:nth-child(1) { width: 6% !important; }
+      #printArea th:nth-child(2), #printArea td:nth-child(2) { width: 14% !important; }
+      #printArea th:nth-child(3), #printArea td:nth-child(3) { width: 25% !important; }
+      #printArea .print-sign-col { width: 15% !important; min-width: 80px !important; }
+
+      /* Remarks block styling */
+      #printArea .print-remarks-block {
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+        font-size: 11px !important;
+        line-height: 1.5 !important;
+        color: #000000 !important;
+        text-align: left !important;
+        white-space: pre-wrap !important;
+        border: 1px dashed #aaaaaa !important;
+        padding: 8px !important;
+      }
+
+      /* Restructured Signatures (left/right) */
+      #printArea .print-signatures-row { 
+        margin-top: 75px !important; 
+        margin-bottom: 35px !important; 
+        display: flex !important; 
+        justify-content: space-between !important; 
+        align-items: center !important; 
+        font-size: 11px !important; 
+        font-weight: bold !important; 
+        color: #000000 !important; 
+      }
+
+      /* Shifted print footer (below signatures) */
+      #printArea .print-footer-text-row {
+        margin-top: 20px !important;
+        text-align: center !important;
+        font-size: 11px !important;
+        font-weight: bold !important;
+        color: #000000 !important;
+      }
     }
   </style>
 </head>
@@ -381,49 +491,68 @@
           </div>
         </div>
 
-        <!-- Create Template Form Modal / Block -->
-        <div id="createFormContainer" class="hidden space-y-6">
-          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-            <h3 class="text-base font-bold text-slate-800">ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚನೆ / Create Incentive Page</h3>
-            <button onclick="hideCreateForm()" class="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-full cursor-pointer transition border-none"><i class="fa-solid fa-xmark"></i></button>
-          </div>
+        <!-- Backdrop for Sliding Drawer -->
+        <div id="drawerBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none no-print" onclick="hideCreateForm()"></div>
 
-          <form onsubmit="event.preventDefault(); handleCreateTemplate();" class="space-y-6 max-w-2xl bg-slate-50/50 p-6 rounded-2xl border border-slate-200/60">
-            <div>
-              <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪುಟದ ಹೆಸರು / Incentive Name *</label>
-              <input type="text" id="templateName" placeholder="e.g. Text Books / ಪಠ್ಯಪುಸ್ತಕಗಳು" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required>
+        <!-- Create Template Form Sliding Drawer -->
+        <div id="createFormContainer" class="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-full flex flex-col no-print">
+          <form onsubmit="event.preventDefault(); handleCreateTemplate();" class="flex flex-col h-full m-0">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md flex-shrink-0">
+              <h3 class="text-base font-bold text-slate-800 dark:text-white">ಹೊಸ ಇನ್ಸೆಂಟಿವ್ ಪುಟ ರಚನೆ / Create Incentive Page</h3>
+              <button type="button" onclick="hideCreateForm()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 p-2 rounded-full cursor-pointer transition border-none flex items-center justify-center w-8 h-8"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Form content area (scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪ್ರಿಂಟ್ ಹೆಡರ್ / Print Header (Optional)</label>
-                <input type="text" id="templatePrintHeader" placeholder="e.g. TEXT BOOKS DISTRIBUTION REPORT" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪುಟದ ಹೆಸರು / Incentive Name *</label>
+                <input type="text" id="templateName" placeholder="e.g. Text Books / ಪಠ್ಯಪುಸ್ತಕಗಳು" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required>
               </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪ್ರಿಂಟ್ ಹೆಡರ್ / Print Header (Optional)</label>
+                  <input type="text" id="templatePrintHeader" placeholder="e.g. TEXT BOOKS DISTRIBUTION REPORT" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪ್ರಿಂಟ್ ಫುಟರ್ / Print Footer (Optional)</label>
+                  <input type="text" id="templatePrintFooter" placeholder="e.g. Signature of Class Teacher" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                </div>
+              </div>
+
+              <!-- Option checkbox for printed signature column -->
+              <div class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+                <input type="checkbox" id="includeSignColumn" class="w-5 h-5 accent-indigo-600 cursor-pointer">
+                <label for="includeSignColumn" class="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer select-none">ಪ್ರಿಂಟ್‌ನಲ್ಲಿ ಸಹಿ ಅಂಕಣ ಸೇರಿಸಿ / Include Student Signature Column in Print</label>
+              </div>
+
               <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪ್ರಿಂಟ್ ಫುಟರ್ / Print Footer (Optional)</label>
-                <input type="text" id="templatePrintFooter" placeholder="e.g. Signature of Class Teacher" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ವರದಿ ವಿವರಣೆ / Report Remarks (Optional)</label>
+                <textarea id="templateReportRemarks" rows="2" placeholder="ವರದಿಯ ಬಗ್ಗೆ ವಿವರಣೆಯನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ... / Type report remarks here..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"></textarea>
+              </div>
+
+              <div>
+                <div class="mb-2">
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">ವಿಭಾಗಗಳು (ಕಾಲಮ್‌ಗಳು) / Form Fields *</label>
+                </div>
+
+                <div id="fieldsContainer" class="space-y-4">
+                  <!-- Dynamic Field Rows go here -->
+                </div>
+
+                <div class="mt-4">
+                  <button type="button" onclick="addFieldRow()" class="bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 px-5 py-3 rounded-2xl text-xs font-bold flex items-center gap-1.5 border border-indigo-200/50 dark:border-indigo-900/50 cursor-pointer shadow-sm transition duration-300 active:scale-[0.98]">
+                    <i class="fa-solid fa-plus text-sm"></i> ಅಂಕಣ ಸೇರಿಸಿ / Add Field
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div>
-              <div class="mb-2">
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">ವಿಭಾಗಗಳು (ಕಾಲಮ್‌ಗಳು) / Form Fields *</label>
-              </div>
-
-              <div id="fieldsContainer" class="space-y-3">
-                <!-- Dynamic Field Rows go here -->
-              </div>
-
-              <div class="mt-3">
-                <button type="button" onclick="addFieldRow()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-1.5 border border-indigo-200/50 cursor-pointer shadow-sm transition duration-300 active:scale-[0.98]">
-                  <i class="fa-solid fa-plus text-sm"></i> ಅಂಕಣ ಸೇರಿಸಿ / Add Field
-                </button>
-              </div>
-            </div>
-
-            <div class="flex gap-3 pt-2">
-              <button type="submit" class="bg-gradient-to-tr from-indigo-600 to-indigo-550 hover:from-indigo-700 hover:to-indigo-600 text-white px-5 py-3 rounded-2xl font-bold text-xs shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer border-none">ಕ್ರಿಯೇಟ್ ಪುಟ / Create Page</button>
-              <button type="button" onclick="hideCreateForm()" class="bg-slate-250 hover:bg-slate-300 text-slate-600 px-5 py-3 rounded-2xl font-bold text-xs transition-all duration-300 active:scale-[0.98] cursor-pointer border-none">ರದ್ದುಗೊಳಿಸಿ / Cancel</button>
+            <!-- Footer buttons -->
+            <div class="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex gap-3 flex-shrink-0">
+              <button type="submit" class="bg-gradient-to-tr from-indigo-600 to-indigo-550 hover:from-indigo-700 hover:to-indigo-600 text-white px-5 py-3 rounded-2xl font-bold text-xs shadow-md transition-all duration-300 active:scale-[0.98] cursor-pointer border-none flex-1">ಉಳಿಸಿ / Save Page</button>
+              <button type="button" onclick="hideCreateForm()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-300 px-5 py-3 rounded-2xl font-bold text-xs transition-all duration-300 active:scale-[0.98] cursor-pointer border-none">ರದ್ದುಗೊಳಿಸಿ / Cancel</button>
             </div>
           </form>
         </div>
@@ -517,6 +646,8 @@
             </div>
           </div>
 
+
+
           <!-- Mini Dashboard Statistics and Chart -->
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
             <div class="bg-slate-50/50 border border-slate-200/50 p-5 rounded-2xl flex flex-col justify-between">
@@ -570,6 +701,12 @@
               </div>
             </div>
 
+            <!-- Browser Remarks Display (above the table) -->
+            <div id="browserRemarksContainer" class="bg-indigo-50/40 dark:bg-slate-800/60 border border-indigo-100/50 dark:border-slate-700 p-4 rounded-2xl text-xs font-medium text-slate-750 dark:text-slate-200 hidden no-print">
+              <span class="block text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest mb-1.5">ವರದಿ ವಿವರಣೆ / Report Remarks</span>
+              <p id="browserRemarksText" class="whitespace-pre-wrap"></p>
+            </div>
+
             <!-- Print Header Area -->
             <div id="printHeaderArea" class="hidden print:block text-center mb-6">
               <h2 id="printSchoolName" class="text-lg font-bold uppercase tracking-wider text-black">Government Higher Primary School, Marched</h2>
@@ -580,13 +717,13 @@
               </div>
             </div>
 
-            <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-sm bg-white min-h-[150px]">
-              <table id="distributionTable" class="w-full text-left border-collapse text-xs whitespace-nowrap">
+            <div class="overflow-x-auto overflow-y-auto max-h-[600px] border border-slate-200 rounded-2xl shadow-sm bg-white min-h-[150px] custom-scrollbar">
+              <table id="distributionTable" class="w-full text-left border-collapse text-xs whitespace-nowrap table-layout-auto">
                 <thead>
                   <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
-                    <th class="p-3 border-r border-slate-800 w-12 text-center no-print">Sl.No</th>
-                    <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
-                    <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
+                    <th class="p-3 border-r border-slate-800 w-12 min-w-[48px] text-center no-print">Sl.No</th>
+                    <th class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center">STS No</th>
+                    <th class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left">Student Name</th>
                     <!-- Dynamic column headers insert here -->
                   </tr>
                 </thead>
@@ -765,17 +902,33 @@
         document.getElementById('templateName').value = '';
         document.getElementById('templatePrintHeader').value = '';
         document.getElementById('templatePrintFooter').value = '';
+        document.getElementById('includeSignColumn').checked = true;
+        document.getElementById('templateReportRemarks').value = '';
         
         document.getElementById('fieldsContainer').innerHTML = '';
         addFieldRow();
       }
-      document.getElementById('dashboardView').classList.add('hidden');
-      document.getElementById('createFormContainer').classList.remove('hidden');
+      
+      const drawer = document.getElementById('createFormContainer');
+      const backdrop = document.getElementById('drawerBackdrop');
+      
+      backdrop.classList.remove('opacity-0', 'pointer-events-none');
+      backdrop.classList.add('opacity-100');
+      
+      drawer.classList.remove('translate-x-full');
+      drawer.classList.add('translate-x-0');
     }
 
     function hideCreateForm() {
-      document.getElementById('createFormContainer').classList.add('hidden');
-      document.getElementById('dashboardView').classList.remove('hidden');
+      const drawer = document.getElementById('createFormContainer');
+      const backdrop = document.getElementById('drawerBackdrop');
+      
+      backdrop.classList.remove('opacity-100');
+      backdrop.classList.add('opacity-0', 'pointer-events-none');
+      
+      drawer.classList.remove('translate-x-0');
+      drawer.classList.add('translate-x-full');
+      
       editingTemplateId = null;
     }
 
@@ -786,12 +939,19 @@
       
       const row = document.createElement('div');
       row.id = rowId;
-      row.className = "flex flex-col gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 relative transition duration-200 hover:border-indigo-200";
+      row.className = "field-card bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 rounded-2xl transition duration-200 hover:border-indigo-300 dark:hover:border-indigo-700 flex flex-col overflow-hidden shadow-sm";
       row.dataset.linked = "false";
+      
+      row.setAttribute('draggable', 'true');
+      row.addEventListener('dragstart', handleDragStart);
+      row.addEventListener('dragover', handleDragOver);
+      row.addEventListener('drop', handleDrop);
+      row.addEventListener('dragend', handleDragEnd);
       
       const isLinked = c && (c.linked === true || c.linked === 'true');
       const linkSource = isLinked ? c.linkSource : 'manual';
       const colName = c ? c.name : '';
+      const parentHeaderVal = c && c.parentHeader ? c.parentHeader : '';
       
       const typeVal = (c && !isLinked) ? c.type : 'text';
       const optionsVal = (c && c.options && !isLinked) ? c.options.join(', ') : '';
@@ -803,108 +963,148 @@
       const linkSubjectVal = (isLinked && linkSource === 'cce') ? c.linkSubject : 'kannada';
       const linkValueTypeVal = (isLinked && linkSource === 'cce') ? c.linkValueType : 'mark';
 
+      const startCollapsed = c !== null; // collapse by default if loading existing config
+
       row.innerHTML = `
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಅಂಕಣದ ಹೆಸರು / Field Name</label>
-            <input type="text" class="field-name-input w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white" placeholder="e.g. Size / ಅಳತೆ" value="${colName}" required>
+        <!-- Card Header -->
+        <div class="flex items-center justify-between p-3.5 bg-slate-100/70 dark:bg-slate-800/80 ${startCollapsed ? '' : 'border-b border-slate-200/50 dark:border-slate-700/50'} cursor-pointer select-none" onclick="toggleFieldCollapse('${rowId}', event)">
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <!-- Grip handle for dragging -->
+            <i class="fa-solid fa-grip-vertical text-slate-400 cursor-grab active:cursor-grabbing mr-1 flex-shrink-0 drag-handle" title="Drag to reorder / ಕ್ರಮಾಂಕ ಬದಲಿಸಲು ಎಳೆಯಿರಿ"></i>
+            <!-- Dynamic Index Badge -->
+            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-750 text-slate-700 dark:text-slate-300 font-extrabold text-[10px] flex items-center justify-center field-index-badge flex-shrink-0"></span>
+            <!-- Summary Title -->
+            <span class="font-extrabold text-xs text-slate-800 dark:text-slate-200 truncate field-summary-title">${colName ? (parentHeaderVal ? `${parentHeaderVal} → ${colName}` : colName) : 'New Field / ಹೊಸ ಅಂಕಣ'}</span>
+            <!-- Source Badge -->
+            <span class="px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-[9px] font-bold rounded-lg uppercase tracking-wider field-badge-source flex-shrink-0">${linkSource}</span>
+            <!-- Type Badge -->
+            <span class="px-2 py-0.5 ${isLinked ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400' : 'bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400'} text-[9px] font-bold rounded-lg uppercase tracking-wider field-badge-type flex-shrink-0">${isLinked ? 'linked' : typeVal}</span>
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಮೂಲ / Source</label>
-            <select onchange="handleSourceTypeChange('${rowId}', this.value)" class="field-source-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="manual" ${linkSource === 'manual' ? 'selected' : ''}>Manual Input / ಕೈಯಾರೆ ನಮೂದು</option>
-              <option value="admissions" ${linkSource === 'admissions' ? 'selected' : ''}>Admissions (Student Details) / ದಾಖಲಾತಿ ವಿವರ</option>
-              <option value="cce" ${linkSource === 'cce' ? 'selected' : ''}>CCE Assessment / ಸಿ.ಸಿ.ಇ ಮೌಲ್ಯಮಾಪನ</option>
-            </select>
-          </div>
-          <div class="flex justify-end">
-            <button type="button" onclick="removeFieldRow('${rowId}')" class="text-rose-500 hover:text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition border border-transparent bg-transparent cursor-pointer self-end text-xs font-bold">
-              <i class="fa-solid fa-trash-can mr-1"></i> ತೆಗೆದುಹಾಕಿ / Remove
+          
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <!-- Copy button -->
+            <button type="button" onclick="event.stopPropagation(); copyFieldRow('${rowId}')" class="text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 p-1.5 rounded-lg transition border-none bg-transparent cursor-pointer flex items-center justify-center" title="Copy Field / ನಕಲು ಮಾಡಿ">
+              <i class="fa-solid fa-copy text-xs"></i>
+            </button>
+            <!-- Collapse toggle -->
+            <button type="button" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 p-1 rounded-lg transition border-none bg-transparent cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300 field-collapse-arrow ${startCollapsed ? 'rotate-180' : ''}"></i>
+            </button>
+            <!-- Trash button -->
+            <button type="button" onclick="event.stopPropagation(); removeFieldRow('${rowId}')" class="text-rose-500 hover:text-rose-600 dark:hover:text-rose-450 hover:bg-rose-50 dark:hover:bg-rose-950/40 p-1.5 rounded-lg transition border-none bg-transparent cursor-pointer flex items-center justify-center" title="Remove Field">
+              <i class="fa-solid fa-trash-can text-xs"></i>
             </button>
           </div>
         </div>
 
-        <!-- Manual Fields Panel -->
-        <div class="manual-fields-container grid grid-cols-1 sm:grid-cols-2 gap-3 ${linkSource === 'manual' ? '' : 'hidden'}">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಧ / Type</label>
-            <select onchange="handleFieldTypeChange('${rowId}', this.value)" class="field-type-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="text" ${typeVal === 'text' ? 'selected' : ''}>Text (ಅಕ್ಷರ)</option>
-              <option value="number" ${typeVal === 'number' ? 'selected' : ''}>Number (ಸಂಖ್ಯೆ)</option>
-              <option value="boolean" ${typeVal === 'boolean' ? 'selected' : ''}>Checkbox (ಸರಿ ಗುರುತು)</option>
-              <option value="dropdown" ${typeVal === 'dropdown' ? 'selected' : ''}>Dropdown (ಆಯ್ಕೆ ಪಟ್ಟಿ)</option>
-              <option value="radio" ${typeVal === 'radio' ? 'selected' : ''}>Radio (ಒಂದನ್ನು ಆರಿಸಿ)</option>
-              <option value="date" ${typeVal === 'date' ? 'selected' : ''}>Date (ದಿನಾಂಕ)</option>
-            </select>
+        <!-- Card Details Panel (Collapsible) -->
+        <div class="field-details-panel p-4 bg-white dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-800 space-y-4 ${startCollapsed ? 'hidden' : ''}">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಪೋಷಕ ಹೆಡರ್ / Parent Header (Optional)</label>
+              <input type="text" class="field-parent-input w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white" placeholder="e.g. KANNADA, UNIFORM" value="${parentHeaderVal}" oninput="updateFieldCardHeader('${rowId}')">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಅಂಕಣದ ಹೆಸರು / Field Name *</label>
+              <input type="text" class="field-name-input w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white" placeholder="e.g. Size / ಅಳತೆ" value="${colName}" required oninput="updateFieldCardHeader('${rowId}')">
+            </div>
           </div>
-          <div class="field-options-container ${isDropdownOrRadio ? '' : 'hidden'}">
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಆಯ್ಕೆಗಳು (Comma Separated)</label>
-            <input type="text" class="field-options-input w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white" placeholder="Small, Medium, Large" value="${optionsVal}" ${isDropdownOrRadio ? 'required' : ''}>
-          </div>
-        </div>
 
-        <!-- Admissions Fields Panel -->
-        <div class="admissions-fields-container grid grid-cols-1 gap-3 ${linkSource === 'admissions' ? '' : 'hidden'}">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ದಾಖಲಾತಿ ಕಾಲಮ್ / Admissions Column</label>
-            <select onchange="updateAdmissionsDataAttrs('${rowId}')" class="admissions-col-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="student_aadhaar" ${linkColumnVal === 'student_aadhaar' ? 'selected' : ''}>Aadhaar Number / ಆಧಾರ್ ಸಂಖ್ಯೆ</option>
-              <option value="name_aadhaar" ${linkColumnVal === 'name_aadhaar' ? 'selected' : ''}>Aadhaar Name / ಆಧಾರ್‌ನಲ್ಲಿರುವ ಹೆಸರು</option>
-              <option value="gender" ${linkColumnVal === 'gender' ? 'selected' : ''}>Gender / ಲಿಂಗ</option>
-              <option value="dob" ${linkColumnVal === 'dob' ? 'selected' : ''}>Date of Birth / ಹುಟ್ಟಿದ ದಿನಾಂಕ</option>
-              <option value="mobile_number" ${linkColumnVal === 'mobile_number' ? 'selected' : ''}>Mobile Number / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</option>
-              <option value="bank_acc_no" ${linkColumnVal === 'bank_acc_no' ? 'selected' : ''}>Bank Account No / ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ</option>
-              <option value="ifsc_code" ${linkColumnVal === 'ifsc_code' ? 'selected' : ''}>IFSC Code / ಐಎಫ್‌ಎಸ್‌ಸಿ ಕೋಡ್</option>
-              <option value="father_name_kn" ${linkColumnVal === 'father_name_kn' ? 'selected' : ''}>Father Name (K) / ತಂದೆಯ ಹೆಸರು</option>
-              <option value="father_name_az" ${linkColumnVal === 'father_name_az' ? 'selected' : ''}>Father Aadhaar Name / ತಂದೆಯ ಆಧಾರ್ ಹೆಸರು</option>
-              <option value="mother_name_kn" ${linkColumnVal === 'mother_name_kn' ? 'selected' : ''}>Mother Name (K) / ತಾಯಿಯ ಹೆಸರು</option>
-              <option value="mother_name_az" ${linkColumnVal === 'mother_name_az' ? 'selected' : ''}>Mother Aadhaar Name / ತಾಯಿಯ ಆಧಾರ್ ಹೆಸರು</option>
-              <option value="caste" ${linkColumnVal === 'caste' ? 'selected' : ''}>Caste / ಜಾತಿ</option>
-              <option value="subcaste" ${linkColumnVal === 'subcaste' ? 'selected' : ''}>Subcaste / ಉಪಜಾತಿ</option>
-              <option value="medium" ${linkColumnVal === 'medium' ? 'selected' : ''}>Medium / ಬೋಧನಾ ಮಾಧ್ಯಮ</option>
-              <option value="student_sts" ${linkColumnVal === 'student_sts' ? 'selected' : ''}>STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ</option>
-              <option value="class" ${linkColumnVal === 'class' ? 'selected' : ''}>Class / ತರಗತಿ</option>
-            </select>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಮೂಲ / Source</label>
+              <select onchange="handleSourceTypeChange('${rowId}', this.value); updateFieldCardHeader('${rowId}');" class="field-source-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="manual" ${linkSource === 'manual' ? 'selected' : ''}>Manual Input / ಕೈಯಾರೆ ನಮೂದು</option>
+                <option value="admissions" ${linkSource === 'admissions' ? 'selected' : ''}>Admissions (Student Details) / ದಾಖಲಾತಿ ವಿವರ</option>
+                <option value="cce" ${linkSource === 'cce' ? 'selected' : ''}>CCE Assessment / ಸಿ.ಸಿ.ಇ ಮೌಲ್ಯಮಾಪನ</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <!-- CCE Fields Panel -->
-        <div class="cce-fields-container grid grid-cols-1 sm:grid-cols-3 gap-3 ${linkSource === 'cce' ? '' : 'hidden'}">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಪರೀಕ್ಷೆ / Exam</label>
-            <select onchange="updateCceDataAttrs('${rowId}')" class="cce-exam-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="FA1" ${linkExamVal === 'FA1' ? 'selected' : ''}>FA1</option>
-              <option value="FA2" ${linkExamVal === 'FA2' ? 'selected' : ''}>FA2</option>
-              <option value="FA3" ${linkExamVal === 'FA3' ? 'selected' : ''}>FA3</option>
-              <option value="FA4" ${linkExamVal === 'FA4' ? 'selected' : ''}>FA4</option>
-              <option value="SA1" ${linkExamVal === 'SA1' ? 'selected' : ''}>SA1</option>
-              <option value="SA2" ${linkExamVal === 'SA2' ? 'selected' : ''}>SA2</option>
-            </select>
+          <!-- Manual Fields Panel -->
+          <div class="manual-fields-container grid grid-cols-1 sm:grid-cols-2 gap-4 ${linkSource === 'manual' ? '' : 'hidden'}">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಧ / Type</label>
+              <select onchange="handleFieldTypeChange('${rowId}', this.value); updateFieldCardHeader('${rowId}');" class="field-type-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="text" ${typeVal === 'text' ? 'selected' : ''}>Text (ಅಕ್ಷರ)</option>
+                <option value="number" ${typeVal === 'number' ? 'selected' : ''}>Number (ಸಂಖ್ಯೆ)</option>
+                <option value="boolean" ${typeVal === 'boolean' ? 'selected' : ''}>Checkbox (ಸರಿ ಗುರುತು)</option>
+                <option value="dropdown" ${typeVal === 'dropdown' ? 'selected' : ''}>Dropdown (ಆಯ್ಕೆ ಪಟ್ಟಿ)</option>
+                <option value="radio" ${typeVal === 'radio' ? 'selected' : ''}>Radio (ಒಂದನ್ನು ಆರಿಸಿ)</option>
+                <option value="date" ${typeVal === 'date' ? 'selected' : ''}>Date (ದಿನಾಂಕ)</option>
+                <option value="textarea" ${typeVal === 'textarea' ? 'selected' : ''}>Textarea (ದೊಡ್ಡ ಪಠ್ಯ)</option>
+              </select>
+            </div>
+            <div class="field-options-container ${isDropdownOrRadio ? '' : 'hidden'}">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಆಯ್ಕೆಗಳು (Comma Separated)</label>
+              <input type="text" class="field-options-input w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white" placeholder="Yes, No" value="${optionsVal}" ${isDropdownOrRadio ? 'required' : ''}>
+            </div>
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಷಯ / Subject</label>
-            <select onchange="updateCceDataAttrs('${rowId}')" class="cce-subject-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="kannada" ${linkSubjectVal === 'kannada' ? 'selected' : ''}>Kannada / ಕನ್ನಡ</option>
-              <option value="english" ${linkSubjectVal === 'english' ? 'selected' : ''}>English / ಇಂಗ್ಲೀಷ್</option>
-              <option value="hindi" ${linkSubjectVal === 'hindi' ? 'selected' : ''}>Hindi / ಹಿಂದಿ</option>
-              <option value="maths" ${linkSubjectVal === 'maths' ? 'selected' : ''}>Maths / ಗಣಿತ</option>
-              <option value="science" ${linkSubjectVal === 'science' ? 'selected' : ''}>Science / ವಿಜ್ಞಾನ</option>
-              <option value="social" ${linkSubjectVal === 'social' ? 'selected' : ''}>Social Sci / ಸಮಾಜ ವಿಜ್ಞಾನ</option>
-              <option value="evs" ${linkSubjectVal === 'evs' ? 'selected' : ''}>EVS / ಪರಿಸರ ಅಧ್ಯಯನ</option>
-              <option value="pe" ${linkSubjectVal === 'pe' ? 'selected' : ''}>PE / ದೈಹಿಕ ಶಿಕ್ಷಣ</option>
-            </select>
+
+          <!-- Admissions Fields Panel -->
+          <div class="admissions-fields-container grid grid-cols-1 gap-4 ${linkSource === 'admissions' ? '' : 'hidden'}">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ದಾಖಲಾತಿ ಕಾಲಮ್ / Admissions Column</label>
+              <select onchange="updateAdmissionsDataAttrs('${rowId}'); updateFieldCardHeader('${rowId}');" class="admissions-col-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="student_aadhaar" ${linkColumnVal === 'student_aadhaar' ? 'selected' : ''}>Aadhaar Number / ಆಧಾರ್ ಸಂಖ್ಯೆ</option>
+                <option value="name_aadhaar" ${linkColumnVal === 'name_aadhaar' ? 'selected' : ''}>Aadhaar Name / ಆಧಾರ್‌ನಲ್ಲಿರುವ ಹೆಸರು</option>
+                <option value="gender" ${linkColumnVal === 'gender' ? 'selected' : ''}>Gender / ಲಿಂಗ</option>
+                <option value="dob" ${linkColumnVal === 'dob' ? 'selected' : ''}>Date of Birth / ಹುಟ್ಟಿದ ದಿನಾಂಕ</option>
+                <option value="mobile_number" ${linkColumnVal === 'mobile_number' ? 'selected' : ''}>Mobile Number / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</option>
+                <option value="bank_acc_no" ${linkColumnVal === 'bank_acc_no' ? 'selected' : ''}>Bank Account No / ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ</option>
+                <option value="ifsc_code" ${linkColumnVal === 'ifsc_code' ? 'selected' : ''}>IFSC Code / ಐಎಫ್‌ಎಸ್‌ಸಿ ಕೋಡ್</option>
+                <option value="father_name_kn" ${linkColumnVal === 'father_name_kn' ? 'selected' : ''}>Father Name (K) / ತಂದೆಯ ಹೆಸರು</option>
+                <option value="father_name_az" ${linkColumnVal === 'father_name_az' ? 'selected' : ''}>Father Aadhaar Name / ತಂದೆಯ ಆಧಾರ್ ಹೆಸರು</option>
+                <option value="mother_name_kn" ${linkColumnVal === 'mother_name_kn' ? 'selected' : ''}>Mother Name (K) / ತಾಯಿಯ ಹೆಸರು</option>
+                <option value="mother_name_az" ${linkColumnVal === 'mother_name_az' ? 'selected' : ''}>Mother Aadhaar Name / ತಾಯಿಯ ಆಧಾರ್ ಹೆಸರು</option>
+                <option value="caste" ${linkColumnVal === 'caste' ? 'selected' : ''}>Caste / ಜಾತಿ</option>
+                <option value="subcaste" ${linkColumnVal === 'subcaste' ? 'selected' : ''}>Subcaste / ಉಪಜಾತಿ</option>
+                <option value="medium" ${linkColumnVal === 'medium' ? 'selected' : ''}>Medium / ಬೋಧನಾ ಮಾಧ್ಯಮ</option>
+                <option value="student_sts" ${linkColumnVal === 'student_sts' ? 'selected' : ''}>STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ</option>
+                <option value="class" ${linkColumnVal === 'class' ? 'selected' : ''}>Class / ತರಗತಿ</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಧ / Value Type</label>
-            <select onchange="updateCceDataAttrs('${rowId}')" class="cce-valtype-select w-full px-3 py-2 rounded-lg border border-slate-250 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white">
-              <option value="mark" ${linkValueTypeVal === 'mark' ? 'selected' : ''}>Mark / ಅಂಕ</option>
-              <option value="grade" ${linkValueTypeVal === 'grade' ? 'selected' : ''}>Grade / ಗ್ರೇಡ್</option>
-            </select>
+
+          <!-- CCE Fields Panel -->
+          <div class="cce-fields-container grid grid-cols-1 sm:grid-cols-3 gap-4 ${linkSource === 'cce' ? '' : 'hidden'}">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ಪರೀಕ್ಷೆ / Exam</label>
+              <select onchange="updateCceDataAttrs('${rowId}'); updateFieldCardHeader('${rowId}');" class="cce-exam-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="FA1" ${linkExamVal === 'FA1' ? 'selected' : ''}>FA1</option>
+                <option value="FA2" ${linkExamVal === 'FA2' ? 'selected' : ''}>FA2</option>
+                <option value="FA3" ${linkExamVal === 'FA3' ? 'selected' : ''}>FA3</option>
+                <option value="FA4" ${linkExamVal === 'FA4' ? 'selected' : ''}>FA4</option>
+                <option value="SA1" ${linkExamVal === 'SA1' ? 'selected' : ''}>SA1</option>
+                <option value="SA2" ${linkExamVal === 'SA2' ? 'selected' : ''}>SA2</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಷಯ / Subject</label>
+              <select onchange="updateCceDataAttrs('${rowId}'); updateFieldCardHeader('${rowId}');" class="cce-subject-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="kannada" ${linkSubjectVal === 'kannada' ? 'selected' : ''}>Kannada / ಕನ್ನಡ</option>
+                <option value="english" ${linkSubjectVal === 'english' ? 'selected' : ''}>English / ಇಂಗ್ಲೀಷ್</option>
+                <option value="hindi" ${linkSubjectVal === 'hindi' ? 'selected' : ''}>Hindi / ಹಿಂದಿ</option>
+                <option value="maths" ${linkSubjectVal === 'maths' ? 'selected' : ''}>Maths / ಗಣಿತ</option>
+                <option value="science" ${linkSubjectVal === 'science' ? 'selected' : ''}>Science / ವಿಜ್ಞಾನ</option>
+                <option value="social" ${linkSubjectVal === 'social' ? 'selected' : ''}>Social Sci / ಸಮಾಜ ವಿಜ್ಞಾನ</option>
+                <option value="evs" ${linkSubjectVal === 'evs' ? 'selected' : ''}>EVS / ಪರಿಸರ ಅಧ್ಯಯನ</option>
+                <option value="pe" ${linkSubjectVal === 'pe' ? 'selected' : ''}>PE / ದೈಹಿಕ ಶಿಕ್ಷಣ</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ವಿಧ / Value Type</label>
+              <select onchange="updateCceDataAttrs('${rowId}'); updateFieldCardHeader('${rowId}');" class="cce-valtype-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="mark" ${linkValueTypeVal === 'mark' ? 'selected' : ''}>Mark / ಅಂಕ</option>
+                <option value="grade" ${linkValueTypeVal === 'grade' ? 'selected' : ''}>Grade / ಗ್ರೇಡ್</option>
+              </select>
+            </div>
           </div>
         </div>
       `;
       
       container.appendChild(row);
+      updateFieldIndices();
       
       if (isLinked) {
         row.dataset.linked = "true";
@@ -921,7 +1121,180 @@
 
     function removeFieldRow(rowId) {
       const row = document.getElementById(rowId);
-      if (row) row.remove();
+      if (row) {
+        row.remove();
+        updateFieldIndices();
+      }
+    }
+
+    function toggleFieldCollapse(rowId, event = null) {
+      const ev = event || window.event;
+      if (ev && (ev.target.closest('.drag-handle') || ev.target.closest('button'))) {
+        return;
+      }
+
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      
+      const header = row.querySelector('.select-none');
+      const panel = row.querySelector('.field-details-panel');
+      const arrow = row.querySelector('.field-collapse-arrow');
+      
+      if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        header.classList.add('border-b');
+        arrow.classList.remove('rotate-180');
+      } else {
+        panel.classList.add('hidden');
+        header.classList.remove('border-b');
+        arrow.classList.add('rotate-180');
+      }
+    }
+
+    let dragSrcEl = null;
+
+    function handleDragStart(e) {
+      if (e.target.closest('input') || e.target.closest('select') || e.target.closest('textarea') || e.target.closest('button')) {
+        e.preventDefault();
+        return;
+      }
+      this.style.opacity = '0.4';
+      dragSrcEl = this;
+      e.dataTransfer.effectAllowed = 'move';
+      this.classList.add('dragging');
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      e.dataTransfer.dropEffect = 'move';
+      return false;
+    }
+
+    function handleDrop(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      const draggingEl = document.querySelector('.dragging');
+      if (draggingEl && draggingEl !== this) {
+        const container = document.getElementById('fieldsContainer');
+        const cards = Array.from(container.querySelectorAll('.field-card'));
+        const draggingIndex = cards.indexOf(draggingEl);
+        const targetIndex = cards.indexOf(this);
+        
+        if (draggingIndex < targetIndex) {
+          this.after(draggingEl);
+        } else {
+          this.before(draggingEl);
+        }
+        
+        updateFieldIndices();
+      }
+      return false;
+    }
+
+    function handleDragEnd(e) {
+      this.style.opacity = '1';
+      this.classList.remove('dragging');
+    }
+
+    function copyFieldRow(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+
+      const parentInput = row.querySelector('.field-parent-input');
+      const parentHeader = parentInput ? parentInput.value.trim() : '';
+      const nameInput = row.querySelector('.field-name-input');
+      const fieldName = nameInput ? nameInput.value.trim() : '';
+      const sourceSelect = row.querySelector('.field-source-select');
+      const source = sourceSelect ? sourceSelect.value : 'manual';
+      
+      const config = {
+        name: fieldName ? `${fieldName} (Copy)` : '',
+        parentHeader: parentHeader,
+        linked: source !== 'manual',
+        linkSource: source
+      };
+
+      if (source === 'manual') {
+        const typeSelect = row.querySelector('.field-type-select');
+        config.type = typeSelect ? typeSelect.value : 'text';
+        const optionsInput = row.querySelector('.field-options-input');
+        const optionsVal = optionsInput ? optionsInput.value : '';
+        config.options = optionsVal.split(',').map(o => o.trim()).filter(o => o !== '');
+      } else if (source === 'admissions') {
+        const colSel = row.querySelector('.admissions-col-select');
+        config.linkColumn = colSel ? colSel.value : 'student_aadhaar';
+      } else if (source === 'cce') {
+        const examSel = row.querySelector('.cce-exam-select');
+        config.linkExam = examSel ? examSel.value : 'FA1';
+        const subSel = row.querySelector('.cce-subject-select');
+        config.linkSubject = subSel ? subSel.value : 'kannada';
+        const valTypeSel = row.querySelector('.cce-valtype-select');
+        config.linkValueType = valTypeSel ? valTypeSel.value : 'mark';
+      }
+
+      addFieldRow(config);
+      
+      // Expand the copied card details to allow easy editing
+      const container = document.getElementById('fieldsContainer');
+      const newCard = container.lastChild;
+      if (newCard) {
+        const panel = newCard.querySelector('.field-details-panel');
+        if (panel && panel.classList.contains('hidden')) {
+          toggleFieldCollapse(newCard.id);
+        }
+        const newNameInput = newCard.querySelector('.field-name-input');
+        if (newNameInput) newNameInput.focus();
+      }
+    }
+
+    function updateFieldCardHeader(rowId) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      
+      const parentInput = row.querySelector('.field-parent-input');
+      const nameInput = row.querySelector('.field-name-input');
+      const sourceSelect = row.querySelector('.field-source-select');
+      
+      const parent = parentInput ? parentInput.value.trim() : '';
+      const name = nameInput ? nameInput.value.trim() : '';
+      const source = sourceSelect ? sourceSelect.value : 'manual';
+      
+      const titleEl = row.querySelector('.field-summary-title');
+      if (parent) {
+        titleEl.innerText = `${parent} → ${name || '...'}`;
+      } else {
+        titleEl.innerText = name || 'New Field / ಹೊಸ ಅಂಕಣ';
+      }
+      
+      row.querySelector('.field-badge-source').innerText = source;
+      
+      const isLinked = source !== 'manual';
+      const typeBadge = row.querySelector('.field-badge-type');
+      if (isLinked) {
+        row.dataset.linked = "true";
+        row.dataset.linkSource = source;
+        typeBadge.innerText = 'linked';
+        typeBadge.className = "field-badge-type px-2 py-0.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-[9px] font-bold rounded-lg uppercase tracking-wider flex-shrink-0";
+      } else {
+        row.dataset.linked = "false";
+        row.dataset.linkSource = "manual";
+        const typeSelect = row.querySelector('.field-type-select');
+        const type = typeSelect ? typeSelect.value : 'text';
+        typeBadge.innerText = type;
+        typeBadge.className = "field-badge-type px-2 py-0.5 bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 text-[9px] font-bold rounded-lg uppercase tracking-wider flex-shrink-0";
+      }
+    }
+
+    function updateFieldIndices() {
+      const container = document.getElementById('fieldsContainer');
+      const cards = container.querySelectorAll('.field-card');
+      cards.forEach((card, index) => {
+        const badge = card.querySelector('.field-index-badge');
+        if (badge) badge.innerText = index + 1;
+      });
     }
 
     function handleSourceTypeChange(rowId, val) {
@@ -992,19 +1365,24 @@
     async function handleCreateTemplate() {
       const name = document.getElementById('templateName').value.trim();
       const printHeader = document.getElementById('templatePrintHeader').value.trim();
-      const printFooter = document.getElementById('templatePrintFooter').value.trim();
-      const rows = document.querySelectorAll('#fieldsContainer > div');
+      const printFooterText = document.getElementById('templatePrintFooter').value.trim();
+      const includeSign = document.getElementById('includeSignColumn').checked;
+      const remarksVal = document.getElementById('templateReportRemarks').value.trim();
+      const printFooter = `${printFooterText}||${includeSign}||${remarksVal}`;
+      const rows = document.querySelectorAll('#fieldsContainer > .field-card');
       
       const columns = [];
       const renames = {};
       rows.forEach(row => {
         const fieldName = row.querySelector('.field-name-input').value.trim();
+        const parentHeader = row.querySelector('.field-parent-input') ? row.querySelector('.field-parent-input').value.trim() : '';
         const isLinked = row.dataset.linked === "true";
         
         if (fieldName) {
           if (isLinked) {
             columns.push({
               name: fieldName,
+              parentHeader: parentHeader,
               linked: true,
               linkSource: row.dataset.linkSource,
               linkColumn: row.dataset.linkColumn,
@@ -1017,11 +1395,12 @@
             const fieldOptionsVal = row.querySelector('.field-options-input').value;
             
             let options = [];
-            if (fieldType === 'dropdown') {
+            if (fieldType === 'dropdown' || fieldType === 'radio') {
               options = fieldOptionsVal.split(',').map(o => o.trim()).filter(o => o !== '');
             }
             columns.push({
               name: fieldName,
+              parentHeader: parentHeader,
               type: fieldType,
               options: options
             });
@@ -1202,7 +1581,11 @@
       // Load values
       document.getElementById('templateName').value = t.name;
       document.getElementById('templatePrintHeader').value = t.print_header || '';
-      document.getElementById('templatePrintFooter').value = t.print_footer || '';
+      
+      const footerParts = (t.print_footer || '').split('||');
+      document.getElementById('templatePrintFooter').value = footerParts[0] || '';
+      document.getElementById('includeSignColumn').checked = footerParts[1] !== 'false';
+      document.getElementById('templateReportRemarks').value = footerParts[2] || '';
       
       const container = document.getElementById('fieldsContainer');
       container.innerHTML = '';
@@ -1283,8 +1666,20 @@
       const headerTitle = selectedTemplate.print_header || selectedTemplate.name;
       document.getElementById('printHeaderTitle').innerText = headerTitle;
       
-      const footerText = selectedTemplate.print_footer || "";
-      document.getElementById('printFooterText').innerText = footerText || "ಮುಖ್ಯಗುರುಗಳು / Head Master";
+      const footerParts = (selectedTemplate.print_footer || '').split('||');
+      const footerText = footerParts[0] || "ಮುಖ್ಯಗುರುಗಳು / Head Master";
+      document.getElementById('printFooterText').innerText = footerText;
+
+      const remarksText = footerParts[2] || '';
+      const browserRemarksContainer = document.getElementById('browserRemarksContainer');
+      const browserRemarksText = document.getElementById('browserRemarksText');
+      if (remarksText && remarksText.trim() !== '') {
+        browserRemarksContainer.classList.remove('hidden');
+        browserRemarksText.innerText = remarksText;
+      } else {
+        browserRemarksContainer.classList.add('hidden');
+        browserRemarksText.innerText = '';
+      }
 
       document.getElementById('classSelector').value = '';
       
@@ -1566,26 +1961,64 @@
         alert("ತರಗತಿಯ ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
       }
     }
-
+    
     function renderDistributionTable() {
       const tbody = document.getElementById('distributionTableBody');
-      const theadTr = document.querySelector('#distributionTable thead tr');
+      const thead = document.querySelector('#distributionTable thead');
       
       const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
 
-      // 1. Rebuild headers
-      theadTr.innerHTML = `
-        <th class="p-3 border-r border-slate-800 w-12 no-print text-center">Sl.No</th>
-        <th class="p-3 border-r border-slate-800 w-24 text-center">STS No</th>
-        <th class="p-3 border-r border-slate-800 text-left">Student Name</th>
-      `;
+      // 1. Rebuild headers (supporting multi-level headers)
+      const hasNested = cols.some(c => c.parentHeader && c.parentHeader.trim() !== '');
       
-      cols.forEach(col => {
-        const th = document.createElement('th');
-        th.className = "p-3 border-r border-slate-800 text-center";
-        th.innerText = col.name;
-        theadTr.appendChild(th);
-      });
+      if (!hasNested) {
+        thead.innerHTML = `
+          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
+            <th class="p-3 border-r border-slate-800 w-12 min-w-[48px] no-print text-center">Sl.No</th>
+            <th class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center">STS No</th>
+            <th class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left">Student Name</th>
+            ${cols.map(col => `<th class="p-3 border-r border-slate-800 text-center min-w-[140px]">${col.name}</th>`).join('')}
+          </tr>
+        `;
+      } else {
+        let tr1Html = `
+          <th rowspan="2" class="p-3 border-r border-slate-800 w-12 min-w-[48px] no-print text-center align-middle">Sl.No</th>
+          <th rowspan="2" class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center align-middle">STS No</th>
+          <th rowspan="2" class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left align-middle">Student Name</th>
+        `;
+        let tr2Html = '';
+        
+        let i = 0;
+        while (i < cols.length) {
+          const col = cols[i];
+          const parent = col.parentHeader ? col.parentHeader.trim() : '';
+          
+          if (parent === '') {
+            tr1Html += `<th rowspan="2" class="p-3 border-r border-slate-800 text-center align-middle min-w-[140px]">${col.name}</th>`;
+            i++;
+          } else {
+            let count = 0;
+            let j = i;
+            while (j < cols.length && cols[j].parentHeader && cols[j].parentHeader.trim() === parent) {
+              count++;
+              j++;
+            }
+            
+            tr1Html += `<th colspan="${count}" class="p-3 border-r border-slate-800 text-center border-b border-slate-800 align-middle min-w-[140px]">${parent}</th>`;
+            
+            for (let k = i; k < j; k++) {
+              tr2Html += `<th class="p-3 border-r border-slate-800 text-center min-w-[140px]">${cols[k].name}</th>`;
+            }
+            
+            i = j;
+          }
+        }
+        
+        thead.innerHTML = `
+          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr1Html}</tr>
+          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr2Html}</tr>
+        `;
+      }
 
       // 2. Build rows
       tbody.innerHTML = '';
@@ -1596,7 +2029,7 @@
       const cls = document.getElementById('classSelector').value;
       students.forEach((student, index) => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition border-b border-slate-200 text-slate-700 font-medium";
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 font-medium";
         
         let colsHtml = '';
         const studVals = incentiveData[student.id] || {};
@@ -1625,52 +2058,73 @@
 
           let inputFieldHtml = '';
           if (isReadOnly) {
-            inputFieldHtml = `<span class="px-2 py-1 bg-slate-100 text-slate-700 rounded font-semibold text-xs border border-slate-200 block text-center min-w-[60px]">${val !== '' ? val : '-'}</span>`;
+            inputFieldHtml = `<span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded font-semibold text-xs border border-slate-200 dark:border-slate-700 block text-center min-w-[60px]">${val !== '' ? val : '-'}</span>`;
           } else {
             if (col.type === 'boolean') {
               const checked = val === true || val === 'true' ? 'checked' : '';
               inputFieldHtml = `<input type="checkbox" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.checked)" class="w-5 h-5 accent-indigo-600 cursor-pointer" ${checked}>`;
             } else if (col.type === 'number') {
               const numVal = val !== undefined && val !== null ? val : '';
-              inputFieldHtml = `<input type="number" value="${numVal}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-24 px-2 py-1 border border-slate-200 rounded text-center font-bold">`;
+              inputFieldHtml = `<input type="number" value="${numVal}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-24 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded text-center font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-white">`;
             } else if (col.type === 'dropdown') {
               let optionsHtml = `<option value="">-- Select --</option>`;
-              col.options.forEach(opt => {
+              const opts = col.options || [];
+              opts.forEach(opt => {
                 const selected = val === opt ? 'selected' : '';
                 optionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
               });
-              inputFieldHtml = `<select onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-32 px-2 py-1 border border-slate-200 rounded text-center font-bold bg-white">${optionsHtml}</select>`;
+              inputFieldHtml = `<select onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-32 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded text-center font-bold bg-white dark:bg-slate-900 text-slate-800 dark:text-white cursor-pointer">${optionsHtml}</select>`;
+            } else if (col.type === 'radio') {
+              const opts = (col.options && col.options.length > 0) ? col.options : ['Yes', 'No'];
+              let radioHtml = `<div class="flex items-center justify-center gap-3">`;
+              opts.forEach(opt => {
+                const checked = val === opt ? 'checked' : '';
+                radioHtml += `
+                  <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                    <input type="radio" name="radio-${student.id}-${col.name.replace(/\s+/g, '-')}" value="${opt}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-350 dark:border-slate-650 cursor-pointer" ${checked}>
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 select-none">${opt}</span>
+                  </label>
+                `;
+              });
+              radioHtml += `</div>`;
+              inputFieldHtml = radioHtml;
+            } else if (col.type === 'date') {
+              const dateVal = val !== undefined && val !== null ? val : '';
+              inputFieldHtml = `<input type="date" value="${dateVal}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-32 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded text-center font-semibold text-xs bg-white dark:bg-slate-900 text-slate-800 dark:text-white cursor-pointer">`;
+            } else if (col.type === 'textarea') {
+              const textVal = val !== undefined && val !== null ? val : '';
+              inputFieldHtml = `<textarea onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-48 px-2 py-1 border border-slate-200 dark:border-slate-700 rounded text-xs font-medium bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="1">${textVal}</textarea>`;
             } else {
               const textVal = val !== undefined && val !== null ? val : '';
-              inputFieldHtml = `<input type="text" value="${textVal}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-full px-2 py-1 border border-slate-200 rounded font-semibold text-left">`;
+              inputFieldHtml = `<input type="text" value="${textVal}" onchange="autoSaveValue('${student.id}', '${col.name.replace(/'/g, "\\'")}', this.value)" class="w-full px-2 py-1 border border-slate-200 dark:border-slate-700 rounded font-semibold text-left bg-white dark:bg-slate-900 text-slate-850 dark:text-white">`;
             }
           }
 
-          colsHtml += `<td class="p-2 border-r border-slate-200 text-center align-middle">${inputFieldHtml}</td>`;
+          colsHtml += `<td class="p-2 border-r border-slate-200 dark:border-slate-800 text-center align-middle">${inputFieldHtml}</td>`;
         });
 
         const nameEn = (student.name_english || '').trim().toUpperCase();
         const nameKn = (student.student_name || '').trim();
         let nameHtml = '';
         if (nameEn && nameKn) {
-          nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 font-medium">${nameKn}</div>`;
+          nameHtml = `<div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">${nameKn}</div>`;
         } else {
-          nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+          nameHtml = `<span class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">${nameEn || nameKn || '-'}</span>`;
         }
 
         const fatherEn = (student.father_name_az || '').trim().toUpperCase();
         const fatherKn = (student.father_name_kn || '').trim();
         let fatherHtml = '';
         if (fatherEn && fatherKn) {
-          fatherHtml = `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherEn} / ${fatherKn})</span>`;
+          fatherHtml = `<span class="text-[10px] text-slate-400 dark:text-slate-500 block font-normal">(ತಂದೆ: ${fatherEn} / ${fatherKn})</span>`;
         } else {
-          fatherHtml = fatherEn || fatherKn ? `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherEn || fatherKn})</span>` : '';
+          fatherHtml = fatherEn || fatherKn ? `<span class="text-[10px] text-slate-400 dark:text-slate-500 block font-normal">(ತಂದೆ: ${fatherEn || fatherKn})</span>` : '';
         }
 
         tr.innerHTML = `
-          <td class="p-3 text-center border-r border-slate-200 font-medium no-print">${index + 1}</td>
-          <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold text-center">${student.app_no}</td>
-          <td class="p-3 border-r border-slate-200 text-left">${nameHtml}${fatherHtml}</td>
+          <td class="p-3 text-center border-r border-slate-200 dark:border-slate-800 font-medium no-print">${index + 1}</td>
+          <td class="p-3 border-r border-slate-200 dark:border-slate-800 font-mono text-slate-500 dark:text-slate-400 font-bold text-center">${student.app_no}</td>
+          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-left">${nameHtml}${fatherHtml}</td>
           ${colsHtml}
         `;
         
@@ -1792,6 +2246,17 @@
               } else {
                 incentiveData[student.id][col.name] = '';
               }
+            } else if (col.type === 'radio') {
+              if (isCheck) {
+                const opts = (col.options && col.options.length > 0) ? col.options : ['Yes', 'No'];
+                incentiveData[student.id][col.name] = opts[0];
+              } else {
+                incentiveData[student.id][col.name] = '';
+              }
+            } else if (col.type === 'date') {
+              incentiveData[student.id][col.name] = isCheck ? new Date().toISOString().split('T')[0] : '';
+            } else if (col.type === 'textarea') {
+              incentiveData[student.id][col.name] = isCheck ? 'Distributed' : '';
             } else {
               incentiveData[student.id][col.name] = isCheck ? 'Distributed' : '';
             }
@@ -1987,10 +2452,13 @@
           } else {
             val = (incentiveData[s.id] || {})[col.name];
           }
+          
+          const headerName = col.parentHeader ? `${col.parentHeader} - ${col.name}` : col.name;
+          
           if (col.type === 'boolean' && col.linked !== true && col.linked !== 'true') {
-            row[col.name] = (val === true || val === 'true') ? 'Distributed' : 'Pending';
+            row[headerName] = (val === true || val === 'true') ? 'Distributed' : 'Pending';
           } else {
-            row[col.name] = val !== undefined && val !== null ? val : '';
+            row[headerName] = val !== undefined && val !== null ? val : '';
           }
         });
         return row;
@@ -2009,13 +2477,17 @@
       const cls = document.getElementById('classSelector').value || 'All';
       const schoolNameEn = localStorage.getItem('school_name_en') || "Government Higher Primary School, Marched";
       
+      const footerParts = (selectedTemplate.print_footer || '').split('||');
+      const footerText = footerParts[0] || "ಮುಖ್ಯಗುರುಗಳು / Head Master";
+      const includeSign = footerParts[1] !== 'false';
+
       document.getElementById('print-school-name').innerText = schoolNameEn;
       document.getElementById('print-title').innerText = selectedTemplate.print_header || selectedTemplate.name;
       document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + cls;
       document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
       
       const printArea = document.getElementById('printArea');
-      printArea.querySelectorAll('table, .print-signatures-row').forEach(el => el.remove());
+      printArea.querySelectorAll('table, .print-remarks-block, .print-signatures-row, .print-footer-text-row').forEach(el => el.remove());
       
       const originalTable = document.getElementById('distributionTable');
       const tableClone = originalTable.cloneNode(true);
@@ -2027,33 +2499,112 @@
         el.classList.remove('no-print');
       });
       
-      // Convert inputs, checkboxes, selects into static spans
-      const originalInputs = originalTable.querySelectorAll('input, select');
-      const clonedInputs = tableClone.querySelectorAll('input, select');
+      // Convert inputs, checkboxes, selects, radios, textareas into static spans in clone
+      const cloneRows = tableClone.querySelectorAll('tbody tr');
+      const originalRows = originalTable.querySelectorAll('tbody tr');
       
-      originalInputs.forEach((orig, idx) => {
-        const replacement = document.createElement('span');
-        if (orig.type === 'checkbox') {
-          replacement.innerText = orig.checked ? '✔' : '✘';
-          replacement.className = orig.checked ? 'text-emerald-600 font-bold text-base' : 'text-rose-500 font-bold text-base';
-        } else {
-          replacement.innerText = orig.value !== '' ? orig.value : '-';
+      cloneRows.forEach((cloneRow, rIdx) => {
+        const origRow = originalRows[rIdx];
+        if (!origRow) return;
+        
+        const cloneCells = cloneRow.cells;
+        const origCells = origRow.cells;
+        
+        for (let cIdx = 3; cIdx < origCells.length; cIdx++) {
+          const origCell = origCells[cIdx];
+          const cloneCell = cloneCells[cIdx];
+          if (!origCell || !cloneCell) continue;
+          
+          const checkbox = origCell.querySelector('input[type="checkbox"]');
+          const radios = origCell.querySelectorAll('input[type="radio"]');
+          const select = origCell.querySelector('select');
+          const textarea = origCell.querySelector('textarea');
+          const input = origCell.querySelector('input[type="text"], input[type="number"], input[type="date"]');
+          const span = origCell.querySelector('span');
+          
+          const replacement = document.createElement('span');
           replacement.className = 'font-bold';
+          
+          if (checkbox) {
+            replacement.innerText = checkbox.checked ? '✔' : '✘';
+            replacement.className = checkbox.checked ? 'text-emerald-600 font-bold text-base' : 'text-rose-500 font-bold text-base';
+          } else if (radios.length > 0) {
+            let checkedVal = '-';
+            radios.forEach(r => {
+              if (r.checked) checkedVal = r.value;
+            });
+            replacement.innerText = checkedVal;
+          } else if (select) {
+            replacement.innerText = select.value !== '' ? select.value : '-';
+          } else if (textarea) {
+            replacement.innerText = textarea.value !== '' ? textarea.value : '-';
+          } else if (input) {
+            replacement.innerText = input.value !== '' ? input.value : '-';
+          } else if (span) {
+            replacement.innerText = span.innerText !== '' ? span.innerText : '-';
+          } else {
+            replacement.innerText = cloneCell.innerText !== '' ? cloneCell.innerText : '-';
+          }
+          
+          cloneCell.innerHTML = '';
+          cloneCell.appendChild(replacement);
         }
-        clonedInputs[idx].parentNode.replaceChild(replacement, clonedInputs[idx]);
       });
       
+      // Append blank signature column if selected
+      if (includeSign) {
+        const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+        const hasNested = cols.some(c => c.parentHeader && c.parentHeader.trim() !== '');
+        const trs = tableClone.querySelectorAll('thead tr');
+        
+        if (hasNested && trs.length >= 2) {
+          const th = document.createElement('th');
+          th.className = "p-3 border-r border-slate-800 text-center align-middle print-sign-col";
+          th.setAttribute('rowspan', '2');
+          th.innerText = "Signature / ಸಹಿ";
+          trs[0].appendChild(th);
+        } else if (trs.length >= 1) {
+          const th = document.createElement('th');
+          th.className = "p-3 border-r border-slate-800 text-center align-middle print-sign-col";
+          th.innerText = "Signature / ಸಹಿ";
+          trs[0].appendChild(th);
+        }
+        
+        cloneRows.forEach(row => {
+          const td = document.createElement('td');
+          td.className = "p-3 border-r border-slate-200 text-center align-middle print-sign-col";
+          td.innerHTML = `<span class="inline-block h-6 w-full"></span>`;
+          row.appendChild(td);
+        });
+      }
+
+      // Append Report Remarks (if any) ABOVE the table clone
+      const remarksText = footerParts[2] || '';
+      if (remarksText && remarksText.trim() !== '') {
+        const remarksDiv = document.createElement('div');
+        remarksDiv.className = 'print-remarks-block';
+        remarksDiv.innerText = remarksText;
+        printArea.appendChild(remarksDiv);
+      }
+
       printArea.appendChild(tableClone);
       
+      // Append signatures block (only Class Teacher and Head Master)
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
-      const footerText = selectedTemplate.print_footer || "ಮುಖ್ಯಗುರುಗಳು / Head Master";
       sigRow.innerHTML = `
         <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Sign</span>
-        <span>${footerText}</span>
         <span>ಮುಖ್ಯಗುರುಗಳ ಸಹಿ / Head Master Sign</span>
       `;
       printArea.appendChild(sigRow);
+
+      // Append print footer text at the very bottom
+      if (footerText && footerText.trim() !== '') {
+        const footerDiv = document.createElement('div');
+        footerDiv.className = 'print-footer-text-row';
+        footerDiv.innerText = footerText;
+        printArea.appendChild(footerDiv);
+      }
       
       window.print();
     }
@@ -2070,7 +2621,7 @@
             school_id: schoolId,
             name: "Textbooks / ಪಠ್ಯಪುಸ್ತಕಗಳು",
             print_header: "TEXTBOOKS DISTRIBUTION REPORT",
-            print_footer: "Signature of Head Master / Class Teacher",
+            print_footer: "Signature of Head Master / Class Teacher||true",
             columns: [
               { name: 'Medium / ಮಾಧ್ಯಮ', linked: true, linkSource: 'admissions', linkColumn: 'medium' },
               { name: 'Textbooks Issued / ಪಠ್ಯಪುಸ್ತಕ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
@@ -2082,11 +2633,11 @@
             school_id: schoolId,
             name: "Uniforms / ಸಮವಸ್ತ್ರಗಳು",
             print_header: "UNIFORMS DISTRIBUTION REPORT",
-            print_footer: "Signature of Head Master / Class Teacher",
+            print_footer: "Signature of Head Master / Class Teacher||true",
             columns: [
               { name: 'Gender / ಲಿಂಗ', linked: true, linkSource: 'admissions', linkColumn: 'gender' },
-              { name: 'Set 1 Issued / ಸೆಟ್ 1 ನೀಡಲಾಗಿದೆ', type: 'boolean' },
-              { name: 'Set 2 Issued / ಸೆಟ್ 2 ನೀಡಲಾಗಿದೆ', type: 'boolean' },
+              { name: 'Set 1 Issued / ಸೆಟ್ 1 ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Uniform / ಸಮವಸ್ತ್ರಗಳು' },
+              { name: 'Set 2 Issued / ಸೆಟ್ 2 ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Uniform / ಸಮವಸ್ತ್ರಗಳು' },
               { name: 'Uniform Size / ಸಮವಸ್ತ್ರದ ಅಳತೆ', type: 'dropdown', options: ['Small', 'Medium', 'Large', 'XL'] }
             ]
           },
@@ -2094,19 +2645,19 @@
             school_id: schoolId,
             name: "Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್",
             print_header: "SHOES & SOCKS DISTRIBUTION REPORT",
-            print_footer: "Signature of Head Master / Class Teacher",
+            print_footer: "Signature of Head Master / Class Teacher||true",
             columns: [
               { name: 'Gender / ಲಿಂಗ', linked: true, linkSource: 'admissions', linkColumn: 'gender' },
-              { name: 'Shoes Size / ಶೂ ಅಳತೆ', type: 'dropdown', options: ['1', '2', '3', '4', '5', '6', '7'] },
-              { name: 'Shoes Issued / ಶೂ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
-              { name: 'Socks Issued / ಸಾಕ್ಸ್ ನೀಡಲಾಗಿದೆ', type: 'boolean' }
+              { name: 'Shoes Size / ಶೂ ಅಳತೆ', type: 'dropdown', options: ['1', '2', '3', '4', '5', '6', '7'], parentHeader: 'Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್' },
+              { name: 'Shoes Issued / ಶೂ ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್' },
+              { name: 'Socks Issued / ಸಾಕ್ಸ್ ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್' }
             ]
           },
           {
             school_id: schoolId,
             name: "Bicycles / ಸೈಕಲ್ ವಿತರಣೆ",
             print_header: "BICYCLES DISTRIBUTION REPORT",
-            print_footer: "Signature of Head Master / Class Teacher",
+            print_footer: "Signature of Head Master / Class Teacher||true",
             columns: [
               { name: 'STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ', linked: true, linkSource: 'admissions', linkColumn: 'student_sts' },
               { name: 'Bicycle Sl.No / ಸೈಕಲ್ ಸಂಖ್ಯೆ', type: 'text' },
@@ -2117,7 +2668,7 @@
             school_id: schoolId,
             name: "Height & Weight / ಎತ್ತರ ಮತ್ತು ತೂಕ",
             print_header: "STUDENTS HEIGHT & WEIGHT REPORT",
-            print_footer: "Signature of Head Master / Physical Education Teacher",
+            print_footer: "Signature of Head Master / Physical Education Teacher||true",
             columns: [
               { name: 'Height (cm) / ಎತ್ತರ (ಸೆಂ.ಮೀ.)', type: 'number' },
               { name: 'Weight (kg) / ತೂಕ (ಕೆ.ಜಿ.)', type: 'number' },
