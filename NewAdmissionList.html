@@ -266,7 +266,7 @@
                 <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
                   <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
                   <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
                 </ul>
               </div>
 
@@ -386,34 +386,38 @@
         </div>
 
         <!-- Actions Row -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
-          <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
+          <div class="flex flex-wrap items-center gap-1.5">
             <!-- Download Template -->
-            <button onclick="downloadCSVTemplate()" class="bg-gradient-to-tr from-slate-600 to-slate-500 hover:from-slate-700 hover:to-slate-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-500/20 active:scale-[0.98] cursor-pointer border-0">
-              Template CSV <i class="fa-solid fa-file-arrow-down"></i>
+            <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-arrow-down text-slate-500 text-lg md:text-xl"></i>
             </button>
             <!-- Import CSV -->
             <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
-            <button onclick="triggerCSVImport()" class="bg-gradient-to-tr from-sky-600 to-cyan-500 hover:from-sky-700 hover:to-cyan-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-sky-500/20 active:scale-[0.98] cursor-pointer border-0">
-              Import CSV <i class="fa-solid fa-file-import"></i>
+            <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
+            </button>
+            <!-- Export CSV -->
+            <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
             </button>
             <!-- Manage Columns -->
-            <button onclick="openManageColumnsModal()" class="bg-gradient-to-tr from-slate-700 to-slate-650 hover:from-slate-800 hover:to-slate-700 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-700/20 active:scale-[0.98] cursor-pointer border-0">
-              Manage Columns <i class="fa-solid fa-sliders"></i>
+            <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-sliders text-indigo-600 text-lg md:text-xl"></i>
             </button>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
             <!-- Excel -->
-            <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
-              Export <i class="fa-solid fa-file-excel"></i>
+            <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
             </button>
             <!-- PDF -->
-            <button onclick="exportToPdf()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0">
-              Export <i class="fa-solid fa-file-pdf"></i>
+            <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
             </button>
             <!-- Print -->
-            <button onclick="printStudentList()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
-              Export <i class="fa-solid fa-print"></i>
+            <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
             </button>
           </div>
         </div>
@@ -700,9 +704,9 @@
       } else if (path === 'CceAssessmet.html') {
         expandMenu('menu-academic');
         highlightSubItem('menu-academic', 'CceAssessmet.html');
-      } else if (path === 'FlnDashboard.html') {
+      } else if (path === 'LbaAssessment.html') {
         expandMenu('menu-academic');
-        highlightSubItem('menu-academic', 'FlnDashboard.html');
+        highlightSubItem('menu-academic', 'LbaAssessment.html');
       }
     }
 
@@ -1477,6 +1481,74 @@
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, sheet, "Students List");
       XLSX.writeFile(wb, `Students_Roster_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+
+    function exportToCSV() {
+      const visibility = getColumnVisibility();
+      const visibleCols = standardColumns.filter(col => visibility[col.id] !== false);
+
+      const headers = ["Sl.No"];
+      visibleCols.forEach(col => {
+        headers.push(col.labelEn);
+      });
+
+      const dataRows = [headers];
+      
+      const searchInput = document.getElementById('roster-search').value.trim().toUpperCase();
+      const selectedClass = document.getElementById('class-filter').value;
+      const selectedGender = document.getElementById('gender-filter').value;
+
+      const filtered = allStudentsData.filter(student => {
+        const searchMatch = !searchInput || 
+          (student.name || '').toUpperCase().includes(searchInput) || 
+          (student.id || '').toUpperCase().includes(searchInput) || 
+          (student.father || '').toUpperCase().includes(searchInput) ||
+          (student.mother || '').toUpperCase().includes(searchInput);
+
+        let classMatch = !selectedClass;
+        if (selectedClass) {
+          const sClassClean = (student.className || '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+          const selClassClean = selectedClass.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+          classMatch = sClassClean === selClassClean;
+        }
+
+        const genderMatch = !selectedGender || student.gender === selectedGender;
+        return searchMatch && classMatch && genderMatch;
+      });
+
+      filtered.forEach((s, idx) => {
+        const row = [idx + 1];
+        visibleCols.forEach(col => {
+          let val = s[col.id] !== undefined && s[col.id] !== null ? s[col.id] : '';
+          if (col.id === 'gender') {
+            row.push(val === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು');
+          } else if (col.id === 'is_admitted') {
+            row.push(val === true || val === 'true' ? 'Admitted' : 'Pending');
+          } else if (col.id === 'app_no') {
+            row.push(s.id || '');
+          } else if (col.id === 'student_name') {
+            row.push(s.name || '');
+          } else if (col.id === 'enroll_class') {
+            row.push(s.className || '');
+          } else if (col.id === 'father_name_kn') {
+            row.push(s.father || '');
+          } else if (col.id === 'mother_name_kn') {
+            row.push(s.mother || '');
+          } else if (col.id === 'student_aadhaar') {
+            row.push(s.aadhaar || '');
+          } else if (col.id === 'mobile_number') {
+            row.push(s.mobile || '');
+          } else {
+            row.push(val);
+          }
+        });
+        dataRows.push(row);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(dataRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Students List");
+      XLSX.writeFile(wb, `Students_Roster_${new Date().toISOString().slice(0,10)}.csv`, { bookType: 'csv' });
     }
 
     function exportToPdf() {

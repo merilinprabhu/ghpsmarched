@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -432,7 +432,7 @@
                 <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
                   <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
                   <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
                 </ul>
               </div>
 
@@ -627,22 +627,31 @@
               </div>
             </div>
             
-            <div class="flex flex-wrap gap-2 w-full lg:w-auto justify-end">
+            <div class="flex flex-wrap items-center gap-1.5 w-full lg:w-auto justify-end">
               <!-- Add Teacher -->
-              <button onclick="switchTab('update')" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-indigo-500/20 active:scale-[0.98] cursor-pointer border-0">
+              <button onclick="switchTab('update')" class="bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-indigo-500/20 active:scale-[0.98] cursor-pointer border-0 mr-2">
                 Add <i class="fa-solid fa-plus"></i>
               </button>
-              <!-- Excel -->
-              <button onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0">
-                Export <i class="fa-solid fa-file-excel"></i>
+              <!-- Export CSV -->
+              <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
               </button>
-              <!-- PDF -->
-              <button onclick="exportToPdf()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0">
-                Export <i class="fa-solid fa-file-pdf"></i>
+              <!-- Import CSV -->
+              <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
+              <button onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
+              </button>
+              <!-- Export PDF -->
+              <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+              </button>
+              <!-- Excel -->
+              <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
               </button>
               <!-- Print -->
-              <button onclick="printReport()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3.5 py-2 rounded-2xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0">
-                Export <i class="fa-solid fa-print"></i>
+              <button onclick="printReport()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
               </button>
             </div>
           </div>
@@ -901,9 +910,9 @@
       } else if (path === 'CceAssessmet.html') {
         expandMenu('menu-academic');
         highlightSubItem('menu-academic', 'CceAssessmet.html');
-      } else if (path === 'FlnDashboard.html') {
+      } else if (path === 'LbaAssessment.html') {
         expandMenu('menu-academic');
-        highlightSubItem('menu-academic', 'FlnDashboard.html');
+        highlightSubItem('menu-academic', 'LbaAssessment.html');
       }
     }
 
@@ -1497,6 +1506,124 @@
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Teachers");
       XLSX.writeFile(workbook, "GHPS_Marched_Teachers_List.xlsx");
+    }
+
+    function exportToCSV() {
+      if (allTeachers.length === 0) {
+        alert("ರಫ್ತು ಮಾಡಲು ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ! / No data to export!");
+        return;
+      }
+
+      const rows = allTeachers.map((t, idx) => ({
+        "SL.NO.": idx + 1,
+        "T. ID": t.teacher_id || "",
+        "TEACHER": t.name || "",
+        "ADHAR NO.": t.aadhaar || "",
+        "GENDER": t.gender || "",
+        "DESIGNATION": t.designation || "",
+        "QUALIFICATION": t.qualification || "",
+        "TEACHING SUBJECT": t.teaching_subject || "",
+        "KGID": t.kgid || "",
+        "DOB": t.dob || "",
+        "DOJ": t.doj_service || "",
+        "DOJ THIS SCHOOL": t.doj_school || "",
+        "BANK": t.bank_name || "",
+        "ACCOUNT NO": t.account_no || "",
+        "IFSC": t.ifsc || "",
+        "GPF/PRAN NO.": t.gpf_pran || "",
+        "PAN NO.": t.pan || "",
+        "CONTACT NO.": t.contact || ""
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Teachers");
+      XLSX.writeFile(workbook, "GHPS_Marched_Teachers_List.csv", { bookType: 'csv' });
+    }
+
+    async function handleCSVUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const firstSheet = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheet];
+          const json = XLSX.utils.sheet_to_json(sheet);
+          
+          if (json.length === 0) {
+            alert('CSV file is empty.');
+            return;
+          }
+          
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          const schoolId = session?.user?.user_metadata?.school_id;
+          
+          const upsertPayloads = [];
+          
+          json.forEach(row => {
+            const kgid = (row['KGID'] || '').toString().trim();
+            const teacher_id = (row['T. ID'] || row['Teacher ID'] || '').toString().trim();
+            const name = (row['TEACHER'] || row['Teacher Name'] || row['Name'] || '').toString().trim();
+            
+            if (!kgid && !teacher_id && !name) return;
+            
+            let original = null;
+            if (kgid) {
+              original = allTeachers.find(t => t.kgid === kgid);
+            } else if (teacher_id) {
+              original = allTeachers.find(t => t.teacher_id === teacher_id);
+            } else if (name) {
+              original = allTeachers.find(t => t.name === name);
+            }
+            
+            const payload = {
+              school_id: schoolId,
+              teacher_id: teacher_id || null,
+              name: name || null,
+              aadhaar: (row['ADHAR NO.'] || row['Aadhaar'] || '').toString().trim() || null,
+              gender: (row['GENDER'] || row['Gender'] || '').toString().trim() || null,
+              designation: (row['DESIGNATION'] || row['Designation'] || '').toString().trim() || null,
+              qualification: (row['QUALIFICATION'] || row['Qualification'] || '').toString().trim() || null,
+              teaching_subject: (row['TEACHING SUBJECT'] || row['Teaching Subject'] || '').toString().trim() || null,
+              kgid: kgid || null,
+              dob: (row['DOB'] || '').toString().trim() || null,
+              doj_service: (row['DOJ'] || row['DOJ Service'] || '').toString().trim() || null,
+              doj_school: (row['DOJ THIS SCHOOL'] || row['DOJ School'] || '').toString().trim() || null,
+              bank_name: (row['BANK'] || row['Bank Name'] || '').toString().trim() || null,
+              account_no: (row['ACCOUNT NO'] || row['Account No'] || '').toString().trim() || null,
+              ifsc: (row['IFSC'] || '').toString().trim() || null,
+              gpf_pran: (row['GPF/PRAN NO.'] || row['GPF/PRAN'] || '').toString().trim() || null,
+              pan: (row['PAN NO.'] || row['PAN'] || '').toString().trim() || null,
+              contact: (row['CONTACT NO.'] || row['Contact'] || '').toString().trim() || null,
+            };
+            
+            if (original && original.id) {
+              payload.id = original.id;
+            }
+            
+            upsertPayloads.push(payload);
+          });
+          
+          if (upsertPayloads.length > 0) {
+            const { error } = await supabaseClient.from('teachers').upsert(upsertPayloads);
+            if (error) throw error;
+            
+            await loadTeachers();
+            alert(`ಯಶಸ್ವಿಯಾಗಿ ${upsertPayloads.length} ಶಿಕ್ಷಕರ ವಿವರಗಳನ್ನು ದಾಖಲಿಸಲಾಗಿದೆ!\nSuccessfully updated data for ${upsertPayloads.length} teachers.`);
+          } else {
+            alert("ಯಾವುದೇ ಬದಲಾವಣೆ ಕಂಡುಬಂದಿಲ್ಲ.\nNo changes detected.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("CSV ಅಪ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ: " + err.message);
+        }
+      };
+      reader.readAsBinaryString(file);
+      event.target.value = '';
     }
 
     // Print Report

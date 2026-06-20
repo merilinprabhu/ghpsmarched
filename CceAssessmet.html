@@ -27,7 +27,7 @@
       body > *:not(#printArea) { display: none !important; }
       #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
       #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
-      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 5px 3px !important; text-align: center !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
       #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
@@ -269,7 +269,7 @@
                 <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
                   <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
                   <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="FlnDashboard.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
                 </ul>
               </div>
 
@@ -417,16 +417,82 @@
             </button>
           </div>
 
-          <div id="page-enter-marks" class="flex flex-col lg:flex-row gap-6 w-full">
-            <aside class="w-full lg:w-1/4 bg-white p-6 rounded-2xl border border-slate-200 flex flex-col no-print">
-              <h2 class="text-base font-bold text-slate-800 mb-5 pb-2 border-b border-slate-100 flex items-center gap-2">
-                <i class="fa-solid fa-filter text-sky-600"></i> ಫಿಲ್ಟರ್‌ಗಳು / Filters
-              </h2>
+          <div id="page-enter-marks" class="flex flex-col gap-4 w-full">
+            
+            <!-- Page Title & Status Header -->
+            <div id="grid-header" class="flex justify-between items-center border-b border-slate-200 pb-3 no-print">
+              <div>
+                <h1 id="grid-title" class="text-base font-bold text-slate-800 flex items-center gap-2">
+                  <i class="fa-solid fa-table-list text-indigo-650"></i> ಮೌಲ್ಯಮಾಪನ ಕೋಷ್ಟಕ / CCE Marks Grid
+                </h1>
+                <p id="grid-subtitle" class="text-xs text-slate-500 mt-1 font-semibold">ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ</p>
+              </div>
+              <div id="grid-actions" class="text-xs font-medium text-slate-500 flex items-center gap-1.5 no-print">
+                <span id="grid-mode-tag" class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[10px] hidden">View Mode</span>
+              </div>
+            </div>
+
+            <!-- Actions & Edit Control Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <!-- Download Template -->
+                <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                  <i class="fa-solid fa-file-arrow-down text-slate-500 text-lg md:text-xl"></i>
+                </button>
+                <!-- Import CSV -->
+                <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
+                <button id="btn-import-csv" onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                  <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
+                </button>
+                <!-- Export CSV -->
+                <button id="btn-export-csv" onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                  <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
+                </button>
+              </div>
               
-              <div class="space-y-4 flex-grow">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <!-- Edit Buttons -->
+                <button id="btn-edit" onclick="enableEditing()" class="bg-indigo-650 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer hidden">
+                  <i class="fa-solid fa-pen-to-square"></i> ತಿದ್ದುಪಡಿ / Edit
+                </button>
+                <button id="btn-save" onclick="saveData()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer hidden">
+                  <i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save
+                </button>
+                <button id="btn-cancel" onclick="cancelEditing()" class="bg-slate-200 hover:bg-slate-300 text-slate-750 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition border-0 cursor-pointer hidden">
+                  ರದ್ದು / Cancel
+                </button>
+                
+                <span class="border-l border-slate-300 h-5 mx-1"></span>
+                
+                <!-- Excel -->
+                <button id="btn-export-excel" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                  <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
+                </button>
+                <!-- PDF -->
+                <button id="btn-export-pdf" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                  <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+                </button>
+                <!-- Print -->
+                <button id="btn-print" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                  <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Scale Note -->
+            <div id="rules-note-card" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2 text-[11px] text-amber-900 font-medium hidden no-print">
+              <span class="font-bold text-amber-800 flex items-center gap-1.5 flex-shrink-0">
+                <i class="fa-solid fa-circle-info text-amber-600"></i> ಪ್ರಸ್ತುತ ನಿಯಮಾವಳಿ / Active Scale Note:
+              </span>
+              <div id="rules-content" class="truncate font-semibold"></div>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 no-print">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ತರಗತಿ / Class</label>
-                  <select id="class-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <select id="class-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
                     <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ --</option>
                     <option value="ALL">ಎಲ್ಲಾ ತರಗತಿಗಳು / All Classes</option>
                     <option value="1">1</option>
@@ -444,7 +510,7 @@
 
                 <div>
                   <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ಪರೀಕ್ಷೆಯ ವಿಧಾನ / Exam Type</label>
-                  <select id="exam-type-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <select id="exam-type-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
                     <option value="">-- ಪರೀಕ್ಷೆ ಆಯ್ಕೆಮಾಡಿ --</option>
                     <option value="FA1">FA1 / ರೂಪಣಾತ್ಮಕ-1</option>
                     <option value="FA2">FA2 / ರೂಪಣಾತ್ಮಕ-2</option>
@@ -457,33 +523,14 @@
 
                 <div>
                   <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ವಿಷಯ / Subject Filter</label>
-                  <select id="subject-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition">
+                  <select id="subject-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
                     <option value="ALL">ಎಲ್ಲಾ ವಿಷಯಗಳು / All Subjects</option>
                   </select>
                 </div>
-
-                <div id="rules-note-card" class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 mt-4 hidden">
-                  <h3 class="text-xs font-bold text-amber-800 mb-1.5 flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-info"></i> ಪ್ರಸ್ತುತ ನಿಯಮಾವಳಿ / Active Scale Note
-                  </h3>
-                  <div id="rules-content" class="text-[11px] text-amber-900 space-y-1 font-medium"></div>
-                </div>
               </div>
+            </div>
 
-              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
-                <button id="btn-edit" onclick="enableEditing()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-pen-to-square"></i> ತಿದ್ದುಪಡಿ ಮಾಡಿ / Edit Data
-                </button>
-                <button id="btn-save" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save Data
-                </button>
-                <button id="btn-cancel" onclick="cancelEditing()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer border-0 text-xs hidden">
-                  <i class="fa-solid fa-xmark"></i> ರದ್ದುಮಾಡಿ / Cancel
-                </button>
-              </div>
-            </aside>
-
-            <section class="flex-grow bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden">
+            <section class="flex-grow bg-white rounded-2xl border border-slate-200 flex flex-col overflow-hidden min-w-0">
               <div id="print-header" class="hidden print:block text-center p-4 border-b-2 border-black mb-6">
                 <h1 class="text-xl font-black text-black tracking-wide">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
                 <h2 class="text-sm font-bold text-gray-700 mt-1">ಸಂಕಲನಾತ್ಮಕ ಮತ್ತು ರೂಪಣಾತ್ಮಕ ಪ್ರಗತಿ ಪಟ್ಟಿ (CCE Assessment Report)</h2>
@@ -491,27 +538,6 @@
                   <span>ತರಗತಿ: </span>
                   <span>ಪರೀಕ್ಷೆ: </span>
                   <span>ದಿನಾಂಕ: </span>
-                </div>
-              </div>
-
-              <div id="grid-header" class="bg-slate-50 p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 no-print">
-                <div>
-                  <h2 id="grid-title" class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-table-list text-slate-600"></i> ಮೌಲ್ಯಮಾಪನ ಕೋಷ್ಟಕ / CCE Marks Grid
-                  </h2>
-                  <p id="grid-subtitle" class="text-[11px] text-slate-500 mt-0.5">ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ</p>
-                </div>
-                <div id="grid-actions" class="text-xs font-medium text-slate-500 flex items-center gap-2 no-print">
-                  <button id="btn-export-excel" onclick="exportToExcel()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
-                    Export <i class="fa-solid fa-file-excel"></i>
-                  </button>
-                  <button id="btn-export-pdf" onclick="exportToPdf()" class="bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-rose-500/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
-                    Export <i class="fa-solid fa-file-pdf"></i>
-                  </button>
-                  <button id="btn-print" onclick="printPage()" class="bg-gradient-to-tr from-slate-800 to-slate-700 hover:from-slate-900 hover:to-slate-800 text-white px-3 py-1.5 rounded-2xl font-bold transition-all duration-300 flex items-center gap-1.5 shadow-md hover:shadow-slate-800/20 active:scale-[0.98] cursor-pointer border-0 text-xs hidden">
-                    Export <i class="fa-solid fa-print"></i>
-                  </button>
-                  <span id="grid-mode-tag" class="px-2.5 py-1 rounded-full bg-slate-200 text-slate-700 font-bold uppercase tracking-wider text-[10px] hidden">View Mode</span>
                 </div>
               </div>
 
@@ -575,7 +601,7 @@
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">ಇಲ್ಲಿ ನಿಮ್ಮ ಶಾಲೆಯ ಇಮೇಜ್ ಬ್ಲೂಪ್ರಿಂಟ್ ನಿಯಮಗಳ ಡಿಫಾಲ್ಟ್ ಮೌಲ್ಯಗಳು ಸಕ್ರಿಯವಾಗಿವೆ. ಅಗತ್ಯವಿದ್ದಲ್ಲಿ ಬದಲಾಯಿಸಿ ಸೇವ್ ಮಾಡಬಹುದು.</p>
               </div>
-              <div class="flex gap-2.5">
+              <div class="flex items-center gap-2.5">
                 <input type="file" id="import-file-input" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleImportFile(this)">
                 <button type="button" onclick="triggerImport()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5">
                   <i class="fa-solid fa-file-import"></i> ಎಕ್ಸೆಲ್ ಆಮದು / Import Excel
@@ -585,6 +611,10 @@
                 </button>
                 <button type="button" onclick="applyCustomSettings()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-5 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5">
                   <i class="fa-solid fa-check"></i>  ಬದಲಾವಣೆ ಅನ್ವಯಿಸು / Apply Settings
+                </button>
+                <span class="border-l border-slate-300 h-5 mx-1"></span>
+                <button type="button" onclick="switchGridSubPage('entermarks')" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer flex items-center justify-center p-1.5 hover:bg-slate-100 rounded-lg transition" title="ಮುಚ್ಚು / Close">
+                  <i class="fa-solid fa-xmark"></i>
                 </button>
               </div>
             </div>
@@ -782,9 +812,9 @@
       } else if (path === 'CceAssessmet.html') {
         expandMenu('menu-academic');
         highlightSubItem('menu-academic', 'CceAssessmet.html');
-      } else if (path === 'FlnDashboard.html') {
+      } else if (path === 'LbaAssessment.html') {
         expandMenu('menu-academic');
-        highlightSubItem('menu-academic', 'FlnDashboard.html');
+        highlightSubItem('menu-academic', 'LbaAssessment.html');
       }
     }
 
@@ -1079,16 +1109,13 @@
       const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
       const isSA = exam.startsWith("SA");
 
-      let rulesHtml = `
-        <div class="grid grid-cols-1 gap-1 text-[11px]">
-          <span>• <b>ವಿಧಾನ / Type:</b> ${exam}</span>
-          ${!isSA ? `<span>• <b>FA ಗರಿಷ್ಠ ಅಂಕ:</b> ${cfg.faMax} (ಗ್ರೇಡ್ ಸಾಲು: ${cfg.faMax})</span>` : 
-          `<span>• <b>SA ನೈಜ ಅಂಕ:</b> ಲಿಖಿತ (${cfg.saWrittenMax}) + ಮೌಖಿಕ (${cfg.saOralMax}) = ಒಟ್ಟು 50</span>
-           <span>• <b>ಗ್ರೇಡ್ ಲೆಕ್ಕಾಚಾರ:</b> ಒಟ್ಟು 50 ರ ಅಂಕದ ಪ್ಯಾಟರ್ನ್ ಮೇಲೆ</span>
-           <span>• <b>ವರದಿ ಪರಿವರ್ತನೆ:</b> 50 ರ ಮೊತ್ತವನ್ನು <b>${cfg.saMax}</b> ಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗುತ್ತದೆ.</span>`}
-        </div>
-      `;
-      content.innerHTML = rulesHtml;
+      let rulesText = "";
+      if (!isSA) {
+        rulesText = `<b>ವಿಧಾನ / Type:</b> ${exam} &nbsp;|&nbsp; <b>FA ಗರಿಷ್ಠ ಅಂಕ:</b> ${cfg.faMax} (ಗ್ರೇಡ್ ಸಾಲು: ${cfg.faMax})`;
+      } else {
+        rulesText = `<b>ವಿಧಾನ / Type:</b> ${exam} &nbsp;|&nbsp; <b>SA ನೈಜ ಅಂಕ:</b> ಲಿಖಿತ (${cfg.saWrittenMax}) + ಮೌಖಿಕ (${cfg.saOralMax}) = ಒಟ್ಟು 50 &nbsp;|&nbsp; <b>ಗ್ರೇಡ್ ಲೆಕ್ಕಾಚಾರ:</b> ಒಟ್ಟು 50 ರ ಅಂಕದ ಪ್ಯಾಟರ್ನ್ ಮೇಲೆ &nbsp;|&nbsp; <b>ವರದಿ ಪರಿವರ್ತನೆ:</b> 50 ರ ಮೊತ್ತವನ್ನು <b>${cfg.saMax}</b> ಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗುತ್ತದೆ.`;
+      }
+      content.innerHTML = rulesText;
       card.classList.remove('hidden');
     }
 
@@ -1129,6 +1156,8 @@
       document.getElementById('btn-export-pdf').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
       document.getElementById('btn-print').classList.add('hidden');
+      if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.add('hidden');
+      if (document.getElementById('btn-import-csv')) document.getElementById('btn-import-csv').classList.add('hidden');
       if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.add('hidden');
       hideActionButtons();
 
@@ -1249,6 +1278,8 @@
       document.getElementById('btn-export-pdf').classList.remove('hidden');
       document.getElementById('btn-export-excel').classList.remove('hidden');
       document.getElementById('btn-print').classList.remove('hidden');
+      if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.remove('hidden');
+      if (document.getElementById('btn-import-csv')) document.getElementById('btn-import-csv').classList.remove('hidden');
       if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.remove('hidden');
       
       if (classFilter.value === "ALL") {
@@ -1278,7 +1309,7 @@
 
       const colsPerSub = isSA ? 4 : 2;
       const totalSubCols = numVisibleSubs * colsPerSub;
-      const pctPerSubCol = (100 - 38) / totalSubCols;
+      const pctPerSubCol = (100 - 54) / totalSubCols;
 
       currentSubjects.forEach(sub => {
         if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
@@ -1569,6 +1600,8 @@
       document.getElementById('btn-export-pdf').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
       document.getElementById('btn-print').classList.add('hidden');
+      if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.add('hidden');
+      if (document.getElementById('btn-import-csv')) document.getElementById('btn-import-csv').classList.add('hidden');
       if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.add('hidden');
       document.getElementById('rules-note-card').classList.add('hidden');
     }
@@ -1704,6 +1737,7 @@
         th, td { border: 1px solid #000000; padding: ${cellPadding}; text-align: center; }
         th { font-weight: bold; background-color: #000000 !important; color: #ffffff !important; }
         td { background-color: #ffffff !important; color: #000000 !important; }
+        .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
       `;
       printContainer.appendChild(styleEl);
 
@@ -1735,6 +1769,17 @@
         }
       });
       printContainer.appendChild(tableClone);
+
+      const teacherSigText = isAllSubjects ? 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature' : 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature';
+      const footerHtml = `
+        <div class="print-signatures-row">
+          <span>${teacherSigText}</span>
+          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+        </div>
+      `;
+      const footerEl = document.createElement('div');
+      footerEl.innerHTML = footerHtml;
+      printContainer.appendChild(footerEl);
 
       const opt = {
         margin: 10, filename: `CCE_Report_${className}_${examType}.pdf`, image: { type: 'jpeg', quality: 0.98 },
@@ -1806,6 +1851,218 @@
     function changeTheme(themeName) {
       document.body.setAttribute('data-theme', themeName);
       localStorage.setItem('portal_theme', themeName);
+    }
+
+    function downloadCSVTemplate() {
+      const className = classFilter.value || "1";
+      const examType = examTypeFilter.value || "FA1";
+      const isSA = examType.startsWith("SA");
+      
+      const headers = ["STS Number", "Student Name", "Father Name"];
+      const sampleRow = ["STS2026001", "Chaitra G", "Girishappa"];
+      
+      const subs = currentSubjects && currentSubjects.length > 0 ? currentSubjects : [
+        { id: "kannada", name: "KANNADA" },
+        { id: "english", name: "ENGLISH" },
+        { id: "maths", name: "MATHS" },
+        { id: "science", name: "SCIENCE" },
+        { id: "social_science", name: "SOCIAL SCIENCE" }
+      ];
+
+      subs.forEach(sub => {
+        if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+        if (isSA) {
+          headers.push(`${sub.name} Written`, `${sub.name} Oral`);
+          sampleRow.push("30", "10");
+        } else {
+          headers.push(`${sub.name} Mark`);
+          sampleRow.push("15");
+        }
+      });
+      
+      let csvContent = "\uFEFF"; 
+      csvContent += headers.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+      csvContent += sampleRow.map(r => `"${r.replace(/"/g, '""')}"`).join(",") + "\r\n";
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `CCE_${examType}_Template.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToCSV() {
+      if (students.length === 0) { alert("ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ"); return; }
+      const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const isSA = examType.startsWith("SA");
+
+      const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+      const row2 = ["", "", "", ""];
+
+      currentSubjects.forEach(sub => {
+        if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+        if (isSA) { row1.push(sub.name, "", "", ""); row2.push("Written", "Oral", "Total", "Grade"); } 
+        else { row1.push(sub.name, ""); row2.push("Mark", "Grade"); }
+      });
+      row1.push("Total A+,A", "Others"); row2.push("", "");
+
+      const aoa = [row1, row2];
+      students.forEach((student, index) => {
+        const sId = student.id; const evalData = evaluations[sId] || {};
+        const row = [index + 1, student.adminNo || student.id, student.name, student.father || ''];
+        let rowA = 0; let rowOthers = 0;
+
+        currentSubjects.forEach(sub => {
+          if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+          const m = evalData[sub.id + "_mark"] !== undefined ? evalData[sub.id + "_mark"] : '';
+          const g = evalData[sub.id + "_grade"] || '-';
+          if (isSA) {
+            const parts = m.toString().split('+');
+            const w = parts[0] || ''; const o = parts[1] || '';
+            const tot = w !== '' || o !== '' ? (parseFloat(w)||0)+(parseFloat(o)||0) : '';
+            row.push(w, o, tot, g);
+          } else { row.push(m, g); }
+          if (g !== '-') { if (['A+', 'A'].includes(g)) { rowA++; } else { rowOthers++; } }
+        });
+        row.push(rowA, rowOthers); aoa.push(row);
+      });
+
+      const sheet = XLSX.utils.aoa_to_sheet(aoa);
+      const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, sheet, "CCE");
+      XLSX.writeFile(wb, `CCE_${className}_${examType}.csv`, { bookType: 'csv' });
+    }
+
+    async function handleCSVUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const firstSheet = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheet];
+          const json = XLSX.utils.sheet_to_json(sheet);
+          
+          if (json.length === 0) {
+            alert('CSV file is empty.');
+            return;
+          }
+          
+          const headers = Object.keys(json[0] || {});
+          const stsKey = headers.find(h => {
+            const norm = h.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            return norm === 'stsno' || norm === 'sts' || norm === 'appno' || norm === 'studentno' || norm === 'stsnumber' || norm === 'ಎಸ್ಟಿಎಸ್ಸಂಖ್ಯೆ';
+          }) || 'STS Number';
+          
+          const className = classFilter.value;
+          const examType = examTypeFilter.value;
+          const isSA = examType.startsWith("SA");
+          const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+          const targetScale = isSA ? 
+            (isPrimary ? mutableConfigs.primary.saMax : mutableConfigs.middleHigh.saMax) : 
+            (isPrimary ? mutableConfigs.primary.faMax : mutableConfigs.middleHigh.faMax);
+            
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          const schoolId = session?.user?.user_metadata?.school_id;
+          
+          let changedCount = 0;
+          const upsertPayloads = [];
+          
+          json.forEach(row => {
+            const stsVal = (row[stsKey] || '').toString().trim();
+            if (!stsVal) return;
+            
+            const student = students.find(s => (s.adminNo || s.id) === stsVal);
+            if (!student) return;
+            
+            if (!evaluations[student.id]) {
+              evaluations[student.id] = {};
+            }
+            
+            let studentChanged = false;
+            
+            currentSubjects.forEach(sub => {
+              if (subjectFilter.value !== "ALL" && sub.id !== subjectFilter.value) return;
+              
+              if (isSA) {
+                const wKey = headers.find(h => h.includes(sub.name) && (h.toLowerCase().includes('written') || h.includes('ಲಿಖಿತ')));
+                const oKey = headers.find(h => h.includes(sub.name) && (h.toLowerCase().includes('oral') || h.includes('ಮೌಖಿಕ')));
+                
+                const wVal = wKey && row[wKey] !== undefined ? row[wKey].toString().trim() : '';
+                const oVal = oKey && row[oKey] !== undefined ? row[oKey].toString().trim() : '';
+                
+                if (wVal !== '' || oVal !== '') {
+                  const mVal = `${wVal}+${oVal}`;
+                  const currentM = evaluations[student.id][sub.id + "_mark"] || '';
+                  if (currentM !== mVal) {
+                    evaluations[student.id][sub.id + "_mark"] = mVal;
+                    const tot = (parseFloat(wVal)||0) + (parseFloat(oVal)||0);
+                    evaluations[student.id][sub.id + "_grade"] = determineGradeByScale(tot, targetScale);
+                    studentChanged = true;
+                  }
+                }
+              } else {
+                const mKey = headers.find(h => h.includes(sub.name) && (h.toLowerCase().includes('mark') || h.includes('ಅಂಕ') || !h.toLowerCase().includes('grade')));
+                const mVal = mKey && row[mKey] !== undefined ? row[mKey].toString().trim() : '';
+                
+                if (mVal !== '') {
+                  const currentM = evaluations[student.id][sub.id + "_mark"] || '';
+                  if (currentM !== mVal) {
+                    evaluations[student.id][sub.id + "_mark"] = mVal;
+                    evaluations[student.id][sub.id + "_grade"] = determineGradeByScale(mVal, targetScale);
+                    studentChanged = true;
+                  }
+                }
+              }
+            });
+            
+            if (studentChanged) {
+              changedCount++;
+              upsertPayloads.push({
+                school_id: schoolId,
+                student_id: student.id,
+                exam_type: examType,
+                marks: evaluations[student.id],
+                updated_at: new Date().toISOString()
+              });
+            }
+          });
+          
+          if (upsertPayloads.length > 0) {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            
+            const { error } = await supabaseClient
+              .from('cce_evaluations')
+              .upsert(upsertPayloads, { onConflict: 'student_id,exam_type' });
+              
+            document.getElementById('loading-overlay').classList.add('hidden');
+            
+            if (error) {
+              console.warn("Supabase upsert failed, saving to localStorage as fallback:", error);
+              const mockKey = `cce_mock_cce_${className}_${examType}`;
+              localStorage.setItem(mockKey, JSON.stringify(evaluations));
+            } else {
+              originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+            }
+            
+            renderGrid();
+            alert(`ಯಶಸ್ವಿಯಾಗಿ ${changedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ!\nSuccessfully updated data for ${changedCount} students.`);
+          } else {
+            alert("ಯಾವುದೇ ಬದಲಾವಣೆ ಕಂಡುಬಂದಿಲ್ಲ.\nNo changes detected.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("CSV ಅಪ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ: " + err.message);
+        }
+      };
+      reader.readAsBinaryString(file);
+      event.target.value = '';
     }
 
     async function initUserAndTheme() {
