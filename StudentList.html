@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -336,30 +336,33 @@
       <!-- Main Contents Container -->
       <main class="flex-grow bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
         
-        <!-- Section Title & Filters Row -->
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 pb-6 border-b border-slate-100">
+        <!-- Section Title -->
+        <div class="mb-4 pb-4 border-b border-slate-100 flex justify-between items-center">
           <div>
-            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-user-plus text-sky-600"></i>
+            <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <i class="fa-solid fa-graduation-cap text-sky-500"></i>
               <span>ಹೊಸ ದಾಖಲಾತಿಗಳ ಪಟ್ಟಿ / List of All New Admission</span>
             </h2>
-            <p class="text-xs text-slate-500 mt-1">ಪರಿಶೀಲನೆ ಮತ್ತು ಅಧಿಕೃತ ತರಗತಿ ಪಟ್ಟಿಗೆ ಅನುಮೋದಿಸಲು ಬಾಕಿ ಇರುವ ಹೊಸ ಅರ್ಜಿಗಳು.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ಪರಿಶೀಲನೆ ಮತ್ತು ಅಧಿಕೃತ ತರಗತಿ ಪಟ್ಟಿಗೆ ಅನುಮೋದಿಸಲು ಬಾಕಿ ಇರುವ ಹೊಸ ಅರ್ಜಿಗಳು.</p>
           </div>
+        </div>
 
-          <!-- Filter Controls -->
-          <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+        <!-- Filters & Actions Single Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch mb-6 no-print">
+          <!-- Left side: Filters & Search (takes 8 cols) -->
+          <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-sky-500/15 rounded-2xl p-4 flex flex-col lg:flex-row flex-wrap items-center gap-3 shadow-sm hover:shadow-md transition">
             <!-- Text Search -->
-            <div class="relative w-full sm:w-60">
+            <div class="relative w-full lg:flex-1 min-w-[200px]">
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
               </span>
-              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, ID, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50">
+              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, STS, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-750 dark:text-slate-200 font-semibold shadow-sm">
             </div>
 
             <!-- Class Filter -->
-            <div class="w-full sm:w-40">
-              <select id="class-filter" onchange="applyFilters()" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
-                <option value="">-- All Classes --</option>
+            <div class="w-full sm:w-32">
+              <select id="class-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- Classes --</option>
                 <option value="LKG">LKG/KG1</option>
                 <option value="UKG">UKG/KG2</option>
                 <option value="1">1</option>
@@ -376,50 +379,64 @@
             </div>
 
             <!-- Gender Filter -->
-            <div class="w-full sm:w-36">
-              <select id="gender-filter" onchange="applyFilters()" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
-                <option value="">-- All Genders --</option>
+            <div class="w-full sm:w-32">
+              <select id="gender-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- Genders --</option>
                 <option value="Boy">Boy / ಗಂಡು</option>
                 <option value="Girl">Girl / ಹೆಣ್ಣು</option>
               </select>
             </div>
-          </div>
-        </div>
 
-        <!-- Actions Row -->
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
-          <div class="flex flex-wrap items-center gap-1.5">
-            <!-- Download Template -->
-            <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-arrow-down text-slate-500 text-lg md:text-xl"></i>
-            </button>
-            <!-- Import CSV -->
-            <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
-            <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
-            </button>
-            <!-- Export CSV -->
-            <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
-            </button>
-            <!-- Manage Columns -->
-            <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-sliders text-indigo-600 text-lg md:text-xl"></i>
-            </button>
+            <!-- Religion Filter -->
+            <div class="w-full sm:w-32">
+              <select id="religion-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- Religions --</option>
+              </select>
+            </div>
+
+            <!-- Caste Filter -->
+            <div class="w-full sm:w-32">
+              <select id="caste-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- Castes --</option>
+              </select>
+            </div>
           </div>
-          <div class="flex flex-wrap items-center gap-1.5">
-            <!-- Excel -->
-            <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
-            </button>
-            <!-- PDF -->
-            <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
-            </button>
-            <!-- Print -->
-            <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
-            </button>
+
+          <!-- Right side: Actions Row (takes 4 cols) -->
+          <div class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-sky-500/20 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-2">
+            <span class="block text-[9px] font-bold text-slate-400 uppercase text-center border-b pb-1">ಕ್ರಿಯೆಗಳು ಮತ್ತು ರಫ್ತು / Actions & Exports</span>
+            <div class="flex items-center justify-center gap-2">
+              <!-- CSV Template -->
+              <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-file-arrow-down text-indigo-600 dark:text-indigo-400 text-sm"></i>
+              </button>
+              <!-- Import CSV -->
+              <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
+              <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-file-import text-amber-600 dark:text-amber-500 text-sm"></i>
+              </button>
+              <!-- Export CSV -->
+              <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-file-csv text-teal-600 dark:text-teal-500 text-sm"></i>
+              </button>
+              <!-- Manage Columns -->
+              <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400 text-sm"></i>
+              </button>
+              <div class="h-6 w-px bg-slate-200 dark:bg-slate-750"></div>
+              <!-- Excel -->
+              <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-sm"></i>
+              </button>
+              <!-- PDF -->
+              <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-sm"></i>
+              </button>
+              <!-- Print -->
+              <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-sm"></i>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -483,7 +500,7 @@
         </div>
 
         <!-- Scrollable Table Container -->
-        <div class="overflow-x-auto border border-slate-100 rounded-xl" id="table-container">
+        <div class="max-h-[600px] overflow-auto custom-scrollbar border border-slate-100 rounded-xl shadow-sm" id="table-container">
           <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
             <thead>
               <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider text-center">
@@ -584,13 +601,237 @@
     </div>
   </div>
 
+  <!-- Quick Student Profile Modal -->
+  <div id="student-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden transition-all duration-300 modal-content">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-sky-500 text-base"></i>
+            <span>ಕ್ಷಿಪ್ರ ವಿವರ ಪರಿಶೀಲನೆ / Quick Profile Preview</span>
+          </h3>
+          <p class="text-[10px] text-slate-550 dark:text-slate-400 mt-0.5" id="modal-subtitle">ವಿದ್ಯಾರ್ಥಿಯ ಸಂಪೂರ್ಣ ಮಾಹಿತಿ ವಿವರಗಳು</p>
+        </div>
+        <button onclick="closeStudentPreviewModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg border-0 bg-transparent cursor-pointer transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="px-6 bg-slate-50/50 dark:bg-slate-850/50 border-b border-slate-200 dark:border-slate-800 flex gap-2 overflow-x-auto custom-scrollbar pt-2">
+        <button onclick="switchPreviewTab('personal')" id="tab-btn-personal" class="px-4 py-2 border-b-2 border-sky-500 text-sky-600 dark:text-sky-400 font-bold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer">
+          <i class="fa-solid fa-user mr-1.5"></i> ವೈಯಕ್ತಿಕ ವಿವರ / Personal
+        </button>
+        <button onclick="switchPreviewTab('family')" id="tab-btn-family" class="px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer">
+          <i class="fa-solid fa-users mr-1.5"></i> ಕುಟುಂಬ / Family & Social
+        </button>
+        <button onclick="switchPreviewTab('academic')" id="tab-btn-academic" class="px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer">
+          <i class="fa-solid fa-graduation-cap mr-1.5"></i> ಶೈಕ್ಷಣಿಕ / Academic
+        </button>
+        <button onclick="switchPreviewTab('bank')" id="tab-btn-bank" class="px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer">
+          <i class="fa-solid fa-wallet mr-1.5"></i> ಬ್ಯಾಂಕ್ / Bank Info
+        </button>
+      </div>
+
+      <!-- Modal Content (Scrollable) -->
+      <div class="flex-grow overflow-y-auto p-6 bg-white dark:bg-slate-900 custom-scrollbar">
+        
+        <!-- Personal Tab -->
+        <div id="tab-content-personal" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹೆಸರು ಕನ್ನಡದಲ್ಲಿ / Name (Kannada)</label>
+              <p id="prev-name-kn" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹೆಸರು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ / Name (English)</label>
+              <p id="prev-name-en" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl uppercase">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No (PEN)</label>
+              <p id="prev-app-no" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತರಗತಿ / Enrollment Class</label>
+              <p id="prev-class" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಲಿಂಗ / Gender</label>
+              <p id="prev-gender" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹುಟ್ಟಿದ ದಿನಾಂಕ / Date of Birth</label>
+              <p id="prev-dob" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಆಧಾರ್ ಸಂಖ್ಯೆ / Student Aadhaar</label>
+              <p id="prev-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಮಾತೃಭಾಷೆ / Mother Tongue</label>
+              <p id="prev-mother-tongue" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Family & Social Tab -->
+        <div id="tab-content-family" class="hidden space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಹೆಸರು / Father's Name</label>
+              <p id="prev-father-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಆಧಾರ್ / Father's Aadhaar</label>
+              <p id="prev-father-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಹೆಸರು / Mother's Name</label>
+              <p id="prev-mother-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಆಧಾರ್ / Mother's Aadhaar</label>
+              <p id="prev-mother-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ವೃತ್ತಿ / Father's Occupation</label>
+              <p id="prev-father-occ" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ವೃತ್ತಿ / Mother's Occupation</label>
+              <p id="prev-mother-occ" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile Number</label>
+              <p id="prev-mobile" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಬಿಪಿಎಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ / BPL Card No</label>
+              <p id="prev-bpl" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category</label>
+              <p id="prev-social" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಜಾತಿ / Caste</label>
+              <p id="prev-caste" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಉಪಜಾತಿ / Sub-Caste</label>
+              <p id="prev-subcaste" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಧರ್ಮ / Religion</label>
+              <p id="prev-religion" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಿಳಾಸ / Permanent Address</label>
+              <p id="prev-address" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಲ್ಲೂಕು / Taluk</label>
+              <p id="prev-taluk" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಜಿಲ್ಲೆ / District</label>
+              <p id="prev-district" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Tab -->
+        <div id="tab-content-academic" class="hidden space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಮಂಡಳಿ / Preschool Board</label>
+              <p id="prev-ps-board" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ವಿಧ / Preschool Type</label>
+              <p id="prev-ps-type" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಹೆಸರು / Previous School Name</label>
+              <p id="prev-ps-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವರ್ಗಾವಣೆ ಪತ್ರದ ಸಂಖ್ಯೆ / TC Number</label>
+              <p id="prev-tc-no" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವರ್ಗಾವಣೆ ದಿನಾಂಕ / TC Date</label>
+              <p id="prev-tc-date" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಿಶೇಷ ಅಗತ್ಯತೆಗಳು / Special Need (CWSN)</label>
+              <p id="prev-special-need" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಿಶೇಷ ವರ್ಗ / Special Category</label>
+              <p id="prev-special-category" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಭಾಗ್ಯಲಕ್ಷ್ಮಿ ಬಾಂಡ್ ಸಂಖ್ಯೆ / Bhagyalakshmi Bond</label>
+              <p id="prev-bhagya-bond" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಯೋಮಿತಿ ಸಡಿಲಿಕೆ ಕಾರಣ / Age Relaxation Reason</label>
+              <p id="prev-age-reason" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bank Tab -->
+        <div id="tab-content-bank" class="hidden space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ / Bank Account No</label>
+              <p id="prev-bank-acc" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಐಎಫ್‌ಎಸ್ಸಿ ಕೋಡ್ / Bank IFSC Code</label>
+              <p id="prev-bank-ifsc" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono uppercase">-</p>
+            </div>
+            <div class="md:col-span-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಬ್ಯಾಂಕ್ ಮತ್ತು ಶಾಖೆಯ ವಿಳಾಸ / Bank Name & Branch</label>
+              <p id="prev-bank-address" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಶಿಷ್ಯವೇತನ ಸಂಖ್ಯೆ / Scholarship No</label>
+              <p id="prev-scholarship" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ ಸಂಖ್ಯೆ / Caste Cert No</label>
+              <p id="prev-caste-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ ಸಂಖ್ಯೆ / Income Cert No</label>
+              <p id="prev-income-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
+        <button onclick="closeStudentPreviewModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer">
+          ಮುಚ್ಚಿ / Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Script block -->
   <script>
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const standardColumns = [
+    let standardColumns = [
       { id: 'app_no', labelKn: 'ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No', labelEn: 'STS No' },
       { id: 'student_name', labelKn: 'ಹೆಸರು / Student Name Kannada', labelEn: 'Student Name Kannada' },
       { id: 'name_english', labelKn: 'ಹೆಸರು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ / Student Name English', labelEn: 'Student Name English' },
@@ -635,6 +876,25 @@
       { id: 'medium', labelKn: 'ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium', labelEn: 'Medium' },
       { id: 'academic_year', labelKn: 'ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Academic Year', labelEn: 'Academic Year' }
     ];
+
+    function loadColumnOrder() {
+      const storedOrder = localStorage.getItem('student_columns_order');
+      if (storedOrder) {
+        try {
+          const orderIds = JSON.parse(storedOrder);
+          standardColumns.sort((a, b) => {
+            let idxA = orderIds.indexOf(a.id);
+            let idxB = orderIds.indexOf(b.id);
+            if (idxA === -1) idxA = 999;
+            if (idxB === -1) idxB = 999;
+            return idxA - idxB;
+          });
+        } catch (e) {
+          console.error("Failed to load column order:", e);
+        }
+      }
+    }
+    loadColumnOrder();
 
     function getColumnVisibility() {
       const stored = localStorage.getItem('visible_student_columns');
@@ -815,6 +1075,7 @@
           return mapped;
         });
 
+        populateFilterDropdowns();
         applyUrlParameters();
         applyFilters();
       } catch (err) {
@@ -854,6 +1115,9 @@
       const q = document.getElementById('roster-search').value.trim().toUpperCase();
       const selectedClass = document.getElementById('class-filter').value;
       const selectedGender = document.getElementById('gender-filter').value;
+      const selectedReligion = document.getElementById('religion-filter').value;
+      const selectedCaste = document.getElementById('caste-filter').value;
+
       const filtered = allStudentsData.filter(student => {
         const searchMatch = !q || 
           (student.name || '').toUpperCase().includes(q) || 
@@ -868,10 +1132,18 @@
 
         const genderMatch = !selectedGender || student.gender === selectedGender;
 
+        // Religion Filter
+        const studentRel = student.religion ? student.religion.trim() : '';
+        const religionMatch = !selectedReligion || studentRel === selectedReligion;
+
+        // Caste Filter
+        const studentCaste = student.student_caste ? student.student_caste.trim() : '';
+        const casteMatch = !selectedCaste || studentCaste === selectedCaste;
+
         // Only show pending students on this page
         const statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
 
-        return searchMatch && classMatch && genderMatch && statusMatch;
+        return searchMatch && classMatch && genderMatch && statusMatch && religionMatch && casteMatch;
       });
 
       renderTable(filtered);
@@ -1047,6 +1319,12 @@
         let actionsCellHtml = `
             <td class="p-3 text-center no-print">
               <div class="flex justify-center gap-1.5">
+                <button onclick="openStudentPreviewModal('${s.realId}')" class="bg-indigo-500 hover:bg-indigo-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Quick View / ಕ್ಷಿಪ್ರ ನೋಟ">
+                  <i class="fa-solid fa-eye text-xs"></i>
+                </button>
+                <button onclick="printApplicationForm('${s.realId}')" class="bg-sky-500 hover:bg-sky-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Print Application Form / ಪ್ರವೇಶ ಅರ್ಜಿ ಮುದ್ರಣ">
+                  <i class="fa-solid fa-file-invoice text-xs"></i>
+                </button>
                 <a href="StudentUpdate.html?id=${s.realId}" class="bg-amber-500 hover:bg-amber-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Edit / ತಿದ್ದುಪಡಿ">
                   <i class="fa-solid fa-pen text-xs"></i>
                 </a>
@@ -1197,7 +1475,139 @@
       return r.map(cell => cell.replace(/^"|"$/g, ''));
     }
 
-    function parseAndValidateCSV(text) {
+    let draggedIdx = null;
+
+    function handleDragStart(e, idx) {
+      draggedIdx = idx;
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', idx);
+      e.currentTarget.classList.add('opacity-40', 'border-dashed', 'border-indigo-500');
+    }
+
+    function handleDragOver(e, idx) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (idx !== draggedIdx) {
+        e.currentTarget.classList.add('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-950/20');
+      }
+    }
+
+    function handleDragLeave(e, idx) {
+      e.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-950/20');
+    }
+
+    function handleDrop(e, targetIdx) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-950/20');
+      
+      if (draggedIdx !== null && draggedIdx !== targetIdx) {
+        const draggedCol = standardColumns[draggedIdx];
+        standardColumns.splice(draggedIdx, 1);
+        standardColumns.splice(targetIdx, 0, draggedCol);
+        
+        const orderIds = standardColumns.map(col => col.id);
+        localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
+        
+        renderColumnSettingsList();
+        buildTableHeader();
+        applyFilters();
+      }
+      draggedIdx = null;
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('opacity-40', 'border-dashed', 'border-indigo-500');
+      draggedIdx = null;
+    }
+
+    function renderColumnSettingsList() {
+      const container = document.getElementById("columns-list-container");
+      if (!container) return;
+      container.innerHTML = "";
+      
+      const visibility = getColumnVisibility();
+      
+      standardColumns.forEach((col, idx) => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition dark:bg-slate-800 dark:border-slate-700 cursor-grab active:cursor-grabbing";
+        div.draggable = true;
+        
+        const isChecked = visibility[col.id] !== false; // default to true
+        
+        const isFirst = idx === 0;
+        const isLast = idx === standardColumns.length - 1;
+
+        div.innerHTML = `
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-grip-vertical text-slate-400 dark:text-slate-500 cursor-grab mr-1 drag-handle"></i>
+            <input type="number" min="1" max="${standardColumns.length}" value="${idx + 1}" onchange="changeColumnPosition('${col.id}', this.value)" class="w-12 text-center text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-1 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();">
+            <div class="flex flex-col gap-0.5 no-print">
+              <button onclick="event.stopPropagation(); moveColumn('${col.id}', -1)" ${isFirst ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''} class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[10px] p-0.5 border-0 bg-transparent cursor-pointer transition-all" title="Move Up"><i class="fa-solid fa-chevron-up"></i></button>
+              <button onclick="event.stopPropagation(); moveColumn('${col.id}', 1)" ${isLast ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''} class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[10px] p-0.5 border-0 bg-transparent cursor-pointer transition-all" title="Move Down"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">${col.labelEn}</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer" onclick="event.stopPropagation();">
+            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleColumnVisibility('${col.id}', this.checked)" class="sr-only peer">
+            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
+          </label>
+        `;
+
+        // Add drag & drop event listeners
+        div.addEventListener("dragstart", (e) => handleDragStart(e, idx));
+        div.addEventListener("dragover", (e) => handleDragOver(e, idx));
+        div.addEventListener("dragleave", (e) => handleDragLeave(e, idx));
+        div.addEventListener("drop", (e) => handleDrop(e, idx));
+        div.addEventListener("dragend", (e) => handleDragEnd(e));
+
+        container.appendChild(div);
+      });
+    }
+
+    function changeColumnPosition(colId, newPositionVal) {
+      let newPosition = parseInt(newPositionVal, 10);
+      if (isNaN(newPosition)) return;
+      
+      if (newPosition < 1) newPosition = 1;
+      if (newPosition > standardColumns.length) newPosition = standardColumns.length;
+      
+      const currentIdx = standardColumns.findIndex(col => col.id === colId);
+      if (currentIdx === -1) return;
+      
+      const newIdx = newPosition - 1;
+      if (currentIdx === newIdx) return;
+      
+      const col = standardColumns[currentIdx];
+      standardColumns.splice(currentIdx, 1);
+      standardColumns.splice(newIdx, 0, col);
+      
+      const orderIds = standardColumns.map(c => c.id);
+      localStorage.setItem("student_columns_order", JSON.stringify(orderIds));
+      
+      renderColumnSettingsList();
+      buildTableHeader();
+      applyFilters();
+    }
+
+    function moveColumn(colId, direction) {
+      const idx = standardColumns.findIndex(col => col.id === colId);
+      if (idx === -1) return;
+      const targetIdx = idx + direction;
+      if (targetIdx < 0 || targetIdx >= standardColumns.length) return;
+
+      const temp = standardColumns[idx];
+      standardColumns[idx] = standardColumns[targetIdx];
+      standardColumns[targetIdx] = temp;
+
+      const orderIds = standardColumns.map(col => col.id);
+      localStorage.setItem("student_columns_order", JSON.stringify(orderIds));
+
+      renderColumnSettingsList();
+      buildTableHeader();
+      applyFilters();
+    }
+
+        function parseAndValidateCSV(text) {
       const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
       if (lines.length < 2) {
         showToast("ದೋಷ: CSV ಫೈಲ್‌ನಲ್ಲಿ ಡೇಟಾ ಇಲ್ಲ.", "error");
@@ -1311,27 +1721,30 @@
       document.getElementById('manage-columns-modal').classList.add('hidden');
     }
 
-    function renderColumnSettingsList() {
-      const container = document.getElementById('columns-list-container');
-      if (!container) return;
-      container.innerHTML = '';
-      
-      const visibility = getColumnVisibility();
-      
-      standardColumns.forEach(col => {
-        const div = document.createElement('div');
-        div.className = "flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/60 transition";
-        const isChecked = visibility[col.id] !== false; // default to true
-        
-        div.innerHTML = `
-          <span class="text-xs font-bold text-slate-700">${col.labelEn}</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleColumnVisibility('${col.id}', this.checked)" class="sr-only peer">
-            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
-          </label>
-        `;
-        container.appendChild(div);
+    function populateFilterDropdowns() {
+      const religionFilter = document.getElementById('religion-filter');
+      const casteFilter = document.getElementById('caste-filter');
+      if (!religionFilter || !casteFilter) return;
+
+      const religions = new Set();
+      const castes = new Set();
+
+      allStudentsData.forEach(s => {
+        if (s.religion && s.religion.trim()) religions.add(s.religion.trim());
+        if (s.student_caste && s.student_caste.trim()) castes.add(s.student_caste.trim());
       });
+
+      let religionHtml = '<option value="">-- Religions --</option>';
+      Array.from(religions).sort().forEach(r => {
+        religionHtml += `<option value="${r}">${r}</option>`;
+      });
+      religionFilter.innerHTML = religionHtml;
+
+      let casteHtml = '<option value="">-- Castes --</option>';
+      Array.from(castes).sort().forEach(c => {
+        casteHtml += `<option value="${c}">${c}</option>`;
+      });
+      casteFilter.innerHTML = casteHtml;
     }
 
     function toggleColumnVisibility(colId, isChecked) {
@@ -1617,10 +2030,10 @@
     }
 
     function showToast(title, message, type = "success") {
-      const toast = document.getElementById('toast');
-      const toastIcon = document.getElementById('toast-icon');
-      const toastTitle = document.getElementById('toast-title');
-      const toastMsg = document.getElementById('toast-message');
+      const toast = document.getElementById("toast");
+      const toastIcon = document.getElementById("toast-icon");
+      const toastTitle = document.getElementById("toast-title");
+      const toastMsg = document.getElementById("toast-message");
 
       toastTitle.innerText = title;
       toastMsg.innerText = message;
@@ -1633,17 +2046,14 @@
         toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i>';
       }
 
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
+      toast.classList.remove("translate-y-20", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
 
       setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-20", "opacity-0");
       }, 3500);
     }
-  
-    // Sidebar & Theme helpers
-    
 
     function changeTheme(themeName) {
       document.body.setAttribute('data-theme', themeName);
@@ -1664,16 +2074,17 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
           const user = session.user;
-          const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
-          if (headerUser) headerUser.innerText = name;
 
-                    // Fetch user profile from database to check for developer role
+          // Fetch user profile from database to check for name and developer role
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('name, role')
             .eq('id', user.id)
             .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;
@@ -1756,6 +2167,90 @@
       } catch (e) {
         console.error("Error loading user session for header:", e);
       }
+    }
+
+    function printApplicationForm(studentId) {
+      const s = allStudentsData.find(st => st.realId === studentId);
+      if (!s) {
+        alert("à²µà²¿à²¦à³à²¯à²¾à²°à³à²¥à²¿à²¯ à²®à²¾à²¹à²¿à²¤à²¿ à²¸à²¿à²•à³à²•à²¿à²²à³à²² / Student details not found.");
+        return;
+      }
+      
+      window.open('Preview.html?id=' + encodeURIComponent(studentId), '_blank');
+    }
+
+    function switchPreviewTab(tabName) {
+      const tabs = ['personal', 'family', 'academic', 'bank'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (t === tabName) {
+          if (btn) btn.className = "px-4 py-2 border-b-2 border-sky-500 text-sky-600 dark:text-sky-400 font-bold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer";
+          if (content) content.classList.remove('hidden');
+        } else {
+          if (btn) btn.className = "px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 font-semibold text-xs focus:outline-none transition whitespace-nowrap cursor-pointer";
+          if (content) content.classList.add('hidden');
+        }
+      });
+    }
+
+    function openStudentPreviewModal(studentId) {
+      const s = allStudentsData.find(st => st.realId === studentId);
+      if (!s) return;
+
+      const getVal = (v) => (v === undefined || v === null || v === '') ? '-' : v;
+
+      document.getElementById('modal-subtitle').innerText = `ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No: ${getVal(s.id || s.app_no)}`;
+      
+      document.getElementById('prev-name-kn').innerText = getVal(s.student_name_kn);
+      document.getElementById('prev-name-en').innerText = getVal(s.name_english);
+      document.getElementById('prev-app-no').innerText = getVal(s.id || s.app_no);
+      document.getElementById('prev-class').innerText = getVal(s.className);
+      document.getElementById('prev-gender').innerText = getVal(s.gender) === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು';
+      document.getElementById('prev-dob').innerText = getVal(s.dob);
+      document.getElementById('prev-aadhaar').innerText = getVal(s.aadhaar);
+      document.getElementById('prev-mother-tongue').innerText = getVal(s.mother_tongue);
+
+      document.getElementById('prev-father-name').innerText = `${getVal(s.father_name_kn)} / ${getVal(s.father_name_az)}`;
+      document.getElementById('prev-father-aadhaar').innerText = getVal(s.father_aadhaar);
+      document.getElementById('prev-mother-name').innerText = `${getVal(s.mother_name_kn)} / ${getVal(s.mother_name_az)}`;
+      document.getElementById('prev-mother-aadhaar').innerText = getVal(s.mother_aadhaar);
+      document.getElementById('prev-father-occ').innerText = getVal(s.father_occupation);
+      document.getElementById('prev-mother-occ').innerText = getVal(s.mother_occupation);
+      document.getElementById('prev-mobile').innerText = getVal(s.mobile);
+      document.getElementById('prev-bpl').innerText = getVal(s.bpl_card_no);
+      document.getElementById('prev-social').innerText = getVal(s.social_class);
+      document.getElementById('prev-caste').innerText = getVal(s.student_caste);
+      document.getElementById('prev-subcaste').innerText = getVal(s.caste);
+      document.getElementById('prev-religion').innerText = getVal(s.religion);
+      document.getElementById('prev-address').innerText = getVal(s.address);
+      document.getElementById('prev-taluk').innerText = getVal(s.taluk);
+      document.getElementById('prev-district').innerText = getVal(s.district);
+
+      document.getElementById('prev-ps-board').innerText = getVal(s.preschool_board);
+      document.getElementById('prev-ps-type').innerText = getVal(s.preschool_type);
+      document.getElementById('prev-ps-name').innerText = getVal(s.preschool_name);
+      document.getElementById('prev-tc-no').innerText = getVal(s.transfer_no);
+      document.getElementById('prev-tc-date').innerText = getVal(s.transfer_date);
+      document.getElementById('prev-special-need').innerText = getVal(s.specialNeed) === 'NONE' || getVal(s.specialNeed) === 'ಯಾವುದೂ ಇಲ್ಲ' ? 'No / ಇಲ್ಲ' : getVal(s.specialNeed);
+      document.getElementById('prev-special-category').innerText = getVal(s.special_category);
+      document.getElementById('prev-bhagya-bond').innerText = getVal(s.bhagyalakshmi_bond);
+      document.getElementById('prev-age-reason').innerText = getVal(s.age_reason);
+
+      document.getElementById('prev-bank-acc').innerText = getVal(s.bank_acc_no);
+      document.getElementById('prev-bank-ifsc').innerText = getVal(s.ifsc_code);
+      document.getElementById('prev-bank-address').innerText = getVal(s.bank_address);
+      document.getElementById('prev-scholarship').innerText = getVal(s.scholarship_no);
+      document.getElementById('prev-caste-cert').innerText = getVal(s.student_caste_cert);
+      document.getElementById('prev-income-cert').innerText = getVal(s.student_income_cert);
+
+      switchPreviewTab('personal');
+
+      document.getElementById('student-preview-modal').classList.remove('hidden');
+    }
+
+    function closeStudentPreviewModal() {
+      document.getElementById('student-preview-modal').classList.add('hidden');
     }
 </script>
 </body>

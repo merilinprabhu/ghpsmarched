@@ -880,6 +880,7 @@
     let evaluations = {};
     let isEditing = false;
     let originalEvaluations = {};
+    let currentSchoolId = null;
 
     const classFilter = document.getElementById('class-filter');
     const examTypeFilter = document.getElementById('exam-type-filter');
@@ -893,7 +894,7 @@
         return;
       }
       initSidebar();
-      loadSettingsFromBackend();
+      await loadSettingsFromBackend();
       fetchDashboardMetrics();
       switchTab('dashboard'); 
     });
@@ -999,11 +1000,47 @@
       }
     }
 
-    function loadSettingsFromBackend() {
-      const saved = localStorage.getItem('cce_saved_settings');
+    async function loadSettingsFromBackend() {
+      // First try to load from Supabase
+      if (currentSchoolId) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', currentSchoolId)
+            .eq('settings_key', 'cce_saved_settings')
+            .maybeSingle();
+
+          if (!error && data && data.settings_value) {
+            console.log("Loaded CCE settings from Supabase");
+            const settingsStr = JSON.stringify(data.settings_value);
+            onSettingsLoaded({ success: true, settings: settingsStr });
+            // Cache locally
+            localStorage.setItem(`cce_saved_settings_${currentSchoolId}`, settingsStr);
+            return;
+          }
+        } catch (dbErr) {
+          console.warn("Failed to load CCE settings from Supabase:", dbErr);
+        }
+      }
+
+      // Fallback to localStorage
+      const key = currentSchoolId ? `cce_saved_settings_${currentSchoolId}` : 'cce_saved_settings';
+      const saved = localStorage.getItem(key);
       if (saved) {
         try { onSettingsLoaded({ success: true, settings: saved }); } catch(e) { loadSettingsIntoInputs(); }
       } else {
+        // Fallback to legacy key
+        const legacySaved = localStorage.getItem('cce_saved_settings');
+        if (legacySaved) {
+          try {
+            onSettingsLoaded({ success: true, settings: legacySaved });
+            if (currentSchoolId) {
+              localStorage.setItem(key, legacySaved);
+            }
+            return;
+          } catch(e) {}
+        }
         loadSettingsIntoInputs();
       }
     }
@@ -1067,9 +1104,29 @@
         };
       });
 
-      const settingsPayload = JSON.stringify({ mutableConfigs, gradeScales });
-      localStorage.setItem('cce_saved_settings', settingsPayload);
+      const settingsPayload = { mutableConfigs, gradeScales };
+      const settingsPayloadStr = JSON.stringify(settingsPayload);
+      const key = currentSchoolId ? `cce_saved_settings_${currentSchoolId}` : 'cce_saved_settings';
+      localStorage.setItem(key, settingsPayloadStr);
       showToast("ನಿಯಮಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!", "success");
+
+      if (currentSchoolId) {
+        supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: currentSchoolId,
+            settings_key: 'cce_saved_settings',
+            settings_value: settingsPayload,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'school_id,settings_key' })
+          .then(({ error }) => {
+            if (error) {
+              console.warn("Failed to persist CCE settings to Supabase:", error);
+            } else {
+              console.log("Successfully persisted CCE settings to Supabase");
+            }
+          });
+      }
 
       if (classFilter.value && examTypeFilter.value) {
         syncActiveGroupConfiguration();
@@ -2079,16 +2136,23 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
           const user = session.user;
-          const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
-          if (headerUser) headerUser.innerText = name;
 
-                    // Fetch user profile from database to check for developer role
+          // Fetch user profile from database to check for name, developer role and school_id
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('name, role, school_id')
             .eq('id', user.id)
             .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
+
+          if (profile) {
+            currentSchoolId = profile.school_id || user.user_metadata?.school_id;
+          } else {
+            currentSchoolId = user.user_metadata?.school_id;
+          }
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;

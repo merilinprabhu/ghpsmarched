@@ -683,6 +683,7 @@
       "1": { "ಕನ್ನಡ / Kannada": ["ಪಾಠ 1", "ಪಾಠ 2"], "English": ["Lesson 1"] },
       "6": { "ಕನ್ನಡ / Kannada": ["ಪಾಠ 1: ಶ್ರಮದಾನ", "ಪಾಠ 2: ಮಳೆಗಾಲ"], "ವಿಜ್ಞಾನ / Science": ["Chapter 1", "Chapter 2"] }
     };
+    let currentSchoolId = null;
 
     const gradeScale10 = { 'A+': 9, 'A': 7, 'B+': 5, 'B': 3, 'C': 0 };
 
@@ -731,12 +732,48 @@
       }
       initSidebar();
 
-      // First try to load config data from localStorage safely
-      if (localStorage.getItem('lba_lesson_config')) {
+      // Load config data from Supabase if currentSchoolId is available
+      let loadedFromDb = false;
+      if (currentSchoolId) {
         try {
-          lessonConfigData = JSON.parse(localStorage.getItem('lba_lesson_config'));
-        } catch (e) {
-          console.error("Failed to parse lba_lesson_config from localStorage:", e);
+          const { data, error } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', currentSchoolId)
+            .eq('settings_key', 'lba_lesson_config')
+            .maybeSingle();
+
+          if (!error && data && data.settings_value) {
+            lessonConfigData = data.settings_value;
+            console.log("Loaded LBA lesson config from Supabase");
+            localStorage.setItem(`lba_lesson_config_${currentSchoolId}`, JSON.stringify(lessonConfigData));
+            loadedFromDb = true;
+          }
+        } catch (dbErr) {
+          console.warn("Failed to load LBA configs from Supabase:", dbErr);
+        }
+      }
+
+      if (!loadedFromDb) {
+        // Fallback to localStorage safely per school
+        const key = currentSchoolId ? `lba_lesson_config_${currentSchoolId}` : 'lba_lesson_config';
+        if (localStorage.getItem(key)) {
+          try {
+            lessonConfigData = JSON.parse(localStorage.getItem(key));
+          } catch (e) {
+            console.error("Failed to parse lba_lesson_config from localStorage:", e);
+          }
+        } else {
+          // Fallback to legacy key
+          const legacyConfig = localStorage.getItem('lba_lesson_config');
+          if (legacyConfig) {
+            try {
+              lessonConfigData = JSON.parse(legacyConfig);
+              if (currentSchoolId) {
+                localStorage.setItem(key, legacyConfig);
+              }
+            } catch(e){}
+          }
         }
       }
 
@@ -812,7 +849,26 @@
       if (!lessonConfigData[cls]) lessonConfigData[cls] = {};
       lessonConfigData[cls][sub] = lessonsArray;
 
-      localStorage.setItem('lba_lesson_config', JSON.stringify(lessonConfigData));
+      const key = currentSchoolId ? `lba_lesson_config_${currentSchoolId}` : 'lba_lesson_config';
+      localStorage.setItem(key, JSON.stringify(lessonConfigData));
+
+      if (currentSchoolId) {
+        supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: currentSchoolId,
+            settings_key: 'lba_lesson_config',
+            settings_value: lessonConfigData,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'school_id,settings_key' })
+          .then(({ error }) => {
+            if (error) {
+              console.warn("Failed to persist LBA configs to Supabase:", error);
+            } else {
+              console.log("Successfully persisted LBA configs to Supabase");
+            }
+          });
+      }
 
       showToast("ಪಾಠಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!", "success");
       toggleSettingsPanel();
@@ -1640,16 +1696,23 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
           const user = session.user;
-          const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
-          if (headerUser) headerUser.innerText = name;
 
-                    // Fetch user profile from database to check for developer role
+          // Fetch user profile from database to check for name, developer role and school_id
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('name, role, school_id')
             .eq('id', user.id)
             .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
+
+          if (profile) {
+            currentSchoolId = profile.school_id || user.user_metadata?.school_id;
+          } else {
+            currentSchoolId = user.user_metadata?.school_id;
+          }
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;

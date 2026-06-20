@@ -583,6 +583,30 @@
       }
       initSidebar();
     });
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      
+      return classStr.toString().trim();
+    }
 
     async function onClassChange() {
       const className = document.getElementById("class-filter").value;
@@ -605,7 +629,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = session?.user?.user_metadata?.school_id;
 
-        let query = supabaseClient.from('admissions').select('id, student_name, dob, gender, enroll_class, student_aadhaar, address, father_name_kn').eq('enroll_class', className);
+        let query = supabaseClient.from('admissions').select('id, student_name, dob, gender, enroll_class, student_aadhaar, address, father_name_kn');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -614,7 +638,9 @@
 
         if (error) throw error;
 
-        allStudents = (data || []).map(s => {
+        const filteredData = (data || []).filter(s => normalizeClass(s.enroll_class) === normalizeClass(className));
+
+        allStudents = filteredData.map(s => {
           const storedApaar = localStorage.getItem(`apaar_${s.id}`) || "";
           
           return {
@@ -849,16 +875,17 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
           const user = session.user;
-          const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
-          if (headerUser) headerUser.innerText = name;
 
-                    // Fetch user profile from database to check for developer role
+          // Fetch user profile from database to check for name and developer role
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('name, role')
             .eq('id', user.id)
             .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;

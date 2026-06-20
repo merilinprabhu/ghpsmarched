@@ -14,6 +14,104 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
     .rotate-90 { transform: rotate(90deg); }
+
+    /* Radiant/Neon Card Styles */
+    .radiant-card-indigo {
+      background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-indigo:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.15), 0 0 15px 1px rgba(99, 102, 241, 0.05);
+    }
+    
+    .radiant-card-emerald {
+      background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-emerald:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.15), 0 0 15px 1px rgba(16, 185, 129, 0.05);
+    }
+
+    .radiant-card-amber {
+      background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-amber:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.15), 0 0 15px 1px rgba(245, 158, 11, 0.05);
+    }
+
+    .radiant-card-sky {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+      border: 1px solid rgba(14, 165, 233, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-sky:hover {
+      transform: translateY(-4px);
+      border-color: rgba(14, 165, 233, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(14, 165, 233, 0.15), 0 0 15px 1px rgba(14, 165, 233, 0.05);
+    }
+
+    body[data-theme="dark"] .radiant-card-indigo {
+      background: linear-gradient(135deg, #1e293b 0%, #312e81 100%) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-indigo:hover {
+      border-color: rgba(99, 102, 241, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.4), 0 0 20px 2px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-emerald {
+      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%) !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-emerald:hover {
+      border-color: rgba(16, 185, 129, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.4), 0 0 20px 2px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-amber {
+      background: linear-gradient(135deg, #1e293b 0%, #78350f 100%) !important;
+      border-color: rgba(245, 158, 11, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-amber:hover {
+      border-color: rgba(245, 158, 11, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.4), 0 0 20px 2px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-sky {
+      background: linear-gradient(135deg, #1e293b 0%, #0c4a6e 100%) !important;
+      border-color: rgba(14, 165, 233, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-sky:hover {
+      border-color: rgba(14, 165, 233, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(14, 165, 233, 0.4), 0 0 20px 2px rgba(14, 165, 233, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .dark-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] .dark-text-override {
+      color: #f1f5f9 !important;
+    }
+
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -391,48 +489,64 @@
 
         <!-- Quick Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4 relative hover:shadow-md transition duration-200">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-650 flex items-center justify-center text-xl flex-shrink-0">
+          <!-- Total Students -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-indigo-50/60 to-white dark:from-slate-900 dark:to-indigo-950/20 p-5 rounded-2xl border border-indigo-100/80 dark:border-indigo-500/20 shadow-sm hover:shadow-[0_8px_30px_rgb(99,102,241,0.08)] dark:hover:shadow-[0_8px_30px_rgb(99,102,241,0.15)] hover:border-indigo-400/40 transition duration-300 flex items-center gap-4 group">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-indigo-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
               <i class="fa-solid fa-users"></i>
             </div>
-            <div>
-              <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Total Students / ಒಟ್ಟು ಮಕ್ಕಳು</span>
-              <h3 id="stat-total-students" class="text-xl font-extrabold text-slate-800 mt-0.5">0</h3>
-              <span class="text-[9px] text-slate-400 font-semibold">Across all 12 classes</span>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 flex items-center justify-center text-xl flex-shrink-0 border border-indigo-500/15">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="relative z-10">
+              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase block">Total Students / ಒಟ್ಟು ಮಕ್ಕಳು</span>
+              <h3 id="stat-total-students" class="text-xl font-extrabold text-slate-800 dark-text-override mt-0.5">0</h3>
+              <span class="text-[9px] text-slate-400 dark:text-slate-450 font-semibold">Across all 12 classes</span>
             </div>
           </div>
 
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4 relative hover:shadow-md transition duration-200">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+          <!-- Completed Entries -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 to-white dark:from-slate-900 dark:to-emerald-950/20 p-5 rounded-2xl border border-emerald-100/80 dark:border-emerald-500/20 shadow-sm hover:shadow-[0_8px_30px_rgb(16,185,129,0.08)] dark:hover:shadow-[0_8px_30px_rgb(16,185,129,0.15)] hover:border-emerald-400/40 transition duration-300 flex items-center gap-4 group">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-emerald-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
               <i class="fa-solid fa-circle-check"></i>
             </div>
-            <div>
-              <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Completed Entries / ಪೂರ್ಣಗೊಂಡವು</span>
-              <h3 id="stat-completed-entries" class="text-xl font-extrabold text-slate-800 mt-0.5">0</h3>
-              <span id="stat-completed-ratio" class="text-[9px] text-emerald-600 font-semibold">0 / 168 cells done</span>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 flex items-center justify-center text-xl flex-shrink-0 border border-emerald-500/15">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="relative z-10">
+              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase block">Completed Entries / ಪೂರ್ಣಗೊಂಡವು</span>
+              <h3 id="stat-completed-entries" class="text-xl font-extrabold text-slate-800 dark-text-override mt-0.5">0</h3>
+              <span id="stat-completed-ratio" class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold">0 / 168 cells done</span>
             </div>
           </div>
 
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4 relative hover:shadow-md transition duration-200">
-            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl flex-shrink-0">
+          <!-- Pending Entries -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-amber-50/60 to-white dark:from-slate-900 dark:to-amber-950/20 p-5 rounded-2xl border border-amber-100/80 dark:border-amber-500/20 shadow-sm hover:shadow-[0_8px_30px_rgb(245,158,11,0.08)] dark:hover:shadow-[0_8px_30px_rgb(245,158,11,0.15)] hover:border-amber-400/40 transition duration-300 flex items-center gap-4 group">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-amber-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
               <i class="fa-solid fa-hourglass-half"></i>
             </div>
-            <div>
-              <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Pending Entries / ಬಾಕಿ ಇವೆ</span>
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-650 dark:text-amber-400 flex items-center justify-center text-xl flex-shrink-0 border border-amber-500/15">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+            <div class="relative z-10">
+              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase block">Pending Entries / ಬಾಕಿ ಇವೆ</span>
               <h3 id="stat-pending-entries" class="text-xl font-extrabold text-slate-800 mt-0.5">168</h3>
-              <span id="stat-pending-ratio" class="text-[9px] text-amber-600 font-semibold">168 pending cells</span>
+              <span id="stat-pending-ratio" class="text-[9px] text-amber-650 dark:text-amber-400 font-semibold">168 pending cells</span>
             </div>
           </div>
 
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center gap-4 relative hover:shadow-md transition duration-200">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl flex-shrink-0">
+          <!-- Overall Progress -->
+          <div class="relative overflow-hidden bg-gradient-to-br from-pink-50/60 to-white dark:from-slate-900 dark:to-pink-950/20 p-5 rounded-2xl border border-pink-100/80 dark:border-pink-500/20 shadow-sm hover:shadow-[0_8px_30px_rgb(236,72,153,0.08)] dark:hover:shadow-[0_8px_30px_rgb(236,72,153,0.15)] hover:border-pink-400/40 transition duration-300 flex items-center gap-4 group">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-pink-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
               <i class="fa-solid fa-percent"></i>
             </div>
-            <div class="flex-grow">
-              <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase block">Overall Progress / ಒಟ್ಟು ಪ್ರಗತಿ</span>
-              <h3 id="stat-overall-percentage" class="text-xl font-extrabold text-slate-800 mt-0.5">0%</h3>
-              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-1">
-                <div id="stat-overall-bar" class="bg-indigo-650 h-1.5 rounded-full" style="width: 0%"></div>
+            <div class="w-12 h-12 rounded-2xl bg-pink-500/10 text-pink-650 dark:text-pink-400 flex items-center justify-center text-xl flex-shrink-0 border border-pink-500/15">
+              <i class="fa-solid fa-percent"></i>
+            </div>
+            <div class="flex-grow relative z-10">
+              <span class="text-[10px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase block">Overall Progress / ಒಟ್ಟು ಪ್ರಗತಿ</span>
+              <h3 id="stat-overall-percentage" class="text-xl font-extrabold text-slate-800 dark-text-override mt-0.5">0%</h3>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 mt-1">
+                <div id="stat-overall-bar" class="bg-pink-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
               </div>
             </div>
           </div>
@@ -456,34 +570,72 @@
           <!-- TAB 1: Analytics Dashboard -->
           <div class="p-6 space-y-6" id="panel-analytics">
             
-            <!-- 1. Gender & Caste Progress Cards Row -->
-            <div>
-              <h4 class="font-extrabold text-[10px] text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
-                <i class="fa-solid fa-layer-group text-indigo-500"></i> ಲಿಂಗವಾರು ಮತ್ತು ವರ್ಗವಾರು ಪ್ರಗತಿ / Gender & Caste Progress
-              </h4>
-              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="gender-caste-cards-container">
-                <!-- JS will generate these 6 cards dynamically -->
+            <!-- Radiant Side-by-Side Carousels Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <!-- Skill Level Spread Carousel -->
+              <div class="radiant-card-indigo rounded-3xl p-6 flex flex-col justify-between space-y-4">
+                <h4 class="font-extrabold text-[10px] text-slate-800 dark-text-override uppercase tracking-widest flex items-center gap-1.5 mb-1 border-b pb-2">
+                  <i class="fa-solid fa-layer-group text-indigo-500"></i> ಒಟ್ಟು ಕೌಶಲ್ಯ ಹಂಚಿಕೆ / Skill Level Spread
+                </h4>
+                <div class="flex items-center justify-between gap-4 mt-2">
+                  <button onclick="navigateSkillCard(-1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Previous / ಹಿಂದಿನ">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  
+                  <div id="skill-spread-cards-container" class="flex-grow transition-all duration-300">
+                    <!-- Dynamically populated single card -->
+                  </div>
+                  
+                  <button onclick="navigateSkillCard(1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Next / ಮುಂದಿನ">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Class-wise Progress Carousel -->
+              <div id="class-carousel-card" class="radiant-card-sky rounded-3xl p-6 flex flex-col justify-between space-y-4 cursor-pointer">
+                <h4 class="font-extrabold text-[10px] text-slate-800 dark-text-override uppercase tracking-widest flex items-center gap-1.5 mb-1 border-b pb-2">
+                  <i class="fa-solid fa-chalkboard-user text-sky-500"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Class-wise Progress
+                </h4>
+                <div class="flex items-center justify-between gap-4 mt-2">
+                  <button onclick="event.stopPropagation(); navigateClassCard(-1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Previous / ಹಿಂದಿನ">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  
+                  <div id="class-cards-container" class="flex-grow transition-all duration-300">
+                    <!-- Dynamically populated single card -->
+                  </div>
+                  
+                  <button onclick="event.stopPropagation(); navigateClassCard(1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Next / ಮುಂದಿನ">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Subject-wise Progress Carousel -->
+              <div id="subject-carousel-card" class="radiant-card-emerald rounded-3xl p-6 flex flex-col justify-between space-y-4 cursor-pointer">
+                <h4 class="font-extrabold text-[10px] text-slate-800 dark-text-override uppercase tracking-widest flex items-center gap-1.5 mb-1 border-b pb-2">
+                  <i class="fa-solid fa-book-open-reader text-emerald-500"></i> ವಿಷಯವಾರು ಪ್ರಗತಿ / Subject-wise Progress
+                </h4>
+                <div class="flex items-center justify-between gap-4 mt-2">
+                  <button onclick="event.stopPropagation(); navigateSubjectCard(-1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Previous / ಹಿಂದಿನ">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                  </button>
+                  
+                  <div id="subject-cards-container" class="flex-grow transition-all duration-300">
+                    <!-- Dynamically populated single card -->
+                  </div>
+                  
+                  <button onclick="event.stopPropagation(); navigateSubjectCard(1)" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Next / ಮುಂದಿನ">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <!-- 2. Class-wise Progress Cards Grid -->
-            <div>
-              <h4 class="font-extrabold text-[10px] text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
-                <i class="fa-solid fa-chalkboard-user text-indigo-500"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Class-wise Progress
-              </h4>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4" id="class-cards-container">
-                <!-- JS will generate 12 class cards dynamically -->
-              </div>
-            </div>
-
-            <!-- 3. Subject-wise Progress Cards Grid -->
-            <div>
-              <h4 class="font-extrabold text-[10px] text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mb-3">
-                <i class="fa-solid fa-book-open-reader text-indigo-500"></i> ವಿಷಯವಾರು ಪ್ರಗತಿ / Subject-wise Progress
-              </h4>
-              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4" id="subject-cards-container">
-                <!-- JS will generate 7 subject cards dynamically -->
-              </div>
+            <!-- Quick Insights Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="insights-row">
+              <!-- Dynamically populated by JS -->
             </div>
 
             <!-- 4. Visual Charts Row (Gender & Caste charts side-by-side) -->
@@ -532,105 +684,109 @@
 
           <!-- TAB 3: Marks Entry Sheet -->
           <div class="p-6 space-y-5 hidden" id="panel-marks">
-            <!-- Actions Row -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
-              <div class="flex flex-wrap items-center gap-1.5">
-                <!-- Download Template -->
-                <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-arrow-down text-slate-500 text-lg md:text-xl"></i>
-                </button>
-                <!-- Import CSV -->
-                <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
-                <button onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
-                </button>
-                <!-- Export CSV -->
-                <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
-                </button>
-              </div>
-              <div class="flex flex-wrap items-center gap-1.5">
-                <!-- Excel -->
-                <button id="btn-export-excel-top" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
-                </button>
-                <!-- PDF -->
-                <button id="btn-export-pdf-top" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
-                </button>
-                <!-- Print -->
-                <button id="btn-print-top" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
-                </button>
-              </div>
-            </div>
+            <!-- Filters & Actions Single Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch mb-4 no-print">
+              <!-- Left side: Filters (takes 8 cols) -->
+              <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-indigo-500/15 rounded-2xl p-4 grid grid-cols-3 gap-3.5 shadow-sm hover:shadow-md transition">
+                <div>
+                  <label class="block text-[9px] font-bold text-slate-400 mb-1 uppercase">ತರಗತಿ / Standard</label>
+                  <select id="class-filter" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-750 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                    <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ --</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
 
-            <!-- Filter Row -->
-            <div class="bg-slate-50/50 border border-slate-200/80 rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase">ತರಗತಿ / Standard</label>
-                <select id="class-filter" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-750 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                  <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ --</option>
-                  <option value="LKG">LKG</option>
-                  <option value="UKG">UKG</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
+                <div>
+                  <label class="block text-[9px] font-bold text-slate-400 mb-1 uppercase">ವಿಷಯ / Subject</label>
+                  <select id="subject-filter" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-750 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                    <option value="">-- ವಿಷಯ ಆಯ್ಕೆಮಾಡಿ --</option>
+                    <option value="KANNADA">KANNADA / ಕನ್ನಡ</option>
+                    <option value="ENGLISH">ENGLISH / ಇಂಗ್ಲಿಷ್</option>
+                    <option value="MATHS">MATHS / ಗಣಿತ</option>
+                    <option value="EVS">EVS / ಪರಿಸರ ಅಧ್ಯಯನ</option>
+                    <option value="SOCIAL SCIENCE">SOCIAL SCIENCE / ಸಮಾಜ ವಿಜ್ಞಾನ</option>
+                    <option value="SCIENCE">SCIENCE / ವಿಜ್ಞಾನ</option>
+                    <option value="HINDI">HINDI / ಹಿಂದಿ</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-[9px] font-bold text-slate-400 mb-1 uppercase">ಪರೀಕ್ಷೆಯ ವಿಧ / Test Type</label>
+                  <select id="test-type-filter" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-755 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+                    <option value="">-- ಪರೀಕ್ಷೆ ಆಯ್ಕೆಮಾಡಿ --</option>
+                    <option value="PRE_TEST">Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ</option>
+                    <option value="POST_TEST">Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ</option>
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase">ವಿಷಯ / Subject</label>
-                <select id="subject-filter" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-750 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                  <option value="">-- ವಿಷಯ ಆಯ್ಕೆಮಾಡಿ --</option>
-                  <option value="KANNADA">KANNADA / ಕನ್ನಡ</option>
-                  <option value="ENGLISH">ENGLISH / ಇಂಗ್ಲಿಷ್</option>
-                  <option value="MATHS">MATHS / ಗಣಿತ</option>
-                  <option value="EVS">EVS / ಪರಿಸರ ಅಧ್ಯಯನ</option>
-                  <option value="SOCIAL SCIENCE">SOCIAL SCIENCE / ಸಮಾಜ ವಿಜ್ಞಾನ</option>
-                  <option value="SCIENCE">SCIENCE / ವಿಜ್ಞಾನ</option>
-                  <option value="HINDI">HINDI / ಹಿಂದಿ</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-slate-500 mb-1.5 uppercase">ಪರೀಕ್ಷೆಯ ವಿಧ / Test Type</label>
-                <select id="test-type-filter" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-755 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                  <option value="">-- ಪರೀಕ್ಷೆ ಆಯ್ಕೆಮಾಡಿ --</option>
-                  <option value="PRE_TEST">Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ</option>
-                  <option value="POST_TEST">Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ</option>
-                </select>
+              <!-- Right side: Actions Row (takes 4 cols) -->
+              <div class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-indigo-500/20 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-2">
+                <span class="block text-[9px] font-bold text-slate-400 uppercase text-center border-b pb-1">ಕ್ರಿಯೆಗಳು ಮತ್ತು ರಫ್ತು / Actions & Exports</span>
+                <div class="flex items-center justify-center gap-2">
+                  <!-- CSV Template -->
+                  <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-arrow-down text-indigo-600 dark:text-indigo-400 text-sm"></i>
+                  </button>
+                  <!-- Import CSV -->
+                  <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
+                  <button onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-import text-amber-600 dark:text-amber-500 text-sm"></i>
+                  </button>
+                  <!-- Export CSV -->
+                  <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-csv text-teal-600 dark:text-teal-500 text-sm"></i>
+                  </button>
+                  <div class="h-6 w-px bg-slate-200 dark:bg-slate-750"></div>
+                  <!-- Excel -->
+                  <button id="btn-export-excel-top" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-sm"></i>
+                  </button>
+                  <!-- PDF -->
+                  <button id="btn-export-pdf-top" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-sm"></i>
+                  </button>
+                  <!-- Print -->
+                  <button id="btn-print-top" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-sm"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
             <!-- Loader for grid -->
             <div id="loading-overlay" class="flex-col items-center justify-center py-12 hidden">
               <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-650 mb-2"></i>
-              <p class="text-xs font-bold text-slate-600">ಮೌಲ್ಯಮಾಪನ ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
+              <p class="text-xs font-bold text-slate-650 dark:text-slate-300">ಮೌಲ್ಯಮಾಪನ ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
             </div>
 
             <!-- Empty State -->
-            <div id="empty-state" class="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-300 rounded-2xl bg-slate-50/20">
-              <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-3 shadow-inner">
-                <i class="fa-solid fa-table-list text-lg"></i>
+            <div id="empty-state" class="flex flex-col items-center justify-center text-center py-16 border border-dashed border-slate-300 dark:border-indigo-500/20 rounded-2xl bg-white dark:bg-slate-900 shadow-sm transition">
+              <div class="w-16 h-16 bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 rounded-full flex items-center justify-center mb-4 shadow-inner relative">
+                <div class="absolute inset-0 rounded-full bg-indigo-500/5 animate-pulse"></div>
+                <i class="fa-solid fa-table-list text-xl"></i>
               </div>
-              <h4 class="text-xs font-bold text-slate-700 mb-1" id="grid-subtitle">ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ / No standard selected</h4>
-              <p class="text-[10px] text-slate-550 max-w-xs leading-relaxed">ದಯವಿಟ್ಟು ಮೇಲ್ಭಾಗದಲ್ಲಿ ತರಗತಿ, ವಿಷಯ ಹಾಗೂ ಪರೀಕ್ಷೆಯ ವಿಧವನ್ನು ಆಯ್ದುಕೊಳ್ಳಿ, ಅಥವಾ ಪ್ರಗತಿ ನಕ್ಷೆಯ ಕೋಶದಲ್ಲಿರುವ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿ.</p>
+              <h4 class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-1.5" id="grid-subtitle">ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ / No standard selected</h4>
+              <p class="text-[10px] text-slate-550 dark:text-slate-400 max-w-xs leading-relaxed px-4">ದಯವಿಟ್ಟು ಮೇಲ್ಭಾಗದಲ್ಲಿ ತರಗತಿ, ವಿಷಯ ಹಾಗೂ ಪರೀಕ್ಷೆಯ ವಿಧವನ್ನು ಆಯ್ದುಕೊಳ್ಳಿ, ಅಥವಾ ಪ್ರಗತಿ ನಕ್ಷೆಯ ಕೋಶದಲ್ಲಿರುವ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿ.</p>
             </div>
 
             <!-- Grid Content Area (Roster Sheet) -->
             <div id="grid-container" class="space-y-4 hidden">
               <!-- Roster Actions Header -->
               <div class="flex justify-between items-center flex-wrap gap-2 pb-3 border-b border-slate-200">
-                <h3 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
-                  <i class="fa-solid fa-list-check text-indigo-600"></i>
+                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase flex items-center gap-1.5">
+                  <i class="fa-solid fa-list-check text-indigo-650"></i>
                   <span id="grid-title-info">Evaluation Grid</span>
                 </h3>
                 <div class="flex gap-2">
@@ -642,10 +798,39 @@
               </div>
 
               <!-- Mini stats -->
-              <div id="stats-bar" class="grid grid-cols-3 gap-3 text-center">
-                <div class="bg-slate-50 border border-slate-200/60 p-2 rounded-xl"><span class="text-[9px] uppercase font-bold text-slate-400 block">Total Students</span><span id="stat-total-students-roster" class="text-sm font-black text-slate-800">0</span></div>
-                <div class="bg-emerald-50/50 border border-emerald-100 p-2 rounded-xl"><span class="text-[9px] uppercase font-bold text-emerald-600 block">Total Grade A</span><span id="stat-total-a" class="text-sm font-black text-emerald-805">0</span></div>
-                <div class="bg-blue-50/50 border border-blue-100 p-2 rounded-xl"><span class="text-[9px] uppercase font-bold text-blue-600 block">Total Grade B</span><span id="stat-total-b" class="text-sm font-black text-blue-805">0</span></div>
+              <div id="stats-bar" class="grid grid-cols-3 gap-4 text-center">
+                <!-- Total Students -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-indigo-500/5 to-indigo-500/10 dark:from-slate-900 dark:to-indigo-950/20 p-3 rounded-2xl border border-indigo-500/15 shadow-sm hover:shadow-[0_4px_15px_rgba(99,102,241,0.1)] dark:hover:shadow-[0_4px_15px_rgba(99,102,241,0.2)] hover:border-indigo-400/40 transition duration-300 flex items-center justify-between group">
+                  <div class="text-left">
+                    <span class="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-wider uppercase block">Total Students / ಒಟ್ಟು ಮಕ್ಕಳು</span>
+                    <span id="stat-total-students-roster" class="text-sm md:text-base font-black text-slate-800 dark:text-slate-105 mt-0.5 block">0</span>
+                  </div>
+                  <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-650 dark:text-indigo-400 flex items-center justify-center text-xs border border-indigo-500/15 shrink-0">
+                    <i class="fa-solid fa-users"></i>
+                  </div>
+                </div>
+
+                <!-- Total Grade A -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 dark:from-slate-900 dark:to-emerald-950/20 p-3 rounded-2xl border border-emerald-500/15 shadow-sm hover:shadow-[0_4px_15px_rgba(16,185,129,0.1)] dark:hover:shadow-[0_4px_15px_rgba(16,185,129,0.2)] hover:border-emerald-400/40 transition duration-300 flex items-center justify-between group">
+                  <div class="text-left">
+                    <span class="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-wider uppercase block">Grade A / ಶ್ರೇಣಿ A</span>
+                    <span id="stat-total-a" class="text-sm md:text-base font-black text-emerald-650 dark:text-emerald-400 mt-0.5 block">0</span>
+                  </div>
+                  <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 flex items-center justify-center text-xs border border-emerald-500/15 shrink-0">
+                    <i class="fa-solid fa-award"></i>
+                  </div>
+                </div>
+
+                <!-- Total Grade B -->
+                <div class="relative overflow-hidden bg-gradient-to-br from-blue-500/5 to-blue-500/10 dark:from-slate-900 dark:to-blue-950/20 p-3 rounded-2xl border border-blue-500/15 shadow-sm hover:shadow-[0_4px_15px_rgba(59,130,246,0.1)] dark:hover:shadow-[0_4px_15px_rgba(59,130,246,0.2)] hover:border-blue-400/40 transition duration-300 flex items-center justify-between group">
+                  <div class="text-left">
+                    <span class="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-wider uppercase block">Grade B / ಶ್ರೇಣಿ B</span>
+                    <span id="stat-total-b" class="text-sm md:text-base font-black text-blue-650 dark:text-blue-400 mt-0.5 block">0</span>
+                  </div>
+                  <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-650 dark:text-blue-400 flex items-center justify-center text-xs border border-blue-500/15 shrink-0">
+                    <i class="fa-solid fa-circle-question"></i>
+                  </div>
+                </div>
               </div>
 
               <!-- Marks Table -->
@@ -927,6 +1112,9 @@
     let evaluations = {};
     let originalEvaluations = {};
     let isEditing = false;
+    let activeSkillCarouselIndex = 0;
+    let activeClassCarouselIndex = 8; // Default to Class 7
+    let activeSubjectCarouselIndex = 0; // Default to KANNADA
 
     // Charts instances references
     let genderChart = null;
@@ -1104,6 +1292,24 @@
       let overallTotalEvaluated = 0;
       let overallMaxPossibleEvaluations = 0;
 
+      let preAchieved = 0;
+      let preTotal = 0;
+      let postAchieved = 0;
+      let postTotal = 0;
+
+      let competencyStats = {
+        c1: { a: 0, b: 0, total: 0 },
+        c2: { a: 0, b: 0, total: 0 },
+        c3: { a: 0, b: 0, total: 0 },
+        c4: { a: 0, b: 0, total: 0 },
+        c5: { a: 0, b: 0, total: 0 },
+        c6: { a: 0, b: 0, total: 0 },
+        c7: { a: 0, b: 0, total: 0 },
+        c8: { a: 0, b: 0, total: 0 },
+        c9: { a: 0, b: 0, total: 0 },
+        c10: { a: 0, b: 0, total: 0 }
+      };
+
       CLASSES.forEach(cls => {
         const roster = classStudents[cls] || [];
         const studentCount = roster.length;
@@ -1172,6 +1378,25 @@
                 if (type === 'PRE_TEST') classPreEvaluated++;
                 else classPostEvaluated++;
               }
+
+              const studentEval = parsed[student.id];
+              if (studentEval) {
+                for (let i = 1; i <= 10; i++) {
+                  const key = `c${i}`;
+                  const val = (studentEval[key] || '').toUpperCase().trim();
+                  if (val === 'A') {
+                    competencyStats[key].a++;
+                    competencyStats[key].total++;
+                    if (type === 'PRE_TEST') preAchieved++;
+                    else postAchieved++;
+                  } else if (val === 'B') {
+                    competencyStats[key].b++;
+                    competencyStats[key].total++;
+                  }
+                  if (type === 'PRE_TEST') preTotal++;
+                  else postTotal++;
+                }
+              }
             });
           });
         });
@@ -1202,116 +1427,243 @@
       document.getElementById('stat-overall-percentage').innerText = `${overallPct}%`;
       document.getElementById('stat-overall-bar').style.width = `${overallPct}%`;
 
-      // 4. Render Gender & Caste Cards
-      const boyPct = boyPossible > 0 ? Math.round((boyEvaluations / boyPossible) * 100) : 0;
-      const girlPct = girlPossible > 0 ? Math.round((girlEvaluations / girlPossible) * 100) : 0;
-      const scPct = castePossible.SC > 0 ? Math.round((casteEvaluations.SC / castePossible.SC) * 100) : 0;
-      const stPct = castePossible.ST > 0 ? Math.round((casteEvaluations.ST / castePossible.ST) * 100) : 0;
-      const obcPct = castePossible.OBC > 0 ? Math.round((casteEvaluations.OBC / castePossible.OBC) * 100) : 0;
-      const othPct = castePossible.Others > 0 ? Math.round((casteEvaluations.Others / castePossible.Others) * 100) : 0;
-
-      const genderCasteContainer = document.getElementById('gender-caste-cards-container');
-      const genCasteData = [
-        { label: 'Boys / ಗಂಡು', enrolled: totalBoysEnrolled, evaluated: boyEvaluations, possible: boyPossible, pct: boyPct, color: 'sky', icon: 'fa-mars' },
-        { label: 'Girls / ಹೆಣ್ಣು', enrolled: totalGirlsEnrolled, evaluated: girlEvaluations, possible: girlPossible, pct: girlPct, color: 'rose', icon: 'fa-venus' },
-        { label: 'SC ವರ್ಗ', enrolled: casteEnrolled.SC, evaluated: casteEvaluations.SC, possible: castePossible.SC, pct: scPct, color: 'emerald', icon: 'fa-user-graduate' },
-        { label: 'ST ವರ್ಗ', enrolled: casteEnrolled.ST, evaluated: casteEvaluations.ST, possible: castePossible.ST, pct: stPct, color: 'teal', icon: 'fa-shield-halved' },
-        { label: 'OBC ವರ್ಗ', enrolled: casteEnrolled.OBC, evaluated: casteEvaluations.OBC, possible: castePossible.OBC, pct: obcPct, color: 'indigo', icon: 'fa-user-check' },
-        { label: 'Others / ಇತರರು', enrolled: casteEnrolled.Others, evaluated: casteEvaluations.Others, possible: castePossible.Others, pct: othPct, color: 'slate', icon: 'fa-users' }
+      // 4. Render Skill Level Spread Cards
+      const competencyMetadata = [
+        { key: 'c1', labelEn: 'C1: Rote Counting (1-100)', labelKn: 'ಸಂಖ್ಯಾ ಜ್ಞಾನ', color: 'indigo', icon: 'fa-list-ol' },
+        { key: 'c2', labelEn: 'C2: Number Identification', labelKn: 'ಸಂಖ್ಯೆ ಗುರುತಿಸುವಿಕೆ', color: 'sky', icon: 'fa-magnifying-glass' },
+        { key: 'c3', labelEn: 'C3: Basic Addition', labelKn: 'ಸರಳ ಸಂಕಲನ', color: 'emerald', icon: 'fa-plus' },
+        { key: 'c4', labelEn: 'C4: Basic Subtraction', labelKn: 'ಸರಳ ವ್ಯವಕಲನ', color: 'rose', icon: 'fa-minus' },
+        { key: 'c5', labelEn: 'C5: Alphabet/Letters', labelKn: 'ಅಕ್ಷರ ಜ್ಞಾನ', color: 'amber', icon: 'fa-font' },
+        { key: 'c6', labelEn: 'C6: Word Formation', labelKn: 'ಪದ ಜೋಡಣೆ', color: 'violet', icon: 'fa-cubes' },
+        { key: 'c7', labelEn: 'C7: Sentence Reading', labelKn: 'ವಾಕ್ಯ ಓದುವಿಕೆ', color: 'teal', icon: 'fa-book-open' },
+        { key: 'c8', labelEn: 'C8: Writing Skills', labelKn: 'ಸ್ವಂತ ಬರವಣಿಗೆ', color: 'cyan', icon: 'fa-pen-nib' },
+        { key: 'c9', labelEn: 'C9: Multiplication & Division', labelKn: 'ಗುಣಾಕಾರ / ಭಾಗಾಕಾರ', color: 'purple', icon: 'fa-calculator' },
+        { key: 'c10', labelEn: 'C10: Practical Operations', labelKn: 'ವ್ಯವಹಾರಿಕ ಕೌಶಲ್ಯ', color: 'orange', icon: 'fa-coins' }
       ];
 
-      genderCasteContainer.innerHTML = genCasteData.map(d => {
-        return `
-          <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between hover:border-slate-300">
-            <div class="flex justify-between items-start gap-2">
-              <span class="text-[10px] font-bold text-slate-400 tracking-wider block uppercase">${d.label}</span>
-              <div class="w-7 h-7 rounded-lg bg-${d.color}-50 text-${d.color === 'slate' ? 'slate' : d.color}-600 flex items-center justify-center text-xs flex-shrink-0">
-                <i class="fa-solid ${d.icon}"></i>
+      const activeSkill = competencyMetadata[activeSkillCarouselIndex];
+      const stats = competencyStats[activeSkill.key];
+      const skillPct = stats.total > 0 ? Math.round((stats.a / stats.total) * 100) : 0;
+
+      const skillSpreadContainer = document.getElementById('skill-spread-cards-container');
+      if (skillSpreadContainer) {
+        skillSpreadContainer.innerHTML = `
+          <div class="flex flex-col justify-between space-y-4 w-full">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-extrabold text-slate-800 dark-text-override text-base flex items-center gap-1.5 leading-tight">${activeSkill.labelEn}</h4>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-bold block mt-0.5">${activeSkill.labelKn}</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-${activeSkill.color}-500/10 text-${activeSkill.color}-600 dark:text-${activeSkill.color}-400 flex items-center justify-center text-base flex-shrink-0">
+                <i class="fa-solid ${activeSkill.icon}"></i>
               </div>
             </div>
-            <div class="mt-2.5">
+            <div class="space-y-3">
               <div class="flex justify-between items-baseline">
-                <span class="text-lg font-black text-slate-800">${d.pct}%</span>
-                <span class="text-[9px] text-slate-400 font-bold">Enrolled: ${d.enrolled}</span>
+                <span class="text-base font-black text-slate-800 dark-text-override">${skillPct}% Achieved / ಸಾಧನೆ</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400 font-bold">${stats.a} A / ${stats.total} Entries</span>
               </div>
-              <div class="w-full bg-slate-100 rounded-full h-1 mt-1">
-                <div class="${d.color === 'slate' ? 'bg-slate-500' : 'bg-' + d.color + '-500'} h-1 rounded-full" style="width: ${d.pct}%"></div>
+              <div class="w-full bg-slate-250 dark:bg-slate-700 rounded-full h-3 overflow-hidden flex shadow-inner">
+                <div class="bg-${activeSkill.color}-500 h-full transition-all duration-500" style="width: ${skillPct}%"></div>
               </div>
-              <span class="text-[8px] text-slate-400 block mt-1 font-semibold">${d.evaluated} / ${d.possible} Entries</span>
+              <div class="grid grid-cols-2 gap-2 mt-2 text-[10px] font-bold text-center">
+                <div class="py-1.5 px-2 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Achieved A: ${stats.a}</div>
+                <div class="py-1.5 px-2 rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20">Assisted B: ${stats.b}</div>
+              </div>
             </div>
           </div>
         `;
-      }).join('');
+      }
 
       // 5. Render Class Progress Cards
       const classCardsContainer = document.getElementById('class-cards-container');
-      classCardsContainer.innerHTML = classProgress.map(c => {
-        const classPct = c.possible > 0 ? Math.round((c.evaluated / c.possible) * 100) : 0;
-        const prePct = c.prePossible > 0 ? Math.round((c.preEvaluated / c.prePossible) * 100) : 0;
-        const postPct = c.postPossible > 0 ? Math.round((c.postEvaluated / c.postPossible) * 100) : 0;
+      const activeClsData = classProgress[activeClassCarouselIndex];
+      const classPct = activeClsData.possible > 0 ? Math.round((activeClsData.evaluated / activeClsData.possible) * 100) : 0;
+      const prePct = activeClsData.prePossible > 0 ? Math.round((activeClsData.preEvaluated / activeClsData.prePossible) * 100) : 0;
+      const postPct = activeClsData.postPossible > 0 ? Math.round((activeClsData.postEvaluated / activeClsData.postPossible) * 100) : 0;
 
-        let preBadge = "bg-slate-50 text-slate-400 border border-slate-200";
-        if (prePct === 100) preBadge = "bg-emerald-50 text-emerald-700 border border-emerald-200";
-        else if (prePct > 0) preBadge = "bg-amber-50 text-amber-700 border border-amber-250";
+      let preBadge = "bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/20";
+      if (prePct === 100) preBadge = "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
+      else if (prePct > 0) preBadge = "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20";
 
-        let postBadge = "bg-slate-50 text-slate-400 border border-slate-200";
-        if (postPct === 100) postBadge = "bg-sky-50 text-sky-700 border border-sky-200";
-        else if (postPct > 0) postBadge = "bg-amber-50 text-amber-700 border border-amber-250";
+      let postBadge = "bg-slate-500/10 text-slate-500 dark:text-slate-400 border border-slate-500/20";
+      if (postPct === 100) postBadge = "bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/20";
+      else if (postPct > 0) postBadge = "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20";
 
-        return `
-          <div onclick="navigateToClassEntry('${c.className}')" class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition duration-200 cursor-pointer flex flex-col justify-between hover:border-indigo-300 group">
+      classCardsContainer.innerHTML = `
+        <div class="flex flex-col justify-between space-y-4 w-full">
+          <div class="flex justify-between items-start">
             <div>
-              <div class="flex justify-between items-center mb-1">
-                <span class="text-xs font-extrabold text-slate-800 group-hover:text-indigo-600 transition">${c.className === 'LKG' || c.className === 'UKG' ? c.className : c.className + ' Std'}</span>
-                <span class="text-[9px] bg-slate-50 px-1.5 py-0.5 rounded text-slate-500 font-bold">Kids: ${c.students}</span>
-              </div>
-              <div class="flex justify-between items-baseline mt-1.5">
-                <span class="text-base font-black text-slate-800">${classPct}%</span>
-                <span class="text-[8px] text-slate-400 font-bold">Total Progress</span>
-              </div>
-              <div class="w-full bg-slate-100 rounded-full h-1 mt-1">
-                <div class="bg-indigo-600 h-1 rounded-full group-hover:bg-indigo-500 transition" style="width: ${classPct}%"></div>
-              </div>
+              <h4 class="font-extrabold text-slate-800 dark-text-override text-base flex items-center gap-1.5 leading-tight">
+                <i class="fa-solid fa-graduation-cap text-sky-500"></i> ${activeClsData.className === 'LKG' || activeClsData.className === 'UKG' ? activeClsData.className : activeClsData.className + ' Std / ' + activeClsData.className + 'ನೇ ತರಗತಿ'}
+              </h4>
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold block mt-0.5">Kids / ವಿದ್ಯಾರ್ಥಿಗಳು: ${activeClsData.students}</span>
             </div>
-            
-            <div class="grid grid-cols-2 gap-1.5 mt-3 text-[8px] font-bold text-center">
-              <div class="py-1 px-1 rounded ${preBadge}">Pre: ${prePct}%</div>
-              <div class="py-1 px-1 rounded ${postBadge}">Post: ${postPct}%</div>
+            <span class="text-sm font-black text-sky-600 bg-sky-500/10 px-2.5 py-1 rounded-xl border border-sky-500/20">${classPct}%</span>
+          </div>
+
+          <div class="space-y-3">
+            <div class="w-full bg-slate-250 dark:bg-slate-700 rounded-full h-3 overflow-hidden flex shadow-inner">
+              <div class="bg-sky-500 h-full transition-all duration-500" style="width: ${classPct}%"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-2 text-[10px] font-bold text-center">
+              <div class="py-1.5 px-2 rounded-xl ${preBadge}">Pre: ${prePct}%</div>
+              <div class="py-1.5 px-2 rounded-xl ${postBadge}">Post: ${postPct}%</div>
             </div>
           </div>
-        `;
-      }).join('');
+        </div>
+      `;
+
+      // Set class click action dynamically
+      const classCarouselCard = document.getElementById('class-carousel-card');
+      if (classCarouselCard) {
+        classCarouselCard.onclick = () => navigateToClassEntry(activeClsData.className);
+      }
 
       // 6. Render Subject Progress Cards
       const subjectCardsContainer = document.getElementById('subject-cards-container');
-      subjectCardsContainer.innerHTML = SUBJECTS.map(sub => {
-        const d = subjectProgress[sub];
-        const pct = d.possible > 0 ? Math.round((d.evaluated / d.possible) * 100) : 0;
-        const subMeta = getSubjectDetails(sub);
+      const activeSubName = SUBJECTS[activeSubjectCarouselIndex];
+      const activeSubData = subjectProgress[activeSubName];
+      const subPct = activeSubData.possible > 0 ? Math.round((activeSubData.evaluated / activeSubData.possible) * 100) : 0;
+      const subMeta = getSubjectDetails(activeSubName);
 
-        return `
-          <div onclick="navigateToSubjectEntry('${sub}')" class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm hover:shadow-md transition duration-200 cursor-pointer flex flex-col justify-between hover:border-${subMeta.color}-300 group">
-            <div class="flex justify-between items-start gap-1">
-              <div>
-                <span class="text-[10px] font-extrabold text-slate-800 group-hover:text-${subMeta.color}-600 transition block leading-tight">${sub}</span>
-                <span class="text-[9px] text-slate-400 font-bold block mt-0.5">${subMeta.labelKn}</span>
-              </div>
-              <div class="w-6 h-6 rounded-md bg-${subMeta.color}-50 text-${subMeta.color}-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                <i class="fa-solid ${subMeta.icon}"></i>
-              </div>
+      subjectCardsContainer.innerHTML = `
+        <div class="flex flex-col justify-between space-y-4 w-full">
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-extrabold text-slate-800 dark-text-override text-base flex items-center gap-1.5 leading-tight">${activeSubName}</h4>
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold block mt-0.5">${subMeta.labelKn}</span>
             </div>
-            <div class="mt-2.5">
-              <div class="flex justify-between items-baseline">
-                <span class="text-sm font-black text-slate-800">${pct}%</span>
-                <span class="text-[8px] text-slate-400 font-bold">${d.evaluated}/${d.possible}</span>
-              </div>
-              <div class="w-full bg-slate-100 rounded-full h-1 mt-1">
-                <div class="bg-${subMeta.color}-500 h-1 rounded-full" style="width: ${pct}%"></div>
-              </div>
+            <div class="w-10 h-10 rounded-2xl bg-${subMeta.color}-500/10 text-${subMeta.color}-600 dark:text-${subMeta.color}-400 flex items-center justify-center text-base flex-shrink-0">
+              <i class="fa-solid ${subMeta.icon}"></i>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="flex justify-between items-baseline">
+              <span class="text-base font-black text-slate-800 dark-text-override">${subPct}%</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 font-bold">${activeSubData.evaluated} / ${activeSubData.possible} Entries</span>
+            </div>
+            <div class="w-full bg-slate-250 dark:bg-slate-700 rounded-full h-3 overflow-hidden flex shadow-inner">
+              <div class="bg-${subMeta.color}-500 h-full transition-all duration-500" style="width: ${subPct}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Set subject click action dynamically
+      const subjectCarouselCard = document.getElementById('subject-carousel-card');
+      if (subjectCarouselCard) {
+        subjectCarouselCard.onclick = () => navigateToSubjectEntry(activeSubName);
+      }
+
+      // Calculate Insights
+      let bestSkill = null;
+      let worstSkill = null;
+      let maxPct = -1;
+      let minPct = 101;
+
+      competencyMetadata.forEach(meta => {
+        const stats = competencyStats[meta.key];
+        const pct = stats.total > 0 ? Math.round((stats.a / stats.total) * 100) : 0;
+        
+        if (stats.total > 0) {
+          if (pct > maxPct) {
+            maxPct = pct;
+            bestSkill = meta;
+          }
+          if (pct < minPct) {
+            minPct = pct;
+            worstSkill = meta;
+          }
+        }
+      });
+
+      const preAchievedPct = preTotal > 0 ? Math.round((preAchieved / preTotal) * 100) : 0;
+      const postAchievedPct = postTotal > 0 ? Math.round((postAchieved / postTotal) * 100) : 0;
+      const learningGain = postAchievedPct - preAchievedPct;
+
+      const insightsRow = document.getElementById('insights-row');
+      if (insightsRow) {
+        let bestHTML = `
+          <div class="relative overflow-hidden group p-5 bg-gradient-to-br from-emerald-50/70 to-emerald-100/20 dark:from-slate-900 dark:to-emerald-950/20 border border-emerald-100/80 dark:border-emerald-500/20 shadow-sm hover:shadow-[0_8px_30px_rgba(16,185,129,0.15)] hover:border-emerald-400/40 transition duration-300 rounded-3xl flex items-center justify-between">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-emerald-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div class="space-y-1 min-w-0 relative z-10">
+              <span class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase border border-emerald-500/20">
+                <i class="fa-solid fa-trophy"></i> ಅತ್ಯುತ್ತಮ ಸಾಮರ್ಥ್ಯ / Best Skill
+              </span>
+              <h5 class="text-sm font-extrabold text-slate-800 dark-text-override truncate mt-1.5">${bestSkill ? bestSkill.labelEn : 'N/A'}</h5>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${bestSkill ? bestSkill.labelKn : 'ಮಾಹಿತಿ ಇಲ್ಲ'}</p>
+            </div>
+            <div class="text-right shrink-0 relative z-10">
+              <span class="text-xl font-black text-emerald-600 dark:text-emerald-400 block">${maxPct >= 0 ? maxPct + '%' : '0%'}</span>
+              <span class="text-[9px] text-slate-450 dark:text-slate-400 font-bold">ಸಾಧನೆ ದರ</span>
             </div>
           </div>
         `;
-      }).join('');
+
+        let worstHTML = `
+          <div class="relative overflow-hidden group p-5 bg-gradient-to-br from-rose-50/70 to-rose-100/20 dark:from-slate-900 dark:to-rose-950/20 border border-rose-100/80 dark:border-rose-500/20 shadow-sm hover:shadow-[0_8px_30px_rgba(239,68,68,0.15)] hover:border-rose-400/40 transition duration-300 rounded-3xl flex items-center justify-between">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-rose-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="space-y-1 min-w-0 relative z-10">
+              <span class="inline-flex items-center gap-1 bg-rose-500/10 text-rose-700 dark:text-rose-400 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase border border-rose-500/20">
+                <i class="fa-solid fa-triangle-exclamation"></i> ಹೆಚ್ಚಿನ ಗಮನ ಅಗತ್ಯ / Needs Attention
+              </span>
+              <h5 class="text-sm font-extrabold text-slate-800 dark-text-override truncate mt-1.5">${worstSkill ? worstSkill.labelEn : 'N/A'}</h5>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">${worstSkill ? worstSkill.labelKn : 'ಮಾಹಿತಿ ಇಲ್ಲ'}</p>
+            </div>
+            <div class="text-right shrink-0 relative z-10">
+              <span class="text-xl font-black text-rose-600 dark:text-rose-400 block">${minPct <= 100 ? minPct + '%' : '0%'}</span>
+              <span class="text-[9px] text-slate-450 dark:text-slate-400 font-bold">ಸಾಧನೆ ದರ</span>
+            </div>
+          </div>
+        `;
+
+        let improvementHTML = `
+          <div class="relative overflow-hidden group p-5 bg-gradient-to-br from-indigo-50/70 to-indigo-100/20 dark:from-slate-900 dark:to-indigo-950/20 border border-indigo-100/80 dark:border-indigo-500/20 shadow-sm hover:shadow-[0_8px_30px_rgba(99,102,241,0.15)] hover:border-indigo-400/40 transition duration-300 rounded-3xl flex items-center justify-between">
+            <div class="absolute -right-4 -bottom-4 text-7xl text-indigo-500/5 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 pointer-events-none">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="space-y-1 relative z-10">
+              <span class="inline-flex items-center gap-1 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase border border-indigo-500/20">
+                <i class="fa-solid fa-chart-line"></i> ಕಲಿಕಾ ಪ್ರಗತಿ ದರ / Improvement Rate
+              </span>
+              <h5 class="text-sm font-extrabold text-slate-800 dark-text-override mt-1.5">Pre: ${preAchievedPct}% &rarr; Post: ${postAchievedPct}%</h5>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">ಪೂರ್ವ ಮತ್ತು ನಂತರದ ಪರೀಕ್ಷೆಗಳು</p>
+            </div>
+            <div class="text-right shrink-0 relative z-10">
+              <span class="text-xl font-black text-indigo-650 dark:text-indigo-400 block">${learningGain >= 0 ? '+' + learningGain + '%' : learningGain + '%'}</span>
+              <span class="text-[9px] text-slate-455 dark:text-slate-400 font-bold">ಕಲಿಕಾ ಪ್ರಗತಿ</span>
+            </div>
+          </div>
+        `;
+
+        insightsRow.innerHTML = bestHTML + worstHTML + improvementHTML;
+      }
+
+      // 7. Draw Visual Charts
+      drawGenderChart(boyEvaluations, boyPossible, girlEvaluations, girlPossible);
+      drawCasteChart(casteEvaluations, castePossible);
+      drawClassChart(classProgress);
+    }
+
+    function navigateSkillCard(dir) {
+      const totalCount = 10;
+      activeSkillCarouselIndex = (activeSkillCarouselIndex + dir + totalCount) % totalCount;
+      calculateAnalyticsDataAndDraw();
+    }
+
+    function navigateClassCard(dir) {
+      activeClassCarouselIndex = (activeClassCarouselIndex + dir + CLASSES.length) % CLASSES.length;
+      calculateAnalyticsDataAndDraw();
+    }
+
+    function navigateSubjectCard(dir) {
+      activeSubjectCarouselIndex = (activeSubjectCarouselIndex + dir + SUBJECTS.length) % SUBJECTS.length;
+      calculateAnalyticsDataAndDraw();
     }
 
     function drawGenderChart(boyEval, boyPoss, girlEval, girlPoss) {
@@ -1640,6 +1992,14 @@
       renderRosterGrid();
     }
 
+    function getGradeSelectClass(val) {
+      if (val === 'A') {
+        return "w-full bg-emerald-500/10 dark:bg-emerald-950/30 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 rounded px-1.5 py-1 text-center font-bold focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer transition-colors";
+      } else {
+        return "w-full bg-blue-500/10 dark:bg-blue-950/30 border border-blue-500/30 text-blue-700 dark:text-blue-400 rounded px-1.5 py-1 text-center font-bold focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer transition-colors";
+      }
+    }
+
     function renderRosterGrid() {
       const tbody = document.getElementById('student-grid-body');
       tbody.innerHTML = '';
@@ -1691,9 +2051,10 @@
           const val = eval[`c${i}`];
           
           if (isEditing) {
+            const selectClass = getGradeSelectClass(val);
             rowHtml += `
-              <td class="p-1.5 border-r border-slate-200 text-center">
-                <select onchange="onGradeChange('${sId}', 'c${i}', this.value)" class="w-full bg-slate-50 border border-slate-200 rounded px-1 py-0.5 text-center font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
+              <td class="p-1 border-r border-slate-200 text-center">
+                <select onchange="this.className=getGradeSelectClass(this.value); onGradeChange('${sId}', 'c${i}', this.value)" class="${selectClass}">
                   <option value="A" ${val === 'A' ? 'selected' : ''}>A</option>
                   <option value="B" ${val === 'B' ? 'selected' : ''}>B</option>
                 </select>
@@ -1701,11 +2062,11 @@
             `;
           } else {
             let badgeClass = "text-slate-400 font-normal";
-            if (val === 'A') badgeClass = "bg-emerald-100 text-emerald-800 font-black rounded px-2 py-0.5";
-            if (val === 'B') badgeClass = "bg-blue-100 text-blue-800 font-black rounded px-2 py-0.5";
+            if (val === 'A') badgeClass = "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-black rounded-full px-2.5 py-1 text-[11px] inline-block shadow-sm";
+            if (val === 'B') badgeClass = "bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-500/20 font-black rounded-full px-2.5 py-1 text-[11px] inline-block shadow-sm";
             
             rowHtml += `
-              <td class="p-3 border-r border-slate-200 text-center font-bold">
+              <td class="p-2 border-r border-slate-200 text-center font-bold">
                 <span class="${badgeClass}">${val || 'B'}</span>
               </td>
             `;
@@ -2305,15 +2666,17 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
           const user = session.user;
-          const name = user.user_metadata?.name || user.email;
           const headerUser = document.getElementById('headerUser');
-          if (headerUser) headerUser.innerText = name;
 
+          // Fetch user profile from database to check for name and developer role
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('role')
+            .select('name, role')
             .eq('id', user.id)
             .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;

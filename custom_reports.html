@@ -551,11 +551,11 @@
     // Theme Config
     function changeTheme(themeVal) {
       document.body.setAttribute('data-theme', themeVal);
-      localStorage.setItem('theme', themeVal);
+      localStorage.setItem('portal_theme', themeVal);
     }
 
     async function initUserAndTheme() {
-      const currentTheme = localStorage.getItem('theme') || 'light';
+      const currentTheme = localStorage.getItem('portal_theme') || 'light';
       document.body.setAttribute('data-theme', currentTheme);
       const sel = document.getElementById('themeSelector');
       if (sel) sel.value = currentTheme;

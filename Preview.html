@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1414,7 +1414,12 @@
             }
             
             // Translate navigation elements
-            document.getElementById('lbl-back').textContent = lang === 'kn' ? '\u0C85\u0CB0\u0CCD\u0C9C\u0CBF\u0C97\u0CC6 \u0CB9\u0CBF\u0C82\u0CA6\u0CBF\u0CB0\u0CC1\u0C97\u0CBF' : 'Back to Form';
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('id')) {
+                document.getElementById('lbl-back').textContent = lang === 'kn' ? 'ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ' : 'Back to Student List';
+            } else {
+                document.getElementById('lbl-back').textContent = lang === 'kn' ? '\u0C85\u0CB0\u0CCD\u0C9C\u0CBF\u0C97\u0CC6 \u0CB9\u0CBF\u0C82\u0CA6\u0CBF\u0CB0\u0CC1\u0C97\u0CBF' : 'Back to Form';
+            }
             document.getElementById('lbl-print').textContent = lang === 'kn' ? 'ರಫ್ತು' : 'Export';
             const lblPdf = document.getElementById('lbl-pdf');
             if (lblPdf) {
@@ -1752,6 +1757,15 @@
 
         // Redirection to main form NewAdmission.html
         function goBackToForm() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('id')) {
+                if (window.opener) {
+                    window.close();
+                } else {
+                    window.location.href = "StudentList.html";
+                }
+                return;
+            }
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage({ action: 'loadView', pageKey: 'admissionForm' }, '*');
             } else {
@@ -2003,10 +2017,115 @@
             }
         }
 
+        function mapDatabaseRowToAdmissionData(row) {
+            return {
+                appNo: row.app_no,
+                studentName: row.student_name,
+                nameEnglish: row.name_english,
+                enrollClass: row.enroll_class,
+                gender: row.gender,
+                dob: row.dob,
+                studentAadhaar: row.student_aadhaar,
+                religion: row.religion,
+                socialClass: row.social_class,
+                studentCaste: row.student_caste,
+                caste: row.caste,
+                motherTongue: row.mother_tongue,
+                mobileNumber: row.mobile_number,
+                specialNeed: row.special_need,
+                specialCategory: row.special_category,
+                bhagyalakshmiBond: row.bhagyalakshmi_bond,
+                ageReason: row.age_reason,
+                address: row.address,
+                district: row.district,
+                taluk: row.taluk,
+                bankAccNo: row.bank_acc_no,
+                ifscCode: row.ifsc_code,
+                bankAddress: row.bank_address,
+                scholarshipNo: row.scholarship_no,
+                studentCasteCert: row.student_caste_cert,
+                studentIncomeCert: row.student_income_cert,
+                bplCardNo: row.bpl_card_no,
+                fatherNameKn: row.father_name_kn,
+                fatherAadhaar: row.father_aadhaar,
+                fatherOccupation: row.father_occupation,
+                motherNameKn: row.mother_name_kn,
+                motherAadhaar: row.mother_aadhaar,
+                motherOccupation: row.mother_occupation,
+                preschoolBoard: row.preschool_board,
+                preschoolType: row.preschool_type,
+                preschoolName: row.preschool_name,
+                transferNo: row.transfer_no,
+                transferDate: row.transfer_date,
+                studentSts: row.student_sts,
+                nameAadhaar: row.name_aadhaar,
+                fatherNameAz: row.father_name_az,
+                motherNameAz: row.mother_name_az,
+                enrolmentNo: row.enrolment_no,
+                enrolmentDate: row.enrolment_date,
+                subCaste: row.sub_caste,
+                hobli: row.hobli,
+                pinCode: row.pin_code,
+                mobileNo1: row.mobile_no_1,
+                fatherCasteCert: row.father_caste_cert,
+                fatherIncomeCert: row.father_income_cert,
+                fatherEmail: row.father_email,
+                mobileNo2: row.mobile_no_2,
+                motherCasteCert: row.mother_caste_cert,
+                motherIncomeCert: row.mother_income_cert,
+                motherEmail: row.mother_email,
+                prevVillage: row.prev_village,
+                prevHobli: row.prev_hobli,
+                prevTaluk: row.prev_taluk,
+                prevDistrict: row.prev_district,
+                prevPinCode: row.prev_pin_code
+            };
+        }
+
+        // Load data on window load/SPA view injection
+        let initPreviewCalled = false;
         // Load data on window load/SPA view injection
         async function initPreview() {
-            // First check template parameters (live environment)
-            if (templateAppNo && templateAcademicYear && templateMedium) {
+            if (initPreviewCalled) return;
+            initPreviewCalled = true;
+
+            // Wait for Supabase to resolve the session from localStorage
+            try {
+                await supabaseClient.auth.getSession();
+            } catch (e) {
+                console.error("Failed to restore session:", e);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('id');
+
+            // First check URL query parameter 'id' for live Supabase fetch
+            if (studentId) {
+                // Hide Submit button since the student is already in the database
+                const submitBtn = document.getElementById('btn-submit-app');
+                if (submitBtn) submitBtn.style.display = 'none';
+
+                try {
+                    const { data: row, error } = await supabaseClient
+                        .from('admissions')
+                        .select('*')
+                        .eq('id', studentId)
+                        .single();
+                    
+                    if (error) throw error;
+                    if (row) {
+                        window.admissionData = mapDatabaseRowToAdmissionData(row);
+                        if (window.admissionData.medium === 'ENGLISH' || window.admissionData.medium === 'en') {
+                            currentLang = 'en';
+                        }
+                    } else {
+                        alert("Student record not found in database.");
+                    }
+                } catch (err) {
+                    console.error("Failed to load student from Supabase:", err);
+                    alert("Failed to load student data: " + err.message);
+                }
+            } else if (templateAppNo && templateAcademicYear && templateMedium) {
                 if (typeof google !== 'undefined' && google.script && google.script.run) {
                     google.script.run
                         .withSuccessHandler(function(data) {
@@ -2048,7 +2167,6 @@
             await loadSchoolDetailsAndApply();
 
             // Auto-PDF download handler
-            const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('autoDownloadPdf') === 'true') {
                 setTimeout(() => {
                     const element = document.getElementById('pages-wrapper');
@@ -2091,7 +2209,7 @@
             }
         }
 
-        // Run immediately for SPA injection, but also bind to load/DOMContentLoaded for standalone testing
+            // Run immediately for SPA injection, but also bind to load/DOMContentLoaded for standalone testing
         initPreview();
         window.addEventListener('load', initPreview);
   </script>

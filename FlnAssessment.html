@@ -14,6 +14,100 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
     .rotate-90 { transform: rotate(90deg); }
+
+    /* Radiant/Neon Card Styles */
+    .radiant-card-indigo {
+      background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-indigo:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.15), 0 0 15px 1px rgba(99, 102, 241, 0.05);
+    }
+    
+    .radiant-card-emerald {
+      background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-emerald:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.15), 0 0 15px 1px rgba(16, 185, 129, 0.05);
+    }
+
+    .radiant-card-amber {
+      background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-amber:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.15), 0 0 15px 1px rgba(245, 158, 11, 0.05);
+    }
+
+    .radiant-card-sky {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+      border: 1px solid rgba(14, 165, 233, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-sky:hover {
+      transform: translateY(-4px);
+      border-color: rgba(14, 165, 233, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(14, 165, 233, 0.15), 0 0 15px 1px rgba(14, 165, 233, 0.05);
+    }
+
+    body[data-theme="dark"] .radiant-card-indigo {
+      background: linear-gradient(135deg, #1e293b 0%, #312e81 100%) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-indigo:hover {
+      border-color: rgba(99, 102, 241, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.4), 0 0 20px 2px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-emerald {
+      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%) !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-emerald:hover {
+      border-color: rgba(16, 185, 129, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.4), 0 0 20px 2px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-amber {
+      background: linear-gradient(135deg, #1e293b 0%, #78350f 100%) !important;
+      border-color: rgba(245, 158, 11, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-amber:hover {
+      border-color: rgba(245, 158, 11, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.4), 0 0 20px 2px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-sky {
+      background: linear-gradient(135deg, #1e293b 0%, #0c4a6e 100%) !important;
+      border-color: rgba(14, 165, 233, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(14, 165, 233, 0.2) !important;
+    }
+    body[data-theme="dark"] .radiant-card-sky:hover {
+      border-color: rgba(14, 165, 233, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(14, 165, 233, 0.4), 0 0 20px 2px rgba(14, 165, 233, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .dark-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+      border-color: #334155 !important;
+    }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -235,10 +329,10 @@
     </div>
   </div>
 
-  <!-- Main Body Wrapper -->
-  <div class="flex flex-col md:flex-row flex-grow w-full no-print">
+  <!-- Main Outer Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6 no-print">
     <!-- Sidebar Navigation -->
-    <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-r-2xl border-r border-slate-200 shadow-sm flex flex-col justify-between min-h-[520px]">
+    <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
       <div class="space-y-6">
         <div>
           <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
@@ -309,17 +403,26 @@
                 <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
               </ul>
             </div>
+            <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
           </nav>
         </div>
+        <div class="pt-3 border-t border-slate-100">
+          <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Govt Portals</span>
+          <div class="space-y-1.5 text-[11px] font-semibold">
+            <a href="https://sts.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-globe text-indigo-400 w-4 text-center"></i> <span class="sidebar-text">SATS / STS Portal</span></a>
+            <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-utensils text-orange-400 w-4 text-center"></i> <span class="sidebar-text">Mid-Day Meals Login</span></a>
+            <a href="https://choas.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-file-invoice text-emerald-400 w-4 text-center"></i> <span class="sidebar-text">Shikshana Kirana</span></a>
+          </div>
+        </div>
       </div>
-      <div class="developer-info text-center pt-4 border-t border-slate-100 mt-auto">
-        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">GHPS MARCHED</p>
-        <p class="text-[8px] text-slate-400/70 font-semibold mt-0.5">Version 2026.1</p>
+      <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info text-center">
+        <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
+        <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
       </div>
     </aside>
 
     <!-- Main Workspace -->
-    <main class="flex-grow p-6 overflow-x-hidden flex flex-col gap-6">
+    <main class="flex-grow space-y-6 overflow-x-hidden flex flex-col gap-6">
 
       <!-- ==================== SUBPAGE 1: FLN DASHBOARD ==================== -->
       <section id="fln-dashboard-view" class="space-y-6">
@@ -339,79 +442,98 @@
         <!-- Metric Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Total Evaluated -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="radiant-card-indigo p-5 rounded-2xl flex items-center justify-between">
             <div>
               <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Total Students / ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</span>
               <span id="dash-total-students" class="text-2xl font-black text-slate-800 block mt-1">0</span>
               <span class="text-[10px] font-bold text-slate-400 block mt-1">Active Admissions</span>
             </div>
-            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+            <div class="w-12 h-12 bg-indigo-500/10 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
               <i class="fa-solid fa-users"></i>
             </div>
           </div>
           
           <!-- FLN Achieved -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="radiant-card-emerald p-5 rounded-2xl flex items-center justify-between">
             <div>
               <span class="text-[9px] uppercase font-bold text-emerald-600 block tracking-wider">FLN Achieved / ಸಾಧಿಸಿದವರು</span>
               <span id="dash-total-achieved" class="text-2xl font-black text-emerald-600 block mt-1">0</span>
               <span id="dash-achieved-pct" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mt-1">0%</span>
             </div>
-            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+            <div class="w-12 h-12 bg-emerald-500/10 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
               <i class="fa-solid fa-circle-check"></i>
             </div>
           </div>
 
           <!-- FLN Not Achieved -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="radiant-card-amber p-5 rounded-2xl flex items-center justify-between">
             <div>
               <span class="text-[9px] uppercase font-bold text-amber-600 block tracking-wider">FLN Not Achieved / ಸಾಧಿಸದವರು</span>
               <span id="dash-total-not-achieved" class="text-2xl font-black text-amber-600 block mt-1">0</span>
               <span id="dash-not-achieved-pct" class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full inline-block mt-1">0%</span>
             </div>
-            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
               <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
           </div>
 
           <!-- School Level Grade Ratio -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+          <div class="radiant-card-sky p-5 rounded-2xl flex items-center justify-between">
             <div>
               <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Top level / ಪ್ರಾವೀಣ್ಯತೆ ಅನುಪಾತ</span>
               <span id="dash-proficient-ratio" class="text-2xl font-black text-slate-800 block mt-1">0</span>
               <span class="text-[10px] font-bold text-slate-400 block mt-1">P & A Level Score</span>
             </div>
-            <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+            <div class="w-12 h-12 bg-sky-500/10 text-sky-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
           </div>
         </div>
 
-        <!-- Class Cards and Analytics Chart Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Class Progress Cards -->
-          <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 mb-2 border-b pb-2 flex items-center gap-1.5">
-              <i class="fa-solid fa-school text-indigo-500"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Classwise Progress Summary
-            </h3>
-            <div id="class-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2 custom-scrollbar">
-              <!-- Dynamically populated class cards -->
+        <!-- History and Carousel Side-by-Side Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Saved Assessment History Panel (Left, 5/12 width) -->
+          <div id="saved-history-panel" class="lg:col-span-5 radiant-card-indigo rounded-3xl p-6 flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="text-sm font-black text-slate-800 mb-2 border-b pb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-history text-indigo-600"></i> ಉಳಿಸಲಾದ ಮೌಲ್ಯಮಾಪನ ದಾಖಲೆಗಳು / Saved Assessment History
+              </h3>
+              <div id="history-loading" class="p-8 text-center flex flex-col items-center justify-center">
+                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-600 mb-2"></i>
+                <p class="text-xs font-bold text-slate-500">ಇತಿಹಾಸ ಲೋಡ್ ಆಗುತ್ತಿದೆ... / Loading history...</p>
+              </div>
+              <div id="history-empty" class="p-8 text-center flex flex-col items-center justify-center hidden">
+                <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-3 shadow-inner">
+                  <i class="fa-solid fa-folder-open text-lg"></i>
+                </div>
+                <h4 class="text-xs font-bold text-slate-700">ಯಾವುದೇ ಉಳಿಸಲಾದ ಮೌಲ್ಯಮಾಪನ ದಾಖಲೆಗಳಿಲ್ಲ</h4>
+                <p class="text-[10px] text-slate-400">ನಿಮ್ಮ ಶಾಲೆಯ ಯಾವುದೇ FLN ಮೌಲ್ಯಮಾಪನದ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</p>
+              </div>
+              
+              <!-- Scrollable vertical list container -->
+              <div id="history-list-container" class="max-h-[300px] overflow-y-auto custom-scrollbar pr-1 hidden space-y-3">
+                <!-- Dynamically populated premium vertical list items -->
+              </div>
             </div>
           </div>
 
-          <!-- Doughnut Chart Analytics -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
-            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-1.5">
-              <i class="fa-solid fa-chart-pie text-pink-500"></i> ಒಟ್ಟು ಕೌಶಲ್ಯ ಹಂಚಿಕೆ / Skill Level Spread
+          <!-- Class Progress Cards Carousel (Right, 7/12 width) -->
+          <div class="lg:col-span-7 radiant-card-sky rounded-3xl p-6 flex flex-col justify-between space-y-4">
+            <h3 class="text-sm font-black text-slate-800 mb-2 border-b pb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-school text-sky-600"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Classwise Progress Summary
             </h3>
-            <div class="relative w-full aspect-square flex items-center justify-center p-2">
-              <canvas id="overallSkillChart" class="max-w-[200px] max-h-[200px]"></canvas>
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-[10px] mt-4 font-bold text-slate-600">
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span> BB: Below Basic</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span> B: Basic</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-500 rounded-full inline-block"></span> P: Proficient</div>
-              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span> A: Advanced</div>
+            <div class="flex items-center justify-between gap-4 mt-2 py-4">
+              <button onclick="navigateClassCard(-1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Previous Class / ಹಿಂದಿನ ತರಗತಿ">
+                <i class="fa-solid fa-chevron-left text-sm"></i>
+              </button>
+              
+              <div id="class-cards-container" class="flex-grow transition-all duration-300">
+                <!-- Dynamically populated single class card -->
+              </div>
+              
+              <button onclick="navigateClassCard(1)" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full flex items-center justify-center transition shadow-inner shrink-0 border border-slate-200/50" title="Next Class / ಮುಂದಿನ ತರಗತಿ">
+                <i class="fa-solid fa-chevron-right text-sm"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -470,6 +592,10 @@
             <div class="flex items-center gap-2 mt-auto sm:ml-auto">
               <button id="btn-save" onclick="saveData()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20">
                 <i class="fa-solid fa-save"></i> Save Data / ಉಳಿಸಿ
+              </button>
+
+              <button id="btn-delete" onclick="deleteData()" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-rose-600/20" title="Delete assessment data for this class and date / ಈ ದಿನದ ಡೇಟಾ ಅಳಿಸಿ">
+                <i class="fa-solid fa-trash"></i> Delete / ಅಳಿಸಿ
               </button>
               
               <button onclick="triggerPrint()" title="Print Page" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
@@ -595,6 +721,8 @@
     let evaluations = {};
     let originalEvaluations = {};
     let allClassStats = {};
+    let currentSchoolId = null;
+    let activeClassCarouselIndex = 6; // Defaults to Class 7
 
     // Outcome config
     const KANNADA_COLS = ["O1", "O2", "O3", "O4", "R1", "R2", "R3", "W1", "W2"];
@@ -611,7 +739,7 @@
     let skillChartInstance = null;
     let comparisonChartInstance = null;
 
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       // Set date filter to today
       const today = new Date().toISOString().split('T')[0];
       dateFilter.value = today;
@@ -621,12 +749,12 @@
       updateClock();
 
       // Theme
-      const savedTheme = localStorage.getItem('theme') || 'light';
+      const savedTheme = localStorage.getItem('portal_theme') || 'light';
       document.body.setAttribute('data-theme', savedTheme);
       document.getElementById('themeSelector').value = savedTheme;
 
       // Profile and School details
-      initUserAndSchool();
+      await initUserAndSchool();
 
       // Load initial dashboard data
       loadDashboardData();
@@ -714,23 +842,79 @@
       }
     });
 
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      
+      return classStr.toString().trim();
+    }
+
     async function initUserAndSchool() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const user = session?.user;
         if (user) {
-          headerUser.innerText = user.email.split('@')[0];
-          
           let schoolId = user.user_metadata?.school_id;
-          if (!schoolId) {
-            // Check profiles table
+          let profileName = null;
+          
+          // Check profiles table for school_id, name and role
+          try {
             const { data: profile } = await supabaseClient
               .from('profiles')
-              .select('school_id')
+              .select('name, school_id, role')
               .eq('id', user.id)
-              .single();
-            if (profile) schoolId = profile.school_id;
+              .maybeSingle();
+            if (profile) {
+              schoolId = profile.school_id || schoolId;
+              profileName = profile.name;
+              
+              const name = profileName || user.user_metadata?.name || user.email;
+              if (headerUser) {
+                if (profile.role === 'developer') {
+                  headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;
+                  
+                  const sidebarNav = document.getElementById('sidebarNav');
+                  if (sidebarNav && !document.getElementById('nav-DeveloperConsole')) {
+                    const devLink = document.createElement('a');
+                    devLink.href = "developer.html";
+                    devLink.id = "nav-DeveloperConsole";
+                    devLink.className = "flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-indigo-600 hover:bg-indigo-50 transition border border-indigo-200/50 bg-indigo-50/30";
+                    devLink.innerHTML = `<i class="fa-solid fa-screwdriver-wrench text-indigo-600 text-sm w-5 text-center"></i> <span class="sidebar-text">Developer Console</span>`;
+                    sidebarNav.insertBefore(devLink, sidebarNav.firstChild);
+                  }
+                } else {
+                  headerUser.innerText = name;
+                }
+              }
+            } else {
+              const name = user.user_metadata?.name || user.email;
+              if (headerUser) headerUser.innerText = name;
+            }
+          } catch (profileErr) {
+            console.warn("Failed to fetch profile details:", profileErr);
+            const name = user.user_metadata?.name || user.email;
+            if (headerUser) headerUser.innerText = name;
           }
+
+          currentSchoolId = schoolId;
 
           let schoolNameEn = localStorage.getItem('school_name_en');
           let schoolNameKn = localStorage.getItem('school_name_kn');
@@ -765,6 +949,11 @@
       }
     }
 
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+
     function syncDateFilter(val) {
       document.getElementById('dateFilter').value = val;
       loadGrid();
@@ -777,7 +966,7 @@
 
     function changeTheme(theme) {
       document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+      localStorage.setItem('portal_theme', theme);
     }
 
     function toggleAccordion(id) {
@@ -825,13 +1014,15 @@
 
       try {
         // Load admissions to get counts
-        const { data: allStudents, error: studErr } = await supabaseClient
-          .from('admissions')
-          .select('id, enroll_class');
+        let admissionsQuery = supabaseClient.from('admissions').select('id, enroll_class');
+        if (currentSchoolId) {
+          admissionsQuery = admissionsQuery.eq('school_id', currentSchoolId);
+        }
+        const { data: allStudents, error: studErr } = await admissionsQuery;
 
         if (!studErr && allStudents) {
           allStudents.forEach(st => {
-            const cls = st.enroll_class;
+            const cls = normalizeClass(st.enroll_class);
             if (allClassStats[cls]) {
               allClassStats[cls].enrolled++;
               totalStudentsSchool++;
@@ -840,9 +1031,11 @@
         }
 
         // Load FLN evaluations from Supabase
-        const { data: allEvals, error: evalErr } = await supabaseClient
-          .from('fln_evaluations')
-          .select('student_id, class_name, outcomes');
+        let evalsQuery = supabaseClient.from('fln_evaluations').select('student_id, class_name, outcomes');
+        if (currentSchoolId) {
+          evalsQuery = evalsQuery.eq('school_id', currentSchoolId);
+        }
+        const { data: allEvals, error: evalErr } = await evalsQuery;
 
         let evalMap = {};
         if (!evalErr && allEvals) {
@@ -865,7 +1058,7 @@
         if (allStudents && allStudents.length > 0) {
           allStudents.forEach(st => {
             const sId = st.id;
-            const cls = st.enroll_class;
+            const cls = normalizeClass(st.enroll_class);
             const outcomes = evalMap[sId] || {};
 
             let bbCount = 0, bCount = 0, pCount = 0, aCount = 0, emptyCount = 0;
@@ -924,6 +1117,9 @@
         renderOverallSkillChart(overallSkillCounts);
         renderClassComparisonChart(classList);
 
+        // Load Assessment History
+        await loadAssessmentHistory();
+
       } catch(err) {
         console.error("Dashboard calculation error:", err);
       } finally {
@@ -936,39 +1132,234 @@
       container.innerHTML = '';
 
       const classList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
-      classList.forEach((cls, i) => {
-        const stats = allClassStats[cls] || { enrolled: 0, achieved: 0, notAchieved: 0 };
-        const rate = stats.enrolled > 0 ? Math.round((stats.achieved / stats.enrolled) * 100) : 0;
+      const cls = classList[activeClassCarouselIndex];
+      const stats = allClassStats[cls] || { enrolled: 0, achieved: 0, notAchieved: 0 };
+      const rate = stats.enrolled > 0 ? Math.round((stats.achieved / stats.enrolled) * 100) : 0;
 
-        const card = document.createElement('div');
-        card.className = "p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col justify-between hover:shadow-md hover:border-indigo-300 transition duration-300 transform hover:-translate-y-0.5 cursor-pointer";
-        card.onclick = () => switchToMarksView(cls);
-        card.innerHTML = `
-          <div class="flex justify-between items-start">
-            <div>
-              <h4 class="font-black text-slate-800 text-xs">${cls}ನೇ ತರಗತಿ / Class ${cls}</h4>
-              <span class="text-[10px] text-slate-400 font-bold block mt-0.5">Enrolled: ${stats.enrolled} students</span>
-            </div>
-            <span class="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${rate}%</span>
+      const card = document.createElement('div');
+      card.className = "p-6 bg-gradient-to-br from-white to-slate-50 dark-card border border-slate-200/80 rounded-3xl flex flex-col justify-between hover:shadow-xl hover:border-indigo-400 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer w-full shadow-sm";
+      card.onclick = () => switchToMarksView(cls);
+      card.innerHTML = `
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h4 class="font-black text-slate-800 text-base flex items-center gap-1.5">
+              <i class="fa-solid fa-graduation-cap text-indigo-500"></i> ${cls}ನೇ ತರಗತಿ / Class ${cls}
+            </h4>
+            <span class="text-xs text-slate-500 font-semibold block mt-1.5">
+              ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Enrolled: <strong class="text-indigo-600 dark:text-indigo-400 font-black">${stats.enrolled}</strong>
+            </span>
           </div>
+          <span class="text-xs font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-xl shadow-inner border border-indigo-100">${rate}%</span>
+        </div>
 
-          <div class="mt-4 space-y-2">
-            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden flex">
-              <div class="bg-emerald-500 h-full" style="width: ${rate}%"></div>
-              <div class="bg-amber-400 h-full" style="width: ${100 - rate}%"></div>
-            </div>
-            <div class="flex justify-between text-[9px] font-bold text-slate-400">
-              <span class="text-emerald-600">Achieved: ${stats.achieved}</span>
-              <span class="text-amber-600">Not: ${stats.notAchieved}</span>
-            </div>
+        <div class="space-y-3">
+          <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden flex shadow-inner">
+            <div class="bg-emerald-500 h-full transition-all duration-500" style="width: ${rate}%"></div>
+            <div class="bg-amber-400 h-full transition-all duration-500" style="width: ${100 - rate}%"></div>
           </div>
-        `;
-        container.appendChild(card);
-      });
+          <div class="flex justify-between text-[10px] font-bold">
+            <span class="text-emerald-600 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              Achieved / ಸಾಧಿಸಿದವರು: ${stats.achieved}
+            </span>
+            <span class="text-amber-600 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              Not / ಸಾಧಿಸದವರು: ${stats.notAchieved}
+            </span>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+
+    function navigateClassCard(dir) {
+      const classList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+      activeClassCarouselIndex = (activeClassCarouselIndex + dir + classList.length) % classList.length;
+      renderClassCards();
+    }
+
+    async function loadAssessmentHistory() {
+      const loadingEl = document.getElementById('history-loading');
+      const emptyEl = document.getElementById('history-empty');
+      const listContainer = document.getElementById('history-list-container');
+
+      if (!loadingEl || !emptyEl || !listContainer) return;
+
+      loadingEl.classList.remove('hidden');
+      emptyEl.classList.add('hidden');
+      listContainer.classList.add('hidden');
+      listContainer.innerHTML = '';
+
+      let groups = {};
+
+      try {
+        let dbQuery = supabaseClient
+          .from('fln_evaluations')
+          .select('student_id, class_name, evaluation_date');
+        if (currentSchoolId) {
+          dbQuery = dbQuery.eq('school_id', currentSchoolId);
+        }
+        const { data: dbRecords, error: dbError } = await dbQuery;
+
+        if (!dbError && dbRecords) {
+          dbRecords.forEach(r => {
+            const key = `${r.class_name}_${r.evaluation_date}`;
+            if (!groups[key]) {
+              groups[key] = {
+                class_name: r.class_name,
+                evaluation_date: r.evaluation_date,
+                student_ids: new Set()
+              };
+            }
+            groups[key].student_ids.add(r.student_id);
+          });
+        }
+
+        // Local storage backup loading
+        const localKeys = Object.keys(localStorage).filter(k => k.startsWith('fln_mock_'));
+        localKeys.forEach(k => {
+          const parts = k.split('_');
+          if (parts.length >= 4) {
+            const className = parts[2];
+            const dateVal = parts.slice(3).join('_');
+            const key = `${className}_${dateVal}`;
+            try {
+              const parsed = JSON.parse(localStorage.getItem(k)) || {};
+              const studentIds = Object.keys(parsed);
+              if (studentIds.length > 0) {
+                if (!groups[key]) {
+                  groups[key] = {
+                    class_name: className,
+                    evaluation_date: dateVal,
+                    student_ids: new Set()
+                  };
+                }
+                studentIds.forEach(id => groups[key].student_ids.add(id));
+              }
+            } catch(e){}
+          }
+        });
+
+        const historyList = Object.values(groups).map(g => ({
+          class_name: g.class_name,
+          evaluation_date: g.evaluation_date,
+          student_count: g.student_ids.size
+        }));
+
+        if (historyList.length === 0) {
+          loadingEl.classList.add('hidden');
+          emptyEl.classList.remove('hidden');
+          return;
+        }
+
+        // Sort by class (asc), then date (desc)
+        historyList.sort((a, b) => {
+          const classA = parseInt(a.class_name) || 0;
+          const classB = parseInt(b.class_name) || 0;
+          if (classA !== classB) {
+            return classA - classB;
+          }
+          return new Date(b.evaluation_date) - new Date(a.evaluation_date);
+        });
+
+        historyList.forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = "p-3 bg-gradient-to-r from-slate-50 to-white dark-card border border-slate-200/60 rounded-2xl flex items-center justify-between hover:shadow-md hover:border-indigo-300 transition duration-300 transform hover:-translate-y-0.5";
+          
+          itemEl.innerHTML = `
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 bg-indigo-500/10 text-indigo-600 rounded-xl flex items-center justify-center text-xs font-black shadow-inner">
+                C${item.class_name}
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800">${item.class_name}ನೇ ತರಗತಿ / Class ${item.class_name}</h4>
+                <p class="text-[10px] text-slate-400 font-semibold mt-0.5">
+                  <span class="font-mono text-slate-500">${item.evaluation_date}</span> &bull; 
+                  <strong class="text-indigo-600">${item.student_count} students</strong>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button onclick="viewHistoryAssessment('${item.class_name}', '${item.evaluation_date}')" class="w-7 h-7 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-lg transition border border-indigo-200/30 flex items-center justify-center" title="View / ನೋಡಿ">
+                <i class="fa-solid fa-eye text-[10px]"></i>
+              </button>
+              <button onclick="deleteHistoryAssessment('${item.class_name}', '${item.evaluation_date}')" class="w-7 h-7 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg transition border border-rose-200/30 flex items-center justify-center" title="Delete / ಅಳಿಸಿ">
+                <i class="fa-solid fa-trash-can text-[10px]"></i>
+              </button>
+            </div>
+          `;
+          listContainer.appendChild(itemEl);
+        });
+
+        loadingEl.classList.add('hidden');
+        listContainer.classList.remove('hidden');
+
+      } catch(err) {
+        console.error("Error loading assessment history:", err);
+        loadingEl.classList.add('hidden');
+        emptyEl.classList.remove('hidden');
+      }
+    }
+
+    function viewHistoryAssessment(className, dateVal) {
+      document.getElementById('fln-dashboard-view').classList.add('hidden');
+      document.getElementById('fln-marks-entry-view').classList.remove('hidden');
+      
+      classFilter.value = className;
+      dateFilter.value = dateVal;
+      
+      const webDateInput = document.getElementById('web-date-input');
+      if (webDateInput) {
+        webDateInput.value = dateVal;
+      }
+      
+      loadGrid();
+    }
+
+    async function deleteHistoryAssessment(className, dateVal) {
+      const confirmDelete = confirm(`ಈ ದಿನಾಂಕ (${dateVal}) ಮತ್ತು ತರಗತಿಯ (${className}) FLN ಮೌಲ್ಯಮಾಪನ ದಾಖಲೆಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಅಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ?\nAre you sure you want to permanently delete FLN assessment data for Class ${className} on ${dateVal}?`);
+      if (!confirmDelete) return;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+
+      try {
+        let deleteQuery = supabaseClient
+          .from('fln_evaluations')
+          .delete()
+          .eq('class_name', className)
+          .eq('evaluation_date', dateVal);
+
+        if (currentSchoolId) {
+          deleteQuery = deleteQuery.eq('school_id', currentSchoolId);
+        }
+
+        const { error } = await deleteQuery;
+
+        if (error) {
+          console.warn("Failed to delete history from Supabase:", error);
+          showToast("ದೋಷ: ಸರ್ವರ್‌ನಿಂದ ಡೇಟಾ ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Error: Could not delete data from server", "error");
+        } else {
+          showToast("ಡೇಟಾವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ! / Data deleted successfully!", "success");
+          
+          // Clear localStorage cache
+          const mockKey = `fln_mock_${className}_${dateVal}`;
+          localStorage.removeItem(mockKey);
+          
+          // Reload dashboard data (which will automatically reload history)
+          await loadDashboardData();
+        }
+      } catch (err) {
+        console.error("Delete history error:", err);
+        showToast("ದೋಷ: ಅಳಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ / Error: Deletion failed", "error");
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
     }
 
     function renderOverallSkillChart(counts) {
-      const ctx = document.getElementById('overallSkillChart').getContext('2d');
+      const canvas = document.getElementById('overallSkillChart');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
       if (skillChartInstance) skillChartInstance.destroy();
 
       skillChartInstance = new Chart(ctx, {
@@ -1046,15 +1437,17 @@
 
       try {
         // Fetch roster
-        const { data: roster, error: rosterError } = await supabaseClient
+        let rosterQuery = supabaseClient
           .from('admissions')
-          .select('id, student_name, name_english, father_name_kn, father_name_az, app_no')
-          .eq('enroll_class', className)
-          .order('name_english', { ascending: true });
+          .select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class');
+        if (currentSchoolId) {
+          rosterQuery = rosterQuery.eq('school_id', currentSchoolId);
+        }
+        const { data: roster, error: rosterError } = await rosterQuery.order('name_english', { ascending: true });
 
         if (rosterError) throw rosterError;
 
-        students = roster || [];
+        students = (roster || []).filter(st => normalizeClass(st.enroll_class) === normalizeClass(className));
         if (students.length === 0) {
           document.getElementById('loading-overlay').classList.add('hidden');
           document.getElementById('empty-state').classList.remove('hidden');
@@ -1073,11 +1466,15 @@
         };
 
         try {
-          const { data: dbRecords, error: dbError } = await supabaseClient
+          let dbQuery = supabaseClient
             .from('fln_evaluations')
             .select('student_id, outcomes')
             .eq('class_name', className)
             .eq('evaluation_date', dateVal);
+          if (currentSchoolId) {
+            dbQuery = dbQuery.eq('school_id', currentSchoolId);
+          }
+          const { data: dbRecords, error: dbError } = await dbQuery;
 
           if (dbError) {
             console.warn("Supabase fetch failed, loading local storage:", dbError);
@@ -1364,19 +1761,21 @@
       document.getElementById('loading-overlay').classList.remove('hidden');
 
       // Fetch School ID
-      let schoolId = null;
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && session.user) {
-          const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('school_id')
-            .eq('id', session.user.id)
-            .single();
-          if (profile) schoolId = profile.school_id;
+      let schoolId = currentSchoolId;
+      if (!schoolId) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('school_id')
+              .eq('id', session.user.id)
+              .single();
+            if (profile) schoolId = profile.school_id;
+          }
+        } catch(e){
+          console.warn("Could not retrieve school_id, using guest fallback:", e);
         }
-      } catch(e){
-        console.warn("Could not retrieve school_id, using guest fallback:", e);
       }
 
       if (!schoolId) {
@@ -1415,6 +1814,57 @@
           document.getElementById('loading-overlay').classList.add('hidden');
           renderGrid();
         });
+    }
+
+    async function deleteData() {
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+
+      if (students.length === 0) return;
+
+      const confirmDelete = confirm("ಈ ದಿನಾಂಕ ಮತ್ತು ತರಗತಿಯ FLN ಮೌಲ್ಯಮಾಪನ ಡೇಟಾವನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಅಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ?\nAre you sure you want to permanently delete FLN assessment data for this class and date?");
+      if (!confirmDelete) return;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+
+      try {
+        const studentIds = students.map(s => s.id);
+        
+        // Delete from Supabase
+        let deleteQuery = supabaseClient
+          .from('fln_evaluations')
+          .delete()
+          .eq('class_name', className)
+          .eq('evaluation_date', dateVal)
+          .in('student_id', studentIds);
+
+        if (currentSchoolId) {
+          deleteQuery = deleteQuery.eq('school_id', currentSchoolId);
+        }
+
+        const { error } = await deleteQuery;
+
+        if (error) {
+          console.warn("Failed to delete from Supabase:", error);
+          showToast("ದೋಷ: ಸರ್ವರ್‌ನಿಂದ ಡೇಟಾ ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ", "error");
+        } else {
+          showToast("ಡೇಟಾವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ!", "success");
+          
+          // Clear localStorage cache
+          const mockKey = `fln_mock_${className}_${dateVal}`;
+          localStorage.removeItem(mockKey);
+          
+          // Reset evaluations state and reload
+          evaluations = {};
+          originalEvaluations = {};
+          await loadGrid();
+        }
+      } catch (err) {
+        console.error("Delete error:", err);
+        showToast("ದೋಷ: ಅಳಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ", "error");
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
     }
 
     // ==================== PRINT AND EXPORTS ====================
