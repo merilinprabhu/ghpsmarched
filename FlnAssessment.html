@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FLN Assessment - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .rotate-90 { transform: rotate(90deg); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    @media print {
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
+      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
+    }
+
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text,
+      aside i.fa-chevron-right,
+      aside ul,
+      aside span.uppercase,
+      aside nav span,
+      aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text,
+      aside:hover i.fa-chevron-right,
+      aside:hover span.uppercase,
+      aside:hover nav span,
+      aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) {
+        display: block !important;
+      }
+      aside:hover .nav-item button {
+        justify-content: space-between !important;
+      }
+      aside:hover nav a {
+        justify-content: flex-start !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      aside .nav-item button {
+        justify-content: center !important;
+      }
+      aside nav a {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+
+    /* Theme Variable Overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] aside,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .modal-content,
+    body[data-theme="dark"] .section-block { background-color: #1e293b !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-800 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .text-slate-600 { color: #cbd5e1 !important; }
+    body[data-theme="dark"] .bg-slate-50 { background-color: #0f172a !important; }
+    body[data-theme="dark"] .border-slate-200 { border-color: #334155 !important; }
+
+    body[data-theme="gray"] { background-color: #f3f4f6 !important; color: #1f2937 !important; }
+    body[data-theme="gray"] .bg-white,
+    body[data-theme="gray"] aside,
+    body[data-theme="gray"] main,
+    body[data-theme="gray"] .form-container,
+    body[data-theme="gray"] .section-block { background-color: #ffffff !important; border-color: #d1d5db !important; }
+
+    body[data-theme="blue"] { background-color: #eff6ff !important; color: #1e3a8a !important; }
+    body[data-theme="blue"] .bg-white,
+    body[data-theme="blue"] aside,
+    body[data-theme="blue"] main,
+    body[data-theme="blue"] .form-container,
+    body[data-theme="blue"] .section-block { background-color: #ffffff !important; border-color: #bfdbfe !important; }
+
+    body[data-theme="green"] { background-color: #f0fdf4 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white,
+    body[data-theme="green"] aside,
+    body[data-theme="green"] main,
+    body[data-theme="green"] .form-container,
+    body[data-theme="green"] .section-block { background-color: #ffffff !important; border-color: #bbf7d0 !important; }
+
+    /* Cell Freezing Styles */
+    .sticky-c1 { position: sticky !important; left: 0px !important; z-index: 20 !important; background-color: #f8fafc !important; }
+    .sticky-c2 { position: sticky !important; left: 35px !important; z-index: 20 !important; background-color: #f8fafc !important; }
+    .sticky-c3 { position: sticky !important; left: 128px !important; z-index: 20 !important; background-color: #ffffff !important; }
+    .sticky-c4 { position: sticky !important; left: 278px !important; z-index: 20 !important; background-color: #ffffff !important; }
+
+    /* Dark theme overrides */
+    body[data-theme="dark"] .sticky-c1,
+    body[data-theme="dark"] .sticky-c2 { background-color: #1e293b !important; }
+    body[data-theme="dark"] .sticky-c3,
+    body[data-theme="dark"] .sticky-c4 { background-color: #0f172a !important; }
+
+    /* Gray theme overrides */
+    body[data-theme="gray"] .sticky-c1,
+    body[data-theme="gray"] .sticky-c2 { background-color: #f3f4f6 !important; }
+    body[data-theme="gray"] .sticky-c3,
+    body[data-theme="gray"] .sticky-c4 { background-color: #ffffff !important; }
+
+    /* Blue theme overrides */
+    body[data-theme="blue"] .sticky-c1,
+    body[data-theme="blue"] .sticky-c2 { background-color: #eff6ff !important; }
+    body[data-theme="blue"] .sticky-c3,
+    body[data-theme="blue"] .sticky-c4 { background-color: #ffffff !important; }
+
+    /* Green theme overrides */
+    body[data-theme="green"] .sticky-c1,
+    body[data-theme="green"] .sticky-c2 { background-color: #f0fdf4 !important; }
+    body[data-theme="green"] .sticky-c3,
+    body[data-theme="green"] .sticky-c4 { background-color: #ffffff !important; }
+
+    th.sticky-c1, th.sticky-c2, th.sticky-c3, th.sticky-c4 { background-color: #1e293b !important; z-index: 30 !important; color: #f1f5f9 !important; }
+
+    /* Selection cell highlight matching spreadsheet style */
+    #competency-table td:focus-within {
+      outline: 2.5px solid #4f46e5 !important;
+      outline-offset: -2.5px;
+      position: relative;
+      z-index: 10 !important;
+    }
+    #competency-table select:focus {
+      background-color: #ffffff !important;
+      color: #4f46e5 !important;
+      border-radius: 4px;
+    }
+    body[data-theme="dark"] #competency-table td:focus-within {
+      outline: 2.5px solid #818cf8 !important;
+    }
+    body[data-theme="dark"] #competency-table select:focus {
+      background-color: #1e293b !important;
+      color: #818cf8 !important;
+    }
+    body[data-theme="blue"] #competency-table td:focus-within {
+      outline: 2.5px solid #2563eb !important;
+    }
+    body[data-theme="green"] #competency-table td:focus-within {
+      outline: 2.5px solid #16a34a !important;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Printable Area -->
+  <div id="printArea" class="hidden" style="color: #000000; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">
+    <div class="text-center mb-4">
+      <h1 class="font-bold text-black" style="font-size: 16pt;">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h1>
+      <h2 class="text-sm font-bold text-black mt-0.5" style="font-size: 12px;">ಶಾಲಾ ಹಂತ</h2>
+      <h3 class="text-xs font-bold text-black mt-0.5" style="font-size: 11px;">ಅನುಬಂಧ 4-(1)</h3>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-y-1.5 gap-x-8 text-black mb-4" style="font-size: 11pt; font-weight: bold; line-height: 1.8;">
+      <div class="text-left">ಶಾಲೆಯ ಹೆಸರು :- <span style="font-weight: bold;" id="print-school-name">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್</span></div>
+      <div class="text-right">ದಾಖಲಾದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span style="font-weight: bold;" id="print-enrolled-meta">56</span></div>
+      
+      <div class="text-left">ತರಗತಿ :- <span style="font-weight: bold;" id="print-class-meta">7ನೇ</span></div>
+      <div class="text-right">FLN ಸಾಧಿಸದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span style="font-weight: bold;" id="print-notachieved-meta">_____</span></div>
+      
+      <div class="text-left">FLN ಸಾಧಿಸಿದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span style="font-weight: bold;" id="print-achieved-meta">_____</span></div>
+      <div class="text-right">ದಿನಾಂಕ :- <span style="font-weight: bold;" id="print-date-meta">______</span></div>
+    </div>
+  </div>
+
+  <div class="no-print">
+    <!-- Header Bar -->
+    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
+        <div>
+          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
+          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
+        </div>
+      </div>
+      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
+        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
+          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
+          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="gray">Gray</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
+          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
+          <span id="headerUser" class="font-semibold text-slate-200">User</span>
+        </div>
+        <div>
+          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Body Wrapper -->
+  <div class="flex flex-col md:flex-row flex-grow w-full no-print">
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-r-2xl border-r border-slate-200 shadow-sm flex flex-col justify-between min-h-[520px]">
+      <div class="space-y-6">
+        <div>
+          <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
+          <nav class="space-y-1 text-xs" id="sidebarNav">
+            <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+              <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
+            </a>
+            
+            <!-- Teachers -->
+            <div class="nav-item">
+              <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
+                </span>
+                <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+              </button>
+              <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
+              </ul>
+            </div>
+
+            <!-- Students -->
+            <div class="nav-item">
+              <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
+                </span>
+                <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+              </button>
+              <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
+                <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
+                <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
+                <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
+                <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
+              </ul>
+            </div>
+
+            <!-- Academic -->
+            <div class="nav-item">
+              <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
+                </span>
+                <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+              </button>
+              <ul id="menu-academic" class="pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
+                <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
+                <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                <li><a href="FlnAssessment.html" class="block py-1.5 text-pink-600 font-bold transition"><span class="sidebar-text">FLN Assessment</span></a></li>
+              </ul>
+            </div>
+
+            <a href="custom_reports.html" id="nav-CustomReports" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+              <i class="fa-solid fa-file-invoice text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Custom Reports</span>
+            </a>
+            
+            <!-- Incentives -->
+            <div class="nav-item">
+              <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
+                </span>
+                <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+              </button>
+              <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+      <div class="developer-info text-center pt-4 border-t border-slate-100 mt-auto">
+        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">GHPS MARCHED</p>
+        <p class="text-[8px] text-slate-400/70 font-semibold mt-0.5">Version 2026.1</p>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="flex-grow p-6 overflow-x-hidden flex flex-col gap-6">
+
+      <!-- ==================== SUBPAGE 1: FLN DASHBOARD ==================== -->
+      <section id="fln-dashboard-view" class="space-y-6">
+        <!-- Top Title Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-indigo-600"></i> FLN ನಿಯಂತ್ರಣ ಫಲಕ / FLN Dashboard
+            </h2>
+            <p class="text-xs font-semibold text-slate-400 mt-0.5">ಶಾಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನದ ವಿಶ್ಲೇಷಣೆ</p>
+          </div>
+          <button onclick="switchToMarksView()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-edit text-xs"></i> Enter Marks / ಅಂಕಗಳ ನಮೂದು
+          </button>
+        </div>
+
+        <!-- Metric Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Total Evaluated -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Total Students / ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</span>
+              <span id="dash-total-students" class="text-2xl font-black text-slate-800 block mt-1">0</span>
+              <span class="text-[10px] font-bold text-slate-400 block mt-1">Active Admissions</span>
+            </div>
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+              <i class="fa-solid fa-users"></i>
+            </div>
+          </div>
+          
+          <!-- FLN Achieved -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <span class="text-[9px] uppercase font-bold text-emerald-600 block tracking-wider">FLN Achieved / ಸಾಧಿಸಿದವರು</span>
+              <span id="dash-total-achieved" class="text-2xl font-black text-emerald-600 block mt-1">0</span>
+              <span id="dash-achieved-pct" class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mt-1">0%</span>
+            </div>
+            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+
+          <!-- FLN Not Achieved -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <span class="text-[9px] uppercase font-bold text-amber-600 block tracking-wider">FLN Not Achieved / ಸಾಧಿಸದವರು</span>
+              <span id="dash-total-not-achieved" class="text-2xl font-black text-amber-600 block mt-1">0</span>
+              <span id="dash-not-achieved-pct" class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full inline-block mt-1">0%</span>
+            </div>
+            <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+          </div>
+
+          <!-- School Level Grade Ratio -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+            <div>
+              <span class="text-[9px] uppercase font-bold text-slate-400 block tracking-wider">Top level / ಪ್ರಾವೀಣ್ಯತೆ ಅನುಪಾತ</span>
+              <span id="dash-proficient-ratio" class="text-2xl font-black text-slate-800 block mt-1">0</span>
+              <span class="text-[10px] font-bold text-slate-400 block mt-1">P & A Level Score</span>
+            </div>
+            <div class="w-12 h-12 bg-sky-50 text-sky-600 rounded-xl flex items-center justify-center shadow-inner text-lg">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Cards and Analytics Chart Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Class Progress Cards -->
+          <div class="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 mb-2 border-b pb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-school text-indigo-500"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Classwise Progress Summary
+            </h3>
+            <div id="class-cards-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[460px] overflow-y-auto pr-2 custom-scrollbar">
+              <!-- Dynamically populated class cards -->
+            </div>
+          </div>
+
+          <!-- Doughnut Chart Analytics -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie text-pink-500"></i> ಒಟ್ಟು ಕೌಶಲ್ಯ ಹಂಚಿಕೆ / Skill Level Spread
+            </h3>
+            <div class="relative w-full aspect-square flex items-center justify-center p-2">
+              <canvas id="overallSkillChart" class="max-w-[200px] max-h-[200px]"></canvas>
+            </div>
+            <div class="grid grid-cols-2 gap-2 text-[10px] mt-4 font-bold text-slate-600">
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-rose-500 rounded-full inline-block"></span> BB: Below Basic</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span> B: Basic</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-sky-500 rounded-full inline-block"></span> P: Proficient</div>
+              <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span> A: Advanced</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- School Level Bar Chart -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-column text-indigo-500"></i> ವರ್ಗವಾರು ಹೋಲಿಕೆ ತಖ್ತೆ / Achievement Comparisons By Class
+          </h3>
+          <div class="w-full h-64 relative">
+            <canvas id="classComparisonChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== SUBPAGE 2: MARKS ENTRY GRID ==================== -->
+      <section id="fln-marks-entry-view" class="space-y-6 hidden">
+        <!-- Top Title and Filters -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4 border-slate-100">
+            <div>
+              <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-table text-emerald-600"></i> FLN ಅಂಕಗಳ ನಮೂದು ಕೋಷ್ಟಕ / FLN Marks Grid
+              </h2>
+              <p class="text-xs font-semibold text-slate-400 mt-0.5">ವಿದ್ಯಾರ್ಥಿಗಳ ಪ್ರಗತಿ ನಮೂದು ಹಾಗೂ ಪರಿಶೀಲನಾ ಹಾಳೆ</p>
+            </div>
+            <button onclick="switchToDashboardView()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie"></i> Back to Dashboard / ಮುಖಪುಟಕ್ಕೆ
+            </button>
+          </div>
+
+          <!-- Selection Controls row -->
+          <div class="flex flex-wrap items-center gap-4 text-xs font-bold text-slate-600">
+            <div class="flex flex-col gap-1 w-44">
+              <label><i class="fa-solid fa-school text-indigo-500 mr-1"></i> Class / ತರಗತಿ</label>
+              <select id="classFilter" onchange="loadGrid()" class="px-3 py-2 border rounded-xl bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <option value="1">Class 1 / ೧ನೇ ತರಗತಿ</option>
+                <option value="2">Class 2 / ೨ನೇ ತರಗತಿ</option>
+                <option value="3">Class 3 / ೩ನೇ ತರಗತಿ</option>
+                <option value="4">Class 4 / ೪ನೇ ತರಗತಿ</option>
+                <option value="5">Class 5 / ೫ನೇ ತರಗತಿ</option>
+                <option value="6">Class 6 / ೬ನೇ ತರಗತಿ</option>
+                <option value="7" selected>Class 7 / ೭ನೇ ತರಗತಿ</option>
+                <option value="8">Class 8 / ೮ನೇ ತರಗತಿ</option>
+                <option value="9">Class 9 / ೯ನೇ ತರಗತಿ</option>
+                <option value="10">Class 10 / ೧೦ನೇ ತರಗತಿ</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1 w-44">
+              <label><i class="fa-solid fa-calendar-alt text-indigo-500 mr-1"></i> Date / ದಿನಾಂಕ</label>
+              <input type="date" id="dateFilter" onchange="loadGrid()" class="px-3 py-2 border rounded-xl bg-slate-50 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            </div>
+
+            <!-- Toolbar buttons -->
+            <div class="flex items-center gap-2 mt-auto sm:ml-auto">
+              <button id="btn-save" onclick="saveData()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-indigo-600/20">
+                <i class="fa-solid fa-save"></i> Save Data / ಉಳಿಸಿ
+              </button>
+              
+              <button onclick="triggerPrint()" title="Print Page" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-print"></i>
+              </button>
+
+              <button onclick="exportToPdf()" title="Export PDF" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-500"></i>
+              </button>
+
+              <button onclick="exportToExcel()" title="Export Excel" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i>
+              </button>
+
+              <!-- CSV Template Download -->
+              <button onclick="downloadCSVTemplate()" title="Download CSV Template / ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-arrow-down text-slate-500"></i>
+              </button>
+
+              <!-- CSV Import -->
+              <button onclick="triggerCSVImport()" title="Import CSV / ಸಿಎಸ್ವಿ ಆಮದು" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-import text-amber-600"></i>
+              </button>
+              <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+
+              <!-- CSV Export -->
+              <button onclick="exportToCSV()" title="Export CSV / ಸಿಎಸ್ವಿ ರಫ್ತು" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-csv text-sky-500"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Web Header & Marks Grid Section matching the print layout -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm text-slate-800 space-y-5">
+          <div class="text-center">
+            <h1 class="text-[20pt] font-black text-slate-800">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h1>
+            <h2 class="text-sm font-bold text-slate-500 mt-0.5">ಶಾಲಾ ಹಂತ</h2>
+            <h3 class="text-xs font-semibold text-slate-400 mt-0.5">ಅನುಬಂಧ 4-(1)</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-8 text-[11pt] font-bold text-slate-600 border-t pt-4 border-slate-100 leading-relaxed pb-2">
+            <div class="text-left">ಶಾಲೆಯ ಹೆಸರು :- <span class="text-slate-900" id="web-school-name">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್</span></div>
+            <div class="md:text-right">ದಾಖಲಾದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span class="text-slate-900" id="web-enrolled-meta">0</span></div>
+            
+            <div class="text-left">ತರಗತಿ :- <span class="text-slate-900" id="web-class-meta">7ನೇ</span></div>
+            <div class="md:text-right">FLN ಸಾಧಿಸದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span class="text-slate-900" id="web-notachieved-meta">0</span></div>
+            
+            <div class="text-left">FLN ಸಾಧಿಸಿದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span class="text-slate-900" id="web-achieved-meta">0</span></div>
+            <div class="md:text-right flex md:justify-end items-center gap-1">ದಿನಾಂಕ :- <input type="date" id="web-date-input" onchange="syncDateFilter(this.value)" class="bg-transparent border-0 text-slate-900 focus:outline-none cursor-pointer font-bold w-28 p-0 text-[11pt]"></div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="border-t pt-4 border-slate-100 overflow-hidden">
+            <div id="empty-state" class="p-16 text-center flex flex-col items-center justify-center">
+              <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4 shadow-inner">
+                <i class="fa-solid fa-folder-open text-2xl"></i>
+              </div>
+              <h3 class="text-xs font-bold text-slate-700 mb-1">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಲಭ್ಯವಿಲ್ಲ</h3>
+              <p class="text-[11px] text-slate-400 max-w-sm">ಈ ತರಗತಿಗೆ ಸಂಬಂಧಿಸಿದ ವಿದ್ಯಾರ್ಥಿಗಳ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ.</p>
+            </div>
+
+            <div id="grid-table-container" class="overflow-x-auto rounded-xl custom-scrollbar hidden">
+              <table id="competency-table" class="w-full border-collapse text-left text-xs table-fixed min-w-[1160px]">
+                <thead id="table-head">
+                  <!-- Built Dynamically with Kannada and Maths Columns -->
+                </thead>
+                <tbody id="student-grid-body" class="divide-y divide-slate-200 text-slate-700 font-medium">
+                  <!-- Dynamically filled row-by-row -->
+                </tbody>
+                <tfoot id="table-foot" class="bg-slate-50 font-bold border-t-2 border-slate-200 text-center">
+                  <!-- Dynamically populated column sums (BB, B, P, A) -->
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes / Instructions & Signatures -->
+        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 space-y-4 text-xs">
+          <h4 class="font-bold text-slate-800 uppercase tracking-wider border-b pb-1.5 flex items-center gap-1">
+            <i class="fa-solid fa-circle-info text-indigo-500"></i> ಸೂಚನೆ ಮತ್ತು ಮಾರ್ಗಸೂಚಿಗಳು / Note & Guidelines
+          </h4>
+          <p class="font-medium text-slate-600 leading-relaxed text-[11px]">
+            <strong>ಸೂಚನೆ :</strong> ಕನಿಷ್ಠ - BB, ಪ್ರಾಥಮಿಕ - B, ಪ್ರಾವೀಣ್ಯತೆ - P, ಸುಧಾರಿತ - A. (O - ಮೌಖಿಕ, R - ಓದುವುದು, W - ಬರೆಯುವುದು, N - ಸಂಖ್ಯಾಶಾಸ್ತ್ರ)
+          </p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-500 text-[10.5px] font-medium">
+            <li><strong>O (Oral/ಮೌಖಿಕ):</strong> ಮಗು ಸ್ಪಷ್ಟವಾಗಿ ಮಾತನಾಡುತ್ತಿದ್ದರೆ ಅಲ್ಲಿ ನಮೂದಿಸುವುದು.</li>
+            <li><strong>R (Reading/ಓದುವುದು):</strong> ಸ್ಪಷ್ಟವಾಗಿ ನಿರರ್ಗಳವಾಗಿ ಏರಿಳಿತದೊಂದಿಗೆ ಓದುತ್ತಿದ್ದರೆ 'R' ನಲ್ಲಿ ನಮೂದಿಸುವುದು.</li>
+            <li><strong>W (Writing/ಬರೆಯುವುದು):</strong> ಸ್ಪಷ್ಟವಾಗಿ ಕಲಿಕಾ ಫಲಗಳಿಗನುಗುಣವಾಗಿ ಬರೆಯುತ್ತಿದ್ದರೆ 'W' ನಲ್ಲಿ ನಮೂದಿಸುವುದು.</li>
+            <li><strong>N (Numeracy/ಸಂಖ್ಯಾಶಾಸ್ತ್ರ):</strong> ಗಣಿತ ವಿಷಯದ ಕಲಿಕಾ ಫಲಗಳಿಗೆ ಅನುಗುಣವಾಗಿ ನಮೂದಿಸುವುದು.</li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[200] flex items-center justify-center hidden">
+    <div class="bg-white px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center gap-3 max-w-xs border">
+      <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-600"></i>
+      <p class="text-xs font-bold text-slate-700">ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
+    </div>
+  </div>
+
+  <footer class="w-full bg-white border-t border-slate-200 py-2.5 text-center text-xs text-slate-400 mt-auto flex-shrink-0">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <!-- Toast Notification container -->
+  <div id="toast-notif" class="fixed bottom-5 right-5 bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition transform translate-y-20 opacity-0 z-[100] max-w-sm border border-slate-800">
+    <p id="toast-message" class="text-xs font-semibold"></p>
+  </div>
+
+  <script>
+    // Supabase Credentials
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Global state
+    let students = [];
+    let evaluations = {};
+    let originalEvaluations = {};
+    let allClassStats = {};
+
+    // Outcome config
+    const KANNADA_COLS = ["O1", "O2", "O3", "O4", "R1", "R2", "R3", "W1", "W2"];
+    const MATH_COLS = ["N1", "N2", "N3", "N4", "N5", "N6", "N7", "N8"];
+    const TOTAL_COLS_COUNT = KANNADA_COLS.length + MATH_COLS.length; // 17 Columns total
+
+    // UI elements
+    const classFilter = document.getElementById('classFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const liveDate = document.getElementById('liveDate');
+    const headerUser = document.getElementById('headerUser');
+
+    // Chart.js instances
+    let skillChartInstance = null;
+    let comparisonChartInstance = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Set date filter to today
+      const today = new Date().toISOString().split('T')[0];
+      dateFilter.value = today;
+
+      // Clock
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // Theme
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      document.getElementById('themeSelector').value = savedTheme;
+
+      // Profile and School details
+      initUserAndSchool();
+
+      // Load initial dashboard data
+      loadDashboardData();
+
+      // Keyboard navigation for the marks entry table
+      const compTable = document.getElementById('competency-table');
+      if (compTable) {
+        compTable.addEventListener('keydown', (e) => {
+          if (e.target.tagName === 'SELECT') {
+            const select = e.target;
+            const td = select.closest('td');
+            if (!td) return;
+            const tr = td.closest('tr');
+            if (!tr) return;
+            const tds = Array.from(tr.children);
+            const colIndex = tds.indexOf(td);
+            // Grade select cells start from column index 4 to index 21
+            if (colIndex < 4) return;
+
+            const tbody = document.getElementById('student-grid-body');
+            const rows = Array.from(tbody.children);
+            const rowIndex = rows.indexOf(tr);
+
+            let targetRowIndex = rowIndex;
+            let targetColIndex = colIndex;
+
+            if (e.key === 'Tab') {
+              e.preventDefault();
+              if (e.shiftKey) {
+                // Shift+Tab: move left
+                targetColIndex = colIndex - 1;
+                if (targetColIndex < 4) {
+                  // Wrap to previous row's last select
+                  if (rowIndex > 0) {
+                    targetRowIndex = rowIndex - 1;
+                    targetColIndex = tds.length - 1;
+                  } else {
+                    targetColIndex = colIndex; // Stay at first
+                  }
+                }
+              } else {
+                // Tab: move right
+                targetColIndex = colIndex + 1;
+                if (targetColIndex >= tds.length) {
+                  // Wrap to next row's first select
+                  if (rowIndex < rows.length - 1) {
+                    targetRowIndex = rowIndex + 1;
+                    targetColIndex = 4;
+                  } else {
+                    targetColIndex = colIndex; // Stay at last
+                  }
+                }
+              }
+            } else if (e.key === 'Enter') {
+              e.preventDefault();
+              if (e.shiftKey) {
+                // Shift+Enter: move up
+                targetRowIndex = rowIndex - 1;
+                if (targetRowIndex < 0) {
+                  targetRowIndex = 0;
+                }
+              } else {
+                // Enter: move down
+                targetRowIndex = rowIndex + 1;
+                if (targetRowIndex >= rows.length) {
+                  targetRowIndex = rows.length - 1;
+                }
+              }
+            } else {
+              return; // Do nothing for other keys
+            }
+
+            const targetRow = rows[targetRowIndex];
+            if (targetRow) {
+              const targetTd = targetRow.children[targetColIndex];
+              if (targetTd) {
+                const targetSelect = targetTd.querySelector('select');
+                if (targetSelect) {
+                  targetSelect.focus();
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+
+    async function initUserAndSchool() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const user = session?.user;
+        if (user) {
+          headerUser.innerText = user.email.split('@')[0];
+          
+          let schoolId = user.user_metadata?.school_id;
+          if (!schoolId) {
+            // Check profiles table
+            const { data: profile } = await supabaseClient
+              .from('profiles')
+              .select('school_id')
+              .eq('id', user.id)
+              .single();
+            if (profile) schoolId = profile.school_id;
+          }
+
+          let schoolNameEn = localStorage.getItem('school_name_en');
+          let schoolNameKn = localStorage.getItem('school_name_kn');
+
+          if ((!schoolNameEn || !schoolNameKn) && schoolId) {
+            const { data: school } = await supabaseClient
+              .from('schools')
+              .select('school_name_en, school_name_kn')
+              .eq('id', schoolId)
+              .single();
+            if (school) {
+              schoolNameEn = school.school_name_en || '';
+              schoolNameKn = school.school_name_kn || '';
+              localStorage.setItem('school_name_en', schoolNameEn);
+              localStorage.setItem('school_name_kn', schoolNameKn);
+            }
+          }
+
+          if (schoolNameEn) {
+            const headerEl = document.querySelector('h1.text-indigo-100');
+            if (headerEl) headerEl.innerText = schoolNameEn;
+          }
+          if (schoolNameKn) {
+            document.getElementById('web-school-name').innerText = schoolNameKn;
+            document.getElementById('print-school-name').innerText = schoolNameKn;
+          }
+        } else {
+          headerUser.innerText = "Guest Teacher";
+        }
+      } catch (err) {
+        console.error("Failed to initialize user and school:", err);
+      }
+    }
+
+    function syncDateFilter(val) {
+      document.getElementById('dateFilter').value = val;
+      loadGrid();
+    }
+
+    function updateClock() {
+      const now = new Date();
+      liveDate.innerText = now.toLocaleString('kn-IN', { hour12: true });
+    }
+
+    function changeTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    function toggleAccordion(id) {
+      const ul = document.getElementById(id);
+      const arrow = document.getElementById(id + "-arrow");
+      if (ul.classList.contains("hidden")) {
+        ul.classList.remove("hidden");
+        if (arrow) arrow.classList.add("rotate-90");
+      } else {
+        ul.classList.add("hidden");
+        if (arrow) arrow.classList.remove("rotate-90");
+      }
+    }
+
+    function switchToDashboardView() {
+      document.getElementById('fln-dashboard-view').classList.remove('hidden');
+      document.getElementById('fln-marks-entry-view').classList.add('hidden');
+      loadDashboardData();
+    }
+
+    function switchToMarksView(className = "7") {
+      document.getElementById('fln-dashboard-view').classList.add('hidden');
+      document.getElementById('fln-marks-entry-view').classList.remove('hidden');
+      if (className) {
+        classFilter.value = className;
+      }
+      loadGrid();
+    }
+
+    // ==================== DASHBOARD ANALYTICS LOGIC ====================
+    async function loadDashboardData() {
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      
+      const classList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+      allClassStats = {};
+      let totalStudentsSchool = 0;
+      let totalAchievedSchool = 0;
+      let totalNotAchievedSchool = 0;
+      let overallSkillCounts = { BB: 0, B: 0, P: 0, A: 0 };
+
+      // Initialize stats per class
+      classList.forEach(cls => {
+        allClassStats[cls] = { enrolled: 0, achieved: 0, notAchieved: 0, rate: 0 };
+      });
+
+      try {
+        // Load admissions to get counts
+        const { data: allStudents, error: studErr } = await supabaseClient
+          .from('admissions')
+          .select('id, enroll_class');
+
+        if (!studErr && allStudents) {
+          allStudents.forEach(st => {
+            const cls = st.enroll_class;
+            if (allClassStats[cls]) {
+              allClassStats[cls].enrolled++;
+              totalStudentsSchool++;
+            }
+          });
+        }
+
+        // Load FLN evaluations from Supabase
+        const { data: allEvals, error: evalErr } = await supabaseClient
+          .from('fln_evaluations')
+          .select('student_id, class_name, outcomes');
+
+        let evalMap = {};
+        if (!evalErr && allEvals) {
+          allEvals.forEach(ev => {
+            evalMap[ev.student_id] = ev.outcomes || {};
+          });
+        }
+
+        // Fetch localstorage backups if empty database
+        const localKeys = Object.keys(localStorage).filter(k => k.startsWith('fln_mock_'));
+        localKeys.forEach(k => {
+          try {
+            const parsed = JSON.parse(localStorage.getItem(k));
+            Object.assign(evalMap, parsed);
+          } catch(e){}
+        });
+
+        // Compute stats for each class based on student outcomes
+        // If student has P or A in at least 11 of the 17 columns, consider it FLN Achieved
+        if (allStudents && allStudents.length > 0) {
+          allStudents.forEach(st => {
+            const sId = st.id;
+            const cls = st.enroll_class;
+            const outcomes = evalMap[sId] || {};
+
+            let bbCount = 0, bCount = 0, pCount = 0, aCount = 0, emptyCount = 0;
+            // Iterate over all 17 columns
+            for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+              const val = outcomes[`col_${i}`] || '';
+              if (val === 'BB') bbCount++;
+              else if (val === 'B') bCount++;
+              else if (val === 'P') pCount++;
+              else if (val === 'A') aCount++;
+              else emptyCount++;
+              
+              if (val) {
+                overallSkillCounts[val]++;
+              }
+            }
+
+            const totalGraded = bbCount + bCount + pCount + aCount;
+            // Criteria: FLN Achieved if got "A" grade in at least 65% of graded outcomes
+            const achieved = totalGraded > 0 && aCount >= (totalGraded * 0.65);
+
+            if (allClassStats[cls]) {
+              if (achieved) {
+                allClassStats[cls].achieved++;
+                totalAchievedSchool++;
+              } else {
+                // If not graded yet, consider it not achieved
+                allClassStats[cls].notAchieved++;
+                totalNotAchievedSchool++;
+              }
+            }
+          });
+        }
+
+        // Render dashboard values
+        document.getElementById('dash-total-students').innerText = totalStudentsSchool;
+        document.getElementById('dash-total-achieved').innerText = totalAchievedSchool;
+        document.getElementById('dash-total-not-achieved').innerText = totalNotAchievedSchool;
+
+        const achievedPct = totalStudentsSchool > 0 ? Math.round((totalAchievedSchool / totalStudentsSchool) * 100) : 0;
+        document.getElementById('dash-achieved-pct').innerText = `${achievedPct}% FLN Achieved`;
+        
+        const notAchievedPct = totalStudentsSchool > 0 ? Math.round((totalNotAchievedSchool / totalStudentsSchool) * 100) : 0;
+        document.getElementById('dash-not-achieved-pct').innerText = `${notAchievedPct}% Not Achieved`;
+
+        // Proficient ratio (overall P + A vs total skills entered)
+        const totalSkills = overallSkillCounts.BB + overallSkillCounts.B + overallSkillCounts.P + overallSkillCounts.A;
+        const proficientCount = overallSkillCounts.P + overallSkillCounts.A;
+        const ratio = totalSkills > 0 ? Math.round((proficientCount / totalSkills) * 100) : 0;
+        document.getElementById('dash-proficient-ratio').innerText = `${ratio}%`;
+
+        // Render cards
+        renderClassCards();
+
+        // Render Charts
+        renderOverallSkillChart(overallSkillCounts);
+        renderClassComparisonChart(classList);
+
+      } catch(err) {
+        console.error("Dashboard calculation error:", err);
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    function renderClassCards() {
+      const container = document.getElementById('class-cards-container');
+      container.innerHTML = '';
+
+      const classList = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+      classList.forEach((cls, i) => {
+        const stats = allClassStats[cls] || { enrolled: 0, achieved: 0, notAchieved: 0 };
+        const rate = stats.enrolled > 0 ? Math.round((stats.achieved / stats.enrolled) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = "p-4 bg-slate-50 border border-slate-200/80 rounded-2xl flex flex-col justify-between hover:shadow-md hover:border-indigo-300 transition duration-300 transform hover:-translate-y-0.5 cursor-pointer";
+        card.onclick = () => switchToMarksView(cls);
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-black text-slate-800 text-xs">${cls}ನೇ ತರಗತಿ / Class ${cls}</h4>
+              <span class="text-[10px] text-slate-400 font-bold block mt-0.5">Enrolled: ${stats.enrolled} students</span>
+            </div>
+            <span class="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg">${rate}%</span>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden flex">
+              <div class="bg-emerald-500 h-full" style="width: ${rate}%"></div>
+              <div class="bg-amber-400 h-full" style="width: ${100 - rate}%"></div>
+            </div>
+            <div class="flex justify-between text-[9px] font-bold text-slate-400">
+              <span class="text-emerald-600">Achieved: ${stats.achieved}</span>
+              <span class="text-amber-600">Not: ${stats.notAchieved}</span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderOverallSkillChart(counts) {
+      const ctx = document.getElementById('overallSkillChart').getContext('2d');
+      if (skillChartInstance) skillChartInstance.destroy();
+
+      skillChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['BB', 'B', 'P', 'A'],
+          datasets: [{
+            data: [counts.BB, counts.B, counts.P, counts.A],
+            backgroundColor: ['#f43f5e', '#f59e0b', '#38bdf8', '#10b981'],
+            borderWidth: 1,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          cutout: '60%'
+        }
+      });
+    }
+
+    function renderClassComparisonChart(classList) {
+      const ctx = document.getElementById('classComparisonChart').getContext('2d');
+      if (comparisonChartInstance) comparisonChartInstance.destroy();
+
+      const achievedData = classList.map(cls => allClassStats[cls]?.achieved || 0);
+      const notAchievedData = classList.map(cls => allClassStats[cls]?.notAchieved || 0);
+
+      comparisonChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: classList,
+          datasets: [
+            {
+              label: 'Achieved / ಸಾಧಿಸಿದವರು',
+              data: achievedData,
+              backgroundColor: '#10b981',
+              borderRadius: 8
+            },
+            {
+              label: 'Not Achieved / ಸಾಧಿಸದವರು',
+              data: notAchievedData,
+              backgroundColor: '#f59e0b',
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true }
+          },
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, font: { weight: 'bold', size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // ==================== MARKS ENTRY LOGIC ====================
+    async function loadGrid() {
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+
+      if (!className || !dateVal) return;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+      document.getElementById('grid-table-container').classList.add('hidden');
+      document.getElementById('empty-state').classList.add('hidden');
+
+      try {
+        // Fetch roster
+        const { data: roster, error: rosterError } = await supabaseClient
+          .from('admissions')
+          .select('id, student_name, name_english, father_name_kn, father_name_az, app_no')
+          .eq('enroll_class', className)
+          .order('name_english', { ascending: true });
+
+        if (rosterError) throw rosterError;
+
+        students = roster || [];
+        if (students.length === 0) {
+          document.getElementById('loading-overlay').classList.add('hidden');
+          document.getElementById('empty-state').classList.remove('hidden');
+          return;
+        }
+
+        // Fetch evaluations
+        let parsedEval = {};
+        const loadLocal = () => {
+          const mockKey = `fln_mock_${className}_${dateVal}`;
+          const saved = localStorage.getItem(mockKey);
+          if (saved) {
+            try { return JSON.parse(saved); } catch (e) { return {}; }
+          }
+          return {};
+        };
+
+        try {
+          const { data: dbRecords, error: dbError } = await supabaseClient
+            .from('fln_evaluations')
+            .select('student_id, outcomes')
+            .eq('class_name', className)
+            .eq('evaluation_date', dateVal);
+
+          if (dbError) {
+            console.warn("Supabase fetch failed, loading local storage:", dbError);
+            parsedEval = loadLocal();
+          } else if (dbRecords && dbRecords.length > 0) {
+            dbRecords.forEach(r => {
+              parsedEval[r.student_id] = r.outcomes || {};
+            });
+            console.log("Loaded FLN evaluations from Supabase");
+          } else {
+            parsedEval = loadLocal();
+          }
+        } catch(e) {
+          console.warn("Error querying database, using local:", e);
+          parsedEval = loadLocal();
+        }
+
+        evaluations = parsedEval;
+
+        // Default unset grades to 'B'
+        students.forEach(st => {
+          if (!evaluations[st.id]) {
+            evaluations[st.id] = {};
+          }
+          for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+            const key = `col_${i}`;
+            if (evaluations[st.id][key] === undefined || evaluations[st.id][key] === '') {
+              evaluations[st.id][key] = 'B';
+            }
+          }
+        });
+
+        originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+
+        // Render UI
+        buildTableHeader();
+        renderGrid();
+        
+        document.getElementById('grid-table-container').classList.remove('hidden');
+      } catch(err) {
+        console.error("Failed to load FLN grid:", err);
+        showToast("ದೋಷ: ಮಾಹಿತಿ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ", "error");
+      } finally {
+        document.getElementById('loading-overlay').classList.add('hidden');
+      }
+    }
+
+    function buildTableHeader() {
+      const thead = document.getElementById('table-head');
+      
+      let columnsNumHtml = '';
+      let subLabelsHtml = '';
+
+      // Total columns is 17. Kannada = 9, Maths = 8.
+      const totalOutcomes = TOTAL_COLS_COUNT;
+      const pctPerCol = (100 - 38) / totalOutcomes; // 38% for metadata columns
+
+      // Kannada cols (1-9)
+      KANNADA_COLS.forEach((col, idx) => {
+        columnsNumHtml += `<th class="p-0.5 py-1 text-center border-r border-slate-700 bg-slate-800 text-[10px]" style="width: ${pctPerCol.toFixed(2)}%;">${idx + 1}</th>`;
+        subLabelsHtml += `<th class="p-0.5 py-0.5 text-center border-r border-slate-200 text-[10px]" style="width: ${pctPerCol.toFixed(2)}%;" title="${col}">${col}</th>`;
+      });
+
+      // Math cols (10-17)
+      MATH_COLS.forEach((col, idx) => {
+        columnsNumHtml += `<th class="p-0.5 py-1 text-center border-r border-slate-700 bg-slate-800 text-[10px]" style="width: ${pctPerCol.toFixed(2)}%;">${idx + 10}</th>`;
+        subLabelsHtml += `<th class="p-0.5 py-0.5 text-center border-r border-slate-200 text-[10px]" style="width: ${pctPerCol.toFixed(2)}%;" title="${col}">${col}</th>`;
+      });
+
+      thead.innerHTML = `
+        <tr class="bg-slate-800 text-slate-200 border-b border-slate-700 font-bold text-center">
+          <th rowspan="3" class="p-1 py-1.5 border-r border-slate-700 text-center sticky-c1" style="width: 3%;">#</th>
+          <th rowspan="3" class="p-1 py-1.5 border-r border-slate-700 text-center sticky-c2" style="width: 9%;">STS ಸಂಖ್ಯೆ / STS No</th>
+          <th rowspan="3" class="p-1 py-1.5 border-r border-slate-700 text-left sticky-c3" style="width: 13%;">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
+          <th rowspan="3" class="p-1 py-1.5 border-r border-slate-700 text-left sticky-c4" style="width: 13%;">ತಂದೆಯ ಹೆಸರು / Father Name</th>
+          <th colspan="${KANNADA_COLS.length}" class="p-0.5 py-1 border-r border-slate-700 bg-indigo-900 text-indigo-100 font-black text-[10px]">FL ಕಲಿಕಾ ಫಲ (ಕನ್ನಡ) / FL Outcomes (Language)</th>
+          <th colspan="${MATH_COLS.length}" class="p-0.5 py-1 border-r border-slate-700 bg-emerald-950 text-emerald-100 font-black text-[10px]">FL ಕಲಿಕಾ ಫಲ (ಗಣಿತ) / FL Outcomes (Math)</th>
+        </tr>
+        <tr class="bg-slate-700 text-slate-300 font-bold border-b border-slate-600">
+          ${columnsNumHtml}
+        </tr>
+        <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
+          ${subLabelsHtml}
+        </tr>
+      `;
+    }
+
+    function renderGrid() {
+      const tbody = document.getElementById('student-grid-body');
+      tbody.innerHTML = '';
+
+      let achievedCount = 0;
+      let notAchievedCount = 0;
+
+      students.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-200";
+        const sId = student.id;
+
+        if (!evaluations[sId]) {
+          evaluations[sId] = {};
+        }
+
+        const outcomes = evaluations[sId];
+        let nameEn = (student.name_english || '').trim().toUpperCase();
+        let nameKn = (student.student_name || '').trim();
+        let nameHtml = `<div class="font-bold text-slate-800 text-xs">${nameEn}</div>`;
+        if (nameKn) {
+          nameHtml += `<div class="text-[10px] text-slate-400 font-bold">${nameKn}</div>`;
+        }
+
+        let fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        let fatherKn = (student.father_name_kn || '').trim();
+        let fatherHtml = `<div class="font-bold text-slate-700 text-xs">${fatherEn}</div>`;
+        if (fatherKn) {
+          fatherHtml += `<div class="text-[10px] text-slate-400 font-bold">${fatherKn}</div>`;
+        }
+
+        let stsNo = student.app_no || '-';
+
+        // Build cells (17 outcome columns)
+        let cellsHtml = '';
+        
+        // 1 to 9 (Kannada)
+        for (let i = 1; i <= KANNADA_COLS.length; i++) {
+          cellsHtml += buildGridCell(sId, `col_${i}`, outcomes[`col_${i}`] || '');
+        }
+
+        // 10 to 17 (Math)
+        for (let i = 10; i <= TOTAL_COLS_COUNT; i++) {
+          cellsHtml += buildGridCell(sId, `col_${i}`, outcomes[`col_${i}`] || '');
+        }
+
+        tr.innerHTML = `
+          <td class="p-2.5 text-center font-bold border-r border-slate-200 sticky-c1">${index + 1}</td>
+          <td class="p-2.5 text-center border-r border-slate-200 font-bold text-slate-800 sticky-c2">${stsNo}</td>
+          <td class="p-2.5 border-r border-slate-200 sticky-c3">${nameHtml}</td>
+          <td class="p-2.5 border-r border-slate-200 sticky-c4">${fatherHtml}</td>
+          ${cellsHtml}
+        `;
+        
+        tbody.appendChild(tr);
+
+        // Check if student achieved FLN (A grade count >= 65%)
+        let gradedCount = 0;
+        let aCount = 0;
+        for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+          const val = outcomes[`col_${i}`] || '';
+          if (val) {
+            gradedCount++;
+            if (val === 'A') aCount++;
+          }
+        }
+
+        if (gradedCount > 0 && aCount >= (gradedCount * 0.65)) {
+          achievedCount++;
+        } else {
+          notAchievedCount++;
+        }
+      });
+
+      // Update counters in meta and labels
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+      
+      const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
+      const formattedDate = new Date(dateVal).toLocaleDateString('kn-IN');
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+
+      const achievedPct = students.length > 0 ? Math.round((achievedCount / students.length) * 100) : 0;
+      const notAchievedPct = students.length > 0 ? Math.round((notAchievedCount / students.length) * 100) : 0;
+
+      document.getElementById('web-school-name').innerText = schoolNameKn;
+      document.getElementById('web-class-meta').innerText = classKn;
+      if (document.getElementById('web-date-input')) {
+        document.getElementById('web-date-input').value = dateVal;
+      }
+      document.getElementById('web-enrolled-meta').innerText = students.length;
+      document.getElementById('web-achieved-meta').innerText = `${achievedCount} (${achievedPct}%)`;
+      document.getElementById('web-notachieved-meta').innerText = `${notAchievedCount} (${notAchievedPct}%)`;
+
+      updateTotalsFooter();
+    }
+
+    function buildGridCell(studentId, colKey, val) {
+      let bgClass = "bg-transparent";
+      let textClass = "text-slate-600";
+      
+      if (val === 'BB') { bgClass = "bg-rose-50"; textClass = "text-rose-700 font-bold"; }
+      else if (val === 'B') { bgClass = "bg-amber-50"; textClass = "text-amber-700 font-bold"; }
+      else if (val === 'P') { bgClass = "bg-sky-50"; textClass = "text-sky-700 font-bold"; }
+      else if (val === 'A') { bgClass = "bg-emerald-50"; textClass = "text-emerald-700 font-bold"; }
+
+      return `
+        <td class="p-1 border-r border-slate-200 text-center ${bgClass}">
+          <select 
+            onchange="updateCellGrade('${studentId}', '${colKey}', this)"
+            class="bg-transparent text-center outline-none cursor-pointer text-xs w-full h-full py-1 ${textClass}"
+          >
+            <option value="" class="text-slate-400 font-normal">-</option>
+            <option value="BB" ${val === 'BB' ? 'selected' : ''} class="text-rose-600 font-bold">BB</option>
+            <option value="B" ${val === 'B' ? 'selected' : ''} class="text-amber-600 font-bold">B</option>
+            <option value="P" ${val === 'P' ? 'selected' : ''} class="text-sky-600 font-bold">P</option>
+            <option value="A" ${val === 'A' ? 'selected' : ''} class="text-emerald-600 font-bold">A</option>
+          </select>
+        </td>
+      `;
+    }
+
+    function updateCellGrade(studentId, colKey, selectEl) {
+      const val = selectEl.value;
+      evaluations[studentId][colKey] = val;
+
+      // Color code select cells
+      const parentTd = selectEl.parentNode;
+      parentTd.className = "p-1 border-r border-slate-200 text-center";
+      selectEl.className = "bg-transparent text-center outline-none cursor-pointer text-xs w-full h-full py-1";
+
+      if (val === 'BB') {
+        parentTd.classList.add("bg-rose-50");
+        selectEl.classList.add("text-rose-700", "font-bold");
+      } else if (val === 'B') {
+        parentTd.classList.add("bg-amber-50");
+        selectEl.classList.add("text-amber-700", "font-bold");
+      } else if (val === 'P') {
+        parentTd.classList.add("bg-sky-50");
+        selectEl.classList.add("text-sky-700", "font-bold");
+      } else if (val === 'A') {
+        parentTd.classList.add("bg-emerald-50");
+        selectEl.classList.add("text-emerald-700", "font-bold");
+      } else {
+        selectEl.classList.add("text-slate-600");
+      }
+
+      // Update counters dynamically
+      updateTotalsFooter();
+    }
+
+    function updateTotalsFooter() {
+      const tfoot = document.getElementById('table-foot');
+      
+      let bbRowHtml = `<td colspan="4" class="p-2 border-r border-slate-200 text-right text-rose-700 uppercase font-black sticky-c1">ಒಟ್ಟು BB / Total BB</td>`;
+      let bRowHtml = `<td colspan="4" class="p-2 border-r border-slate-200 text-right text-amber-700 uppercase font-black sticky-c1">ಒಟ್ಟು B / Total B</td>`;
+      let pRowHtml = `<td colspan="4" class="p-2 border-r border-slate-200 text-right text-sky-700 uppercase font-black sticky-c1">ಒಟ್ಟು P / Total P</td>`;
+      let aRowHtml = `<td colspan="4" class="p-2 border-r border-slate-200 text-right text-emerald-700 uppercase font-black sticky-c1">ಒಟ್ಟು A / Total A</td>`;
+
+      // Accumulate totals per column
+      const colKeys = [];
+      for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+        colKeys.push(`col_${i}`);
+      }
+
+      colKeys.forEach(colKey => {
+        let bbSum = 0, bSum = 0, pSum = 0, aSum = 0;
+        students.forEach(st => {
+          const outcomes = evaluations[st.id] || {};
+          const val = outcomes[colKey] || '';
+          if (val === 'BB') bbSum++;
+          else if (val === 'B') bSum++;
+          else if (val === 'P') pSum++;
+          else if (val === 'A') aSum++;
+        });
+
+        bbRowHtml += `<td class="p-1.5 border-r border-slate-200 text-rose-700 text-center font-black bg-rose-50/20">${bbSum}</td>`;
+        bRowHtml += `<td class="p-1.5 border-r border-slate-200 text-amber-700 text-center font-black bg-amber-50/20">${bSum}</td>`;
+        pRowHtml += `<td class="p-1.5 border-r border-slate-200 text-sky-700 text-center font-black bg-sky-50/20">${pSum}</td>`;
+        aRowHtml += `<td class="p-1.5 border-r border-slate-200 text-emerald-700 text-center font-black bg-emerald-50/20">${aSum}</td>`;
+      });
+
+      tfoot.innerHTML = `
+        <tr class="bg-rose-50/10 border-t border-slate-200">${bbRowHtml}</tr>
+        <tr class="bg-amber-50/10">${bRowHtml}</tr>
+        <tr class="bg-sky-50/10">${pRowHtml}</tr>
+        <tr class="bg-emerald-50/10">${aRowHtml}</tr>
+      `;
+    }
+
+    async function saveData() {
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+
+      if (students.length === 0) return;
+
+      document.getElementById('loading-overlay').classList.remove('hidden');
+
+      // Fetch School ID
+      let schoolId = null;
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('school_id')
+            .eq('id', session.user.id)
+            .single();
+          if (profile) schoolId = profile.school_id;
+        }
+      } catch(e){
+        console.warn("Could not retrieve school_id, using guest fallback:", e);
+      }
+
+      if (!schoolId) {
+        // Fallback to guest school_id
+        schoolId = "381b83df-cb1b-4d43-9828-a40a5a3a7895"; 
+      }
+
+      // Construct records payload
+      const payload = students.map(st => {
+        return {
+          school_id: schoolId,
+          student_id: st.id,
+          class_name: className,
+          evaluation_date: dateVal,
+          outcomes: evaluations[st.id] || {}
+        };
+      });
+
+      // Upsert
+      supabaseClient
+        .from('fln_evaluations')
+        .upsert(payload, { onConflict: 'student_id,evaluation_date' })
+        .then(({ error }) => {
+          if (error) {
+            console.warn("Supabase upsert for FLN failed, saving locally:", error);
+            showToast("ಸಿಸ್ಟಮ್ ಸಂಪರ್ಕವಿಲ್ಲ: ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ", "warning");
+          } else {
+            showToast("ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!", "success");
+            originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+          }
+
+          // Backup in localStorage
+          const mockKey = `fln_mock_${className}_${dateVal}`;
+          localStorage.setItem(mockKey, JSON.stringify(evaluations));
+
+          document.getElementById('loading-overlay').classList.add('hidden');
+          renderGrid();
+        });
+    }
+
+    // ==================== PRINT AND EXPORTS ====================
+    function triggerPrint() {
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+      
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      document.getElementById('print-school-name').innerText = schoolNameKn;
+      
+      const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
+      document.getElementById('print-class-meta').innerText = classKn;
+      
+      const formattedDate = new Date(dateVal).toLocaleDateString('kn-IN');
+      document.getElementById('print-date-meta').innerText = formattedDate;
+      
+      // Calculate totals
+      let achievedCount = 0;
+      students.forEach(st => {
+        const outcomes = evaluations[st.id] || {};
+        let gradedCount = 0, aCount = 0;
+        for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+          const val = outcomes[`col_${i}`] || '';
+          if (val) {
+            gradedCount++;
+            if (val === 'A') aCount++;
+          }
+        }
+        if (gradedCount > 0 && aCount >= (gradedCount * 0.65)) achievedCount++;
+      });
+
+      const achievedPct = students.length > 0 ? Math.round((achievedCount / students.length) * 100) : 0;
+      const notAchievedCount = students.length - achievedCount;
+      const notAchievedPct = students.length > 0 ? Math.round((notAchievedCount / students.length) * 100) : 0;
+
+      document.getElementById('print-enrolled-meta').innerText = students.length;
+      document.getElementById('print-achieved-meta').innerText = `${achievedCount} (${achievedPct}%)`;
+      document.getElementById('print-notachieved-meta').innerText = `${notAchievedCount} (${notAchievedPct}%)`;
+
+      // Clean up previous print content
+      const existingTable = document.getElementById('printArea').querySelector('table');
+      if (existingTable) existingTable.remove();
+      const existingSigs = document.getElementById('printArea').querySelector('.print-signatures-row');
+      if (existingSigs) existingSigs.remove();
+      
+      // Clone table
+      const originalTable = document.getElementById('competency-table');
+      const tableClone = originalTable.cloneNode(true);
+      tableClone.removeAttribute('id');
+      
+      // Replace select dropdowns with spans
+      const selectElements = tableClone.querySelectorAll('select');
+      selectElements.forEach(select => {
+        const parent = select.parentNode;
+        const val = select.value || '-';
+        const span = document.createElement('span');
+        span.innerText = val;
+        span.style.fontWeight = 'bold';
+        parent.replaceChild(span, select);
+      });
+
+      // Move tfoot rows into tbody so they only print once at the end of the table
+      const tfoot = tableClone.querySelector('tfoot');
+      if (tfoot) {
+        const tbody = tableClone.querySelector('tbody');
+        while (tfoot.rows.length > 0) {
+          tbody.appendChild(tfoot.rows[0]);
+        }
+        tfoot.remove();
+      }
+      
+      document.getElementById('printArea').appendChild(tableClone);
+      
+      // Add signature block
+      const sigRow = document.createElement('div');
+      sigRow.className = 'print-signatures-row';
+      const isSingleClass = className && className !== "ALL";
+      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
+      
+      sigRow.innerHTML = `
+        <span>${teacherSigText}</span>
+        <span>CRP ಸಹಿ / CRP Signature</span>
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
+      document.getElementById('printArea').appendChild(sigRow);
+      
+      window.print();
+    }
+
+    function exportToPdf() {
+      if (typeof html2pdf === 'undefined') {
+        alert("PDF ಲೈಬ್ರರಿ ಲೋಡ್ ಆಗಿಲ್ಲ.");
+        return;
+      }
+
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+      
+      const disabledStyles = [];
+      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(tag => {
+        if (!tag.disabled) {
+          tag.disabled = true;
+          disabledStyles.push(tag);
+        }
+      });
+
+      const printContainer = document.createElement('div');
+      printContainer.style.padding = '10px';
+      printContainer.style.fontFamily = "'Inter', 'Noto Sans Kannada', sans-serif";
+      printContainer.style.backgroundColor = '#ffffff';
+      printContainer.style.color = '#000000';
+      
+      const styleEl = document.createElement('style');
+      styleEl.innerText = `
+        table { width: 100%; border-collapse: collapse; font-size: 7.5px; margin-top: 15px; border: 1px solid #000000; background-color: #ffffff; table-layout: auto !important; }
+        th, td { border: 1px solid #000000; padding: 4px 2px; text-align: center; white-space: normal !important; word-break: break-word !important; }
+        th { font-weight: bold; background-color: #000000 !important; color: #ffffff !important; }
+        td { background-color: #ffffff !important; color: #000000 !important; }
+        .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
+      `;
+      printContainer.appendChild(styleEl);
+
+      // Calculate totals
+      let achievedCount = 0;
+      students.forEach(st => {
+        const outcomes = evaluations[st.id] || {};
+        let gradedCount = 0, aCount = 0;
+        for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
+          const val = outcomes[`col_${i}`] || '';
+          if (val) {
+            gradedCount++;
+            if (val === 'A') aCount++;
+          }
+        }
+        if (gradedCount > 0 && aCount >= (gradedCount * 0.65)) achievedCount++;
+      });
+      const achievedPct = students.length > 0 ? Math.round((achievedCount / students.length) * 100) : 0;
+      const notAchievedCount = students.length - achievedCount;
+      const notAchievedPct = students.length > 0 ? Math.round((notAchievedCount / students.length) * 100) : 0;
+      const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
+      const formattedDate = new Date(dateVal).toLocaleDateString('kn-IN');
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+
+      printContainer.innerHTML += `
+        <div style="text-align: center; margin-bottom: 15px; color: #000000;">
+          <h1 style="font-size: 16pt; font-weight: bold; margin: 0;">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h1>
+          <h2 style="font-size: 11px; font-weight: bold; margin: 3px 0 0 0;">ಶಾಲಾ ಹಂತ</h2>
+          <h3 style="font-size: 10px; font-weight: bold; margin: 3px 0 0 0;">ಅನುಬಂಧ 4-(1)</h3>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; font-size: 11pt; font-weight: bold; color: #000000; margin-bottom: 15px; line-height: 1.6;">
+          <div style="text-align: left;">ಶಾಲೆಯ ಹೆಸರು :- <span>${schoolNameKn}</span></div>
+          <div style="text-align: right;">ದಾಖಲಾದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${students.length}</span></div>
+          
+          <div style="text-align: left;">ತರಗತಿ :- <span>${classKn}</span></div>
+          <div style="text-align: right;">FLN ಸಾಧಿಸದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${notAchievedCount} (${notAchievedPct}%)</span></div>
+          
+          <div style="text-align: left;">FLN ಸಾಧಿಸಿದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${achievedCount} (${achievedPct}%)</span></div>
+          <div style="text-align: right;">ದಿನಾಂಕ :- <span>${formattedDate}</span></div>
+        </div>
+      `;
+      
+      const originalTable = document.getElementById('competency-table');
+      const tableClone = originalTable.cloneNode(true);
+      
+      const selectElements = tableClone.querySelectorAll('select');
+      selectElements.forEach(select => {
+        const parent = select.parentNode;
+        const val = select.value || '-';
+        const span = document.createElement('span');
+        span.innerText = val;
+        span.style.fontWeight = 'bold';
+        parent.replaceChild(span, select);
+      });
+
+      // Move tfoot rows to end of tbody
+      const tfoot = tableClone.querySelector('tfoot');
+      if (tfoot) {
+        const tbody = tableClone.querySelector('tbody');
+        while (tfoot.rows.length > 0) {
+          tbody.appendChild(tfoot.rows[0]);
+        }
+        tfoot.remove();
+      }
+
+      // Clear Tailwind classes
+      tableClone.removeAttribute('class');
+      tableClone.querySelectorAll('*').forEach(el => {
+        el.removeAttribute('class');
+        if (el.tagName === 'TH') {
+          el.style.backgroundColor = '#000000';
+          el.style.color = '#ffffff';
+        }
+      });
+      printContainer.appendChild(tableClone);
+      
+      const isSingleClass = className && className !== "ALL";
+      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
+      printContainer.innerHTML += `
+        <div class="print-signatures-row">
+          <span>${teacherSigText}</span>
+          <span>CRP ಸಹಿ / CRP Signature</span>
+          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+        </div>
+      `;
+      
+      const opt = {
+        margin:       [8, 8, 8, 8],
+        filename:     `FLN_Assessment_Report_${className}_${dateVal}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      };
+      
+      html2pdf().set(opt).from(printContainer).save().then(() => {
+        disabledStyles.forEach(tag => tag.disabled = false);
+      });
+    }
+
+    function exportToExcel() {
+      if (students.length === 0) return;
+
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+
+      // Build Headers
+      const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+      const row2 = ["", "", "", ""];
+
+      // Add columns
+      KANNADA_COLS.forEach((col, idx) => {
+        row1.push(`FL Kannada (Col ${idx+1})`);
+        row2.push(col);
+      });
+      MATH_COLS.forEach((col, idx) => {
+        row1.push(`FL Math (Col ${idx+10})`);
+        row2.push(col);
+      });
+
+      const dataAOA = [row1, row2];
+
+      students.forEach((student, index) => {
+        const outcomes = evaluations[student.id] || {};
+        let nameEn = (student.name_english || '').trim().toUpperCase();
+        let nameKn = (student.student_name || '').trim();
+        let nameStr = nameEn;
+        if (nameKn) {
+          nameStr = nameEn ? `${nameEn} / ${nameKn}` : nameKn;
+        }
+
+        let fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        let fatherKn = (student.father_name_kn || '').trim();
+        let fatherStr = fatherEn;
+        if (fatherKn) {
+          fatherStr = fatherEn ? `${fatherEn} / ${fatherKn}` : fatherKn;
+        }
+
+        const studentRow = [
+          index + 1,
+          student.app_no || '-',
+          nameStr || '-',
+          fatherStr || '-'
+        ];
+
+        // Kannada cols
+        for (let i = 1; i <= KANNADA_COLS.length; i++) {
+          studentRow.push(outcomes[`col_${i}`] || '');
+        }
+
+        // Math cols
+        for (let i = 10; i <= TOTAL_COLS_COUNT; i++) {
+          studentRow.push(outcomes[`col_${i}`] || '');
+        }
+
+        dataAOA.push(studentRow);
+      });
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(dataAOA);
+      XLSX.utils.book_append_sheet(wb, ws, "FLN Evaluation");
+      XLSX.writeFile(wb, `FLN_Evaluation_${className}_${dateVal}.xlsx`);
+    }
+
+    // ==================== CSV IMPORT TEMPLATE LOGIC ====================
+    function triggerCSVImport() {
+      document.getElementById('csvFileInput').click();
+    }
+
+    function handleCSVUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        processCSVData(text);
+      };
+      reader.readAsText(file);
+    }
+
+    function processCSVData(csvText) {
+      const lines = csvText.split('\n');
+      if (lines.length < 3) {
+        showToast("ದೋಷ: ಅಮಾನ್ಯವಾದ CSV ಫೈಲ್", "error");
+        return;
+      }
+
+      let parsedCount = 0;
+      // Loop lines starting from line 2
+      for (let i = 2; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const cells = line.split(',').map(c => c.replace(/^["']|["']$/g, '').trim());
+        if (cells.length < 4) continue;
+
+        const stsNo = cells[1];
+        // Match student by STS number
+        const matchedStudent = students.find(st => st.app_no === stsNo);
+        if (matchedStudent) {
+          const sId = matchedStudent.id;
+          if (!evaluations[sId]) evaluations[sId] = {};
+
+          // Extract grades starting from column 4 (O1)
+          let cellIdx = 4;
+          // Kannada
+          for (let j = 1; j <= KANNADA_COLS.length; j++) {
+            const val = cells[cellIdx] || '';
+            if (['BB', 'B', 'P', 'A'].includes(val.toUpperCase())) {
+              evaluations[sId][`col_${j}`] = val.toUpperCase();
+            }
+            cellIdx++;
+          }
+          // Maths
+          for (let j = 10; j <= TOTAL_COLS_COUNT; j++) {
+            const val = cells[cellIdx] || '';
+            if (['BB', 'B', 'P', 'A'].includes(val.toUpperCase())) {
+              evaluations[sId][`col_${j}`] = val.toUpperCase();
+            }
+            cellIdx++;
+          }
+          parsedCount++;
+        }
+      }
+
+      if (parsedCount > 0) {
+        showToast(`${parsedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ!`, "success");
+        renderGrid();
+      } else {
+        showToast("ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.", "warning");
+      }
+    }
+
+    function downloadCSVTemplate() {
+      const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+      KANNADA_COLS.forEach((col, idx) => {
+        row1.push(`FL Kannada (Col ${idx+1})`);
+      });
+      MATH_COLS.forEach((col, idx) => {
+        row1.push(`FL Math (Col ${idx+10})`);
+      });
+
+      const row2 = ["", "", "", ""];
+      KANNADA_COLS.forEach((col) => {
+        row2.push(col);
+      });
+      MATH_COLS.forEach((col) => {
+        row2.push(col);
+      });
+
+      const sampleRow = ["1", "STS123456", "Sample Student En / Kn", "Sample Father En / Kn"];
+      for (let i = 0; i < TOTAL_COLS_COUNT; i++) {
+        sampleRow.push("A");
+      }
+
+      let csvContent = "\uFEFF"; 
+      csvContent += row1.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+      csvContent += row2.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+      csvContent += sampleRow.map(r => `"${r.replace(/"/g, '""')}"`).join(",") + "\r\n";
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "FLN_Assessment_Template.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function exportToCSV() {
+      if (students.length === 0) {
+        showToast("ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ", "warning");
+        return;
+      }
+
+      const className = classFilter.value;
+      const dateVal = dateFilter.value;
+
+      const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+      KANNADA_COLS.forEach((col, idx) => {
+        row1.push(`FL Kannada (Col ${idx+1})`);
+      });
+      MATH_COLS.forEach((col, idx) => {
+        row1.push(`FL Math (Col ${idx+10})`);
+      });
+
+      const row2 = ["", "", "", ""];
+      KANNADA_COLS.forEach((col) => {
+        row2.push(col);
+      });
+      MATH_COLS.forEach((col) => {
+        row2.push(col);
+      });
+
+      const csvRows = [row1, row2];
+
+      students.forEach((student, index) => {
+        const outcomes = evaluations[student.id] || {};
+        let nameEn = (student.name_english || '').trim().toUpperCase();
+        let nameKn = (student.student_name || '').trim();
+        let nameStr = nameEn;
+        if (nameKn) nameStr = nameEn ? `${nameEn} / ${nameKn}` : nameKn;
+
+        let fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        let fatherKn = (student.father_name_kn || '').trim();
+        let fatherStr = fatherEn;
+        if (fatherKn) fatherStr = fatherEn ? `${fatherEn} / ${fatherKn}` : fatherKn;
+
+        const studentRow = [
+          index + 1,
+          student.app_no || '-',
+          nameStr || '-',
+          fatherStr || '-'
+        ];
+
+        // Kannada cols
+        for (let i = 1; i <= KANNADA_COLS.length; i++) {
+          studentRow.push(outcomes[`col_${i}`] || '');
+        }
+
+        // Math cols
+        for (let i = 10; i <= TOTAL_COLS_COUNT; i++) {
+          studentRow.push(outcomes[`col_${i}`] || '');
+        }
+
+        csvRows.push(studentRow);
+      });
+
+      let csvContent = "\uFEFF"; 
+      csvRows.forEach(row => {
+        csvContent += row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(",") + "\r\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `FLN_Assessment_${className}_${dateVal}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ==================== UTILS ====================
+    function showToast(msg, type = "success") {
+      const container = document.getElementById('toast-notif');
+      const message = document.getElementById('toast-message');
+      
+      message.innerText = msg;
+      container.className = "fixed bottom-5 right-5 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition transform z-[100] max-w-sm border";
+      
+      if (type === "success") {
+        container.classList.add("bg-emerald-900/95", "border-emerald-800");
+      } else if (type === "error") {
+        container.classList.add("bg-rose-900/95", "border-rose-800");
+      } else if (type === "warning") {
+        container.classList.add("bg-amber-900/95", "border-amber-800");
+      }
+
+      container.classList.remove("translate-y-20", "opacity-0");
+      setTimeout(() => {
+        container.classList.add("translate-y-20", "opacity-0");
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
