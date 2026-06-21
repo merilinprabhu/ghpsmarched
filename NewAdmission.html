@@ -29,7 +29,7 @@
 
 <header id="standalone-header" class="no-print" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1010; height: 70px; background: linear-gradient(to right, #0c4a6e, #1e293b); color: white; padding: 10px 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; gap: 16px;">
   <div style="display: flex; align-items: center; gap: 12px;">
-    <button type="button" onclick="goToDashboard()" style="background: #334155; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">
+    <button type="button" onclick="goBack()" style="background: #334155; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 0; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">
       <i class="fa-solid fa-arrow-left" style="font-size: 16px;"></i>
     </button>
     <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
@@ -412,12 +412,12 @@
         </select>
       </div>
       <div class="mb-3">
-        <label class="form-label fw-semibold text-secondary">ಜಾತಿ ಹೆಸರು (ಕನ್ನಡ) / Caste Name (KN)</label>
-        <input type="text" id="modalCasteKn" class="form-control" placeholder="ಉದಾ: ಕುರುಬ">
+        <label class="form-label fw-semibold text-secondary">ಜาತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Caste Name (EN)</label>
+        <input type="text" id="modalCasteEn" class="form-control" placeholder="e.g. Kuruba" onblur="autoTransliterateModalField('modalCasteEn', 'modalCasteKn')">
       </div>
       <div class="mb-3">
-        <label class="form-label fw-semibold text-secondary">ಜಾತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Caste Name (EN)</label>
-        <input type="text" id="modalCasteEn" class="form-control" placeholder="e.g. Kuruba">
+        <label class="form-label fw-semibold text-secondary">ಜಾತಿ ಹೆಸರು (ಕನ್ನಡ) / Caste Name (KN)</label>
+        <input type="text" id="modalCasteKn" class="form-control" placeholder="ಉದಾ: ಕುರುಬ">
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeCasteModal()" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ರದ್ದುಮಾಡಿ / Cancel</button>
@@ -436,12 +436,12 @@
     </div>
     <div class="card-body p-0">
       <div class="mb-3">
-        <label class="form-label fw-semibold text-secondary">ವೃತ್ತಿ ಹೆಸರು (ಕನ್ನಡ) / Occupation Name (KN)</label>
-        <input type="text" id="modalOccKn" class="form-control" placeholder="ಉದಾ: ಶಿಕ್ಷಕ">
+        <label class="form-label fw-semibold text-secondary">ವೃತ್ತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Occupation Name (EN)</label>
+        <input type="text" id="modalOccEn" class="form-control" placeholder="e.g. Teacher" onblur="autoTransliterateModalField('modalOccEn', 'modalOccKn')">
       </div>
       <div class="mb-3">
-        <label class="form-label fw-semibold text-secondary">ವೃತ್ತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Occupation Name (EN)</label>
-        <input type="text" id="modalOccEn" class="form-control" placeholder="e.g. Teacher">
+        <label class="form-label fw-semibold text-secondary">ವೃತ್ತಿ ಹೆಸರು (ಕನ್ನಡ) / Occupation Name (KN)</label>
+        <input type="text" id="modalOccKn" class="form-control" placeholder="ಉದಾ: ಶಿಕ್ಷಕ">
       </div>
       <div class="d-flex justify-content-end gap-2 mt-4">
         <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeOccupationModal()" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ರದ್ದುಮಾಡಿ / Cancel</button>
@@ -1216,6 +1216,15 @@
       .processForm(form);
   }
 
+  function goBack() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('id')) {
+      window.location.href = "NewAdmissionList.html";
+      return;
+    }
+    goToDashboard();
+  }
+
   function goToDashboard() {
     if (window.parent && window.parent !== window) {
       window.parent.postMessage({ action: 'goToDashboard' }, '*');
@@ -1229,6 +1238,19 @@
       }
     }
   }
+
+  window.addEventListener("message", function(event) {
+    if (event.data && event.data.action === 'loadView' && event.data.pageKey === 'admissionForm') {
+      showFormSection('student-details');
+    } else if (event.data && event.data.action === 'submitSuccess') {
+      const isEdit = event.data.isEdit || event.data.id || (localStorage.getItem("editMode") === "true");
+      if (isEdit) {
+        window.location.href = "NewAdmissionList.html";
+      } else {
+        window.location.href = "NewAdmission.html";
+      }
+    }
+  });
 
   function showFormSection(sectionId) {
     // Show all form sections
@@ -1266,8 +1288,16 @@
     data.age = document.getElementById("age") ? document.getElementById("age").value : "";
     data.appNo = document.getElementById("appNo") ? document.getElementById("appNo").value : "";
     
+    // Preserve student ID if in edit mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlId = urlParams.get('id');
+    if (urlId) {
+      data.id = urlId;
+    }
+    
     // Save to localStorage
     localStorage.setItem("admissionData", JSON.stringify(data));
+
     
     // Hide all form sections and submit button
     document.getElementById("student-details").classList.add("d-none");
@@ -1310,6 +1340,32 @@
   function checkForEditMode() {
     // 1. Check URL parameters
     const urlParams = new URLSearchParams(window.location.search);
+    const urlId = urlParams.get('id');
+    
+    if (urlId) {
+      // Load directly from Supabase
+      supabaseClient
+        .from('admissions')
+        .select('*')
+        .eq('id', urlId)
+        .single()
+        .then(({ data: row, error }) => {
+          if (error) throw error;
+          if (row) {
+            const mapped = mapDatabaseRowToAdmissionData(row);
+            // Save to localStorage for preview sync
+            localStorage.setItem("editMode", "true");
+            localStorage.setItem("admissionData", JSON.stringify(mapped));
+            populateForm(mapped);
+          }
+        })
+        .catch(err => {
+          console.error("Error loading student for edit:", err);
+          alert("Error loading student for editing: " + err.message);
+        });
+      return;
+    }
+
     const urlAppNo = urlParams.get('appNo');
     const urlAcademicYear = urlParams.get('academicYear');
     const urlMedium = urlParams.get('medium');
@@ -1319,6 +1375,7 @@
     const medium = templateMedium || urlMedium;
 
     if (appNo && academicYear && medium) {
+
       if (typeof google !== "undefined" && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(studentData) {
@@ -1419,6 +1476,73 @@
         } catch(e) {}
       }
     }
+  }
+
+  function mapDatabaseRowToAdmissionData(row) {
+    return {
+      id: row.id,
+      academicYear: row.academic_year,
+      medium: row.medium,
+      enrollClass: row.enroll_class,
+      appNo: row.app_no,
+      studentName: row.student_name,
+      nameEnglish: row.name_english,
+      dob: row.dob,
+      gender: row.gender,
+      studentAadhaar: row.student_aadhaar,
+      religion: row.religion,
+      caste: row.caste,
+      socialClass: row.social_class,
+      subCaste: row.student_caste, // maps to row.student_caste
+      motherTongue: row.mother_tongue,
+      mobileNumber: row.mobile_number,
+      specialNeed: row.special_need,
+      specialCategory: row.special_category,
+      bhagyalakshmiBond: row.bhagyalakshmi_bond,
+      ageReason: row.age_reason,
+      address: row.address,
+      district: row.district,
+      taluk: row.taluk,
+      bankAccNo: row.bank_acc_no,
+      ifscCode: row.ifsc_code,
+      bankAddress: row.bank_address,
+      scholarshipNo: row.scholarship_no,
+      studentCasteCert: row.student_caste_cert,
+      studentIncomeCert: row.student_income_cert,
+      bplCardNo: row.bpl_card_no,
+      fatherNameKn: row.father_name_kn,
+      fatherNameAz: row.father_name_az,
+      fatherOccupation: row.father_occupation,
+      fatherAadhaar: row.father_aadhaar,
+      fatherCasteCert: row.father_caste_cert,
+      fatherIncomeCert: row.father_income_cert,
+      mobileNo1: row.mobile_no_1,
+      fatherEmail: row.father_email,
+      motherNameKn: row.mother_name_kn,
+      motherNameAz: row.mother_name_az,
+      motherOccupation: row.mother_occupation,
+      motherAadhaar: row.mother_aadhaar,
+      motherCasteCert: row.mother_caste_cert,
+      motherIncomeCert: row.mother_income_cert,
+      mobileNo2: row.mobile_no_2,
+      motherEmail: row.mother_email,
+      preschoolBoard: row.preschool_board,
+      preschoolType: row.preschool_type,
+      preschoolName: row.preschool_name,
+      transferNo: row.transfer_no,
+      transferDate: row.transfer_date,
+      studentSts: row.student_sts,
+      enrolmentNo: row.enrolment_no,
+      enrolmentDate: row.enrolment_date,
+      nameAadhaar: row.name_aadhaar,
+      hobli: row.hobli,
+      pinCode: row.pin_code,
+      prevVillage: row.prev_village,
+      prevHobli: row.prev_hobli,
+      prevTaluk: row.prev_taluk,
+      prevDistrict: row.prev_district,
+      prevPinCode: row.prev_pin_code
+    };
   }
 
   function populateForm(data) {
@@ -1605,6 +1729,29 @@
     if (kannadaInput.value.trim() !== "") return;
     
     transliterateAdmissionField(englishFieldName, kannadaFieldName);
+  }
+
+  async function autoTransliterateModalField(englishId, kannadaId) {
+    const englishInput = document.getElementById(englishId);
+    const kannadaInput = document.getElementById(kannadaId);
+    if (!englishInput || !kannadaInput) return;
+    
+    const text = englishInput.value.trim();
+    if (!text) return;
+    
+    // Only auto-transliterate if Kannada field is currently empty
+    if (kannadaInput.value.trim() !== "") return;
+    
+    try {
+      const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=kn-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage`;
+      const response = await fetch(url);
+      const json = await response.json();
+      if (json && json[0] === "SUCCESS" && json[1] && json[1][0] && json[1][0][1] && json[1][0][1][0]) {
+        kannadaInput.value = json[1][0][1][0];
+      }
+    } catch (err) {
+      console.error("Modal transliteration failed", err);
+    }
   }
 </script>
 </body>

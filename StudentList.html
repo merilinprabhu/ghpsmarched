@@ -17,6 +17,25 @@
     .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    #table-container table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+    }
+    thead th {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 20 !important;
+      background-color: #1e293b !important;
+      color: #cbd5e1 !important;
+      border-bottom: 2px solid #334155 !important;
+    }
+    #table-container tbody td {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    body[data-theme="dark"] #table-container tbody td {
+      border-bottom-color: #334155 !important;
+    }
+
 
     @media print {
       body { background: white !important; color: black !important; }
@@ -499,11 +518,44 @@
           </div>
         </div>
 
+        <!-- Mass Actions Floating Bar -->
+        <div id="mass-actions-bar" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col md:flex-row items-center justify-between gap-4 z-[80] w-[92%] max-w-4xl no-print border border-slate-700/30 transition-all duration-300 transform translate-y-28 opacity-0 pointer-events-none">
+          <div class="flex items-center gap-3">
+            <span class="bg-indigo-650 text-white text-xs font-black px-3 py-1 rounded-full shadow-md shadow-indigo-500/20" id="selected-count-badge">0 selected</span>
+            <span class="text-xs font-bold text-slate-200">ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ / Students Selected</span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap justify-center text-xs font-bold">
+            <!-- View Profile -->
+            <button onclick="viewSelectedProfile()" id="mass-view-btn" class="bg-indigo-650 hover:bg-indigo-600 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-eye text-[10px]"></i> View Profile / ನೋಡಿ
+            </button>
+            <!-- Print Form -->
+            <button onclick="printSelectedApplicationForm()" id="mass-print-btn" class="bg-sky-650 hover:bg-sky-600 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-invoice text-[10px]"></i> Print Form / ಮುದ್ರಣ
+            </button>
+            <!-- PDF -->
+            <button onclick="downloadSelectedStudentPdf()" id="mass-pdf-btn" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-pdf text-[10px]"></i> PDF / ಪಿಡಿಎಫ್
+            </button>
+            <!-- Edit -->
+            <button onclick="editSelectedStudent()" id="mass-edit-btn" class="bg-amber-500 hover:bg-amber-400 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-pen text-[10px]"></i> Edit / ತಿದ್ದುಪಡಿ
+            </button>
+            <!-- Delete -->
+            <button onclick="deleteSelectedStudents()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-trash text-[10px]"></i> Delete / ಅಳಿಸಿ
+            </button>
+          </div>
+        </div>
+
         <!-- Scrollable Table Container -->
         <div class="max-h-[600px] overflow-auto custom-scrollbar border border-slate-100 rounded-xl shadow-sm" id="table-container">
           <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
             <thead>
               <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider text-center">
+                <th class="p-3 text-center w-10 no-print">
+                  <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
+                </th>
                 <th class="p-3 text-center w-12">Sl.No / ಕ್ರ.ಸಂ</th>
                 <th class="p-3 text-left">Student ID / PEN</th>
                 <th class="p-3 text-left">Student Name (ಹೆಸರು)</th>
@@ -1210,7 +1262,12 @@
         return ' <i class="fa-solid fa-sort ml-1 opacity-40"></i>';
       };
 
-      let headersHtml = `<th class="p-3 text-center w-12">Sl.No</th>`;
+      let headersHtml = `
+        <th class="p-3 text-center w-10 no-print">
+          <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
+        </th>
+        <th class="p-3 text-center w-12">Sl.No</th>
+      `;
       
       standardColumns.forEach(col => {
         if (visibility[col.id] !== false) {
@@ -1218,7 +1275,6 @@
         }
       });
       
-      headersHtml += `<th class="p-3 text-center no-print">Actions</th>`;
       theadRow.innerHTML = headersHtml;
     }
 
@@ -1237,11 +1293,10 @@
       document.getElementById('cwsn-count').textContent = cwsn;
 
       const visibility = getColumnVisibility();
-      let colCount = 1;
+      let colCount = 2; // Checkbox + Sl.No
       standardColumns.forEach(c => {
         if (visibility[c.id]) colCount++;
       });
-      colCount++; // Actions
 
       if (!students || students.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-semibold bg-slate-50/10"><i class="fa-solid fa-triangle-exclamation mr-1.5 text-lg"></i> No records match these filter selections.</td></tr>`;
@@ -1250,7 +1305,12 @@
 
       let rowsHtml = "";
       students.forEach((s, index) => {
-        let cellsHtml = `<td class="p-3 font-semibold text-slate-500 font-mono text-center">${index + 1}</td>`;
+        let cellsHtml = `
+          <td class="p-3 text-center no-print">
+            <input type="checkbox" class="student-checkbox w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 cursor-pointer" data-id="${s.realId}" onchange="updateSelectedCount()">
+          </td>
+          <td class="p-3 font-semibold text-slate-500 font-mono text-center">${index + 1}</td>
+        `;
         
         standardColumns.forEach(col => {
           if (visibility[col.id] !== false) {
@@ -1316,29 +1376,9 @@
           }
         });
 
-        let actionsCellHtml = `
-            <td class="p-3 text-center no-print">
-              <div class="flex justify-center gap-1.5">
-                <button onclick="openStudentPreviewModal('${s.realId}')" class="bg-indigo-500 hover:bg-indigo-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Quick View / ಕ್ಷಿಪ್ರ ನೋಟ">
-                  <i class="fa-solid fa-eye text-xs"></i>
-                </button>
-                <button onclick="printApplicationForm('${s.realId}')" class="bg-sky-500 hover:bg-sky-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Print Application Form / ಪ್ರವೇಶ ಅರ್ಜಿ ಮುದ್ರಣ">
-                  <i class="fa-solid fa-file-invoice text-xs"></i>
-                </button>
-                <a href="StudentUpdate.html?id=${s.realId}" class="bg-amber-500 hover:bg-amber-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Edit / ತಿದ್ದುಪಡಿ">
-                  <i class="fa-solid fa-pen text-xs"></i>
-                </a>
-                <button onclick="deleteStudent('${s.realId}', '${s.name.replace(/'/g, "\\'")}')" class="bg-red-500 hover:bg-red-600 text-white w-7 h-7 rounded-lg flex items-center justify-center transition shadow-sm border-0 cursor-pointer" title="Delete / ಅಳಿಸಿ">
-                  <i class="fa-solid fa-trash text-xs"></i>
-                </button>
-              </div>
-            </td>
-        `;
-
         rowsHtml += `
           <tr class="hover:bg-slate-50 transition-colors text-center">
             ${cellsHtml}
-            ${actionsCellHtml}
           </tr>
         `;
       });
@@ -1355,6 +1395,13 @@
       if (!confirm(`ಎಚ್ಚರಿಕೆ! ನಿಜವಾಗಿಯೂ ${studentName} ಅವರ ದಾಖಲೆಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nWarning! Are you sure you want to permanently delete ${studentName}'s record?`)) {
         return;
       }
+      
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!studentId || !uuidRegex.test(studentId)) {
+        alert(`ದೋಷ: ಅಮಾನ್ಯವಾದ ವಿದ್ಯಾರ್ಥಿ ಐಡಿ (${studentId}). ಇದು UUID ರೂಪದಲ್ಲಿರಬೇಕು.\nError: Invalid student ID (${studentId}). It must be a valid UUID.`);
+        return;
+      }
+
       try {
         const { error } = await supabaseClient
           .from('admissions')
@@ -1370,7 +1417,139 @@
 
         applyFilters();
       } catch (err) {
-        alert("ಅಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to delete: " + err.message);
+        let details = err.message || err;
+        if (err.details) details += "\nDetails: " + err.details;
+        if (err.hint) details += "\nHint: " + err.hint;
+        if (err.code) details += "\nCode: " + err.code;
+        alert("ಅಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to delete: " + details);
+      }
+    }
+
+    function toggleSelectAll(checked) {
+      const checkboxes = document.querySelectorAll('.student-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = checked;
+      });
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      const count = checkedBoxes.length;
+      
+      const bar = document.getElementById('mass-actions-bar');
+      const badge = document.getElementById('selected-count-badge');
+      const selectAll = document.getElementById('select-all-checkbox');
+      
+      const viewBtn = document.getElementById('mass-view-btn');
+      const printBtn = document.getElementById('mass-print-btn');
+      const pdfBtn = document.getElementById('mass-pdf-btn');
+      const editBtn = document.getElementById('mass-edit-btn');
+
+      if (count > 0) {
+        if (badge) badge.textContent = `${count} selected`;
+        if (bar) {
+          bar.classList.remove('translate-y-28', 'opacity-0', 'pointer-events-none');
+          bar.classList.add('translate-y-0', 'opacity-100');
+        }
+        
+        // Single selection features
+        if (count === 1) {
+          if (viewBtn) viewBtn.classList.remove('hidden');
+          if (printBtn) printBtn.classList.remove('hidden');
+          if (pdfBtn) pdfBtn.classList.remove('hidden');
+          if (editBtn) editBtn.classList.remove('hidden');
+        } else {
+          if (viewBtn) viewBtn.classList.add('hidden');
+          if (printBtn) printBtn.classList.add('hidden');
+          if (pdfBtn) pdfBtn.classList.add('hidden');
+          if (editBtn) editBtn.classList.add('hidden');
+        }
+      } else {
+        if (bar) {
+          bar.classList.remove('translate-y-0', 'opacity-100');
+          bar.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+        }
+      }
+      
+      const totalBoxes = document.querySelectorAll('.student-checkbox').length;
+      if (selectAll) {
+        selectAll.checked = totalBoxes > 0 && count === totalBoxes;
+      }
+    }
+
+    function viewSelectedProfile() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 1) {
+        const studentId = checkedBoxes[0].getAttribute('data-id');
+        openStudentPreviewModal(studentId);
+      }
+    }
+
+    function printSelectedApplicationForm() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 1) {
+        const studentId = checkedBoxes[0].getAttribute('data-id');
+        printApplicationForm(studentId);
+      }
+    }
+
+    function downloadSelectedStudentPdf() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 1) {
+        const studentId = checkedBoxes[0].getAttribute('data-id');
+        window.open('Preview.html?id=' + encodeURIComponent(studentId) + '&autoDownloadPdf=true', '_blank');
+      }
+    }
+
+    function editSelectedStudent() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 1) {
+        const studentId = checkedBoxes[0].getAttribute('data-id');
+        window.location.href = `StudentUpdate.html?id=${studentId}`;
+      }
+    }
+
+    async function deleteSelectedStudents() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      if (selectedIds.length === 0) return;
+
+      if (!confirm(`ಎಚ್ಚರಿಕೆ! ನಿಜವಾಗಿಯೂ ಆಯ್ಕೆ ಮಾಡಲಾದ ${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲೆಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nWarning! Are you sure you want to permanently delete ${selectedIds.length} selected students' records?`)) {
+        return;
+      }
+
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const invalidIds = selectedIds.filter(id => !id || !uuidRegex.test(id));
+      if (invalidIds.length > 0) {
+        alert("ದೋಷ: ಅಮಾನ್ಯವಾದ ವಿದ್ಯಾರ್ಥಿ ಐಡಿಗಳನ್ನು ಗುರುತಿಸಲಾಗಿದೆ: " + invalidIds.join(", ") + "\nError: Invalid student IDs identified: " + invalidIds.join(", "));
+        return;
+      }
+
+      const tbody = document.getElementById('students-table-body');
+      const colCount = document.querySelectorAll('thead th').length;
+      tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-2 text-lg"></i> ದಾಖಲೆಗಳನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ... / Deleting selected records...</td></tr>`;
+
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .delete()
+          .in('id', selectedIds);
+
+        if (error) throw error;
+
+        showToast("ಅಳಿಸಲಾಗಿದೆ / Deleted", `${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ.`, "success");
+        
+        allStudentsData = allStudentsData.filter(s => !selectedIds.includes(s.realId));
+
+        applyFilters();
+      } catch (err) {
+        let details = err.message || err;
+        if (err.details) details += "\nDetails: " + err.details;
+        if (err.hint) details += "\nHint: " + err.hint;
+        if (err.code) details += "\nCode: " + err.code;
+        alert("ಅಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to delete: " + details);
+        fetchStudentsDatabase();
       }
     }
 
@@ -1702,7 +1881,7 @@
         row.enroll_class = normalizeClass(row.enroll_class) || "1";
         row.dob = parseDateValue(row.dob) || "2019-06-01";
         row.gender = (row.gender && row.gender.toLowerCase().includes('girl')) ? 'Girl' : 'Boy';
-        row.is_admitted = false; 
+        row.is_admitted = true; 
 
         row.transfer_date = parseDateValue(row.transfer_date);
         if (row.transfer_date === '') row.transfer_date = null;
@@ -1739,9 +1918,15 @@
       tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-2 text-lg"></i> ಡೇಟಾಬೇಸ್‌ಗೆ ಸೇರಿಸಲಾಗುತ್ತಿದೆ...</td></tr>`;
 
       try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id || null;
+        const createdBy = session?.user?.id || null;
+
         const dbRows = parsedCSVStudents.map(s => {
           const clone = { ...s };
-          clone.is_admitted = false;
+          clone.is_admitted = true;
+          if (schoolId) clone.school_id = schoolId;
+          if (createdBy) clone.created_by = createdBy;
           return clone;
         });
 

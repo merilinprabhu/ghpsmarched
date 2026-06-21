@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1597,17 +1597,25 @@
             
             // Translate navigation elements
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('id')) {
-                document.getElementById('lbl-back').textContent = lang === 'kn' ? 'ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ' : 'Back to Student List';
+            const isIframe = window.parent && window.parent !== window;
+            if (isIframe) {
+                document.getElementById('lbl-back').textContent = lang === 'kn' ? 'ಅರ್ಜಿಗೆ ಹಿಂತಿರುಗಿ' : 'Back to Form';
+            } else if (urlParams.get('id') || (window.admissionData && window.admissionData.id)) {
+                document.getElementById('lbl-back').textContent = lang === 'kn' ? 'ದಾಖಲಾತಿ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ' : 'Back to Admission List';
             } else {
-                document.getElementById('lbl-back').textContent = lang === 'kn' ? '\u0C85\u0CB0\u0CCD\u0C9C\u0CBF\u0C97\u0CC6 \u0CB9\u0CBF\u0C82\u0CA6\u0CBF\u0CB0\u0CC1\u0C97\u0CBF' : 'Back to Form';
+                document.getElementById('lbl-back').textContent = lang === 'kn' ? 'ಅರ್ಜಿಗೆ ಹಿಂತಿರುಗಿ' : 'Back to Form';
             }
             document.getElementById('lbl-print').textContent = lang === 'kn' ? 'ರಫ್ತು' : 'Export';
             const lblPdf = document.getElementById('lbl-pdf');
             if (lblPdf) {
                 lblPdf.textContent = lang === 'kn' ? 'ರಫ್ತು' : 'Export';
             }
-            document.getElementById('lbl-submit').textContent = lang === 'kn' ? '\u0C85\u0CB0\u0CCD\u0C9C\u0CBF \u0CB8\u0CB2\u0CCD\u0CB2\u0CBF\u0CB8\u0CBF' : 'Submit Form';
+            if (window.admissionData && window.admissionData.id) {
+                document.getElementById('lbl-submit').textContent = lang === 'kn' ? 'ಅರ್ಜಿ ನವೀಕರಿಸಿ' : 'Update Form';
+            } else {
+                document.getElementById('lbl-submit').textContent = lang === 'kn' ? 'ಅರ್ಜಿ ಸಲ್ಲಿಸಿ' : 'Submit Form';
+            }
+
             
             document.documentElement.lang = lang;
             updateTranslations();
@@ -1906,6 +1914,10 @@
                 hindu: 'ಹಿಂದೂ',
                 islam: 'ಇಸ್ಲಾಂ',
                 christian: 'ಕ್ರೈಸ್ತ',
+                parsi: 'ಪಾರ್ಸಿ',
+                jain: 'ಜೈನ್',
+                buddhist: 'ಬೌದ್ಧ',
+                sikh: 'ಸಿಖ್',
                 others: 'ಇತರೆ'
             };
             ['hindu', 'islam', 'christian', 'parsi', 'jain', 'buddhist', 'sikh', 'others'].forEach(r => {
@@ -1939,25 +1951,27 @@
 
         // Redirection to main form NewAdmission.html
         function goBackToForm() {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ action: 'loadView', pageKey: 'admissionForm' }, '*');
+                return;
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('id')) {
+            if (urlParams.get('id') || (window.admissionData && window.admissionData.id)) {
                 if (window.opener) {
                     window.close();
                 } else {
-                    window.location.href = "StudentList.html";
+                    window.location.href = "NewAdmissionList.html";
                 }
                 return;
             }
-            if (window.parent && window.parent !== window) {
-                window.parent.postMessage({ action: 'loadView', pageKey: 'admissionForm' }, '*');
+
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+                google.script.run.withSuccessHandler(function(url) {
+                    window.open(url + "?page=newadmission", "_top");
+                }).getWebAppUrl();
             } else {
-                if (typeof google !== 'undefined' && google.script && google.script.run) {
-                    google.script.run.withSuccessHandler(function(url) {
-                        window.open(url + "?page=newadmission", "_top");
-                    }).getWebAppUrl();
-                } else {
-                    window.location.href = "NewAdmission.html";
-                }
+                window.location.href = "NewAdmission.html";
             }
         }
 
@@ -1969,18 +1983,20 @@
         function getAdmissionPdfFilename() {
             const data = window.admissionData || {};
             const appNo = (data.appNo || '').trim();
-            const enrollClass = (data.enrollClass || '').trim();
+            const medium = (data.medium || '').trim();
             const studentName = (data.nameEnglish || data.studentName || '').trim();
             const fatherName = (data.fatherNameAz || data.fatherNameKn || '').trim();
             
             let parts = [];
             if (appNo) parts.push(appNo);
-            if (enrollClass) parts.push(enrollClass);
+            if (medium) parts.push(medium);
             if (studentName) parts.push(studentName);
             if (fatherName) parts.push(fatherName);
             
-            return parts.length > 0 ? parts.join(' ') : 'admission_form';
+            const filename = parts.length > 0 ? parts.join(' ') : 'admission_form';
+            return filename.replace(/[\\/:*?"<>|]/g, '');
         }
+
 
         function downloadPdf() {
             // Update document title so browser print dialog picks up the correct custom filename
@@ -2020,6 +2036,7 @@
             lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ..." : "Submitting...";
 
             function proceedToAppsScriptSubmit() {
+                const isEdit = !!(window.admissionData && window.admissionData.id);
                 if (typeof google !== 'undefined' && google.script && google.script.run) {
                     google.script.run
                         .withSuccessHandler(function(response) {
@@ -2030,8 +2047,12 @@
                                 // Clear localStorage
                                 safeRemoveItem('admissionData');
                                 safeRemoveItem('editMode');
-                                // Redirect back to main page (app1)
-                                goBackToForm();
+                                
+                                if (window.parent && window.parent !== window) {
+                                    window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
+                                } else {
+                                    goBackToForm();
+                                }
                             } else {
                                 alert((currentLang === 'kn' ? "ದೋಷ: " : "Error: ") + response);
                                 submitBtn.disabled = false;
@@ -2052,7 +2073,11 @@
                         alert("Local simulation: Data submitted successfully!\n" + JSON.stringify(window.admissionData, null, 2));
                         safeRemoveItem('admissionData');
                         safeRemoveItem('editMode');
-                        goBackToForm();
+                        if (window.parent && window.parent !== window) {
+                            window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
+                        } else {
+                            goBackToForm();
+                        }
                     }, 1000);
                 }
             }
@@ -2118,7 +2143,8 @@
                         student_sts: data.studentSts || '',
                         name_aadhaar: data.nameAadhaar || '',
                         father_name_az: data.fatherNameAz || '',
-                        mother_name_az: data.motherNameAz || ''
+                        mother_name_az: data.motherNameAz || '',
+                        is_admitted: false
                     };
 
                     if (session && session.user) {
@@ -2126,30 +2152,61 @@
                         payload.created_by = session.user.id || null;
                     }
 
-                    supabaseClient
-                        .from('admissions')
-                        .insert([payload])
-                        .then(result => {
-                            if (result.error) {
-                                console.error("Supabase insert error:", result.error);
-                                alert(currentLang === 'kn' 
-                                    ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
-                                    : "Failed to save to Supabase: " + result.error.message);
+                    if (data.id) {
+                        // UPDATE existing record
+                        supabaseClient
+                            .from('admissions')
+                            .update(payload)
+                            .eq('id', data.id)
+                            .then(result => {
+                                if (result.error) {
+                                    console.error("Supabase update error:", result.error);
+                                    alert(currentLang === 'kn' 
+                                        ? "Supabase ಗೆ ಡೇಟಾ ನವೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
+                                        : "Failed to update in Supabase: " + result.error.message);
+                                    submitBtn.disabled = false;
+                                    submitBtn.style.opacity = "1";
+                                    lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ನವೀಕರಿಸಿ" : "Update Form";
+                                } else {
+                                    console.log("Supabase update success:", result);
+                                    proceedToAppsScriptSubmit();
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Supabase update exception:", err);
+                                alert("Supabase Error: " + err.message);
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = "1";
+                                lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ನವೀಕರಿಸಿ" : "Update Form";
+                            });
+                    } else {
+                        // INSERT new record
+                        supabaseClient
+                            .from('admissions')
+                            .insert([payload])
+                            .then(result => {
+                                if (result.error) {
+                                    console.error("Supabase insert error:", result.error);
+                                    alert(currentLang === 'kn' 
+                                        ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
+                                        : "Failed to save to Supabase: " + result.error.message);
+                                    submitBtn.disabled = false;
+                                    submitBtn.style.opacity = "1";
+                                    lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
+                                } else {
+                                    console.log("Supabase insert success:", result);
+                                    proceedToAppsScriptSubmit();
+                                }
+                            })
+                            .catch(err => {
+                                console.error("Supabase save exception:", err);
+                                alert("Supabase Error: " + err.message);
                                 submitBtn.disabled = false;
                                 submitBtn.style.opacity = "1";
                                 lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
-                            } else {
-                                console.log("Supabase insert success:", result);
-                                proceedToAppsScriptSubmit();
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Supabase save exception:", err);
-                            alert("Supabase Error: " + err.message);
-                            submitBtn.disabled = false;
-                            submitBtn.style.opacity = "1";
-                            lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
-                        });
+                            });
+                    }
+
                 }).catch(err => {
                     console.error("Auth session fetch error:", err);
                     alert("Auth error: " + err.message);

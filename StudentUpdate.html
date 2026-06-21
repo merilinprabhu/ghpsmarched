@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -302,7 +302,7 @@
         <!-- Dark Header Bar -->
     <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
       <div class="flex items-center gap-3">
-        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+        <a id="header-back-btn" href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
           <i class="fa-solid fa-arrow-left text-sm"></i>
         </a>
         <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
@@ -621,6 +621,74 @@
     </div>
   </div>
 
+  <!-- Add Caste Modal -->
+  <div id="editorCasteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-4 no-print">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-plus text-sky-600"></i> ಜಾತಿ ಸೇರಿಸಿ / Add New Caste
+        </h3>
+        <button type="button" onclick="closeEditorCasteModal()" class="text-slate-400 hover:text-slate-650 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ಸಾಮಾಜಿಕ ವರ್ಗ / Social Class</label>
+          <select id="modalSocialClass" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs font-semibold focus:outline-none premium-input">
+            <option value="SC">SC (ಪರಿಶಿಷ್ಟ ಜಾತಿ)</option>
+            <option value="ST">ST (ಪರಿಶಿಷ್ಟ ಪಂಗಡ)</option>
+            <option value="C1">C1</option>
+            <option value="2A">2A</option>
+            <option value="2B">2B</option>
+            <option value="3A">3A</option>
+            <option value="3B">3B</option>
+            <option value="OTHERS">OTHERS (ಇತರೆ)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ಜಾತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Caste Name (EN)</label>
+          <input type="text" id="modalCasteEn" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs font-semibold focus:outline-none premium-input" placeholder="e.g. Kuruba" onblur="autoTransliterateModalField('modalCasteEn', 'modalCasteKn')">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ಜಾತಿ ಹೆಸರು (ಕನ್ನಡ) / Caste Name (KN)</label>
+          <input type="text" id="modalCasteKn" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs font-semibold focus:outline-none premium-input" placeholder="ಉದಾ: ಕುರುಬ">
+        </div>
+      </div>
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
+        <button type="button" onclick="closeEditorCasteModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">ರದ್ದುಮಾಡಿ / Cancel</button>
+        <button type="button" onclick="saveEditorNewCaste()" class="bg-gradient-to-tr from-sky-550 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white py-2 px-5 rounded-xl transition border-0 cursor-pointer shadow-md shadow-sky-500/10">ಉಳಿಸಿ / Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Occupation Modal -->
+  <div id="editorOccupationModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[100] p-4 no-print">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-plus text-sky-600"></i> ವೃತ್ತಿ ಸೇರಿಸಿ / Add New Occupation
+        </h3>
+        <button type="button" onclick="closeEditorOccupationModal()" class="text-slate-400 hover:text-slate-650 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ವೃತ್ತಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್) / Occupation Name (EN)</label>
+          <input type="text" id="modalOccEn" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs font-semibold focus:outline-none premium-input" placeholder="e.g. Teacher" onblur="autoTransliterateModalField('modalOccEn', 'modalOccKn')">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ವೃತ್ತಿ ಹೆಸರು (ಕನ್ನಡ) / Occupation Name (KN)</label>
+          <input type="text" id="modalOccKn" class="w-full p-2.5 bg-slate-50 border border-slate-350 rounded-xl text-xs font-semibold focus:outline-none premium-input" placeholder="ಉದಾ: ಶಿಕ್ಷಕ">
+        </div>
+      </div>
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
+        <button type="button" onclick="closeEditorOccupationModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">ರದ್ದುಮಾಡಿ / Cancel</button>
+        <button type="button" onclick="saveEditorNewOccupation()" class="bg-gradient-to-tr from-sky-550 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 text-white py-2 px-5 rounded-xl transition border-0 cursor-pointer shadow-md shadow-sky-500/10">ಉಳಿಸಿ / Save</button>
+      </div>
+    </div>
+  </div>
   <!-- Toast Notification System -->
   <div id="toast-notif" class="fixed bottom-5 right-5 hidden bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center space-x-3 text-sm z-50 transition-all duration-305 transform translate-y-10">
     <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
@@ -635,6 +703,460 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let globalDropdownData = {};
+
+    function getMockDropdownData() {
+      return {
+        academicYear: [["2026-27"]],
+        medium: [["ಕನ್ನಡ", "ಕನ್ನಡ"], ["ENGLISH", "ENGLISH"]],
+        classes: [["LKG", "LKG"], ["UKG", "UKG"], ["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["10", "10"]],
+        religion: [["ಹಿಂದೂ", "HINDU"], ["ಇಸ್ಲಾಂ", "ISLAM"], ["ಕ್ರೈಸ್ತ", "CHRISTIAN"], ["ಪಾರ್ಸಿ", "PARSI"], ["ಜೈನ್", "JAIN"], ["ಬೌದ್ಧ", "BUDDHIST"], ["ಸಿಖ್", "SIKH"], ["ಇತರೆ", "OTHERS"]],
+        motherTongue: [["ಕನ್ನಡ", "KANNADA"], ["ಉರ್ದು", "URDU"], ["ತೆಲುಗು", "TELUGU"], ["ಇತರೆ", "OTHERS"]],
+        specialNeed: [["ಯಾವುದೂ ಅಲ್ಲ", "NONE"], ["ಶ್ರವಣ ದೋಷ", "HEARING"], ["ಕಲಿಕಾ ದೌರ್ಬಲ್ಯ", "LEARNING"], ["ಸ್ನಾಯು ದೌರ್ಬಲ್ಯ", "MUSCLE"], ["ಬುದ್ಧಿ ಮಾಂದ್ಯತೆ", "MENTAL"], ["ಬಹು ದೌರ್ಬಲ್ಯ", "MULTIPLE"], ["ವಾಕ್ ದೋಷ", "SPEECH"], ["ಅಂಧತ್ವ", "BLIND"], ["ಅಲ್ಪ ದೃಷ್ಟಿ ದೋಷ", "LOWVISION"], ["ಸಿರಿಬ್ರಲ್ ಪಾಲ್ಸಿ", "CP"], ["ಆಟಿಸಂ/ ಸ್ಪ್ಯಾಸ್ಟಿಕ್", "AUTISM"], ["ದೈಹಿಕ ಅಂಗವಿಕಲತೆ", "PHYSICAL"], ["ಇತರೆ", "OTHERS"]],
+        specialGroup: [["ಯಾವುದು ಇಲ್ಲ", "NONE"], ["ನಿರ್ಗತಿಕ", "DESTITUTE"], ["ಹೆಚ್.ಐ.ವಿ. ಪೀಡಿತ", "HIV_AFFECTED"], ["ಅನಾಥ", "ORPHAN"], ["ಇತರೆ", "OTHERS"]],
+        occupation: [["ವ್ಯವಸಾಯ", "AGRICULTURE"], ["ಕೂಲಿ", "LABOUR"], ["ನೌಕರಿ", "EMPLOYEE"], ["ಇತರೆ", "OTHERS"]],
+        board: [["ರಾಜ್ಯ ಮಂಡಳಿ", "STATE BOARD"], ["ಸಿ.ಬಿ.ಎಸ್.ಸಿ.", "CBSE"], ["ಐ.ಸಿ.ಎಸ್.ಸಿ.", "ICSE"], ["ಇತರೆ", "OTHERS"]],
+        districtsKN: {
+          "ಬಾಗಲಕೋಟೆ": ["ಬಾಗಲಕೋಟೆ", "ಬಾದಾಮಿ", "ಬೀಳಗಿ", "ಹುನಗುಂದ", "ಜಮಖಂಡಿ", "ಮುಧೋಳ"],
+          "ಬಳ್ಳಾರಿ": ["ಬಳ್ಳಾರಿ", "ಹಗರಿಬೊಮ್ಮನಹಳ್ಳಿ", "ಹೊಸಪೇಟೆ", "ಕೂಡ್ಲಿಗಿ", "ಸಂಡೂರು", "ಸಿರಗುಪ್ಪ"],
+          "ಬೆಳಗಾವಿ": ["ಬೆಳಗಾವಿ", "ಅಥಣಿ", "ಬೈಲಹೊಂಗಲ", "ಚಿಕ್ಕೋಡಿ", "ಗೋಕಾಕ್", "ಹುಕ್ಕೇರಿ", "ಖಾನಾಪುರ", "ರಾಮದುರ್ಗ", "ರಾಯಬಾಗ", "ಸವದತ್ತಿ"],
+          "ಬೆಂಗಳೂರು ನಗರ": ["ಬೆಂಗಳೂರು ಉತ್ತರ", "ಬೆಂಗಳೂರು ದಕ್ಷಿಣ", "ಬೆಂಗಳೂರು ಪೂರ್ವ", "ಆನೇಕಲ್"],
+          "ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ": ["ದೊಡ್ಡಬಳ್ಳಾಪುರ", "ಹೊಸಕೋಟೆ", "ನೆಲಮಂಗಲ", "ದೇವನಹಳ್ಳಿ"],
+          "ಬೀದರ್": ["ಬೀದರ್", "ಔರಾದ್", "ಬಸವಕಲ್ಯಾಣ", "ಭಾಲ್ಕಿ", "ಹುಮ್ನಾಬಾದ್"],
+          "ಚಾಮರಾಜನಗರ": ["ಚಾಮರಾಜನಗರ", "ಗುಂಡ್ಲುಪೇಟೆ", "ಕೊಳ್ಳೇಗಾಲ", "ಯಳಂದೂರು"],
+          "ಚಿಕ್ಕಬಳ್ಳಾಪುರ": ["ಚಿಕ್ಕಬಳ್ಳಾಪುರ", "ಚಿಂತಾಮಣಿ", "ಗೌರಿಬಿದನೂರು", "ಗುಡಿಬಂಡೆ", "ಬಾಗೇಪಲ್ಲಿ", "ಶಿಡ್ಲಘಟ್ಟ"],
+          "ಚಿಕ್ಕಮಗಳೂರು": ["ಚಿಕ್ಕಮಗಳೂರು", "ಕಡೂರು", "ಕೊಪ್ಪ", "ಮೂಡಿಗೆರೆ", "ಶೃಂಗೇರಿ", "ತರೀಕೆರೆ", "ಎನ್.ಆ.ಪುರ"],
+          "ಚಿತ್ರದುರ್ಗ": ["ಚಿತ್ರದುರ್ಗ", "ಚಳ್ಳಕೆರೆ", "ಹಿರಿಯೂರು", "ಹೊಳಲ್ಕೆರೆ", "ಹೊಸದುರ್ಗ", "ಮೊಳಕಾಲ್ಮೂರು"],
+          "ದಕ್ಷಿಣ ಕನ್ನಡ": ["ಮಂಗಳೂರು", "ಬಂಟ್ವಾಳ", "ಬೆಳ್ತಂಗಡಿ", "ಪುತ್ತೂರು", "ಸುಳ್ಯ"],
+          "ದಾವಣಗೆರೆ": ["ದಾವಣಗೆರೆ", "ಚನ್ನಗಿರಿ", "ಹರಿಹರ", "ಹೊನ್ನಾಳಿ", "ಜಗಳೂರು"],
+          "ದಧಾರವಾಡ": ["ಧಾರವಾಡ", "ಹುಬ್ಬಳ್ಳಿ", "ಕಲಘಟಗಿ", "ಕುಂದಗೋಳ", "ನವಲಗುಂದ"],
+          "ಗದಗ": ["ಗದಗ", "ಮುಂಡರಗಿ", "ನರಗುಂದ", "ರೋಣ", "ಶಿರಹಟ್ಟಿ"],
+          "ಕಲಬುರಗಿ": ["ಕಲಬುರಗಿ", "ಅಫಜಲಪುರ", "ಆಳಂದ", "ಚಿಂಚೋಳಿ", "ಚಿತ್ತಾಪುರ", "ಜೇವರ್ಗಿ", "ಸೇಡಂ"],
+          "ಹಾಸನ": ["ಹಾಸನ", "ಅರಸೀಕೆರೆ", "ಆಲೂರು", "ಬೇಲೂರು", "ಚನ್ನರಾಯಪಟ್ಟಣ", "ಹೊಳೇನರಸೀಪುರ", "ಸಕಲೇಶಪುರ", "ಅರಕಲಗೂಡು"],
+          "ಹಾವೇರಿ": ["ಹಾವೇರಿ", "ಬ್ಯಾಡಗಿ", "ಹಾನಗಲ್", "ಹಿರೇಕೆರೂರು", "ರಾಣೇಬೆನ್ನೂರು", "ಸವಣೂರು", "ಶಿಗ್ಗಾಂವಿ"],
+          "ಕೊಡಗು": ["ಮಡಿಕೇರಿ", "ಸೋಮವಾರಪೇಟೆ", "ವಿರಾಜಪೇಟೆ"],
+          "ಕೋಲಾರ": ["ಕೋಲಾರ", "ಬಂಗಾರಪೇಟೆ", "ಮಾಲೂರು", "ಮುಳಬಾಗಿಲು", "ಶ್ರೀನಿವಾಸಪುರ"],
+          "ಕೊಪ್ಪಳ": ["ಕೊಪ್ಪಳ", "ಗಂಗಾವತಿ", "ಯಲಬುರ್ಗಾ", "ಕುಷ್ಟಗಿ", "ಕನಕಗಿರಿ", "ಕಾರಟಗಿ", "ಕುಕನೂರು"],
+          "ಮಂಡ್ಯ": ["ಮಂಡ್ಯ", "ಮದ್ದೂರು", "ಮಳವಳ್ಳಿ", "ನಾಗಮಂಗಲ", "ಪಾಂಡವಪುರ", "ಶ್ರೀರಂಗಪಟ್ಟಣ", "ಕೃಷ್ಣರಾಜಪೇಟೆ"],
+          "ಮೈಸೂರು": ["ಮೈಸೂರು", "ಹುಣಸೂರು", "ಕೃಷ್ಣರಾಜನಗರ", "ನಂಜನಗೂಡು", "ಪಿರಿಯಾಪಟ್ಟಣ", "ಟಿ.ನರಸೀಪುರ", "ಹೆಚ್.ಡಿ.ಕೋಟೆ"],
+          "ರಾಯಚೂರು": ["ರಾಯಚೂರು", "ದೇವದುರ್ಗ", "ಲಿಂಗಸೂಗೂರು", "ಮಾನವಿ", "ಸಿಂಧನೂರು", "ಮಸ್ಕಿ", "ಸಿರವಾರ"],
+          "ರಾಮನಗರ": ["ರಾಮನಗರ", "ಚನ್ನಪಟ್ಟಣ", "ಕನಕಪುರ", "ಮಾಗಡಿ"],
+          "ಶಿವಮೊಗ್ಗ": ["ಶಿವಮೊಗ್ಗ", "ಭದ್ರಾವತಿ", "ಹೊಸನಗರ", "ಸಾಗರ", "ಶಿಕಾರಿಪುರ", "ಸೊರಬ", "ತೀರ್ಥಹಳ್ಳಿ"],
+          "ತುಮಕೂರು": ["ತುಮಕೂರು", "ಗುಬ್ಬಿ", "ಕುಣಿಗಲ್", "ಮಧುಗಿರಿ", "ಪಾವಗಡ", "ಶಿರಾ", "ತಿಪಟೂರು", "ತುರುವೇಕೆರೆ", "ಚಿಕ್ಕನಾಯಕನಹಳ್ಳಿ", "ಕೊರಟಗೆರೆ"],
+          "ಉಡುಪಿ": ["ಉಡುಪಿ", "ಕಾರ್ಕಳ", "ಕುಂದಾಪುರ"],
+          "ಉತ್ತರ ಕನ್ನಡ": ["ಕಾರವಾರ", "ಅಂಕೋಲಾ", "ಭಟ್ಕಳ", "ಹಳಿಯಾಳ", "ಹೊನ್ನಾವರ", "ಜೋಯಿಡಾ", "ಕುಮಟಾ", "ಮುಂಡಗೋಡ", "ಸಿದ್ಧಾಪುರ", "ಶಿರಸಿ", "ಯಲ್ಲಾಪುರ"],
+          "ವಿಜಯಪುರ": ["ವಿಜಯಪುರ", "ಬಸವನ ಬಾಗೇವಾಡಿ", "ಇಂಡಿ", "ಮುದ್ದೇಬಿಹಾಳ", "ಸಿಂದಗಿ"],
+          "ಯಾದಗಿರಿ": ["ಯಾದಗಿರಿ", "ಶಹಾಪುರ", "ಸುರಪುರ"],
+          "ವಿಜಯನಗರ": ["ಹೊಸಪೇಟೆ", "ಹಗರಿಬೊಮ್ಮನಹಳ್ಳಿ", "ಕೂಡ್ಲಿಗಿ", "ಕೊಟ್ಟೂರು", "ಹಡಗಲಿ", "ಹರಪನಹಳ್ಳಿ"]
+        },
+        districtsEN: {
+          "Bagalkote": ["Bagalkote", "Badami", "Bilagi", "Hunagunda", "Jamakhandi", "Mudhol"],
+          "Ballari": ["Ballari", "Hagaribommanahalli", "Hosapete", "Kudligi", "Sandur", "Siruguppa"],
+          "Belagavi": ["Belagavi", "Athani", "Bailahongala", "Chikkodi", "Gokak", "Hukkeri", "Khanapura", "Ramadurga", "Rayabaga", "Savadatti"],
+          "Bengaluru Urban": ["Bengaluru North", "Bengaluru South", "Bengaluru East", "Anekal"],
+          "Bengaluru Rural": ["Doddaballapura", "Hosakote", "Nelamangala", "Devanahalli"],
+          "Bidar": ["Bidar", "Aurad", "Basavakalyana", "Bhalki", "Humnabad"],
+          "Chamarajanagara": ["Chamarajanagara", "Gundlupete", "Kollegala", "Yalandur"],
+          "Chikkaballapura": ["Chikkaballapura", "Chintamani", "Gauribidanur", "Gudibande", "Bagepalli", "Sidlaghatta"],
+          "Chikkamagaluru": ["Chikkamagaluru", "Kadur", "Koppa", "Mudigere", "Sringeri", "Tarikere", "N.R.Pura"],
+          "Chitradurga": ["Chitradurga", "Challakere", "Hiriyur", "Holalkere", "Hosadurga", "Molakalmuru"],
+          "Dakshina Kannada": ["Mangaluru", "Bantval", "Belthangady", "Puttur", "Sulya"],
+          "Davanagere": ["Davanagere", "Channagiri", "Harihar", "Honnali", "Jagalur"],
+          "Dharwad": ["Dharwad", "Hubballi", "Kalghatgi", "Kundgol", "Navalgund"],
+          "Gadag": ["Gadag", "Mundargi", "Nargund", "Ron", "Shirahatti"],
+          "Kalaburagi": ["Kalaburagi", "Afzalpur", "Aland", "Chincholi", "Chittapur", "Jewargi", "Sedam"],
+          "Hassan": ["Hassan", "Arsikere", "Alur", "Belur", "Channarayapatna", "Holenarasipura", "Sakleshpur", "Arakalagud"],
+          "Haveri": ["Haveri", "Byadgi", "Hanagal", "Hirekerur", "Ranebennur", "Savanur", "Shiggaon"],
+          "Kodagu": ["Madikeri", "Somwarpet", "Virajpet"],
+          "Kolar": ["Kolar", "Bangarpet", "Malur", "Mulbagal", "Srinivaspur"],
+          "Koppal": ["Koppal", "Gangavathi", "Yelaburga", "Kushtagi", "Kanakagiri", "Karatagi", "Kukanoor"],
+          "Mandya": ["Mandya", "Maddur", "Malavalli", "Nagamangala", "Pandavapura", "Srirangapatna", "K.R.Pet"],
+          "Mysuru": ["Mysuru", "Hunsur", "K.R.Nagar", "Nanjangud", "Periyapatna", "T.Narasipura", "H.D.Kote"],
+          "Raichur": ["Raichur", "Devadurga", "Lingsugur", "Manvi", "Sindhanur", "Maski", "Sirwar"],
+          "Ramanagara": ["Ramanagara", "Channapatna", "Kanakapura", "Magadi"],
+          "Shivamogga": ["Shivamogga", "Bhadravati", "Hosanagar", "Sagar", "Shikaripura", "Soraba", "Thirthahalli"],
+          "Tumakuru": ["Tumakuru", "Gubbi", "Kunigal", "Madhugiri", "Pavagada", "Sira", "Tiptur", "Turuvekere", "C.N.Halli", "Koratagere"],
+          "Udupi": ["Udupi", "Karkala", "Kundapura"],
+          "Uttara Kannada": ["Karwar", "Ankola", "Bhatkal", "Haliyal", "Honnavar", "Joida", "Kumta", "Mundgod", "Siddapur", "Sirsi", "Yellapur"],
+          "Vijayapura": ["Vijayapura", "Basavana Bagewadi", "Indi", "Muddebihal", "Sindagi"],
+          "Yadgir": ["Yadgir", "Shahapur", "Surpur"],
+          "Vijayanagara": ["Hospet", "Hagaribommanahalli", "Kudligi", "Kottur", "Hadagali", "Harapanahalli"]
+        },
+        castesKN: {
+          "SC": ["ಮಾದಿಗ", "ಹೊಲೆಯ", "ಇತರೆ"],
+          "ST": ["ನಾಯಕ", "ವಾಲ್ಮೀಕಿ", "ಇತರೆ"],
+          "C1": ["ಉಪ್ಪಾರ", "ಬೆಸ್ತರ್", "ಇತರೆ"],
+          "2A": ["ಕುರುಬ", "ಈಡಿಗ", "ಇತರೆ"],
+          "2B": ["ಮುಸ್ಲಿಂ", "ಇತರೆ"],
+          "3A": ["ಒಕ್ಕಲಿಗ", "ರೆಡ್ಡಿ", "ಇತರೆ"],
+          "3B": ["ಲಿಂಗಾಯತ", "ವೀರಶೈವ", "ಇತರೆ"],
+          "OTHERS": ["ಬ್ರಾಹ್ಮಣ", "ವೈಶ್ಯ", "ಇತರೆ"]
+        },
+        castesEN: {
+          "SC": ["Madiga", "Holeya", "Others"],
+          "ST": ["Nayaka", "Valmiki", "Others"],
+          "C1": ["Uppara", "Bestar", "Others"],
+          "2A": ["Kuruba", "Ediga", "Others"],
+          "2B": ["Muslim", "Others"],
+          "3A": ["Vokkaliga", "Reddy", "Others"],
+          "3B": ["Lingayat", "Veerashaiva", "Others"],
+          "OTHERS": ["Brahmin", "Vaishya", "Others"]
+        }
+      };
+    }
+
+    async function loadCastesFromSupabase() {
+      try {
+        const { data, error } = await supabaseClient
+          .from('portal_castes')
+          .select('*');
+        if (error) throw error;
+        if (data && data.length > 0) {
+          globalDropdownData.castesKN = { "SC":[], "ST":[], "C1":[], "2A":[], "2B":[], "3A":[], "3B":[], "OTHERS":[] };
+          globalDropdownData.castesEN = { "SC":[], "ST":[], "C1":[], "2A":[], "2B":[], "3A":[], "3B":[], "OTHERS":[] };
+          
+          data.forEach(item => {
+            const sc = item.social_class.toUpperCase();
+            if (globalDropdownData.castesKN[sc]) {
+              globalDropdownData.castesKN[sc].push(item.name_kn);
+            }
+            if (globalDropdownData.castesEN[sc]) {
+              globalDropdownData.castesEN[sc].push(item.name_en);
+            }
+          });
+          console.log("Castes loaded dynamically from Supabase:", globalDropdownData.castesKN);
+        }
+      } catch (err) {
+        console.error("Failed to load castes from Supabase, using mock fallback:", err);
+      }
+    }
+
+    function setupEditorDropdownOptions(header, selectElement, medium, studentObj) {
+      const mode = (medium === "ಕನ್ನಡ") ? "KN" : "EN";
+      selectElement.innerHTML = (mode === "KN") ? '<option value="">ಆರಿಸಿ</option>' : '<option value="">Select</option>';
+
+      if (header === "Class") {
+        globalDropdownData.classes.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = row[0];
+          opt.text = row[0];
+          selectElement.add(opt);
+        });
+      } else if (header === "Gender") {
+        const options = (mode === "KN") ? 
+          [{value: "MALE", text: "ಗಂಡು"}, {value: "FEMALE", text: "ಹೆಣ್ಣು"}] : 
+          [{value: "MALE", text: "MALE"}, {value: "FEMALE", text: "FEMALE"}];
+        options.forEach(opt => {
+          let option = document.createElement("option");
+          option.value = opt.value;
+          option.text = opt.text;
+          selectElement.add(option);
+        });
+      } else if (header === "Religion") {
+        globalDropdownData.religion.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+      } else if (header === "Social Class") {
+        const options = (mode === "KN") ? 
+          [
+            {value: "SC", text: "SC (ಪರಿಶಿಷ್ಟ ಜಾತಿ)"},
+            {value: "ST", text: "ST (ಪರಿಶಿಷ್ಟ ಪಂಗಡ)"},
+            {value: "C1", text: "C1"},
+            {value: "2A", text: "2A"},
+            {value: "2B", text: "2B"},
+            {value: "3A", text: "3A"},
+            {value: "3B", text: "3B"},
+            {value: "OTHERS", text: "OTHERS (ಇತರೆ)"}
+          ] : 
+          [
+            {value: "SC", text: "SC"},
+            {value: "ST", text: "ST"},
+            {value: "C1", text: "C1"},
+            {value: "2A", text: "2A"},
+            {value: "2B", text: "2B"},
+            {value: "3A", text: "3A"},
+            {value: "3B", text: "3B"},
+            {value: "OTHERS", text: "OTHERS"}
+          ];
+        options.forEach(opt => {
+          let option = document.createElement("option");
+          option.value = opt.value;
+          option.text = opt.text;
+          selectElement.add(option);
+        });
+      } else if (header === "Student's Caste") {
+        const socialClassVal = studentObj ? (studentObj["Social Class"] || "") : "";
+        const list = (mode === "KN") ? (globalDropdownData.castesKN[socialClassVal] || []) : (globalDropdownData.castesEN[socialClassVal] || []);
+        list.forEach(val => {
+          let opt = document.createElement("option");
+          opt.value = val;
+          opt.text = val;
+          selectElement.add(opt);
+        });
+        let opt = document.createElement("option");
+        opt.value = "ADD_NEW_CASTE";
+        opt.text = (mode === "KN") ? "+ ಜಾತಿ ಸೇರಿಸಿ / + Add Caste" : "+ Add Caste";
+        opt.style.fontWeight = "bold";
+        opt.style.color = "#0056b3";
+        selectElement.add(opt);
+      } else if (header === "Mother Tongue") {
+        globalDropdownData.motherTongue.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+        let opt = document.createElement("option");
+        opt.value = "ADD_NEW_LANGUAGE";
+        opt.text = (mode === "KN") ? "+ ಹೊಸ ಭಾಷೆ ಸೇರಿಸಿ / + Add Language" : "+ Add Language";
+        opt.style.fontWeight = "bold";
+        opt.style.color = "#0056b3";
+        selectElement.add(opt);
+      } else if (header === "Special Need") {
+        globalDropdownData.specialNeed.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+      } else if (header === "Special Category") {
+        globalDropdownData.specialGroup.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+      } else if (header === "District") {
+        const districtData = (mode === "KN") ? globalDropdownData.districtsKN : globalDropdownData.districtsEN;
+        Object.keys(districtData).forEach(dist => {
+          let opt = document.createElement("option");
+          opt.value = dist;
+          opt.text = dist;
+          selectElement.add(opt);
+        });
+      } else if (header === "Taluk") {
+        const districtVal = studentObj ? (studentObj["District"] || "") : "";
+        const districtData = (mode === "KN") ? globalDropdownData.districtsKN : globalDropdownData.districtsEN;
+        const talukas = districtData[districtVal] || [];
+        talukas.forEach(tal => {
+          let opt = document.createElement("option");
+          opt.value = tal;
+          opt.text = tal;
+          selectElement.add(opt);
+        });
+      } else if (header === "Father Occupation" || header === "Mother Occupation") {
+        globalDropdownData.occupation.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+        let opt = document.createElement("option");
+        opt.value = "ADD_NEW_OCCUPATION";
+        opt.text = (mode === "KN") ? "+ ಹೊಸ ವೃತ್ತಿ ಸೇರಿಸಿ / + Add Occupation" : "+ Add Occupation";
+        opt.style.fontWeight = "bold";
+        opt.style.color = "#0056b3";
+        selectElement.add(opt);
+      } else if (header === "Preschool Board") {
+        globalDropdownData.board.forEach(row => {
+          let opt = document.createElement("option");
+          opt.value = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          opt.text = (mode === "KN") ? row[0] : (row[1] || row[0]);
+          selectElement.add(opt);
+        });
+      } else if (header === "Preschool Type") {
+        const options = (mode === "KN") ? 
+          [{value: "GOVERNMENT", text: "ಸರ್ಕಾರಿ"}, {value: "AIDED", text: "ಅನುದಾನಿತ"}, {value: "UNAIDED", text: "ಅನುದಾನರಹಿತ"}] : 
+          [{value: "GOVERNMENT", text: "GOVERNMENT"}, {value: "AIDED", text: "AIDED"}, {value: "UNAIDED", text: "UNAIDED"}];
+        options.forEach(opt => {
+          let option = document.createElement("option");
+          option.value = opt.value;
+          option.text = opt.text;
+          selectElement.add(option);
+        });
+      } else if (header === "Student STS") {
+        const options = ["Active", "In-Active", "Transferred", "Completed"];
+        options.forEach(opt => {
+          let option = document.createElement("option");
+          option.value = opt;
+          option.text = opt;
+          selectElement.add(option);
+        });
+      }
+    }
+
+    let activeEditorCasteSelect = null;
+    let activeEditorCasteLastValue = "";
+    let activeEditorOccSelect = null;
+    let activeEditorOccLastValue = "";
+
+    function openEditorCasteModal(selectEl, lastVal) {
+      activeEditorCasteSelect = selectEl;
+      activeEditorCasteLastValue = lastVal;
+      
+      const socialClassSelect = document.getElementsByName("Social Class")[0];
+      const socialClassVal = socialClassSelect ? socialClassSelect.value : "";
+      if (socialClassVal) {
+        document.getElementById("modalSocialClass").value = socialClassVal;
+      }
+      document.getElementById("modalCasteKn").value = "";
+      document.getElementById("modalCasteEn").value = "";
+      
+      document.getElementById("editorCasteModal").classList.remove("hidden");
+    }
+
+    function closeEditorCasteModal() {
+      document.getElementById("editorCasteModal").classList.add("hidden");
+      if (activeEditorCasteSelect) {
+        activeEditorCasteSelect.value = activeEditorCasteLastValue;
+      }
+    }
+
+    async function saveEditorNewCaste() {
+      const socialClass = document.getElementById("modalSocialClass").value;
+      const nameKn = document.getElementById("modalCasteKn").value.trim();
+      const nameEn = document.getElementById("modalCasteEn").value.trim();
+
+      if (!nameKn || !nameEn) {
+        alert("ದಯವಿಟ್ಟು ಜಾತಿ ಹೆಸರನ್ನು ನಮೂದಿಸಿ! / Please enter both Kannada and English names!");
+        return;
+      }
+
+      const saveBtn = document.querySelector("#editorCasteModal button[onclick='saveEditorNewCaste()']");
+      const originalText = saveBtn.innerText;
+      saveBtn.disabled = true;
+      saveBtn.innerText = "Saving...";
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('portal_castes')
+          .insert([{ social_class: socialClass, name_kn: nameKn, name_en: nameEn }])
+          .select();
+
+        if (error) throw error;
+
+        if (!globalDropdownData.castesKN[socialClass]) {
+          globalDropdownData.castesKN[socialClass] = [];
+        }
+        if (!globalDropdownData.castesEN[socialClass]) {
+          globalDropdownData.castesEN[socialClass] = [];
+        }
+        globalDropdownData.castesKN[socialClass].push(nameKn);
+        globalDropdownData.castesEN[socialClass].push(nameEn);
+
+        const medium = document.getElementsByName("Medium")[0]?.value || "Kannada";
+        const student = activeRosterStudents.find(s => s["ID"] === selectedStudentId);
+        
+        if (student) {
+          student["Social Class"] = socialClass;
+          const socialClassSelect = document.getElementsByName("Social Class")[0];
+          if (socialClassSelect) socialClassSelect.value = socialClass;
+        }
+
+        setupEditorDropdownOptions("Student's Caste", activeEditorCasteSelect, medium, student);
+        
+        const newCasteValue = (medium === "ಕನ್ನಡ") ? nameKn : nameEn;
+        activeEditorCasteSelect.value = newCasteValue;
+        activeEditorCasteLastValue = newCasteValue;
+
+        showToast("ಜಾತಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ! / Caste added successfully!", "fa-circle-check", "text-emerald-400");
+        document.getElementById("editorCasteModal").classList.add("hidden");
+        
+        triggerAutoSave(false);
+      } catch (err) {
+        console.error("Error saving editor caste:", err);
+        alert("ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to save: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerText = originalText;
+      }
+    }
+
+    function openEditorOccupationModal(selectEl, lastVal) {
+      activeEditorOccSelect = selectEl;
+      activeEditorOccLastValue = lastVal;
+      
+      document.getElementById("modalOccKn").value = "";
+      document.getElementById("modalOccEn").value = "";
+      
+      document.getElementById("editorOccupationModal").classList.remove("hidden");
+    }
+
+    function closeEditorOccupationModal() {
+      document.getElementById("editorOccupationModal").classList.add("hidden");
+      if (activeEditorOccSelect) {
+        activeEditorOccSelect.value = activeEditorOccLastValue;
+      }
+    }
+
+    function saveEditorNewOccupation() {
+      const nameKn = document.getElementById("modalOccKn").value.trim();
+      const nameEn = document.getElementById("modalOccEn").value.trim();
+
+      if (!nameKn || !nameEn) {
+        alert("ದಯವಿಟ್ಟು ವೃತ್ತಿ ಹೆಸರನ್ನು ನಮೂದಿಸಿ! / Please enter both Kannada and English names!");
+        return;
+      }
+
+      if (!globalDropdownData.occupation) {
+        globalDropdownData.occupation = [];
+      }
+      globalDropdownData.occupation.push([nameKn, nameEn]);
+
+      const medium = document.getElementsByName("Medium")[0]?.value || "Kannada";
+      const student = activeRosterStudents.find(s => s["ID"] === selectedStudentId);
+
+      const newSelectionValue = (medium === "ಕನ್ನಡ") ? nameKn : nameEn;
+      
+      const fOccSelect = document.getElementsByName("Father Occupation")[0];
+      const mOccSelect = document.getElementsByName("Mother Occupation")[0];
+      
+      if (fOccSelect) {
+        const currentVal = fOccSelect === activeEditorOccSelect ? newSelectionValue : fOccSelect.value;
+        setupEditorDropdownOptions("Father Occupation", fOccSelect, medium, student);
+        fOccSelect.value = currentVal;
+      }
+      if (mOccSelect) {
+        const currentVal = mOccSelect === activeEditorOccSelect ? newSelectionValue : mOccSelect.value;
+        setupEditorDropdownOptions("Mother Occupation", mOccSelect, medium, student);
+        mOccSelect.value = currentVal;
+      }
+
+      if (activeEditorOccSelect) {
+        activeEditorOccSelect.value = newSelectionValue;
+        activeEditorOccLastValue = newSelectionValue;
+      }
+
+      showToast("ವೃತ್ತಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ! / Occupation added successfully!", "fa-circle-check", "text-emerald-400");
+      document.getElementById("editorOccupationModal").classList.add("hidden");
+      
+      triggerAutoSave(false);
+    }
+
+    function handleEditorLanguageAddition(selectElement, lastValue) {
+      const medium = document.getElementsByName("Medium")[0]?.value || "Kannada";
+      const promptText = (medium === "ಕನ್ನಡ") ? "ಹೊಸ ಮಾತೃಭಾಷೆಯನ್ನು ನಮೂದಿಸಿ:" : "Enter new mother tongue:";
+      let newLang = prompt(promptText);
+      if (newLang && newLang.trim() !== "") {
+        newLang = newLang.trim();
+        if (!globalDropdownData.motherTongue) {
+          globalDropdownData.motherTongue = [];
+        }
+        globalDropdownData.motherTongue.push([newLang, newLang]);
+
+        const student = activeRosterStudents.find(s => s["ID"] === selectedStudentId);
+        setupEditorDropdownOptions("Mother Tongue", selectElement, medium, student);
+        selectElement.value = newLang;
+        
+        triggerAutoSave(false);
+      } else {
+        selectElement.value = lastValue;
+      }
+    }
 
     function normalizeClass(classStr) {
       if (!classStr) return "";
@@ -753,6 +1275,9 @@
     let currentSortDir = 'asc';
 
     document.addEventListener("DOMContentLoaded", async function() {
+      globalDropdownData = getMockDropdownData();
+      await loadCastesFromSupabase();
+
       await initUserAndTheme();
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
@@ -765,6 +1290,11 @@
       const urlParams = new URLSearchParams(window.location.search);
       const studentId = urlParams.get('id');
       if (studentId) {
+        const backBtn = document.getElementById('header-back-btn');
+        if (backBtn) {
+          backBtn.href = "StudentList.html";
+          backBtn.title = "Back to Student List";
+        }
         loadStudentDirectlyFromUrl(studentId);
       } else {
         const classFilter = document.getElementById('class-filter');
@@ -1162,12 +1692,22 @@
         }
 
         let input;
+        const dropdownFields = [
+          "Class", "Gender", "Religion", "Social Class", "Student's Caste",
+          "Mother Tongue", "Special Need", "Special Category", "District", "Taluk",
+          "Father Occupation", "Mother Occupation", "Preschool Board", "Preschool Type", "Student STS"
+        ];
+
         if (header === "Medium") {
           input = document.createElement("select");
           input.innerHTML = `<option value="ಕನ್ನಡ">ಕನ್ನಡ</option><option value="ENGLISH">ENGLISH</option>`;
         } else if (header === "Academic Year") {
           input = document.createElement("select");
           input.innerHTML = `<option value="2026-27">2026-27</option><option value="2025-26">2025-26</option>`;
+        } else if (dropdownFields.includes(header)) {
+          input = document.createElement("select");
+          const med = student["Medium"] || "Kannada";
+          setupEditorDropdownOptions(header, input, med, student);
         } else {
           input = document.createElement("input");
           if (header.includes("Date") || header.includes("DOB")) {
@@ -1185,10 +1725,143 @@
           input.className += " bg-slate-100 text-slate-500 font-mono";
         }
 
-        input.value = student[header] !== undefined ? student[header] : "";
+        if (input.tagName === "SELECT") {
+          const val = student[header] !== undefined ? student[header] : "";
+          if (val) {
+            let valExists = false;
+            for (let i = 0; i < input.options.length; i++) {
+              if (input.options[i].value === val) {
+                valExists = true;
+                break;
+              }
+            }
+            if (!valExists) {
+              let opt = document.createElement("option");
+              opt.value = val;
+              opt.text = val;
+              const lastOpt = input.options[input.options.length - 1];
+              if (lastOpt && lastOpt.value.startsWith("ADD_NEW_")) {
+                input.add(opt, lastOpt);
+              } else {
+                input.add(opt);
+              }
+            }
+            input.value = val;
+          } else {
+            input.value = "";
+          }
+        } else {
+          input.value = student[header] !== undefined ? student[header] : "";
+        }
 
         // Bind auto-save triggers for all editable fields
         if (!input.readOnly) {
+          if (header === "Social Class") {
+            input.addEventListener("change", function() {
+              const casteSelect = document.getElementsByName("Student's Caste")[0];
+              if (casteSelect) {
+                const s = activeRosterStudents.find(st => st["ID"] === selectedStudentId);
+                if (s) {
+                  s["Social Class"] = input.value;
+                  const med = document.getElementsByName("Medium")[0]?.value || "Kannada";
+                  setupEditorDropdownOptions("Student's Caste", casteSelect, med, s);
+                  casteSelect.value = "";
+                  s["Student's Caste"] = "";
+                }
+              }
+            });
+          }
+
+          if (header === "District") {
+            input.addEventListener("change", function() {
+              const talukSelect = document.getElementsByName("Taluk")[0];
+              if (talukSelect) {
+                const s = activeRosterStudents.find(st => st["ID"] === selectedStudentId);
+                if (s) {
+                  s["District"] = input.value;
+                  const med = document.getElementsByName("Medium")[0]?.value || "Kannada";
+                  setupEditorDropdownOptions("Taluk", talukSelect, med, s);
+                  talukSelect.value = "";
+                  s["Taluk"] = "";
+                }
+              }
+            });
+          }
+
+          if (header === "Medium") {
+            input.addEventListener("change", function() {
+              const med = input.value;
+              const s = activeRosterStudents.find(st => st["ID"] === selectedStudentId);
+              if (s) {
+                s["Medium"] = med;
+                const dropdownHeaders = [
+                  "Class", "Gender", "Religion", "Social Class", "Student's Caste",
+                  "Mother Tongue", "Special Need", "Special Category", "District", "Taluk",
+                  "Father Occupation", "Mother Occupation", "Preschool Board", "Preschool Type"
+                ];
+                dropdownHeaders.forEach(dh => {
+                  const el = document.getElementsByName(dh)[0];
+                  if (el) {
+                    const currentVal = el.value;
+                    setupEditorDropdownOptions(dh, el, med, s);
+                    
+                    if (currentVal) {
+                      let exists = false;
+                      for (let i = 0; i < el.options.length; i++) {
+                        if (el.options[i].value === currentVal) { exists = true; break; }
+                      }
+                      if (!exists) {
+                        let opt = document.createElement("option");
+                        opt.value = currentVal;
+                        opt.text = currentVal;
+                        const lastOpt = el.options[el.options.length - 1];
+                        if (lastOpt && lastOpt.value.startsWith("ADD_NEW_")) {
+                          el.add(opt, lastOpt);
+                        } else {
+                          el.add(opt);
+                        }
+                      }
+                      el.value = currentVal;
+                    }
+                  }
+                });
+              }
+            });
+          }
+
+          if (header === "Student's Caste") {
+            let lastSelectedCaste = input.value;
+            input.addEventListener("change", function() {
+              if (input.value === "ADD_NEW_CASTE") {
+                openEditorCasteModal(input, lastSelectedCaste);
+              } else {
+                lastSelectedCaste = input.value;
+              }
+            });
+          }
+
+          if (header === "Father Occupation" || header === "Mother Occupation") {
+            let lastSelectedOcc = input.value;
+            input.addEventListener("change", function() {
+              if (input.value === "ADD_NEW_OCCUPATION") {
+                openEditorOccupationModal(input, lastSelectedOcc);
+              } else {
+                lastSelectedOcc = input.value;
+              }
+            });
+          }
+
+          if (header === "Mother Tongue") {
+            let lastSelectedLang = input.value;
+            input.addEventListener("change", function() {
+              if (input.value === "ADD_NEW_LANGUAGE") {
+                handleEditorLanguageAddition(input, lastSelectedLang);
+              } else {
+                lastSelectedLang = input.value;
+              }
+            });
+          }
+
           input.addEventListener("input", function() {
             triggerAutoSave(true); // show "typing" status
           });
@@ -1918,6 +2591,29 @@
       if (!force && kannadaInput.value.trim() !== "") return;
       
       await transliterateField(englishField, kannadaField);
+    }
+
+    async function autoTransliterateModalField(englishId, kannadaId) {
+      const englishInput = document.getElementById(englishId);
+      const kannadaInput = document.getElementById(kannadaId);
+      if (!englishInput || !kannadaInput) return;
+      
+      const text = englishInput.value.trim();
+      if (!text) return;
+      
+      // Only auto-transliterate if Kannada field is currently empty
+      if (kannadaInput.value.trim() !== "") return;
+      
+      try {
+        const url = 'https://inputtools.google.com/request?text=' + encodeURIComponent(text) + '&itc=kn-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=demopage';
+        const response = await fetch(url);
+        const json = await response.json();
+        if (json && json[0] === 'SUCCESS' && json[1] && json[1][0] && json[1][0][1] && json[1][0][1][0]) {
+          kannadaInput.value = json[1][0][1][0];
+        }
+      } catch (err) {
+        console.error('Modal transliteration failed', err);
+      }
     }
 </script>
 </body>
