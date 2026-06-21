@@ -503,46 +503,232 @@
                 padding: 8mm 10mm !important;
             }
         }
+
+        /* Premium Controls Header & Controls */
+        .preview-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            color: #fff;
+            padding: 14px 28px !important;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .preview-navbar-brand {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-logo {
+            height: 34px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-premium-back {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            color: #e2e8f0 !important;
+            border-radius: 20px !important;
+            padding: 7px 16px !important;
+            font-size: 11.5px !important;
+            font-weight: 600 !important;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease !important;
+            text-decoration: none;
+        }
+
+        .btn-premium-back:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #38bdf8 !important;
+            color: #fff !important;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .preview-nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .preview-lang-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3px;
+            border-radius: 30px;
+        }
+
+        .lang-toggle-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            padding: 6px 16px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.25s ease;
+        }
+
+        .lang-toggle-btn.active {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.45);
+        }
+
+        .lang-toggle-btn:not(.active):hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zoom-btn-circle {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            width: 30px;
+            height: 30px;
+            border-radius: 50% !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s ease !important;
+        }
+
+        .zoom-btn-circle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            transform: scale(1.05);
+        }
+
+        .zoom-value-text {
+            font-size: 11.5px;
+            font-weight: 600;
+            min-width: 42px;
+            text-align: center;
+            color: #e2e8f0;
+            font-family: 'Outfit', monospace;
+        }
+
+        .btn-premium-action {
+            padding: 8px 18px !important;
+            font-size: 12px !important;
+            font-weight: 700 !important;
+            border: none !important;
+            color: #fff !important;
+            border-radius: 20px !important;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .btn-premium-print {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+        }
+
+        .btn-premium-print:hover {
+            background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.45) !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-premium-pdf {
+            background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+        }
+
+        .btn-premium-pdf:hover {
+            background: linear-gradient(135deg, #fb7185, #f43f5e) !important;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.45) !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-premium-submit {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+        }
+
+        .btn-premium-submit:hover {
+            background: linear-gradient(135deg, #34d399, #10b981) !important;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.45) !important;
+            transform: translateY(-1px);
+        }
   </style>
 </head>
 <body style="background-color: #525659; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; padding-top: 0px;">
-
   <!-- Sticky Preview Controls Navbar -->
-  <nav class="preview-navbar no-print" style="margin-bottom: 25px; width: 100%; display: flex; justify-content: space-between; align-items: center; background-color: #1e293b; color: #fff; padding: 12px 24px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);">
-    <div class="preview-navbar-brand" style="font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 12px;">
-      <button type="button" class="btn btn-outline-light text-xs font-semibold py-1.5 px-3 border border-slate-500 rounded-2xl flex items-center gap-1.5 transition-all duration-300 active:scale-[0.98] cursor-pointer" onclick="goBackToForm()">
+  <nav class="preview-navbar no-print">
+    <div class="preview-navbar-brand">
+      <button type="button" class="btn-premium-back" onclick="goBackToForm()">
         <i class="fa-solid fa-arrow-left"></i> <span id="lbl-back">ಅರ್ಜಿಗೆ ಹಿಂತಿರುಗಿ / Back to Form</span>
       </button>
-      <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
-      <span style="font-size: 14px; font-weight: bold; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif;">ಅರ್ಜಿ ಮುನ್ನೋಟ / Form Preview</span>
+      <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="brand-logo">
+      <span class="brand-title">ಅರ್ಜಿ ಮುನ್ನೋಟ / Form Preview</span>
     </div>
     
-    <div class="preview-nav-controls" style="display: flex; align-items: center; gap: 15px;">
+    <div class="preview-nav-controls">
       <!-- Language Switch -->
-      <div class="preview-lang-toggle" style="display: flex; background: rgba(255, 255, 255, 0.15); padding: 2px; border-radius: 6px;">
-        <button type="button" class="btn btn-sm btn-light py-1 px-3 text-xs font-bold rounded-sm active" id="btn-lang-kn" onclick="togglePreviewLanguage('kn')" style="background-color: #fff; border: none; color: #1e293b; transition: all 0.2s;">ಕನ್ನಡ</button>
-        <button type="button" class="btn btn-sm btn-link py-1 px-3 text-xs font-bold rounded-sm text-white text-decoration-none" id="btn-lang-en" onclick="togglePreviewLanguage('en')" style="border: none; transition: all 0.2s;">English</button>
+      <div class="preview-lang-toggle">
+        <button type="button" class="lang-toggle-btn active" id="btn-lang-kn" onclick="togglePreviewLanguage('kn')">ಕನ್ನಡ</button>
+        <button type="button" class="lang-toggle-btn" id="btn-lang-en" onclick="togglePreviewLanguage('en')">English</button>
       </div>
 
       <!-- Zooming -->
-      <div class="zoom-controls" style="display: flex; align-items: center; gap: 10px;">
-        <button type="button" class="btn btn-sm btn-outline-light rounded-sm font-black w-8 h-8 flex items-center justify-center border-slate-500" onclick="adjustZoom(-0.05)">-</button>
-        <span class="zoom-value text-xs min-w-10 text-center" id="zoom-val">85%</span>
-        <button type="button" class="btn btn-sm btn-outline-light rounded-sm font-black w-8 h-8 flex items-center justify-center border-slate-500" onclick="adjustZoom(0.05)">+</button>
+      <div class="zoom-controls">
+        <button type="button" class="zoom-btn-circle" onclick="adjustZoom(-0.05)">-</button>
+        <span class="zoom-value-text" id="zoom-val">85%</span>
+        <button type="button" class="zoom-btn-circle" onclick="adjustZoom(0.05)">+</button>
       </div>
 
       <!-- Print Trigger -->
-      <button type="button" class="btn text-xs font-bold py-1.5 px-3 border-none flex items-center gap-1.5 shadow-md active:scale-[0.98] transition-all duration-300 text-white rounded-2xl bg-gradient-to-tr from-slate-700 to-slate-600 hover:from-slate-800 hover:to-slate-700 cursor-pointer" onclick="printApplication()">
+      <button type="button" class="btn-premium-action btn-premium-print" onclick="printApplication()">
         <span id="lbl-print">Export</span> <i class="fa-solid fa-print"></i>
       </button>
 
       <!-- PDF Trigger -->
-      <button type="button" class="btn text-xs font-bold py-1.5 px-3 border-none flex items-center gap-1.5 shadow-md active:scale-[0.98] transition-all duration-300 text-white rounded-2xl bg-gradient-to-tr from-rose-600 to-pink-500 hover:from-rose-700 hover:to-pink-600 cursor-pointer" onclick="downloadPdf()">
+      <button type="button" class="btn-premium-action btn-premium-pdf" onclick="downloadPdf()">
         <span id="lbl-pdf">Export</span> <i class="fa-solid fa-file-pdf"></i>
       </button>
 
       <!-- Submit Trigger -->
-      <button type="button" class="btn text-xs font-bold py-1.5 px-3 border-none flex items-center gap-1.5 shadow-md active:scale-[0.98] transition-all duration-300 text-white rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 cursor-pointer" id="btn-submit-app" onclick="submitApplicationFromPreview()">
+      <button type="button" class="btn-premium-action btn-premium-submit" id="btn-submit-app" onclick="submitApplicationFromPreview()">
         <span id="lbl-submit">Submit</span> <i class="fa-solid fa-check"></i>
       </button>
     </div>
@@ -1402,15 +1588,11 @@
             const btnEn = document.getElementById('btn-lang-en');
             
             if (lang === 'kn') {
-                btnKn.style.backgroundColor = '#fff';
-                btnKn.style.color = '#1e293b';
-                btnEn.style.backgroundColor = 'transparent';
-                btnEn.style.color = '#fff';
+                btnKn.classList.add('active');
+                btnEn.classList.remove('active');
             } else {
-                btnKn.style.backgroundColor = 'transparent';
-                btnKn.style.color = '#fff';
-                btnEn.style.backgroundColor = '#fff';
-                btnEn.style.color = '#1e293b';
+                btnKn.classList.remove('active');
+                btnEn.classList.add('active');
             }
             
             // Translate navigation elements

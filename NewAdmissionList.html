@@ -1215,6 +1215,53 @@
       return r.map(cell => cell.replace(/^"|"$/g, ''));
     }
 
+    function parseDateValue(val) {
+      if (!val) return '';
+      val = val.trim();
+      if (!val) return '';
+      
+      // If it's a numeric string (Excel serial date number like 43589)
+      if (/^\d+(\.\d+)?$/.test(val)) {
+        const num = Number(val);
+        if (num > 0 && num < 100000) {
+          // Excel epoch starts at December 30, 1899 due to 1900 leap year bug
+          const date = new Date((num - 25569) * 86400 * 1000);
+          if (!isNaN(date.getTime())) {
+            const yyyy = date.getUTCFullYear();
+            let mm = date.getUTCMonth() + 1;
+            let dd = date.getUTCDate();
+            if (mm < 10) mm = '0' + mm;
+            if (dd < 10) dd = '0' + dd;
+            return `${yyyy}-${mm}-${dd}`;
+          }
+        }
+      }
+      
+      // If in format DD/MM/YYYY or DD-MM-YYYY
+      const dmy = val.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        let dd = dmy[1];
+        let mm = dmy[2];
+        const yyyy = dmy[3];
+        if (dd.length < 2) dd = '0' + dd;
+        if (mm.length < 2) mm = '0' + mm;
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      // If in format YYYY-MM-DD or YYYY/MM/DD
+      const ymd = val.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+      if (ymd) {
+        const yyyy = ymd[1];
+        let mm = ymd[2];
+        let dd = ymd[3];
+        if (mm.length < 2) mm = '0' + mm;
+        if (dd.length < 2) dd = '0' + dd;
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      return val;
+    }
+
     function parseAndValidateCSV(text) {
       const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
       if (lines.length < 2) {
@@ -1261,10 +1308,11 @@
         });
 
         row.enroll_class = normalizeClass(row.enroll_class) || "1";
-        row.dob = row.dob || "2019-06-01";
+        row.dob = parseDateValue(row.dob) || "2019-06-01";
         row.gender = (row.gender && row.gender.toLowerCase().includes('girl')) ? 'Girl' : 'Boy';
         row.is_admitted = false; 
 
+        row.transfer_date = parseDateValue(row.transfer_date);
         if (row.transfer_date === '') row.transfer_date = null;
 
         parsedCSVStudents.push(row);
