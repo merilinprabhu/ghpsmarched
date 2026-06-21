@@ -1872,8 +1872,9 @@
       const className = classFilter.value;
       const dateVal = dateFilter.value;
       
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
       const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
-      document.getElementById('print-school-name').innerText = schoolNameKn;
+      document.getElementById('print-school-name').innerText = schoolNameKn + " / " + schoolNameEn;
       
       const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
       document.getElementById('print-class-meta').innerText = classKn;
@@ -1942,10 +1943,9 @@
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
       const isSingleClass = className && className !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
-      
       sigRow.innerHTML = `
-        <span>${teacherSigText}</span>
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
         <span>CRP ಸಹಿ / CRP Signature</span>
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
@@ -2006,17 +2006,20 @@
       const notAchievedPct = students.length > 0 ? Math.round((notAchievedCount / students.length) * 100) : 0;
       const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
       const formattedDate = new Date(dateVal).toLocaleDateString('kn-IN');
+      
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
       const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
 
       printContainer.innerHTML += `
         <div style="text-align: center; margin-bottom: 15px; color: #000000;">
-          <h1 style="font-size: 16pt; font-weight: bold; margin: 0;">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h1>
-          <h2 style="font-size: 11px; font-weight: bold; margin: 3px 0 0 0;">ಶಾಲಾ ಹಂತ</h2>
-          <h3 style="font-size: 10px; font-weight: bold; margin: 3px 0 0 0;">ಅನುಬಂಧ 4-(1)</h3>
+          <h1 style="font-size: 16pt; font-weight: bold; margin: 0; text-transform: uppercase;">${schoolNameEn}</h1>
+          <h2 style="font-size: 13pt; font-weight: bold; margin: 5px 0 0 0;">${schoolNameKn}</h2>
+          <h3 style="font-size: 11pt; font-weight: bold; margin: 5px 0 0 0; text-transform: uppercase;">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h3>
+          <h4 style="font-size: 9pt; font-weight: bold; margin: 3px 0 0 0;">ಶಾಲಾ ಹಂತ - ಅನುಬಂಧ 4-(1)</h4>
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; font-size: 11pt; font-weight: bold; color: #000000; margin-bottom: 15px; line-height: 1.6;">
-          <div style="text-align: left;">ಶಾಲೆಯ ಹೆಸರು :- <span>${schoolNameKn}</span></div>
+          <div style="text-align: left;">ಶಾಲೆಯ ಹೆಸರು :- <span>${schoolNameKn} / ${schoolNameEn}</span></div>
           <div style="text-align: right;">ದಾಖಲಾದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${students.length}</span></div>
           
           <div style="text-align: left;">ತರಗತಿ :- <span>${classKn}</span></div>
@@ -2062,12 +2065,15 @@
       printContainer.appendChild(tableClone);
       
       const isSingleClass = className && className !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
+      const sigsContent = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
+        <span>CRP ಸಹಿ / CRP Signature</span>
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
       printContainer.innerHTML += `
         <div class="print-signatures-row">
-          <span>${teacherSigText}</span>
-          <span>CRP ಸಹಿ / CRP Signature</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+          ${sigsContent}
         </div>
       `;
       

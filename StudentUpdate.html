@@ -705,6 +705,7 @@
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
     let globalDropdownData = {};
+    let currentUserProfile = null;
 
     function getMockDropdownData() {
       return {

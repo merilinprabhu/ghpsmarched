@@ -41,7 +41,10 @@
       <p style="margin: 0; font-size: 9px; color: #cbd5e1; line-height: 1.1;">GHPS MARCHED - Student Admission Form Panel</p>
     </div>
   </div>
-  <div style="display: flex; align-items: center; gap: 16px; justify-content: flex-end;">
+  <div style="display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+    <button type="button" onclick="window.location.href='NewAdmissionList.html'" style="background: #059669; color: white; padding: 6px 12px; border-radius: 10px; font-weight: 500; font-size: 11px; border: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);" onmouseover="this.style.background='#047857'" onmouseout="this.style.background='#059669'">
+      <i class="fa-solid fa-list-check"></i> ಹೊಸ ಪ್ರವೇಶಾತಿ ಪಟ್ಟಿ / New Admission List
+    </button>
     <button type="button" onclick="goToDashboard()" style="background: #0284c7; color: white; padding: 6px 12px; border-radius: 10px; font-weight: 500; font-size: 11px; border: 0; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.15);" onmouseover="this.style.background='#0369a1'" onmouseout="this.style.background='#0284c7'">
       <i class="fa-solid fa-house"></i> ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
     </button>
@@ -675,7 +678,87 @@
       saveDropdownData(mockData);
     }
     setDefaultDates();
+    registerDefaultBehaviorListeners();
   };
+
+  function registerDefaultBehaviorListeners() {
+    // 1. Name per Aadhaar sync
+    const nameEnInput = document.getElementsByName("nameEnglish")[0];
+    const nameAadhaarInput = document.getElementsByName("nameAadhaar")[0];
+    if (nameEnInput && nameAadhaarInput) {
+      nameEnInput.addEventListener("input", function() {
+        if (!nameAadhaarInput.dataset.manualEdited) {
+          nameAadhaarInput.value = nameEnInput.value.toUpperCase();
+        }
+      });
+      nameAadhaarInput.addEventListener("input", function() {
+        nameAadhaarInput.dataset.manualEdited = "true";
+      });
+    }
+
+    // 11. Bank Account default
+    const bankAccInput = document.getElementsByName("bankAccNo")[0];
+    const ifscInput = document.getElementsByName("ifscCode")[0];
+    const bankAddressInput = document.getElementsByName("bankAddress")[0];
+    if (bankAccInput && ifscInput && bankAddressInput) {
+      bankAccInput.addEventListener("input", function() {
+        if (bankAccInput.value.trim() !== "") {
+          if (ifscInput.value.trim() === "") {
+            ifscInput.value = "SBIN0041068";
+          }
+          if (bankAddressInput.value.trim() === "") {
+            bankAddressInput.value = "STATE BANK OF INDIA";
+          }
+        }
+      });
+    }
+
+    // 13. TC details auto-populate
+    const transferNoInput = document.getElementsByName("transferNo")[0];
+    if (transferNoInput) {
+      transferNoInput.addEventListener("input", function() {
+        if (transferNoInput.value.trim() !== "") {
+          const medium = document.getElementById("medium").value;
+          const isKn = (medium === "ಕನ್ನಡ");
+
+          const boardSelect = document.getElementById("preschoolBoard");
+          const typeSelect = document.getElementById("preschoolType");
+          const nameInput = document.getElementsByName("preschoolName")[0];
+          const addressInput = document.getElementsByName("preschoolAddress")[0];
+          const distSelect = document.getElementById("prevDistrict");
+          const talukSelect = document.getElementById("prevTaluk");
+          const hobliInput = document.getElementsByName("prevHobli")[0];
+          const pinInput = document.getElementsByName("prevPinCode")[0];
+
+          if (boardSelect && boardSelect.value === "") {
+            boardSelect.value = isKn ? "ರಾಜ್ಯ ಮಂಡಳಿ" : "STATE BOARD";
+          }
+          if (typeSelect && typeSelect.value === "") {
+            typeSelect.value = "GOVERNMENT";
+          }
+          if (nameInput && nameInput.value.trim() === "") {
+            nameInput.value = isKn ? "ಸರಕಾರಿ ಕಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ತೋಟದ ಮರ್ಚೆಡ್" : "TOTADA MARCHED";
+          }
+          if (addressInput && addressInput.value.trim() === "") {
+            addressInput.value = isKn ? "ತೋಟದ ಮರ್ಚೆಡ್" : "TOTADA MARCHED";
+          }
+          if (distSelect && distSelect.value === "") {
+            distSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+            onPrevDistrictChange();
+          }
+          if (talukSelect && talukSelect.value === "") {
+            talukSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+          }
+          if (hobliInput && hobliInput.value.trim() === "") {
+            hobliInput.value = isKn ? "ಕಲಮಲ" : "KALAMA";
+          }
+          if (pinInput && pinInput.value.trim() === "") {
+            pinInput.value = "584134";
+          }
+        }
+      });
+    }
+  }
 
   async function saveDropdownData(data) {
     globalDropdownData = data;
@@ -1014,6 +1097,99 @@
 
     // ಅರ್ಜಿ ಸಂಖ್ಯೆ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದು
     updateAppNo();
+
+    // ಅಡ್ಮಿಷನ್ ಫಾರ್ಮ್ ಮೊದಲ ಬಾರಿಗೆ ತೆರೆದಾಗ ಡೀಫಾಲ್ಟ್ ವ್ಯಾಲ್ಯೂಗಳನ್ನು ಸೆಟ್ ಮಾಡುವುದು
+    const isEditMode = new URLSearchParams(window.location.search).get('id') || 
+                       new URLSearchParams(window.location.search).get('appNo') || 
+                       (localStorage.getItem("editMode") === "true");
+    if (!isEditMode && !window.isFormLoadingData) {
+      const isKn = (medium === "ಕನ್ನಡ");
+
+      // 2. ಧರ್ಮ / Religion - HINDU
+      const relSelect = document.getElementById("religion");
+      if (relSelect) {
+        relSelect.value = isKn ? "ಹಿಂದೂ" : "HINDU";
+      }
+
+      // 3. ಸಾಮಾಜಿಕ ವರ್ಗ / Social Class - SC
+      const scSelect = document.getElementById("socialClass");
+      if (scSelect) {
+        scSelect.value = "SC";
+        updateCastes();
+      }
+
+      // 4. ಜಾತಿ / Caste - MADIGA
+      const casteSelect = document.getElementById("caste");
+      if (casteSelect) {
+        casteSelect.value = isKn ? "ಮಾದಿಗ" : "Madiga";
+      }
+
+      // 5. ಮಾತೃ ಭಾಷೆ / Mother Tongue - KANNADA
+      const mtSelect = document.getElementById("motherTongue");
+      if (mtSelect) {
+        mtSelect.value = isKn ? "ಕನ್ನಡ" : "KANNADA";
+      }
+
+      // 6. ಜಿಲ್ಲಾ / District - RAICHUR
+      const distSelect = document.getElementById("district");
+      if (distSelect) {
+        distSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+        onDistrictChange();
+      }
+
+      // 7. ತಾಲೂಕು / Taluk - RAICHUR
+      const talukSelect = document.getElementById("taluk");
+      if (talukSelect) {
+        talukSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+      }
+
+      // 8. ಹೊಬಳಿ / Hobli - KALAMA (ಕಲಮಲ)
+      const hobliInput = document.getElementsByName("hobli")[0];
+      if (hobliInput) {
+        hobliInput.value = isKn ? "ಕಲಮಲ" : "KALAMA";
+      }
+
+      // 9. ಪಿನ್ ಕೋಡ್ / Pin Code - 584134
+      const pinInput = document.getElementsByName("pinCode")[0];
+      if (pinInput) {
+        pinInput.value = "584134";
+      }
+
+      // 10. ವಿಳಾಸ / Address - ತೋಟದ ಮರ್ಚೆಡ್
+      const addressInput = document.getElementsByName("address")[0];
+      if (addressInput) {
+        addressInput.value = isKn ? "ತೋಟದ ಮರ್ಚೆಡ್" : "TOTADA MARCHED";
+      }
+
+      // 12. ತಂದೆ/ತಾಯಿಯ ಉದ್ಯೋಗ / Occupation - LABOUR
+      const fOccSelect = document.getElementById("fatherOccupation");
+      const mOccSelect = document.getElementById("motherOccupation");
+      if (fOccSelect) {
+        fOccSelect.value = isKn ? "ಕೂಲಿ" : "LABOUR";
+      }
+      if (mOccSelect) {
+        mOccSelect.value = isKn ? "ಕೂಲಿ" : "LABOUR";
+      }
+
+      // Previous School Address Details Defaults (ಜಿಲ್ಲೆ, ತಾಲೂಕು, ಹೊಬಳಿ, ಪಿನ್‌ಕೋಡ್)
+      const prevDistSelect = document.getElementById("prevDistrict");
+      if (prevDistSelect) {
+        prevDistSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+        onPrevDistrictChange();
+      }
+      const prevTalukSelect = document.getElementById("prevTaluk");
+      if (prevTalukSelect) {
+        prevTalukSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
+      }
+      const prevHobliInput = document.getElementsByName("prevHobli")[0];
+      if (prevHobliInput) {
+        prevHobliInput.value = isKn ? "ಕಲಮಲ" : "KALAMA";
+      }
+      const prevPinInput = document.getElementsByName("prevPinCode")[0];
+      if (prevPinInput) {
+        prevPinInput.value = "584134";
+      }
+    }
   }
 
   function fillStandardSelect(elementId, dataArray, mode) {

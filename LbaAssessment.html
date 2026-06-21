@@ -1323,7 +1323,13 @@
       const subjectName = subjectFilter.value;
       
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      document.getElementById('print-school-name').innerText = schoolNameEn;
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      
+      document.getElementById('print-school-name').innerHTML = `
+        <div style="font-size: 20px; font-weight: 800; text-transform: uppercase; color: #000000; line-height: 1.2;">${schoolNameEn}</div>
+        <div style="font-size: 16px; font-weight: 700; color: #000000; margin-top: 4px; line-height: 1.2;">${schoolNameKn}</div>
+      `;
+      
       document.getElementById('print-class-meta').innerText = "ತರಗತಿ / Class: " + className;
       document.getElementById('print-subject-meta').innerText = "ವಿಷಯ / Subject: " + subjectName;
       document.getElementById('print-date-meta').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
@@ -1340,24 +1346,18 @@
       tableClone.removeAttribute('id');
       tableClone.classList.remove('hidden');
       
-      // Sync select values to cloned table
-      const originalSelects = originalTable.querySelectorAll('select');
-      const clonedSelects = tableClone.querySelectorAll('select');
-      originalSelects.forEach((origSelect, index) => {
-        if (clonedSelects[index]) {
-          clonedSelects[index].value = origSelect.value;
+      // Sync input values to cloned table and replace them with spans
+      const originalInputs = originalTable.querySelectorAll('input');
+      const clonedInputs = tableClone.querySelectorAll('input');
+      originalInputs.forEach((origInput, index) => {
+        if (clonedInputs[index]) {
+          const parent = clonedInputs[index].parentNode;
+          const val = origInput.value !== '' ? origInput.value : '-';
+          const span = document.createElement('span');
+          span.innerText = val;
+          span.style.fontWeight = 'bold';
+          parent.replaceChild(span, clonedInputs[index]);
         }
-      });
-      
-      // Replace select dropdowns with spans in cloned table
-      const selects = tableClone.querySelectorAll('select');
-      selects.forEach(select => {
-        const parent = select.parentNode;
-        const val = select.value;
-        const span = document.createElement('span');
-        span.innerText = val;
-        span.style.fontWeight = 'bold';
-        parent.replaceChild(span, select);
       });
       
       // Append cloned table
@@ -1367,9 +1367,9 @@
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
       const isSingleClass = className && className !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
       sigRow.innerHTML = `
-        <span>${teacherSigText}</span>
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
       document.getElementById('printArea').appendChild(sigRow);
@@ -1416,10 +1416,14 @@
       `;
       printContainer.appendChild(styleEl);
 
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+
       const headerHtml = `
         <div class="print-header-title">
-          <h1 class="print-title-h1">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
-          <h2 class="print-title-h2">ಪಾಠ ಆಧಾರಿತ ಪ್ರಗತಿ ಪಟ್ಟಿ (Lesson Based Assessment Report)</h2>
+          <h1 class="print-title-h1">${schoolNameEn}</h1>
+          <h2 class="print-title-h2">${schoolNameKn}</h2>
+          <h3 style="font-size: 12px; font-weight: 700; margin: 6px 0 0 0; color: #000000; text-transform: uppercase;">ಪಾಠ ಆಧಾರಿತ ಪ್ರಗತಿ ಪಟ್ಟಿ (Lesson Based Assessment Report)</h3>
           <div class="print-meta-row">
             <span>ತರಗತಿ / Class: ${className}</span>
             <span>ವಿಷಯ / Subject: ${subjectName}</span>
@@ -1476,11 +1480,14 @@
       printContainer.appendChild(tableClone);
       
       const isSingleClass = className && className !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
+      const sigsContent = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
       const footerHtml = `
         <div class="print-signatures-row">
-          <span>${teacherSigText}</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+          ${sigsContent}
         </div>
       `;
       const footerEl = document.createElement('div');

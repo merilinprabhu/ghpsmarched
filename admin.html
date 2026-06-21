@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HM Admin Panel - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .rotate-90 { transform: rotate(90deg); }
+    
+    /* Sidebar Hover Collapsed Styles */
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text,
+      aside i.fa-chevron-right,
+      aside ul,
+      aside span.uppercase,
+      aside nav span,
+      aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text,
+      aside:hover i.fa-chevron-right,
+      aside:hover span.uppercase,
+      aside:hover nav span,
+      aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) {
+        display: block !important;
+      }
+      aside:hover .nav-item button {
+        justify-content: space-between !important;
+      }
+      aside:hover nav a {
+        justify-content: flex-start !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+      }
+      aside .nav-item button {
+        justify-content: center !important;
+      }
+      aside nav a {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    }
+    
+    /* Themes */
+    body[data-theme="dark"] {
+      background-color: #0f172a !important;
+      color: #f1f5f9 !important;
+    }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] aside,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .section-block {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] td,
+    body[data-theme="dark"] th {
+      color: #cbd5e1 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] .text-slate-700,
+    body[data-theme="dark"] .text-slate-800,
+    body[data-theme="dark"] .text-slate-650,
+    body[data-theme="dark"] .text-slate-500,
+    body[data-theme="dark"] label {
+      color: #cbd5e1 !important;
+    }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea {
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      border-color: #475569 !important;
+    }
+    body[data-theme="dark"] .bg-slate-50,
+    body[data-theme="dark"] .bg-slate-100 {
+      background-color: #0f172a !important;
+    }
+    
+    /* Gray Theme */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white, body[data-theme="gray"] aside, body[data-theme="gray"] main, body[data-theme="gray"] .form-container {
+      background-color: #f1f5f9 !important; border-color: #cbd5e1 !important;
+    }
+    
+    /* Blue Theme */
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white, body[data-theme="blue"] aside, body[data-theme="blue"] main, body[data-theme="blue"] .form-container {
+      background-color: #f0f9ff !important; border-color: #93c5fd !important;
+    }
+    
+    /* Green Theme */
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white, body[data-theme="green"] aside, body[data-theme="green"] main, body[data-theme="green"] .form-container {
+      background-color: #f0fdf4 !important; border-color: #86efac !important;
+    }
+
+    .tab-btn {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      color: #e11d48;
+      font-weight: 700;
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: #e11d48;
+      border-radius: 99px;
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+  <div>
+    <!-- Dark Header Bar -->
+    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
+        <div>
+          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
+          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
+        </div>
+      </div>
+      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
+        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
+          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
+          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="gray">Gray</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+          </select>
+        </div>
+        
+        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
+          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
+          <span id="headerUser" class="font-semibold text-slate-200">User</span>
+        </div>
+        <div>
+          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
+          <span id="liveClock" class="font-bold text-emerald-400"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- White Navigation Tabs Bar -->
+    <div class="w-full bg-white border-b border-slate-200/80 px-6 flex justify-center sm:justify-start gap-8 text-sm no-print">
+      <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn active py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಾಲಾ ಮಾಹಿತಿ / School Settings</button>
+      <button onclick="switchTab('approvals')" id="tab-approvals" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ / Teacher Approvals <span id="pendingBadge" class="hidden bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1">0</span></button>
+      <button onclick="switchTab('allotment')" id="tab-allotment" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ತರಗತಿ ನಿಯೋಜನೆ / Class Allotment</button>
+    </div>
+
+    <!-- Main Outer Container -->
+    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
+      <!-- Sidebar Navigation -->
+      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
+        <div class="space-y-6">
+          <div>
+            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
+            <nav class="space-y-1 text-xs" id="sidebarNav">
+              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
+              </a>
+              
+              <!-- Teachers -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
+                  </span>
+                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Students -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
+                  </span>
+                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
+                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
+                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
+                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
+                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
+                </ul>
+              </div>
+
+              <!-- Academic -->
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
+                  </span>
+                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
+                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
+                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
+                  <li><a href="FlnAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">FLN Assessment</span></a></li>
+                </ul>
+              </div>
+
+              <a href="custom_reports.html" id="nav-CustomReports" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                <i class="fa-solid fa-file-invoice text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Custom Reports</span>
+              </a>
+
+              <div class="nav-item">
+                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
+                  <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
+                  </span>
+                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
+                </button>
+                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
+                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
+                </ul>
+              </div>
+
+              <a href="admin.html" id="nav-Admin" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-rose-700 bg-rose-50 border border-rose-250 transition">
+                <i class="fa-solid fa-shield-halved text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">HM Admin Panel</span>
+              </a>
+
+              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition border-0"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
+            </nav>
+          </div>
+          <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
+            <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
+            <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Contents Container -->
+      <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
+        
+        <!-- Welcome Banner -->
+        <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 text-white p-5 rounded-3xl flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg border border-white/5 no-print">
+          <div class="absolute -left-16 -top-16 w-36 h-36 bg-rose-500 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+          <div class="relative z-10 flex items-center gap-3">
+            <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-xl shadow-inner border border-white/10 backdrop-blur-md">
+              👑
+            </div>
+            <div>
+              <h2 class="text-base font-bold tracking-tight">ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ನಿಯಂತ್ರಣ ಫಲಕ</h2>
+              <p class="text-[10px] text-slate-300 font-medium">ಶಾಲಾ ಮಾಹಿತಿ, ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ ಮತ್ತು ತರಗತಿ ನಿಯೋಜನೆ ನಿರ್ವಹಣೆ.</p>
+            </div>
+          </div>
+          <span class="relative z-10 text-xs bg-rose-500/20 text-rose-350 px-3.5 py-1.5 rounded-full font-bold border border-rose-500/30 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> ಶಾಲಾ ಆಡಳಿತ / Head Master Console</span>
+        </div>
+
+        <!-- 1. School Settings Tab -->
+        <div id="view-settings" class="space-y-5">
+          <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-school text-rose-500"></i> ಶಾಲೆಯ ಮೂಲ ಮಾಹಿತಿ ತಿದ್ದುಪಡಿ / School Settings</h3>
+            <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+            
+            <form id="schoolSettingsForm" onsubmit="handleSchoolUpdate(event)" class="space-y-4 max-w-lg">
+              <div>
+                <label class="block text-xs font-bold text-slate-650 mb-1">School Name (English) *</label>
+                <input type="text" id="schNameEn" placeholder="e.g. GHPS MARCHED" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all uppercase" required>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-650 mb-1">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+                <input type="text" id="schNameKn" placeholder="ಉದಾ. ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-650 mb-1">School UDISE Code *</label>
+                <input type="text" id="schUdise" placeholder="e.g. 29060709801" maxlength="11" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-mono" required>
+              </div>
+              <div class="pt-2">
+                <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer">
+                  ಮಾಹಿತಿ ಉಳಿಸಿ / Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- 2. Teacher Approvals Tab -->
+        <div id="view-approvals" class="hidden space-y-4">
+          <div class="p-5 border border-slate-200 rounded-2xl bg-white shadow-sm space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left text-amber-500"></i> ಹೊಸ ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ ಸರತಿ ಸಾಲು / Teacher Registration Approval Queue</h3>
+            <div class="w-12 h-[3px] bg-amber-500 rounded-full"></div>
+            
+            <div class="overflow-x-auto border border-slate-200 rounded-xl bg-slate-50/20">
+              <table class="w-full text-left text-xs whitespace-nowrap border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-600 font-bold uppercase border-b">
+                    <th class="py-3 px-4">Name</th>
+                    <th class="py-3 px-4">Username</th>
+                    <th class="py-3 px-4">Contact</th>
+                    <th class="py-3 px-4">Email Address</th>
+                    <th class="py-3 px-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="approvalsTableBody" class="divide-y divide-slate-150 font-medium text-slate-700 bg-white">
+                  <tr>
+                    <td colspan="5" class="text-center py-6 text-slate-400">ಅನುಮೋದನೆಗಾಗಿ ಯಾವುದೇ ಹೊಸ ಶಿಕ್ಷಕರ ನೋಂದಣಿ ಇಲ್ಲ / No pending approvals.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Class Allotment Tab -->
+        <div id="view-allotment" class="hidden space-y-4">
+          <div class="p-5 border border-slate-200 rounded-2xl bg-white shadow-sm space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-user-gear text-sky-500"></i> ತರಗತಿ ನಿಯೋಜನೆ ಗ್ರಿಡ್ ಮತ್ತು ರೋಲ್ ನಿರ್ವಹಣೆ / Multi-Class Allotment</h3>
+                <div class="w-12 h-[3px] bg-sky-500 rounded-full mt-1.5"></div>
+              </div>
+              <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-3 py-1.5 rounded-xl font-bold font-semibold uppercase">ಒಬ್ಬ ಶಿಕ್ಷಕನಿಗೆ ಹಲವು ತರಗತಿಗಳನ್ನು ನಿಯೋಜಿಸಲು ಟಿಕ್ ಮಾಡಿ ಉಳಿಸಿ.</span>
+            </div>
+            
+            <div class="overflow-x-auto border border-slate-200 rounded-xl bg-slate-50/20">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-150 text-slate-650 font-bold uppercase border-b text-center">
+                    <th class="py-3.5 px-4 text-left">Teacher Name</th>
+                    <th class="py-3.5 px-4">System Role</th>
+                    <th class="py-3.5 px-3">LKG</th>
+                    <th class="py-3.5 px-3">UKG</th>
+                    <th class="py-3.5 px-3">1</th>
+                    <th class="py-3.5 px-3">2</th>
+                    <th class="py-3.5 px-3">3</th>
+                    <th class="py-3.5 px-3">4</th>
+                    <th class="py-3.5 px-3">5</th>
+                    <th class="py-3.5 px-3">6</th>
+                    <th class="py-3.5 px-3">7</th>
+                    <th class="py-3.5 px-3">8</th>
+                    <th class="py-3.5 px-3">9</th>
+                    <th class="py-3.5 px-3">10</th>
+                    <th class="py-3.5 px-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="allotmentTableBody" class="divide-y divide-slate-150 font-semibold text-slate-700 bg-white">
+                  <tr>
+                    <td colspan="15" class="text-center py-6 text-slate-400">ಶಿಕ್ಷಕರ ಪಟ್ಟಿ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast system -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-[100]">
+    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white" id="toast-icon">
+      <i class="fa-solid fa-check text-sm"></i>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold" id="toast-title">Success!</h4>
+      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Saved successfully.</p>
+    </div>
+  </div>
+
+  <footer class="w-full bg-white border-t border-slate-200 py-2.5 text-center text-xs text-slate-400 mt-auto flex-shrink-0">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const classesList = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12; h = h ? h : 12;
+      m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
+      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+    }
+    setInterval(updateClock, 1000); updateClock();
+
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+      localStorage.setItem('portal_theme', themeName);
+    }
+
+    function toggleAccordion(menuId) {
+      const menu = document.getElementById(menuId);
+      const arrow = document.getElementById(menuId + '-arrow');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        arrow.classList.add('rotate-90');
+      } else {
+        menu.classList.add('hidden');
+        arrow.classList.remove('rotate-90');
+      }
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['settings', 'approvals', 'allotment'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        const view = document.getElementById(`view-${t}`);
+        if (t === tabId) {
+          btn.classList.add('active');
+          view.classList.remove('hidden');
+        } else {
+          btn.classList.remove('active');
+          view.classList.add('hidden');
+        }
+      });
+    }
+
+    let currentSchoolId = null;
+    let currentUserProfile = null;
+    let registeredProfiles = [];
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // Init theme
+      const savedTheme = localStorage.getItem('portal_theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      const selector = document.getElementById('themeSelector');
+      if (selector) selector.value = savedTheme;
+
+      // Verify Session
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const user = session.user;
+      
+      // Fetch user profile
+      const { data: profile, error: profErr } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      if (profErr || !profile) {
+        console.error("Profile fetch error:", profErr);
+        window.location.href = "index.html";
+        return;
+      }
+
+      currentUserProfile = profile;
+      currentSchoolId = profile.school_id;
+
+      // HM/Admin role protection
+      if (profile.role !== 'Admin' && profile.role !== 'developer') {
+        alert("ಅನಧಿಕೃತ ಪ್ರವೇಶ! ಮುಖ್ಯೋಪಾಧ್ಯಾಯರಿಗೆ ಮಾತ್ರ ಪ್ರವೇಶವಿದೆ. / Unauthorized! Access allowed only for Headmaster.");
+        window.location.href = "dashboard.html";
+        return;
+      }
+
+      document.getElementById('headerUser').innerText = profile.name || user.email;
+
+      await loadSchoolSettings();
+      await loadRegisteredProfiles();
+    });
+
+    async function loadSchoolSettings() {
+      if (!currentSchoolId) return;
+      try {
+        const { data: school, error } = await supabaseClient
+          .from('schools')
+          .select('*')
+          .eq('id', currentSchoolId)
+          .single();
+
+        if (error) throw error;
+        if (school) {
+          document.getElementById('schNameEn').value = school.school_name_en || '';
+          document.getElementById('schNameKn').value = school.school_name_kn || '';
+          document.getElementById('schUdise').value = school.udise_code || '';
+        }
+      } catch (err) {
+        console.error("Error loading school details:", err);
+        showToast("Error", "ಶಾಲೆಯ ವಿವರ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.", "error");
+      }
+    }
+
+    async function handleSchoolUpdate(event) {
+      event.preventDefault();
+      if (!currentSchoolId) return;
+
+      const schEn = document.getElementById('schNameEn').value.trim();
+      const schKn = document.getElementById('schNameKn').value.trim();
+      const schUdise = document.getElementById('schUdise').value.trim();
+
+      if (!schEn || !schKn || !schUdise) {
+        showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
+        return;
+      }
+
+      try {
+        const { error } = await supabaseClient
+          .from('schools')
+          .update({
+            school_name_en: schEn,
+            school_name_kn: schKn,
+            udise_code: schUdise
+          })
+          .eq('id', currentSchoolId);
+
+        if (error) throw error;
+
+        localStorage.setItem('school_name_en', schEn);
+        localStorage.setItem('school_name_kn', schKn);
+        localStorage.setItem('school_udise', schUdise);
+
+        showToast("ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಲಾಗಿದೆ", "ಶಾಲೆಯ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "success");
+      } catch (err) {
+        console.error("Error updating school:", err);
+        showToast("Error", "ಶಾಲಾ ಮಾಹಿತಿ ಅಪ್‌ಡೇಟ್ ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
+      }
+    }
+
+    async function loadRegisteredProfiles() {
+      if (!currentSchoolId) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('school_id', currentSchoolId)
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+        registeredProfiles = data || [];
+
+        renderApprovalsQueue();
+        renderAllotmentGrid();
+      } catch (err) {
+        console.error("Error fetching profiles:", err);
+      }
+    }
+
+    function renderApprovalsQueue() {
+      const tbody = document.getElementById('approvalsTableBody');
+      tbody.innerHTML = '';
+
+      const pending = registeredProfiles.filter(p => p.is_approved === false && p.id !== currentUserProfile.id);
+      
+      const badge = document.getElementById('pendingBadge');
+      if (pending.length > 0) {
+        badge.innerText = pending.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+
+      if (pending.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-8 text-slate-400 font-semibold bg-slate-50/10">
+              <i class="fa-solid fa-circle-check text-lg text-emerald-500 mr-1"></i> ಅನುಮೋದನೆಗಾಗಿ ಯಾವುದೇ ಹೊಸ ಶಿಕ್ಷಕರಿಲ್ಲ.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      pending.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-800">${p.name || '-'}</td>
+          <td class="py-3 px-4 font-mono">${p.username || '-'}</td>
+          <td class="py-3 px-4 font-mono">${p.phone || '-'}</td>
+          <td class="py-3 px-4">${p.email || '-'}</td>
+          <td class="py-3 px-4 text-center flex items-center justify-center gap-2">
+            <button onclick="approveTeacher('${p.id}', '${p.name}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition border-0 cursor-pointer">
+              <i class="fa-solid fa-check mr-1"></i> Approve
+            </button>
+            <button onclick="deleteProfile('${p.id}', '${p.name}')" class="bg-rose-600/10 hover:bg-rose-600 text-rose-600 hover:text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition border border-rose-200 hover:border-transparent cursor-pointer">
+              <i class="fa-solid fa-trash-can mr-1"></i> Delete
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function approveTeacher(profileId, name) {
+      try {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .update({ is_approved: true })
+          .eq('id', profileId);
+
+        if (error) throw error;
+
+        showToast("ಅನುಮೋದಿಸಲಾಗಿದೆ / Approved", `${name} ಅವರ ಖಾತೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅನುಮೋದಿಸಲಾಗಿದೆ.`, "success");
+        await loadRegisteredProfiles();
+      } catch (err) {
+        console.error("Approve error:", err);
+        showToast("Error", "ಅನುಮೋದಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      }
+    }
+
+    async function deleteProfile(profileId, name) {
+      if (!confirm(`Are you sure you want to delete ${name}'s system login profile?\nThis action is irreversible!`)) {
+        return;
+      }
+      try {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .delete()
+          .eq('id', profileId);
+
+        if (error) throw error;
+
+        showToast("Deleted / ಅಳಿಸಲಾಗಿದೆ", `${name} ಅವರ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗಿದೆ.`, "success");
+        await loadRegisteredProfiles();
+      } catch (err) {
+        console.error("Delete profile error:", err);
+        showToast("Error", "ಖಾತೆ ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      }
+    }
+
+    function renderAllotmentGrid() {
+      const tbody = document.getElementById('allotmentTableBody');
+      tbody.innerHTML = '';
+
+      // Only show approved teachers (include HM / Admins but exclude developer)
+      const approved = registeredProfiles.filter(p => p.is_approved === true && p.role !== 'developer');
+
+      if (approved.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="15" class="text-center py-6 text-slate-400">ಯಾವುದೇ ಶಿಕ್ಷಕರು ಕಂಡುಬಂದಿಲ್ಲ.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      approved.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors text-center";
+        
+        const isSelf = p.id === currentUserProfile.id;
+        const assigned = p.assigned_classes || [];
+        
+        // Build class checkboxes
+        let checkboxesHtml = '';
+        classesList.forEach(cls => {
+          const isChecked = assigned.includes(cls) ? 'checked' : '';
+          checkboxesHtml += `
+            <td class="py-3.5 px-1.5">
+              <input type="checkbox" class="teacher-class-chk font-bold cursor-pointer w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-350" data-teacher-id="${p.id}" data-class="${cls}" ${isChecked}>
+            </td>
+          `;
+        });
+
+        // Current role selector dropdown
+        const roleDropdown = `
+          <select class="teacher-role-sel bg-slate-50 border border-slate-300 rounded-lg p-1 text-[11px] font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none" data-teacher-id="${p.id}" ${isSelf ? 'disabled' : ''}>
+            <option value="Teacher" ${p.role === 'Teacher' ? 'selected' : ''}>Teacher</option>
+            <option value="Admin" ${p.role === 'Admin' ? 'selected' : ''}>Admin (HM)</option>
+          </select>
+        `;
+
+        tr.innerHTML = `
+          <td class="py-3.5 px-4 text-left font-bold text-slate-800">
+            ${p.name || '-'} ${isSelf ? '<span class="text-[9px] bg-slate-100 text-slate-550 border px-1.5 py-0.5 rounded ml-1 font-semibold">You</span>' : ''}
+          </td>
+          <td class="py-3.5 px-2 text-center">${roleDropdown}</td>
+          ${checkboxesHtml}
+          <td class="py-3.5 px-4 text-center">
+            <button onclick="saveTeacherAllotment('${p.id}', '${p.name}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition border-0 cursor-pointer shadow-sm">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> Save
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function saveTeacherAllotment(teacherId, teacherName) {
+      // 1. Get Selected Role
+      const roleSel = document.querySelector(`.teacher-role-sel[data-teacher-id="${teacherId}"]`);
+      const newRole = roleSel ? roleSel.value : 'Teacher';
+
+      // 2. Get All Allotted Classes
+      const chks = document.querySelectorAll(`.teacher-class-chk[data-teacher-id="${teacherId}"]:checked`);
+      const selectedClasses = Array.from(chks).map(c => c.getAttribute('data-class'));
+
+      // Check one school one admin warning
+      if (newRole === 'Admin') {
+        const otherAdmins = registeredProfiles.filter(p => p.role === 'Admin' && p.id !== teacherId && p.is_approved === true);
+        if (otherAdmins.length > 0) {
+          if (!confirm(`ಗಮನಿಸಿ: ಈ ಶಾಲೆಯಲ್ಲಿ ಈಗಾಗಲೇ ಅಡ್ಮಿನ್ (${otherAdmins[0].name}) ಇದ್ದಾರೆ. ಒಬ್ಬರಿಗಿಂತ ಹೆಚ್ಚು ಅಡ್ಮಿನ್ ನಿಯೋಜಿಸಲು ಬಯಸುವಿರಾ?\nNote: There is already an Admin (${otherAdmins[0].name}) in this school. Are you sure you want to add another Admin role?`)) {
+            return;
+          }
+        }
+      }
+
+      try {
+        const { error } = await supabaseClient
+          .from('profiles')
+          .update({
+            role: newRole,
+            assigned_classes: selectedClasses
+          })
+          .eq('id', teacherId);
+
+        if (error) throw error;
+
+        showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", `${teacherName} ಅವರ ತರಗತಿ/ರೋಲ್ ನಿಯೋಜನೆ ಉಳಿಸಲಾಗಿದೆ.`, "success");
+        await loadRegisteredProfiles();
+      } catch (err) {
+        console.error("Save allotment error:", err);
+        showToast("Error", "ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      }
+    }
+
+    async function handleLogout() {
+      await supabaseClient.auth.signOut();
+      window.location.href = "index.html";
+    }
+
+    function showToast(title, message, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+
+      toastTitle.innerText = title;
+      toastMsg.innerText = message;
+
+      if (type === "success") {
+        toastIcon.className = "w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-check text-sm"></i>';
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i>';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>

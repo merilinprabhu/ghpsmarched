@@ -408,11 +408,20 @@
           
           <!-- Class Wise Enrollment (Left 7 Columns) -->
           <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
-            <div class="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800">
-              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center gap-2 tracking-wider">
-                <i class="fa-solid fa-table text-indigo-500"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
-              </h3>
-              <span class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</span>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center gap-2 tracking-wider">
+                  <i class="fa-solid fa-table text-indigo-500"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
+                </h3>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic mt-0.5">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</p>
+              </div>
+              
+              <!-- Segmented Control View Switcher -->
+              <div class="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 text-[10px] font-bold self-start sm:self-auto no-print">
+                <button type="button" onclick="switchEnrollmentView('gender')" id="btn-view-gender" class="px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 shadow-sm">ಲಿಂಗಾವಾರು / Gender</button>
+                <button type="button" onclick="switchEnrollmentView('caste')" id="btn-view-caste" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">ವರ್ಗಾವಾರು / Caste</button>
+                <button type="button" onclick="switchEnrollmentView('all')" id="btn-view-all" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">ಎಲ್ಲಾ / All</button>
+              </div>
             </div>
             
             <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-700/40 rounded-2xl shadow-sm">
@@ -549,6 +558,16 @@
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    let currentEnrollmentView = 'gender';
+    let cachedClassData = null;
+    const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+    const classLabels = {
+      'LKG': 'LKG', 'UKG': 'UKG',
+      '1': '1', '2': '2', '3': '3', '4': '4',
+      '5': '5', '6': '6', '7': '7', '8': '8',
+      '9': '9', '10': '10'
+    };
+
     function updateClock() {
       const now = new Date();
       let h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
@@ -675,14 +694,6 @@
           return;
         }
 
-        const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-        const classLabels = {
-          'LKG': 'LKG', 'UKG': 'UKG',
-          '1': '1', '2': '2', '3': '3', '4': '4',
-          '5': '5', '6': '6', '7': '7', '8': '8',
-          '9': '9', '10': '10'
-        };
-
         const admittedList = admissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false');
         const pendingList = admissions.filter(s => s.is_admitted === false || s.is_admitted === 'false');
 
@@ -694,7 +705,7 @@
 
         const classData = {};
         classes.forEach(c => {
-          classData[c] = { b: 0, g: 0 };
+          classData[c] = { b: 0, g: 0, sc: 0, st: 0, obc: 0, oth: 0 };
         });
 
         function normalizeClass(classStr) {
@@ -733,17 +744,31 @@
             girls++;
           }
 
+          const cst = (student.caste || '').toUpperCase();
+          let isSC = cst.includes('SC');
+          let isST = cst.includes('ST');
+          let isOBC = cst.includes('OBC') || cst.includes('C1') || cst.includes('2A') || cst.includes('3A') || cst.includes('3B');
+
+          if (isSC) {
+            castes['SC']++;
+          } else if (isST) {
+            castes['ST']++;
+          } else if (isOBC) {
+            castes['OBC']++;
+          } else {
+            castes['Others']++;
+          }
+
           let cls = normalizeClass(student.enroll_class);
           if (cls && classData[cls]) {
             if (isBoy) classData[cls].b++;
             else if (isGirl) classData[cls].g++;
-          }
 
-          const cst = (student.caste || '').toUpperCase();
-          if (cst.includes('SC')) castes['SC']++;
-          else if (cst.includes('ST')) castes['ST']++;
-          else if (cst.includes('OBC') || cst.includes('C1') || cst.includes('2A') || cst.includes('3A') || cst.includes('3B')) castes['OBC']++;
-          else castes['Others']++;
+            if (isSC) classData[cls].sc++;
+            else if (isST) classData[cls].st++;
+            else if (isOBC) classData[cls].obc++;
+            else classData[cls].oth++;
+          }
         });
 
         document.getElementById('totalStudents').innerText = totalStudents;
@@ -773,21 +798,130 @@
           }
         }
 
-        const tbody = document.getElementById('classTableBody');
-        tbody.innerHTML = '';
-        classes.forEach(c => {
-          const bCount = classData[c].b;
-          const gCount = classData[c].g;
-          const total = bCount + gCount;
+        cachedClassData = classData;
+        renderClasswiseTable();
 
-          const row = document.createElement('tr');
-          row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors duration-150';
-          row.innerHTML = `
-            <td class="px-4 py-2.5 font-bold text-slate-800 dark:text-slate-200">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-extrabold border border-slate-200/50 dark:border-slate-700/50">
-                ${classLabels[c]}
-              </span>
+      } catch (err) {
+        console.error("Dashboard calculation error:", err);
+      }
+    }
+
+    function switchEnrollmentView(viewMode) {
+      currentEnrollmentView = viewMode;
+      
+      const modes = ['gender', 'caste', 'all'];
+      modes.forEach(m => {
+        const btn = document.getElementById(`btn-view-${m}`);
+        if (!btn) return;
+        if (m === viewMode) {
+          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm";
+        } else {
+          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200";
+        }
+      });
+
+      renderClasswiseTable();
+    }
+
+    function renderClasswiseTable() {
+      if (!cachedClassData) return;
+
+      const tableEl = document.querySelector('.overflow-x-auto table');
+      if (!tableEl) return;
+
+      // 1. Render Table Headers dynamically
+      let theadHtml = "";
+      if (currentEnrollmentView === 'gender') {
+        theadHtml = `
+          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
+            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
+          </tr>
+        `;
+      } else if (currentEnrollmentView === 'caste') {
+        theadHtml = `
+          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
+            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">SC</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">ST</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">OBC</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Others / ಇತರೆ</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
+          </tr>
+        `;
+      } else { // 'all'
+        theadHtml = `
+          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
+            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Caste Profile / ವರ್ಗಾವಾರು</th>
+            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
+          </tr>
+        `;
+      }
+      const thead = tableEl.querySelector('thead');
+      if (thead) thead.innerHTML = theadHtml;
+
+      // 2. Render Table Body dynamically
+      const tbody = document.getElementById('classTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      classes.forEach(c => {
+        const bCount = cachedClassData[c].b;
+        const gCount = cachedClassData[c].g;
+        const scCount = cachedClassData[c].sc;
+        const stCount = cachedClassData[c].st;
+        const obcCount = cachedClassData[c].obc;
+        const othCount = cachedClassData[c].oth;
+        const total = bCount + gCount;
+
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors duration-150';
+
+        let cellsHtml = `
+          <td class="px-4 py-2.5 font-bold text-slate-800 dark:text-slate-200">
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-extrabold border border-slate-200/50 dark:border-slate-700/50">
+              ${classLabels[c]}
+            </span>
+          </td>
+        `;
+
+        if (currentEnrollmentView === 'gender') {
+          cellsHtml += `
+            <td class="px-4 py-2.5 text-center">
+              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" 
+                      class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-bold transition border border-sky-100/50 dark:border-sky-900/30">
+                <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${bCount}
+              </button>
             </td>
+            <td class="px-4 py-2.5 text-center">
+              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
+                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-450 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
+                <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
+              </button>
+            </td>
+          `;
+        } else if (currentEnrollmentView === 'caste') {
+          cellsHtml += `
+            <td class="px-4 py-2.5 text-center">
+              <span class="inline-flex items-center justify-center min-w-[32px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-2 py-1 rounded-md text-xs font-bold border border-emerald-100/50 dark:border-emerald-900/30">${scCount}</span>
+            </td>
+            <td class="px-4 py-2.5 text-center">
+              <span class="inline-flex items-center justify-center min-w-[32px] bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-2 py-1 rounded-md text-xs font-bold border border-teal-100/50 dark:border-teal-900/30">${stCount}</span>
+            </td>
+            <td class="px-4 py-2.5 text-center">
+              <span class="inline-flex items-center justify-center min-w-[32px] bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded-md text-xs font-bold border border-indigo-100/50 dark:border-indigo-900/30">${obcCount}</span>
+            </td>
+            <td class="px-4 py-2.5 text-center">
+              <span class="inline-flex items-center justify-center min-w-[32px] bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-2 py-1 rounded-md text-xs font-bold border border-slate-200/50 dark:border-slate-700/30">${othCount}</span>
+            </td>
+          `;
+        } else { // 'all'
+          cellsHtml += `
             <td class="px-4 py-2.5 text-center">
               <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" 
                       class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-bold transition border border-sky-100/50 dark:border-sky-900/30">
@@ -801,17 +935,27 @@
               </button>
             </td>
             <td class="px-4 py-2.5 text-center">
-              <span class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
-                ${total}
-              </span>
+              <div class="flex items-center justify-center gap-1 flex-wrap">
+                <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${scCount}</span>
+                <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${stCount}</span>
+                <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${obcCount}</span>
+                <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${othCount}</span>
+              </div>
             </td>
           `;
-          tbody.appendChild(row);
-        });
+        }
 
-      } catch (err) {
-        console.error("Dashboard calculation error:", err);
-      }
+        cellsHtml += `
+          <td class="px-4 py-2.5 text-center">
+            <span class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
+              ${total}
+            </span>
+          </td>
+        `;
+
+        row.innerHTML = cellsHtml;
+        tbody.appendChild(row);
+      });
     }
 
     function handleGenderClick(c, g) {

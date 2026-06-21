@@ -2241,7 +2241,13 @@
       const testTypeStr = type === 'PRE_TEST' ? 'Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ' : 'Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ';
       
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      document.getElementById('print-school-name').innerText = schoolNameEn;
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      
+      document.getElementById('print-school-name').innerHTML = `
+        <div style="font-size: 20px; font-weight: 800; text-transform: uppercase; color: #000000; line-height: 1.2;">${schoolNameEn}</div>
+        <div style="font-size: 16px; font-weight: 700; color: #000000; margin-top: 4px; line-height: 1.2;">${schoolNameKn}</div>
+      `;
+      
       document.getElementById('print-class-meta').innerText = "ತರಗತಿ / Class: " + cls;
       document.getElementById('print-subject-meta').innerText = "ವಿಷಯ / Subject: " + sub;
       document.getElementById('print-test-meta').innerText = "ಪರೀಕ್ಷೆಯ ವಿಧ / Test Type: " + testTypeStr;
@@ -2286,9 +2292,9 @@
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
       const isSingleClass = cls && cls !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
       sigRow.innerHTML = `
-        <span>${teacherSigText}</span>
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
       document.getElementById('printArea').appendChild(sigRow);
@@ -2339,11 +2345,14 @@
       printContainer.appendChild(styleEl);
 
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      const testTypeStr = type === 'PRE_TEST' ? 'Pre-Test' : 'Post-Test';
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      const testTypeStr = type === 'PRE_TEST' ? 'Pre-Test / ಪೂರ್ವ ಪರೀಕ್ಷೆ' : 'Post-Test / ನಂತರದ ಪರೀಕ್ಷೆ';
+      
       printContainer.innerHTML += `
         <div class="print-header-title">
-          <h1 class="print-title-h1">${schoolNameEn}</h1>
-          <h2 class="print-title-h2">ಸೇತುಬಂಧ ಕೋರ್ಸ್ ಮೌಲ್ಯಮಾಪನ / Bridge Course Competency Evaluation</h2>
+          <h1 class="print-title-h1" style="font-size: 16px; font-weight: 800; text-transform: uppercase; margin: 0; color: #000000;">${schoolNameEn}</h1>
+          <h2 class="print-title-h2" style="font-size: 13px; font-weight: 700; margin: 4px 0 0 0; color: #000000;">${schoolNameKn}</h2>
+          <h3 style="font-size: 12px; font-weight: 700; margin: 6px 0 0 0; color: #000000; text-transform: uppercase;">ಸೇತುಬಂಧ ಕೋರ್ಸ್ ಮೌಲ್ಯಮಾಪನ / Bridge Course Competency Evaluation</h3>
           <div class="print-meta-row">
             <span>Class: ${cls}</span>
             <span>Subject: ${sub}</span>
@@ -2383,11 +2392,14 @@
       printContainer.appendChild(tableClone);
       
       const isSingleClass = cls && cls !== "ALL";
-      const teacherSigText = isSingleClass ? 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature' : 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature';
+      const sigsContent = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
       printContainer.innerHTML += `
         <div class="print-signatures-row">
-          <span>${teacherSigText}</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+          ${sigsContent}
         </div>
       `;
       

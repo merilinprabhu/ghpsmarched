@@ -1729,7 +1729,13 @@
       const isAllSubjects = (selectedSub === "ALL");
       
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      document.getElementById('print-school-name').innerText = schoolNameEn;
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      
+      document.getElementById('print-school-name').innerHTML = `
+        <div style="font-size: 20px; font-weight: 800; text-transform: uppercase; color: #000000; line-height: 1.2;">${schoolNameEn}</div>
+        <div style="font-size: 16px; font-weight: 700; color: #000000; margin-top: 4px; line-height: 1.2;">${schoolNameKn}</div>
+      `;
+      
       document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + className;
       document.getElementById('print-exam-lbl').innerText = "ಪರೀಕ್ಷೆ / Exam: " + examType;
       document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
@@ -1762,9 +1768,9 @@
       // Add signature block
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
-      const teacherSigText = isAllSubjects ? 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature' : 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature';
       sigRow.innerHTML = `
-        <span>${teacherSigText}</span>
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${!isAllSubjects ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
       document.getElementById('printArea').appendChild(sigRow);
@@ -1803,10 +1809,14 @@
       printContainer.appendChild(styleEl);
 
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      
       const headerHtml = `
         <div class="print-header-title">
-          <h1 style="font-size:16px; font-weight:800;">${schoolNameEn}</h1>
-          <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:10px;">
+          <h1 style="font-size:16px; font-weight:800; margin: 0; text-transform: uppercase; color: #000000;">${schoolNameEn}</h1>
+          <h2 style="font-size:13px; font-weight:700; margin: 4px 0 0 0; color: #000000;">${schoolNameKn}</h2>
+          <h3 style="font-size:12px; font-weight:700; margin: 6px 0 0 0; color: #000000; text-transform: uppercase;">ಸಂಕಲನಾತ್ಮಕ ಮತ್ತು ರೂಪಣಾತ್ಮಕ ಪ್ರಗತಿ ಪಟ್ಟಿ / CCE Assessment Report</h3>
+          <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:10px; color: #000000;">
             <span>Class: ${className}</span><span>Exam: ${examType}</span><span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
           </div>
         </div>
@@ -1831,11 +1841,14 @@
       });
       printContainer.appendChild(tableClone);
 
-      const teacherSigText = isAllSubjects ? 'ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature' : 'ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature';
+      const sigsContent = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+        ${!isAllSubjects ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      `;
       const footerHtml = `
         <div class="print-signatures-row">
-          <span>${teacherSigText}</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+          ${sigsContent}
         </div>
       `;
       const footerEl = document.createElement('div');

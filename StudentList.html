@@ -355,33 +355,38 @@
       <!-- Main Contents Container -->
       <main class="flex-grow bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
         
-        <!-- Section Title -->
-        <div class="mb-4 pb-4 border-b border-slate-100 flex justify-between items-center">
+        <!-- Section Title Row -->
+        <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-graduation-cap text-sky-500"></i>
-              <span>ಹೊಸ ದಾಖಲಾತಿಗಳ ಪಟ್ಟಿ / List of All New Admission</span>
+              <span>ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / List of All Admitted Students</span>
             </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ಪರಿಶೀಲನೆ ಮತ್ತು ಅಧಿಕೃತ ತರಗತಿ ಪಟ್ಟಿಗೆ ಅನುಮೋದಿಸಲು ಬಾಕಿ ಇರುವ ಹೊಸ ಅರ್ಜಿಗಳು.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ಶಾಲೆಯ ಅಧಿಕೃತ ತರಗತಿವಾರು ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಪಟ್ಟಿ.</p>
+          </div>
+          <div>
+            <a href="NewAdmission.html" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+              <i class="fa-solid fa-user-plus"></i> ಹೊಸ ಪ್ರವೇಶಾತಿ ಅರ್ಜಿ / New Admission Form
+            </a>
           </div>
         </div>
 
-        <!-- Filters & Actions Single Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch mb-6 no-print">
-          <!-- Left side: Filters & Search (takes 8 cols) -->
-          <div class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-sky-500/15 rounded-2xl p-4 flex flex-col lg:flex-row flex-wrap items-center gap-3 shadow-sm hover:shadow-md transition">
+        <!-- Search, Filter & Actions Row -->
+        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 no-print">
+          <!-- Left: Search & Filter Panel -->
+          <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
             <!-- Text Search -->
-            <div class="relative w-full lg:flex-1 min-w-[200px]">
+            <div class="relative w-full sm:w-60">
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
               </span>
-              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, STS, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-800 text-slate-750 dark:text-slate-200 font-semibold shadow-sm">
+              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, STS, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-900 text-slate-750 dark:text-slate-200 font-semibold shadow-sm">
             </div>
 
             <!-- Class Filter -->
             <div class="w-full sm:w-32">
-              <select id="class-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- Classes --</option>
+              <select id="class-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- All Classes --</option>
                 <option value="LKG">LKG/KG1</option>
                 <option value="UKG">UKG/KG2</option>
                 <option value="1">1</option>
@@ -399,8 +404,8 @@
 
             <!-- Gender Filter -->
             <div class="w-full sm:w-32">
-              <select id="gender-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- Genders --</option>
+              <select id="gender-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- All Genders --</option>
                 <option value="Boy">Boy / ಗಂಡು</option>
                 <option value="Girl">Girl / ಹೆಣ್ಣು</option>
               </select>
@@ -408,54 +413,87 @@
 
             <!-- Religion Filter -->
             <div class="w-full sm:w-32">
-              <select id="religion-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <select id="religion-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
                 <option value="">-- Religions --</option>
               </select>
             </div>
 
             <!-- Caste Filter -->
             <div class="w-full sm:w-32">
-              <select id="caste-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <select id="caste-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
                 <option value="">-- Castes --</option>
+              </select>
+            </div>
+
+            <!-- Medium Filter -->
+            <div class="w-full sm:w-36">
+              <select id="medium-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- All Mediums --</option>
+                <option value="Kannada">Kannada / ಕನ್ನಡ</option>
+                <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="w-full sm:w-40">
+              <select id="category-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="">-- All Categories --</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="C1">Category-1</option>
+                <option value="2A">2A</option>
+                <option value="2B">2B</option>
+                <option value="3A">3A</option>
+                <option value="3B">3B</option>
+                <option value="OTHERS">General/Others</option>
+              </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="w-full sm:w-40">
+              <select id="status-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+                <option value="Admitted">Admitted / ದಾಖಲಾದ</option>
+                <option value="Pending">Pending / ಬಾಕಿ</option>
+                <option value="All">-- All Statuses --</option>
               </select>
             </div>
           </div>
 
-          <!-- Right side: Actions Row (takes 4 cols) -->
-          <div class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-sky-500/20 rounded-2xl p-4 shadow-sm hover:shadow-md transition flex flex-col justify-between gap-2">
-            <span class="block text-[9px] font-bold text-slate-400 uppercase text-center border-b pb-1">ಕ್ರಿಯೆಗಳು ಮತ್ತು ರಫ್ತು / Actions & Exports</span>
-            <div class="flex items-center justify-center gap-2">
-              <!-- CSV Template -->
-              <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-file-arrow-down text-indigo-600 dark:text-indigo-400 text-sm"></i>
-              </button>
-              <!-- Import CSV -->
-              <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
-              <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-file-import text-amber-600 dark:text-amber-500 text-sm"></i>
-              </button>
-              <!-- Export CSV -->
-              <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-file-csv text-teal-600 dark:text-teal-500 text-sm"></i>
-              </button>
-              <!-- Manage Columns -->
-              <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400 text-sm"></i>
-              </button>
-              <div class="h-6 w-px bg-slate-200 dark:bg-slate-750"></div>
-              <!-- Excel -->
-              <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-sm"></i>
-              </button>
-              <!-- PDF -->
-              <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-sm"></i>
-              </button>
-              <!-- Print -->
-              <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
-                <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-sm"></i>
-              </button>
-            </div>
+          <!-- Right: Action Panel -->
+          <div class="flex flex-wrap items-center gap-1.5 w-full xl:w-auto xl:justify-end border-t xl:border-t-0 pt-3 xl:pt-0 border-slate-200 dark:border-slate-700/60">
+            <!-- Download CSV Template -->
+            <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-805 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-arrow-down text-indigo-650 dark:text-indigo-400 text-base md:text-lg"></i>
+            </button>
+            <!-- Import CSV -->
+            <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
+            <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-import text-amber-600 dark:text-amber-500 text-base md:text-lg"></i>
+            </button>
+            <!-- Export CSV -->
+            <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-csv text-teal-600 dark:text-teal-500 text-base md:text-lg"></i>
+            </button>
+            <!-- Manage Columns -->
+            <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400 text-base md:text-lg"></i>
+            </button>
+            
+            <!-- Visual Divider -->
+            <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
+            <!-- Excel Export -->
+            <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-base md:text-lg"></i>
+            </button>
+            <!-- PDF Export -->
+            <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-base md:text-lg"></i>
+            </button>
+            <!-- Print -->
+            <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-base md:text-lg"></i>
+            </button>
           </div>
         </div>
 
@@ -883,6 +921,8 @@
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+    let currentUserProfile = null;
+
     let standardColumns = [
       { id: 'app_no', labelKn: 'ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No', labelEn: 'STS No' },
       { id: 'student_name', labelKn: 'ಹೆಸರು / Student Name Kannada', labelEn: 'Student Name Kannada' },
@@ -1071,6 +1111,9 @@
       const urlParams = new URLSearchParams(window.location.search);
       const classParam = urlParams.get('class');
       const genderParam = urlParams.get('gender');
+      const mediumParam = urlParams.get('medium');
+      const categoryParam = urlParams.get('category');
+      const statusParam = urlParams.get('status');
       
       if (classParam) {
         const classFilter = document.getElementById('class-filter');
@@ -1087,6 +1130,18 @@
           }
           genderFilter.value = mappedGender;
         }
+      }
+      if (mediumParam) {
+        const mediumFilter = document.getElementById('medium-filter');
+        if (mediumFilter) mediumFilter.value = mediumParam;
+      }
+      if (categoryParam) {
+        const categoryFilter = document.getElementById('category-filter');
+        if (categoryFilter) categoryFilter.value = categoryParam.toUpperCase();
+      }
+      if (statusParam) {
+        const statusFilter = document.getElementById('status-filter');
+        if (statusFilter) statusFilter.value = statusParam;
       }
     }
 
@@ -1169,13 +1224,21 @@
       const selectedGender = document.getElementById('gender-filter').value;
       const selectedReligion = document.getElementById('religion-filter').value;
       const selectedCaste = document.getElementById('caste-filter').value;
+      const selectedMedium = document.getElementById('medium-filter').value;
+      const selectedCategory = document.getElementById('category-filter').value;
+      const selectedStatus = document.getElementById('status-filter').value;
 
       const filtered = allStudentsData.filter(student => {
         const searchMatch = !q || 
           (student.name || '').toUpperCase().includes(q) || 
+          (student.name_english || '').toUpperCase().includes(q) || 
           (student.id || '').toUpperCase().includes(q) || 
           (student.father || '').toUpperCase().includes(q) ||
-          (student.mother || '').toUpperCase().includes(q);
+          (student.father_name_kn || '').toUpperCase().includes(q) ||
+          (student.mother || '').toUpperCase().includes(q) ||
+          (student.mother_name_kn || '').toUpperCase().includes(q) ||
+          (student.aadhaar || '').toUpperCase().includes(q) ||
+          (student.mobile || '').toUpperCase().includes(q);
 
         let classMatch = !selectedClass;
         if (selectedClass) {
@@ -1192,10 +1255,23 @@
         const studentCaste = student.student_caste ? student.student_caste.trim() : '';
         const casteMatch = !selectedCaste || studentCaste === selectedCaste;
 
-        // Only show pending students on this page
-        const statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
+        // Medium Filter
+        const mediumMatch = !selectedMedium || 
+          (student.medium || '').toLowerCase() === selectedMedium.toLowerCase();
 
-        return searchMatch && classMatch && genderMatch && statusMatch && religionMatch && casteMatch;
+        // Category Filter
+        const categoryMatch = !selectedCategory || 
+          (student.social_class || '').toUpperCase() === selectedCategory.toUpperCase();
+
+        // Status Filter
+        let statusMatch = true;
+        if (selectedStatus === 'Pending') {
+          statusMatch = (student.isAdmitted === false || student.isAdmitted === 'false');
+        } else if (selectedStatus === 'Admitted') {
+          statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
+        }
+
+        return searchMatch && classMatch && genderMatch && religionMatch && casteMatch && mediumMatch && categoryMatch && statusMatch;
       });
 
       renderTable(filtered);
@@ -1278,8 +1354,28 @@
       theadRow.innerHTML = headersHtml;
     }
 
+    function highlightMatch(text, query) {
+      if (!text) return '';
+      const str = text.toString();
+      if (!query) return str;
+      
+      const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(`(${escapedQuery})`, 'gi');
+      return str.replace(regex, '<mark class="bg-yellow-250 text-slate-950 font-bold px-[2px] py-[1px] rounded shadow-sm">$1</mark>');
+    }
+
     function renderTable(students) {
       const tbody = document.getElementById('students-table-body');
+      const q = document.getElementById('roster-search').value.trim();
+      
+      // Reset Select All checkbox and hide mass action bar on re-render
+      const selectAll = document.getElementById('select-all-checkbox');
+      if (selectAll) selectAll.checked = false;
+      const bar = document.getElementById('mass-actions-bar');
+      if (bar) {
+        bar.classList.remove('translate-y-0', 'opacity-100');
+        bar.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
+      }
       
       let boys = 0, girls = 0, cwsn = 0;
       students.forEach(s => {
@@ -1320,19 +1416,19 @@
             } else if (col.id === 'is_admitted') {
               cellsHtml += `<td class="p-3 text-center">${val === true || val === 'true' ? 'Admitted' : 'Pending'}</td>`;
             } else if (col.id === 'app_no') {
-              cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${s.id}</td>`;
+              cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${highlightMatch(s.id, q)}</td>`;
             } else if (col.id === 'student_name') {
               const nameEn = (s.name_english || '').trim().toUpperCase();
               const nameKn = (s.student_name_kn || '').trim();
               if (nameEn && nameKn) {
                 cellsHtml += `
-                  <td class="p-3 text-left">
-                    <div class="font-bold text-slate-800 text-[11px]">${nameEn}</div>
-                    <div class="text-[10px] text-slate-500 font-medium">${nameKn}</div>
+                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 group" onclick="openStudentPreviewModal('${s.realId}')" title="Click to view detailed profile">
+                    <div class="font-bold text-slate-800 text-[11px] group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn, q)}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(nameKn, q)}</div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${nameEn || nameKn || '-'}</td>`;
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left cursor-pointer hover:text-sky-600 transition-colors" onclick="openStudentPreviewModal('${s.realId}')" title="Click to view detailed profile">${highlightMatch(nameEn || nameKn || '-', q)}</td>`;
               }
             } else if (col.id === 'enroll_class') {
               cellsHtml += `<td class="p-3 text-center">${s.className}</td>`;
@@ -1342,36 +1438,36 @@
               if (fatherEn && fatherKn) {
                 cellsHtml += `
                   <td class="p-3 text-left">
-                    <div class="font-bold text-slate-800 text-[11px]">${fatherEn}</div>
-                    <div class="text-[10px] text-slate-500 font-medium">${fatherKn}</div>
+                    <div class="font-bold text-slate-800 text-[11px]">${highlightMatch(fatherEn, q)}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(fatherKn, q)}</div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${fatherEn || fatherKn || '-'}</td>`;
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${highlightMatch(fatherEn || fatherKn || '-', q)}</td>`;
               }
             } else if (col.id === 'father_name_az') {
-              cellsHtml += `<td class="p-3 uppercase text-left">${s.father_name_az || '-'}</td>`;
+              cellsHtml += `<td class="p-3 uppercase text-left">${highlightMatch(s.father_name_az || '-', q)}</td>`;
             } else if (col.id === 'mother_name_kn') {
               const motherEn = (s.mother_name_az || '').trim().toUpperCase();
               const motherKn = (s.mother_name_kn || '').trim();
               if (motherEn && motherKn) {
                 cellsHtml += `
                   <td class="p-3 text-left">
-                    <div class="font-bold text-slate-800 text-[11px]">${motherEn}</div>
-                    <div class="text-[10px] text-slate-500 font-medium">${motherKn}</div>
+                    <div class="font-bold text-slate-800 text-[11px]">${highlightMatch(motherEn, q)}</div>
+                    <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(motherKn, q)}</div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${motherEn || motherKn || '-'}</td>`;
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${highlightMatch(motherEn || motherKn || '-', q)}</td>`;
               }
             } else if (col.id === 'mother_name_az') {
-              cellsHtml += `<td class="p-3 uppercase text-left">${s.mother_name_az || '-'}</td>`;
+              cellsHtml += `<td class="p-3 uppercase text-left">${highlightMatch(s.mother_name_az || '-', q)}</td>`;
             } else if (col.id === 'student_aadhaar') {
-              cellsHtml += `<td class="p-3 font-mono text-center">${s.aadhaar || '-'}</td>`;
+              cellsHtml += `<td class="p-3 font-mono text-center">${highlightMatch(s.aadhaar || '-', q)}</td>`;
             } else if (col.id === 'mobile_number') {
-              cellsHtml += `<td class="p-3 font-mono text-center">${s.mobile || '-'}</td>`;
+              cellsHtml += `<td class="p-3 font-mono text-center">${highlightMatch(s.mobile || '-', q)}</td>`;
             } else {
-              cellsHtml += `<td class="p-3 text-center">${val || '-'}</td>`;
+              cellsHtml += `<td class="p-3 text-center">${highlightMatch(val || '-', q)}</td>`;
             }
           }
         });
@@ -1392,6 +1488,19 @@
 
 
     async function deleteStudent(studentId, studentName) {
+      if (currentUserProfile && currentUserProfile.role === 'Teacher') {
+        const student = allStudentsData.find(s => s.realId === studentId);
+        if (student) {
+          const teacherClasses = currentUserProfile.assigned_classes || [];
+          const classClean = normalizeClass(student.className);
+          const hasClass = teacherClasses.some(c => normalizeClass(c) === classClean);
+          if (!hasClass) {
+            alert(`ಈ ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳನ್ನು ಬದಲಾಯಿಸಲು ನಿಮಗೆ ಅನುಮತಿ ಇಲ್ಲ. ನೀವು ${classClean} ತರಗತಿಗೆ ನಿಯೋಜನೆಗೊಂಡಿಲ್ಲ. / You are not authorized to edit this student. You are not assigned to Class ${classClean}.`);
+            return;
+          }
+        }
+      }
+
       if (!confirm(`ಎಚ್ಚರಿಕೆ! ನಿಜವಾಗಿಯೂ ${studentName} ಅವರ ದಾಖಲೆಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nWarning! Are you sure you want to permanently delete ${studentName}'s record?`)) {
         return;
       }
@@ -1506,6 +1615,16 @@
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
       if (checkedBoxes.length === 1) {
         const studentId = checkedBoxes[0].getAttribute('data-id');
+        const student = allStudentsData.find(s => s.realId === studentId);
+        if (student && currentUserProfile && currentUserProfile.role === 'Teacher') {
+          const teacherClasses = currentUserProfile.assigned_classes || [];
+          const classClean = normalizeClass(student.className);
+          const hasClass = teacherClasses.some(c => normalizeClass(c) === classClean);
+          if (!hasClass) {
+            alert(`ಈ ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳನ್ನು ಬದಲಾಯಿಸಲು ನಿಮಗೆ ಅನುಮತಿ ಇಲ್ಲ. ನೀವು ${classClean} ತರಗತಿಗೆ ನಿಯೋಜನೆಗೊಂಡಿಲ್ಲ. / You are not authorized to edit this student. You are not assigned to Class ${classClean}.`);
+            return;
+          }
+        }
         window.location.href = `StudentUpdate.html?id=${studentId}`;
       }
     }
@@ -1514,6 +1633,21 @@
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
       const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
       if (selectedIds.length === 0) return;
+
+      if (currentUserProfile && currentUserProfile.role === 'Teacher') {
+        const teacherClasses = currentUserProfile.assigned_classes || [];
+        for (let id of selectedIds) {
+          const student = allStudentsData.find(s => s.realId === id);
+          if (student) {
+            const classClean = normalizeClass(student.className);
+            const hasClass = teacherClasses.some(c => normalizeClass(c) === classClean);
+            if (!hasClass) {
+              alert(`ಆಯ್ಕೆ ಮಾಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳಲ್ಲಿ ಕೆಲವು ವಿದ್ಯಾರ್ಥಿಗಳ (${student.name}) ವಿವರಗಳನ್ನು ಬದಲಾಯಿಸಲು ನಿಮಗೆ ಅನುಮತಿ ಇಲ್ಲ. / You are not authorized to delete some of the selected students (${student.name}).`);
+              return;
+            }
+          }
+        }
+      }
 
       if (!confirm(`ಎಚ್ಚರಿಕೆ! ನಿಜವಾಗಿಯೂ ಆಯ್ಕೆ ಮಾಡಲಾದ ${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲೆಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nWarning! Are you sure you want to permanently delete ${selectedIds.length} selected students' records?`)) {
         return;
@@ -2312,9 +2446,11 @@
           // Fetch user profile from database to check for name and developer role
           const { data: profile } = await supabaseClient
             .from('profiles')
-            .select('name, role')
+            .select('name, role, assigned_classes, is_approved')
             .eq('id', user.id)
             .maybeSingle();
+
+          currentUserProfile = profile;
 
           const name = profile?.name || user.user_metadata?.name || user.email;
           if (headerUser) headerUser.innerText = name;

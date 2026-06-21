@@ -204,7 +204,7 @@
       } else {
         newSchool.classList.add('hidden');
         joinSchool.classList.remove('hidden');
-        roleSel.classList.remove('hidden');
+        roleSel.classList.add('hidden'); // Force role to Teacher when joining school
         regRole.value = 'Teacher';
         loadExistingSchoolsList();
       }
@@ -312,9 +312,15 @@
         // Fetch user profile from the database (including role)
         const { data: profile, error: profileErr } = await supabaseClient
           .from('profiles')
-          .select('name, school_id, role')
+          .select('name, school_id, role, is_approved')
           .eq('id', data.user.id)
           .single();
+
+        if (profile && profile.role !== 'developer' && profile.is_approved === false) {
+          await supabaseClient.auth.signOut();
+          showMessage("ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಖ್ಯೋಪಾಧ್ಯಾಯರು ಇನ್ನೂ ಅನುಮೋದಿಸಿಲ್ಲ. ದಯವಿಟ್ಟು ಅನುಮೋದನೆಗಾಗಿ ಕಾಯಿರಿ. / Your account has not been approved by the Headmaster yet. Please wait for approval.", false);
+          return;
+        }
 
         if (profile && profile.role === 'developer') {
           showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", true);
@@ -453,6 +459,7 @@
 
         if (data.user) {
           // Insert details to profiles table
+          const isApproved = (role === 'Admin'); // Admins approved by default, teachers wait for admin approval
           const { error: profileErr } = await supabaseClient
             .from('profiles')
             .insert({
@@ -462,7 +469,9 @@
               username: username,
               phone: phone,
               role: role,
-              school_id: schoolId
+              school_id: schoolId,
+              is_approved: isApproved,
+              assigned_classes: []
             });
 
           if (profileErr) {
