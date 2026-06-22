@@ -114,18 +114,24 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
         color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       body > *:not(#printArea) { display: none !important; }
       #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
-      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
       #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
       #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
+      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
     }
 
     @media (min-width: 768px) {
@@ -1868,7 +1874,7 @@
     }
 
     // ==================== PRINT AND EXPORTS ====================
-    function triggerPrint() {
+    function buildPrintArea() {
       const className = classFilter.value;
       const dateVal = dateFilter.value;
       
@@ -1937,6 +1943,23 @@
         tfoot.remove();
       }
       
+      // Clean classes from tableClone and its children to allow native print CSS to apply solid black borders and backgrounds
+      tableClone.removeAttribute('class');
+      tableClone.querySelectorAll('*').forEach(el => {
+        const isLeft = el.classList.contains('text-left') || el.classList.contains('sticky-c3') || el.classList.contains('sticky-c4');
+        const isRight = el.classList.contains('text-right');
+        el.removeAttribute('class');
+        if (isLeft) {
+          el.style.textAlign = 'left';
+          el.style.paddingLeft = '6px';
+        } else if (isRight) {
+          el.style.textAlign = 'right';
+          el.style.paddingRight = '6px';
+        } else {
+          el.style.textAlign = 'center';
+        }
+      });
+      
       document.getElementById('printArea').appendChild(tableClone);
       
       // Add signature block
@@ -1950,144 +1973,142 @@
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
       document.getElementById('printArea').appendChild(sigRow);
-      
+    }
+
+    function triggerPrint() {
+      buildPrintArea();
       window.print();
     }
 
     function exportToPdf() {
-      if (typeof html2pdf === 'undefined') {
-        alert("PDF ಲೈಬ್ರರಿ ಲೋಡ್ ಆಗಿಲ್ಲ.");
-        return;
+      const className = classFilter.value || 'ALL';
+      const dateVal = dateFilter.value || 'today';
+      const pdfName = `FLN_Assessment_Class_${className}_${dateVal.replace(/\s+/g, '_')}`;
+
+      showPdfDownloadModal(pdfName, () => {
+        buildPrintArea();
+        window.print();
+      });
+    }
+
+    function showPdfDownloadModal(pdfName, printCallback) {
+      let modal = document.getElementById('pdf-guide-modal');
+      if (!modal) {
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = `
+          <div id="pdf-guide-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[9999] hidden">
+            <div class="bg-slate-900 border border-indigo-500/30 rounded-3xl p-6 max-w-lg w-full mx-4 shadow-[0_0_50px_rgba(99,102,241,0.25)] relative overflow-hidden text-white transition transform scale-95 duration-300">
+              <div class="absolute -top-24 -left-20 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -bottom-24 -right-20 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              
+              <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl bg-indigo-650 flex items-center justify-center text-white shadow-lg shadow-indigo-550/20">
+                    <i class="fa-solid fa-file-pdf text-lg"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಸಹಾಯಕಿ</h3>
+                    <p class="text-[10px] text-emerald-400 font-extrabold uppercase tracking-wider">Professional PDF Download Guide</p>
+                  </div>
+                </div>
+                <button onclick="closePdfGuideModal()" class="bg-white/5 hover:bg-white/10 border-0 text-slate-400 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer">
+                  <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+              
+              <div class="space-y-4 text-xs">
+                <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-4 space-y-2">
+                  <h4 class="font-bold text-indigo-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಏಕೆ? / Why Browser Printing?</h4>
+                  <p class="text-slate-350 leading-relaxed text-[11px]">
+                    ಕನ್ನಡ ಅಕ್ಷರಗಳು ಮತ್ತು ಕೋಷ್ಟಕಗಳು ಯಾವುದೇ ಕಾಗುಣಿತ ದೋಷವಿಲ್ಲದೆ ಅತಿ ಸುಂದರವಾಗಿ ಮೂಡಿಬರಲು ಹಾಗೂ <b>ಪಿಡಿಎಫ್‌ನಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲು (Copyable text)</b> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಅತ್ಯುತ್ತಮ ವಿಧಾನವಾಗಿದೆ.
+                  </p>
+                </div>
+
+                <div class="space-y-2.5">
+                  <h4 class="font-bold text-slate-200 uppercase tracking-wide text-[10px]">ಅಗತ್ಯವಿರುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು / Required Print Settings:</h4>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2">
+                      <i class="fa-solid fa-print text-sky-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Destination (ಗುರಿ)</span>
+                        <span class="text-slate-400 font-semibold text-emerald-400">Save as PDF (ಪಿಡಿಎಫ್ ಆಗಿ ಉಳಿಸಿ)</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2">
+                      <i class="fa-solid fa-arrows-left-right text-emerald-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Layout (ವಿನ್ಯಾಸ)</span>
+                        <span class="text-slate-400 font-semibold text-emerald-400">Landscape (ಅಡ್ಡಲಾಗಿ)</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2 col-span-2">
+                      <i class="fa-solid fa-square-check text-emerald-450 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Background Graphics (ಹಿನ್ನೆಲೆ ಚಿತ್ರಗಳು)</span>
+                        <span class="text-emerald-400 font-extrabold animate-pulse">MUST BE ENABLED / ಆನ್ ಇರಲೇಬೇಕು</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2 col-span-2">
+                      <i class="fa-solid fa-square-xmark text-rose-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Headers and Footers (ಹೆಡರ್ ಮತ್ತು ಫೂಟರ್)</span>
+                        <span class="text-slate-450">DISABLED / ಆಫ್ ಮಾಡಿ</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bg-emerald-950/30 border border-emerald-500/20 rounded-2xl p-3 flex items-start gap-2 text-[10px] text-emerald-400 font-semibold">
+                  <i class="fa-solid fa-lightbulb text-emerald-500 mt-0.5 animate-bounce"></i>
+                  <span>ಸೂಚನೆ: ಪ್ರಿಂಟ್ ಸಂವಾದದಲ್ಲಿ "Background Graphics" ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಮಾಡುವುದರಿಂದ ಕೋಷ್ಟಕದ ಹೆಡರ್ ಕಪ್ಪು ಬಣ್ಣದಲ್ಲಿ ಅತಿ ಸುಂದರವಾಗಿ ಮೂಡಿಬರುತ್ತದೆ!</span>
+                </div>
+              </div>
+              
+              <div class="mt-6 flex gap-3">
+                <button onclick="closePdfGuideModal()" class="flex-1 bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold py-3 rounded-2xl transition border-0 cursor-pointer text-xs active:scale-95">
+                  ರದ್ದು / Cancel
+                </button>
+                <button id="pdf-confirm-btn" class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all duration-300 border-0 cursor-pointer text-xs radium-btn-glow active:scale-95 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> ಈಗ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modalContainer.firstElementChild);
+        modal = document.getElementById('pdf-guide-modal');
       }
-
-      const className = classFilter.value;
-      const dateVal = dateFilter.value;
       
-      const disabledStyles = [];
-      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(tag => {
-        if (!tag.disabled) {
-          tag.disabled = true;
-          disabledStyles.push(tag);
-        }
-      });
-
-      const printContainer = document.createElement('div');
-      printContainer.style.padding = '10px';
-      printContainer.style.fontFamily = "'Inter', 'Noto Sans Kannada', sans-serif";
-      printContainer.style.backgroundColor = '#ffffff';
-      printContainer.style.color = '#000000';
-      
-      const styleEl = document.createElement('style');
-      styleEl.innerText = `
-        table { width: 100%; border-collapse: collapse; font-size: 7.5px; margin-top: 15px; border: 1px solid #000000; background-color: #ffffff; table-layout: auto !important; }
-        th, td { border: 1px solid #000000; padding: 4px 2px; text-align: center; white-space: normal !important; word-break: break-word !important; }
-        th { font-weight: bold; background-color: #000000 !important; color: #ffffff !important; }
-        td { background-color: #ffffff !important; color: #000000 !important; }
-        .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
-      `;
-      printContainer.appendChild(styleEl);
-
-      // Calculate totals
-      let achievedCount = 0;
-      students.forEach(st => {
-        const outcomes = evaluations[st.id] || {};
-        let gradedCount = 0, aCount = 0;
-        for (let i = 1; i <= TOTAL_COLS_COUNT; i++) {
-          const val = outcomes[`col_${i}`] || '';
-          if (val) {
-            gradedCount++;
-            if (val === 'A') aCount++;
-          }
-        }
-        if (gradedCount > 0 && aCount >= (gradedCount * 0.65)) achievedCount++;
-      });
-      const achievedPct = students.length > 0 ? Math.round((achievedCount / students.length) * 100) : 0;
-      const notAchievedCount = students.length - achievedCount;
-      const notAchievedPct = students.length > 0 ? Math.round((notAchievedCount / students.length) * 100) : 0;
-      const classKn = className === "7" ? "7ನೇ" : (className + "ನೇ");
-      const formattedDate = new Date(dateVal).toLocaleDateString('kn-IN');
-      
-      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
-
-      printContainer.innerHTML += `
-        <div style="text-align: center; margin-bottom: 15px; color: #000000;">
-          <h1 style="font-size: 16pt; font-weight: bold; margin: 0; text-transform: uppercase;">${schoolNameEn}</h1>
-          <h2 style="font-size: 13pt; font-weight: bold; margin: 5px 0 0 0;">${schoolNameKn}</h2>
-          <h3 style="font-size: 11pt; font-weight: bold; margin: 5px 0 0 0; text-transform: uppercase;">ಆರಂಭಿಕ ಸಾಕ್ಷರತೆ ಮತ್ತು ಸಂಖ್ಯಾಜ್ಞಾನ (FLN)</h3>
-          <h4 style="font-size: 9pt; font-weight: bold; margin: 3px 0 0 0;">ಶಾಲಾ ಹಂತ - ಅನುಬಂಧ 4-(1)</h4>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; font-size: 11pt; font-weight: bold; color: #000000; margin-bottom: 15px; line-height: 1.6;">
-          <div style="text-align: left;">ಶಾಲೆಯ ಹೆಸರು :- <span>${schoolNameKn} / ${schoolNameEn}</span></div>
-          <div style="text-align: right;">ದಾಖಲಾದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${students.length}</span></div>
-          
-          <div style="text-align: left;">ತರಗತಿ :- <span>${classKn}</span></div>
-          <div style="text-align: right;">FLN ಸಾಧಿಸದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${notAchievedCount} (${notAchievedPct}%)</span></div>
-          
-          <div style="text-align: left;">FLN ಸಾಧಿಸಿದ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ :- <span>${achievedCount} (${achievedPct}%)</span></div>
-          <div style="text-align: right;">ದಿನಾಂಕ :- <span>${formattedDate}</span></div>
-        </div>
-      `;
-      
-      const originalTable = document.getElementById('competency-table');
-      const tableClone = originalTable.cloneNode(true);
-      
-      const selectElements = tableClone.querySelectorAll('select');
-      selectElements.forEach(select => {
-        const parent = select.parentNode;
-        const val = select.value || '-';
-        const span = document.createElement('span');
-        span.innerText = val;
-        span.style.fontWeight = 'bold';
-        parent.replaceChild(span, select);
-      });
-
-      // Move tfoot rows to end of tbody
-      const tfoot = tableClone.querySelector('tfoot');
-      if (tfoot) {
-        const tbody = tableClone.querySelector('tbody');
-        while (tfoot.rows.length > 0) {
-          tbody.appendChild(tfoot.rows[0]);
-        }
-        tfoot.remove();
-      }
-
-      // Clear Tailwind classes
-      tableClone.removeAttribute('class');
-      tableClone.querySelectorAll('*').forEach(el => {
-        el.removeAttribute('class');
-        if (el.tagName === 'TH') {
-          el.style.backgroundColor = '#000000';
-          el.style.color = '#ffffff';
-        }
-      });
-      printContainer.appendChild(tableClone);
-      
-      const isSingleClass = className && className !== "ALL";
-      const sigsContent = `
-        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-        ${isSingleClass ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
-        <span>CRP ಸಹಿ / CRP Signature</span>
-        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
-      `;
-      printContainer.innerHTML += `
-        <div class="print-signatures-row">
-          ${sigsContent}
-        </div>
-      `;
-      
-      const opt = {
-        margin:       [8, 8, 8, 8],
-        filename:     `FLN_Assessment_Report_${className}_${dateVal}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      const confirmBtn = document.getElementById('pdf-confirm-btn');
+      confirmBtn.onclick = function() {
+        closePdfGuideModal();
+        const oldTitle = document.title;
+        document.title = pdfName;
+        printCallback();
+        setTimeout(() => {
+          document.title = oldTitle;
+        }, 1200);
       };
       
-      html2pdf().set(opt).from(printContainer).save().then(() => {
-        disabledStyles.forEach(tag => tag.disabled = false);
-      });
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        const dialog = modal.querySelector('div');
+        dialog.classList.remove('scale-95');
+        dialog.classList.add('scale-100');
+      }, 50);
+    }
+    
+    function closePdfGuideModal() {
+      const modal = document.getElementById('pdf-guide-modal');
+      if (modal) {
+        const dialog = modal.querySelector('div');
+        dialog.classList.remove('scale-100');
+        dialog.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
     }
 
     function exportToExcel() {

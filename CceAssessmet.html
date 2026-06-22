@@ -11,26 +11,99 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; transition: background-color 0.3s ease, color 0.3s ease; }
     .rotate-90 { transform: rotate(90deg); }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+    
+    /* Radium Glows & Modern Styles */
+    .radium-btn-glow {
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radium-btn-glow:hover {
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.55), 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+    .indigo-glow {
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .indigo-glow:hover {
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5), 0 0 4px rgba(99, 102, 241, 0.25);
+    }
+    .rose-glow {
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .rose-glow:hover {
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.45), 0 0 4px rgba(244, 63, 94, 0.2);
+    }
+    .sky-glow {
+      box-shadow: 0 0 12px rgba(14, 165, 233, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .sky-glow:hover {
+      box-shadow: 0 0 20px rgba(14, 165, 233, 0.45), 0 0 4px rgba(14, 165, 233, 0.2);
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    body[data-theme="dark"] .glass-effect {
+      background: rgba(30, 41, 59, 0.75) !important;
+      border: 1px solid rgba(71, 85, 105, 0.5) !important;
+    }
+    .neon-border {
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      transition: border 0.3s ease, box-shadow 0.3s ease;
+    }
+    .neon-border:hover, .neon-border:focus-within {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+    }
+    .radium-pulse {
+      position: relative;
+    }
+    .radium-pulse::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background-color: #22c55e;
+      border-radius: 50%;
+      top: -2px;
+      right: -2px;
+      box-shadow: 0 0 8px #22c55e;
+      animation: pulse-ring 1.8s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.7); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
 
     @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
         color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       body > *:not(#printArea) { display: none !important; }
       #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
-      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
       #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
       #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea .print-signatures-row { margin-top: 50px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; }
+      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
     }
   
     @media (min-width: 768px) {
@@ -169,6 +242,7 @@
       <p class="text-sm font-semibold uppercase text-black mt-1" id="print-title">ಸಂಕಲನಾತ್ಮಕ ಮತ್ತು ರೂಪಣಾತ್ಮಕ ಪ್ರಗತಿ ಪಟ್ಟಿ (CCE Assessment Report)</p>
       <div class="print-meta-row mt-2 flex justify-between text-xs font-bold text-black border-b pb-2">
         <span id="print-class-lbl">ತರಗತಿ: </span>
+        <span id="print-subject-lbl" style="display: none;">ವಿಷಯ: </span>
         <span id="print-exam-lbl">ಪರೀಕ್ಷೆ: </span>
         <span id="print-date-lbl">ದಿನಾಂಕ: </span>
       </div>
@@ -176,26 +250,33 @@
   </div>
 
   <div class="no-print">
-    <!-- Dark Header Bar -->
-    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+    <!-- Premium Dark Gradient Header Bar with Radium Accents -->
+    <div class="w-full bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-indigo-500/20 shadow-lg flex-shrink-0 relative overflow-hidden">
+      <!-- Glow decoration -->
+      <div class="absolute -top-24 -left-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-20 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <div class="flex items-center gap-3 relative z-10">
+        <a href="dashboard.html" class="bg-slate-850 hover:bg-slate-750 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-indigo-500/50 hover:scale-105 active:scale-95 shadow-md no-underline no-print" title="Back to Dashboard">
           <i class="fa-solid fa-arrow-left text-sm"></i>
         </a>
-        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
+        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-9 w-auto object-contain rounded-xl border border-white/10 shadow-sm">
         <div>
-          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
-          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
+          <h1 class="text-sm md:text-base font-black uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">Government Higher Primary School, Marched</h1>
+          <p class="text-[9px] text-emerald-400 font-extrabold tracking-widest uppercase flex items-center gap-1.5">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
+            School Management & Information Portal
+          </p>
         </div>
       </div>
-      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
+      <div class="text-right text-xs mt-3 sm:mt-0 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 flex items-center gap-4 flex-wrap justify-end relative z-10 shadow-inner">
         <!-- Dashboard Link -->
-        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition duration-300 no-underline border border-indigo-500/30 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 no-print" title="Dashboard">
           <i class="fa-solid fa-house text-[10px]"></i> Dashboard
         </a>
-        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
-          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
-          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
+        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3">
+          <span class="text-slate-400 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
+          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800/80 text-white border border-white/20 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer transition">
             <option value="light">Light</option>
             <option value="dark">Dark</option>
             <option value="gray">Gray</option>
@@ -204,13 +285,13 @@
           </select>
         </div>
         
-        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
-          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
-          <span id="headerUser" class="font-semibold text-slate-200">User</span>
+        <div class="flex items-center gap-2 border-r border-white/10 pr-3 text-slate-300">
+          <i class="fa-solid fa-user-circle text-base text-indigo-400"></i>
+          <span id="headerUser" class="font-bold text-slate-200">User</span>
         </div>
-        <div>
-          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
-          <span id="liveClock" class="font-bold text-emerald-400"></span>
+        <div class="flex items-center gap-2">
+          <span id="liveDate" class="text-slate-450 font-medium"></span>
+          <span id="liveClock" class="font-extrabold text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-500/20 shadow-[0_0_8px_rgba(16,185,129,0.1)]"></span>
         </div>
       </div>
     </div>
@@ -340,66 +421,70 @@
       <div class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
         
         <!-- Tab navigation bar -->
-        <div class="bg-white border-b border-slate-200 pb-2.5 flex gap-4 no-print flex-shrink-0">
-          <button id="tab-dashboard" onclick="switchTab('dashboard')" class="text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-sky-600 text-white shadow">
-            <i class="fa-solid fa-chart-line"></i> CCE ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / CCE Dashboard
+        <div class="bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded-2xl flex gap-2 no-print flex-shrink-0 border border-slate-200/60 dark:border-slate-800">
+          <button id="tab-dashboard" onclick="switchTab('dashboard')" class="text-xs font-bold px-5 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-sky-600 text-white shadow-lg shadow-sky-500/20 active:scale-95">
+            <i class="fa-solid fa-chart-line text-sm"></i> CCE ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / CCE Dashboard
           </button>
-          <button id="tab-grid" onclick="switchTab('grid')" class="text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200">
-            <i class="fa-solid fa-table-list"></i> ಅಂಕಗಳ ಗ್ರಿಡ್ / Marks Grid
+          <button id="tab-grid" onclick="switchTab('grid')" class="text-xs font-bold px-5 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200 active:scale-95">
+            <i class="fa-solid fa-table-list text-sm"></i> ಅಂಕಗಳ ಗ್ರಿಡ್ / Marks Grid
           </button>
         </div>
 
         <!-- CCE DASHBOARD PAGE VIEW -->
         <div id="main-dashboard-view" class="space-y-6 w-full print-container">
-          <div class="bg-gradient-to-r from-slate-50 to-indigo-50/30 p-6 rounded-2xl border border-slate-200">
-            <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-gauge-high text-indigo-600"></i> CCE ಪ್ರಗತಿ ಅವಲೋಕನ / CCE Assessment Analytics Control
+          <div class="bg-gradient-to-r from-slate-50 to-indigo-50/30 dark:from-slate-900 dark:to-indigo-950/20 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none"></div>
+            <h2 class="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <i class="fa-solid fa-gauge-high text-indigo-600 dark:text-indigo-400"></i> CCE ಪ್ರಗತಿ ಅವಲೋಕನ / CCE Assessment Analytics Control
             </h2>
-            <p class="text-xs text-slate-500 mt-1">Continuous and Comprehensive Evaluation summary matrix for real-time monitoring of school grading workflows.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Continuous and Comprehensive Evaluation summary matrix for real-time monitoring of school grading workflows.</p>
           </div>
 
           <!-- Quick Metrics Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-              <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg"><i class="fa-solid fa-user-graduate text-xl"></i></div>
+            <div class="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-indigo-500/30 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-4 group cursor-default">
+              <div class="p-3.5 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 rounded-2xl group-hover:scale-110 group-hover:rotate-3 transition duration-300"><i class="fa-solid fa-user-graduate text-2xl"></i></div>
               <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Total Pupils / ವಿದ್ಯಾರ್ಥಿಗಳು</p>
-                <h3 id="dash-total-students" class="text-xl font-black text-slate-800">--</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Total Pupils / ವಿದ್ಯಾರ್ಥಿಗಳು</p>
+                <h3 id="dash-total-students" class="text-2xl font-black text-slate-800 dark:text-slate-200 tracking-tight mt-0.5">--</h3>
               </div>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-              <div class="p-3 bg-sky-50 text-sky-600 rounded-lg"><i class="fa-solid fa-file-signature text-xl"></i></div>
+            <div class="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-sky-500/30 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-4 group cursor-default">
+              <div class="p-3.5 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 rounded-2xl group-hover:scale-110 group-hover:rotate-3 transition duration-300"><i class="fa-solid fa-file-signature text-2xl"></i></div>
               <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Active Exams / ಪರೀಕ್ಷೆಗಳು</p>
-                <h3 class="text-xl font-black text-slate-800">6 Formats</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Active Exams / ಪರೀಕ್ಷೆಗಳು</p>
+                <h3 class="text-2xl font-black text-slate-800 dark:text-slate-200 tracking-tight mt-0.5">6 Formats</h3>
               </div>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-              <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg"><i class="fa-solid fa-book-bookmark text-xl"></i></div>
+            <div class="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-emerald-500/30 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-4 group cursor-default">
+              <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-2xl group-hover:scale-110 group-hover:rotate-3 transition duration-300"><i class="fa-solid fa-book-bookmark text-2xl"></i></div>
               <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Subjects Tracking / ವಿಷಯಗಳು</p>
-                <h3 class="text-xl font-black text-slate-800">7 Layouts</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Subjects Tracking / ವಿಷಯಗಳು</p>
+                <h3 class="text-2xl font-black text-slate-800 dark:text-slate-200 tracking-tight mt-0.5">7 Layouts</h3>
               </div>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
-              <div class="p-3 bg-amber-50 text-amber-600 rounded-lg"><i class="fa-solid fa-clock-rotate-left text-xl"></i></div>
+            <div class="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-amber-500/30 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-4 group cursor-default">
+              <div class="p-3.5 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-2xl group-hover:scale-110 group-hover:rotate-3 transition duration-300"><i class="fa-solid fa-clock-rotate-left text-2xl"></i></div>
               <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Status / ಸ್ಥಿತಿ</p>
-                <h3 class="text-sm font-bold text-amber-700">Awaiting Submissions</h3>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Status / ಸ್ಥಿತಿ</p>
+                <h3 class="text-sm font-bold text-amber-700 dark:text-amber-400 mt-1 flex items-center gap-1.5">
+                  <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+                  Active Evaluation
+                </h3>
               </div>
             </div>
           </div>
 
           <!-- Interactive Content Block -->
-          <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-2">
+          <div class="bg-white dark:bg-slate-850 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-sm">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 border-b border-slate-100 dark:border-slate-800 pb-2 flex items-center gap-2">
               <i class="fa-solid fa-circle-question text-slate-400"></i> ತ್ವರಿತ ಮಾರ್ಗದರ್ಶಿ / Quick Evaluation Operations
             </h3>
-            <p class="text-xs text-slate-600 leading-relaxed">
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               To update academic evaluation matrix parameters or verify class results, use the <b>Marks Grid</b> navigator interface found at the top link item. Within that menu context, you can apply subject configurations, export comprehensive datasets, and view individual student transcript charts.
             </p>
             <div class="pt-2">
-              <button onclick="switchTab('grid')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-2">
+              <button onclick="switchTab('grid')" class="bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow transition duration-300 border-0 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-indigo-500/25 shadow-indigo-600/10">
                 <span>Go to Marks Grid</span> <i class="fa-solid fa-arrow-right"></i>
               </button>
             </div>
@@ -409,12 +494,12 @@
         <!-- Marks Grid View -->
         <div id="main-grid-view" class="flex flex-col gap-4 w-full print-container hidden">
           
-          <div id="grid-sub-nav" class="bg-slate-100 p-1.5 rounded-2xl flex no-print gap-2 self-start shadow-sm border border-slate-200">
-            <button id="sub-tab-entermarks" onclick="switchGridSubPage('entermarks')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-white text-slate-800 shadow">
-              <i class="fa-solid fa-pen-nib text-sky-600"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ / Enter Marks
+          <div id="grid-sub-nav" class="bg-slate-100 dark:bg-slate-900/60 p-1.5 rounded-2xl flex no-print gap-2 self-start shadow-sm border border-slate-200 dark:border-slate-800">
+            <button id="sub-tab-entermarks" onclick="switchGridSubPage('entermarks')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow hover:scale-105 active:scale-95">
+              <i class="fa-solid fa-pen-nib text-sky-600 dark:text-sky-400"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ / Enter Marks
             </button>
-            <button id="sub-tab-assesssetting" onclick="switchGridSubPage('assesssetting')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 hover:text-slate-800">
-              <i class="fa-solid fa-sliders text-amber-600"></i> ನಿಯಮಗಳ ಸಂಯೋಜನೆ / Assessment Setting
+            <button id="sub-tab-assesssetting" onclick="switchGridSubPage('assesssetting')" class="text-xs font-bold px-5 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:scale-105 active:scale-95">
+              <i class="fa-solid fa-sliders text-amber-600 dark:text-amber-400"></i> ನಿಯಮಗಳ ಸಂಯೋಜನೆ / Assessment Setting
             </button>
           </div>
 
@@ -434,66 +519,66 @@
             </div>
 
             <!-- Actions & Edit Control Bar -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200 no-print text-xs font-semibold">
-              <div class="flex flex-wrap items-center gap-1.5">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2 bg-slate-50/80 dark:bg-slate-900/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 backdrop-blur-md no-print text-xs font-semibold">
+              <div class="flex flex-wrap items-center gap-2">
                 <!-- Download Template -->
-                <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                  <i class="fa-solid fa-file-arrow-down text-slate-500 text-lg md:text-xl"></i>
+                <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="hover:bg-slate-100 dark:hover:bg-slate-800 hover:scale-110 active:scale-95 transition-all duration-300 text-slate-555 dark:text-slate-400 border border-slate-200 dark:border-slate-750 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850">
+                  <i class="fa-solid fa-file-arrow-down text-lg"></i>
                 </button>
                 <!-- Import CSV -->
                 <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
-                <button id="btn-import-csv" onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
-                  <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
+                <button id="btn-import-csv" onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="hover:bg-amber-50 dark:hover:bg-amber-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden">
+                  <i class="fa-solid fa-file-import text-lg"></i>
                 </button>
                 <!-- Export CSV -->
-                <button id="btn-export-csv" onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
-                  <i class="fa-solid fa-file-csv text-teal-600 text-lg md:text-xl"></i>
+                <button id="btn-export-csv" onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="hover:bg-teal-50 dark:hover:bg-teal-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-teal-600 dark:text-teal-400 border border-teal-200/50 dark:border-teal-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden">
+                  <i class="fa-solid fa-file-csv text-lg"></i>
                 </button>
               </div>
               
-              <div class="flex flex-wrap items-center gap-1.5">
+              <div class="flex flex-wrap items-center gap-2">
                 <!-- Edit Buttons -->
-                <button id="btn-edit" onclick="enableEditing()" class="bg-indigo-650 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer hidden">
+                <button id="btn-edit" onclick="enableEditing()" class="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-indigo-500/20 active:scale-95 cursor-pointer border-0 hidden indigo-glow">
                   <i class="fa-solid fa-pen-to-square"></i> ತಿದ್ದುಪಡಿ / Edit
                 </button>
-                <button id="btn-save" onclick="saveData()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer hidden">
+                <button id="btn-save" onclick="saveData()" class="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all duration-300 shadow-md hover:shadow-emerald-500/20 active:scale-95 cursor-pointer border-0 hidden radium-btn-glow">
                   <i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save
                 </button>
-                <button id="btn-cancel" onclick="cancelEditing()" class="bg-slate-200 hover:bg-slate-300 text-slate-750 px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition border-0 cursor-pointer hidden">
+                <button id="btn-cancel" onclick="cancelEditing()" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-750 dark:text-slate-250 px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition duration-300 border-0 cursor-pointer active:scale-95 hidden">
                   ರದ್ದು / Cancel
                 </button>
                 
-                <span class="border-l border-slate-300 h-5 mx-1"></span>
+                <span class="border-l border-slate-200 dark:border-slate-850 h-5 mx-1"></span>
                 
                 <!-- Excel -->
-                <button id="btn-export-excel" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
-                  <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
+                <button id="btn-export-excel" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden">
+                  <i class="fa-solid fa-file-excel text-lg"></i>
                 </button>
                 <!-- PDF -->
-                <button id="btn-export-pdf" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
-                  <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+                <button id="btn-export-pdf" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-rose-600 dark:text-rose-400 border border-rose-200/50 dark:border-rose-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden rose-glow">
+                  <i class="fa-solid fa-file-pdf text-lg"></i>
                 </button>
                 <!-- Print -->
-                <button id="btn-print" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
-                  <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
+                <button id="btn-print" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="hover:bg-sky-50 dark:hover:bg-sky-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-sky-600 dark:text-sky-400 border border-sky-200/50 dark:border-sky-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden sky-glow">
+                  <i class="fa-solid fa-print text-lg"></i>
                 </button>
               </div>
             </div>
-
+ 
             <!-- Active Scale Note -->
-            <div id="rules-note-card" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 flex items-center gap-2 text-[11px] text-amber-900 font-medium hidden no-print">
-              <span class="font-bold text-amber-800 flex items-center gap-1.5 flex-shrink-0">
-                <i class="fa-solid fa-circle-info text-amber-600"></i> ಪ್ರಸ್ತುತ ನಿಯಮಾವಳಿ / Active Scale Note:
+            <div id="rules-note-card" class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl px-4 py-2 flex items-center gap-2 text-[11px] text-amber-900 dark:text-amber-400 font-medium hidden no-print">
+              <span class="font-bold text-amber-800 dark:text-amber-500 flex items-center gap-1.5 flex-shrink-0">
+                <i class="fa-solid fa-circle-info text-amber-600 dark:text-amber-400 animate-bounce"></i> ಪ್ರಸ್ತುತ ನಿಯಮಾವಳಿ / Active Scale Note:
               </span>
               <div id="rules-content" class="truncate font-semibold"></div>
             </div>
-
+ 
             <!-- Filter Bar -->
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 no-print">
+            <div class="bg-white dark:bg-slate-850 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm no-print">
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ತರಗತಿ / Class</label>
-                  <select id="class-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
+                  <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">ತರಗತಿ / Class</label>
+                  <select id="class-filter" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-700 dark:text-slate-350 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition cursor-pointer font-semibold shadow-inner">
                     <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ --</option>
                     <option value="ALL">ಎಲ್ಲಾ ತರಗತಿಗಳು / All Classes</option>
                     <option value="1">1</option>
@@ -510,8 +595,8 @@
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ಪರೀಕ್ಷೆಯ ವಿಧಾನ / Exam Type</label>
-                  <select id="exam-type-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
+                  <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">ಪರೀಕ್ಷೆಯ ವಿಧಾನ / Exam Type</label>
+                  <select id="exam-type-filter" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-700 dark:text-slate-350 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition cursor-pointer font-semibold shadow-inner">
                     <option value="">-- ಪರೀಕ್ಷೆ ಆಯ್ಕೆಮಾಡಿ --</option>
                     <option value="FA1">FA1 / ರೂಪಣಾತ್ಮಕ-1</option>
                     <option value="FA2">FA2 / ರೂಪಣಾತ್ಮಕ-2</option>
@@ -523,8 +608,8 @@
                 </div>
 
                 <div>
-                  <label class="block text-xs font-bold text-slate-600 mb-1.5 uppercase">ವಿಷಯ / Subject Filter</label>
-                  <select id="subject-filter" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 transition cursor-pointer">
+                  <label class="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">ವಿಷಯ / Subject Filter</label>
+                  <select id="subject-filter" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-700 dark:text-slate-350 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition cursor-pointer font-semibold shadow-inner">
                     <option value="ALL">ಎಲ್ಲಾ ವಿಷಯಗಳು / All Subjects</option>
                   </select>
                 </div>
@@ -1481,11 +1566,11 @@
 
             if (isEditing) {
               rowHtml += `
-                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-50/10">
-                  <input type="number" min="0" max="${cfg.saWrittenMax}" step="0.5" value="${written}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'w', this.value, this)" class="w-11 bg-slate-50 border border-slate-200 rounded px-0.5 py-1 text-center font-bold text-xs">
+                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-55/10">
+                  <input type="number" min="0" max="${cfg.saWrittenMax}" step="0.5" value="${written}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'w', this.value, this)" class="w-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded px-1 py-1 text-center font-bold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
                 </td>
-                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-50/10">
-                  <input type="number" min="0" max="${cfg.saOralMax}" step="0.5" value="${oral}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'o', this.value, this)" class="w-11 bg-slate-50 border border-slate-200 rounded px-0.5 py-1 text-center font-bold text-xs">
+                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-55/10">
+                  <input type="number" min="0" max="${cfg.saOralMax}" step="0.5" value="${oral}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'o', this.value, this)" class="w-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded px-1 py-1 text-center font-bold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
                 </td>
                 <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-amber-100/10">
                   <span id="sa-total-${sId}-${sub.id}" class="text-xs text-slate-700 font-bold">${convertedDisplay}</span>
@@ -1507,7 +1592,7 @@
             if (isEditing) {
               rowHtml += `
                 <td class="p-1.5 border-r border-slate-200 text-center">
-                  <input type="number" min="0" max="${cfg.faMax}" step="0.5" value="${m}" oninput="onMarkChange('${sId}', '${sub.id}', this.value, this)" class="w-14 bg-slate-50 border border-slate-200 rounded px-1 py-1 text-center font-bold">
+                  <input type="number" min="0" max="${cfg.faMax}" step="0.5" value="${m}" oninput="onMarkChange('${sId}', '${sub.id}', this.value, this)" class="w-14 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded px-1 py-1 text-center font-bold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
                 </td>
                 <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-slate-50/50">
                   <span id="grade-${sId}-${sub.id}" class="text-xs text-slate-600 font-bold">${g}</span>
@@ -1722,7 +1807,7 @@
       renderGrid();
     }
 
-    function printPage() {
+    function buildPrintArea() {
       const className = classFilter.value;
       const examType = examTypeFilter.value;
       const selectedSub = subjectFilter.value;
@@ -1739,6 +1824,17 @@
       document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + className;
       document.getElementById('print-exam-lbl').innerText = "ಪರೀಕ್ಷೆ / Exam: " + examType;
       document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
+      
+      const subLabel = document.getElementById('print-subject-lbl');
+      if (subLabel) {
+        if (isAllSubjects) {
+          subLabel.style.display = 'none';
+        } else {
+          const subText = subjectFilter.options[subjectFilter.selectedIndex].text;
+          subLabel.innerText = "ವಿಷಯ / Subject: " + subText;
+          subLabel.style.display = 'inline';
+        }
+      }
       
       // Clean up previous print content
       const existingTable = document.getElementById('printArea').querySelector('table');
@@ -1762,6 +1858,23 @@
         parent.replaceChild(span, input);
       });
       
+      // Clean classes from tableClone and its children to allow native print CSS to apply solid black borders and backgrounds
+      tableClone.removeAttribute('class');
+      tableClone.querySelectorAll('*').forEach(el => {
+        const isLeft = el.classList.contains('text-left');
+        const isRight = el.classList.contains('text-right');
+        el.removeAttribute('class');
+        if (isLeft) {
+          el.style.textAlign = 'left';
+          el.style.paddingLeft = '6px';
+        } else if (isRight) {
+          el.style.textAlign = 'right';
+          el.style.paddingRight = '6px';
+        } else {
+          el.style.textAlign = 'center';
+        }
+      });
+      
       // Append cloned table
       document.getElementById('printArea').appendChild(tableClone);
       
@@ -1774,95 +1887,143 @@
         <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
       `;
       document.getElementById('printArea').appendChild(sigRow);
-      
+    }
+
+    function printPage() {
+      buildPrintArea();
       window.print();
     }
 
     function exportToPdf() {
-      if (typeof html2pdf === 'undefined') { alert("PDF ಲೈಬ್ರರಿ ಲೋಡ್ ಆಗಿಲ್ಲ."); return; }
-      const className = classFilter.value;
-      const examType = examTypeFilter.value;
-      const selectedSub = subjectFilter.value;
-      const isAllSubjects = (selectedSub === "ALL");
+      const className = classFilter.value || 'ALL';
+      const examType = examTypeFilter.value || 'FA1';
+      const selectedSub = subjectFilter.value || 'ALL';
+      const pdfName = `CCE_Report_Class_${className}_${examType}_${selectedSub.replace(/\s+/g, '_')}`;
 
-      const disabledStyles = [];
-      document.querySelectorAll('style, link[rel="stylesheet"]').forEach(tag => {
-        if (!tag.disabled) { tag.disabled = true; disabledStyles.push(tag); }
+      showPdfDownloadModal(pdfName, () => {
+        buildPrintArea();
+        window.print();
       });
+    }
 
-      const printContainer = document.createElement('div');
-      printContainer.style.backgroundColor = '#ffffff'; printContainer.style.color = '#000000';
-      printContainer.style.fontFamily = "'Inter', 'Noto Sans Kannada', sans-serif";
-      printContainer.style.width = '100%'; printContainer.style.padding = '10px';
+    function showPdfDownloadModal(pdfName, printCallback) {
+      let modal = document.getElementById('pdf-guide-modal');
+      if (!modal) {
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = `
+          <div id="pdf-guide-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[9999] hidden">
+            <div class="bg-slate-900 border border-indigo-500/30 rounded-3xl p-6 max-w-lg w-full mx-4 shadow-[0_0_50px_rgba(99,102,241,0.25)] relative overflow-hidden text-white transition transform scale-95 duration-300">
+              <div class="absolute -top-24 -left-20 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div class="absolute -bottom-24 -right-20 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+              
+              <div class="flex justify-between items-start border-b border-white/10 pb-4 mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl bg-indigo-650 flex items-center justify-center text-white shadow-lg shadow-indigo-550/20">
+                    <i class="fa-solid fa-file-pdf text-lg"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-base font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಸಹಾಯಕಿ</h3>
+                    <p class="text-[10px] text-emerald-400 font-extrabold uppercase tracking-wider">Professional PDF Download Guide</p>
+                  </div>
+                </div>
+                <button onclick="closePdfGuideModal()" class="bg-white/5 hover:bg-white/10 border-0 text-slate-400 hover:text-white w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer">
+                  <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+              
+              <div class="space-y-4 text-xs">
+                <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-4 space-y-2">
+                  <h4 class="font-bold text-indigo-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-info"></i> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಏಕೆ? / Why Browser Printing?</h4>
+                  <p class="text-slate-350 leading-relaxed text-[11px]">
+                    ಕನ್ನಡ ಅಕ್ಷರಗಳು ಮತ್ತು ಕೋಷ್ಟಕಗಳು ಯಾವುದೇ ಕಾಗುಣಿತ ದೋಷವಿಲ್ಲದೆ ಅತಿ ಸುಂದರವಾಗಿ ಮೂಡಿಬರಲು ಹಾಗೂ <b>ಪಿಡಿಎಫ್‌ನಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲು (Copyable text)</b> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಅತ್ಯುತ್ತಮ ವಿಧಾನವಾಗಿದೆ.
+                  </p>
+                </div>
 
-      const fontSize = isAllSubjects ? '7.5px' : '9px';
-      const cellPadding = isAllSubjects ? '3px 2px' : '6px 4px';
-      const styleEl = document.createElement('style');
-      styleEl.innerText = `
-        .print-header-title { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: ${fontSize}; border: 1px solid #000000; background-color: #ffffff; }
-        th, td { border: 1px solid #000000; padding: ${cellPadding}; text-align: center; }
-        th { font-weight: bold; background-color: #000000 !important; color: #ffffff !important; }
-        td { background-color: #ffffff !important; color: #000000 !important; }
-        .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; }
-      `;
-      printContainer.appendChild(styleEl);
-
-      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
-      
-      const headerHtml = `
-        <div class="print-header-title">
-          <h1 style="font-size:16px; font-weight:800; margin: 0; text-transform: uppercase; color: #000000;">${schoolNameEn}</h1>
-          <h2 style="font-size:13px; font-weight:700; margin: 4px 0 0 0; color: #000000;">${schoolNameKn}</h2>
-          <h3 style="font-size:12px; font-weight:700; margin: 6px 0 0 0; color: #000000; text-transform: uppercase;">ಸಂಕಲನಾತ್ಮಕ ಮತ್ತು ರೂಪಣಾತ್ಮಕ ಪ್ರಗತಿ ಪಟ್ಟಿ / CCE Assessment Report</h3>
-          <div style="display:flex; justify-content:space-between; font-size:10px; margin-top:10px; color: #000000;">
-            <span>Class: ${className}</span><span>Exam: ${examType}</span><span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
+                <div class="space-y-2.5">
+                  <h4 class="font-bold text-slate-200 uppercase tracking-wide text-[10px]">ಅಗತ್ಯವಿರುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು / Required Print Settings:</h4>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2">
+                      <i class="fa-solid fa-print text-sky-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Destination (ಗುರಿ)</span>
+                        <span class="text-slate-400 font-semibold text-emerald-400">Save as PDF (ಪಿಡಿಎಫ್ ಆಗಿ ಉಳಿಸಿ)</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2">
+                      <i class="fa-solid fa-arrows-left-right text-emerald-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Layout (ವಿನ್ಯಾಸ)</span>
+                        <span class="text-slate-400 font-semibold text-emerald-400">Landscape (ಅಡ್ಡಲಾಗಿ)</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2 col-span-2">
+                      <i class="fa-solid fa-square-check text-emerald-450 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Background Graphics (ಹಿನ್ನೆಲೆ ಚಿತ್ರಗಳು)</span>
+                        <span class="text-emerald-400 font-extrabold animate-pulse">MUST BE ENABLED / ಆನ್ ಇರಲೇಬೇಕು</span>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 border border-white/5 rounded-xl p-2.5 flex items-start gap-2 col-span-2">
+                      <i class="fa-solid fa-square-xmark text-rose-400 mt-0.5"></i>
+                      <div>
+                        <span class="block font-bold text-slate-200">Headers and Footers (ಹೆಡರ್ ಮತ್ತು ಫೂಟರ್)</span>
+                        <span class="text-slate-450">DISABLED / ಆಫ್ ಮಾಡಿ</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bg-emerald-950/30 border border-emerald-500/20 rounded-2xl p-3 flex items-start gap-2 text-[10px] text-emerald-400 font-semibold">
+                  <i class="fa-solid fa-lightbulb text-emerald-500 mt-0.5 animate-bounce"></i>
+                  <span>ಸೂಚನೆ: ಪ್ರಿಂಟ್ ಸಂವಾದದಲ್ಲಿ "Background Graphics" ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಮಾಡುವುದರಿಂದ ಕೋಷ್ಟಕದ ಹೆಡರ್ ಕಪ್ಪು ಬಣ್ಣದಲ್ಲಿ ಮೂಡಿಬರುತ್ತದೆ!</span>
+                </div>
+              </div>
+              
+              <div class="mt-6 flex gap-3">
+                <button onclick="closePdfGuideModal()" class="flex-1 bg-slate-800 hover:bg-slate-750 text-slate-300 font-bold py-3 rounded-2xl transition border-0 cursor-pointer text-xs active:scale-95">
+                  ರದ್ದು / Cancel
+                </button>
+                <button id="pdf-confirm-btn" class="flex-1 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-black py-3 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all duration-300 border-0 cursor-pointer text-xs radium-btn-glow active:scale-95 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> ಈಗ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      `;
-      printContainer.innerHTML += headerHtml;
-
-      const tableClone = document.getElementById('competency-table').cloneNode(true);
-      tableClone.classList.remove('hidden');
-      tableClone.querySelectorAll('input').forEach(input => {
-        const span = document.createElement('span'); span.innerText = input.value !== '' ? input.value : '-';
-        input.parentNode.replaceChild(span, input);
-      });
-      tableClone.querySelectorAll('*').forEach(el => {
-        el.removeAttribute('class');
-        if (el.tagName === 'TH') {
-          el.style.backgroundColor = '#000000';
-          el.style.color = '#ffffff';
-        } else {
-          el.style.backgroundColor = '#ffffff';
-          el.style.color = '#000000';
-        }
-      });
-      printContainer.appendChild(tableClone);
-
-      const sigsContent = `
-        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-        ${!isAllSubjects ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
-        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
-      `;
-      const footerHtml = `
-        <div class="print-signatures-row">
-          ${sigsContent}
-        </div>
-      `;
-      const footerEl = document.createElement('div');
-      footerEl.innerHTML = footerHtml;
-      printContainer.appendChild(footerEl);
-
-      const opt = {
-        margin: 10, filename: `CCE_Report_${className}_${examType}.pdf`, image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 1.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+        `;
+        document.body.appendChild(modalContainer.firstElementChild);
+        modal = document.getElementById('pdf-guide-modal');
+      }
+      
+      const confirmBtn = document.getElementById('pdf-confirm-btn');
+      confirmBtn.onclick = function() {
+        closePdfGuideModal();
+        const oldTitle = document.title;
+        document.title = pdfName;
+        printCallback();
+        setTimeout(() => {
+          document.title = oldTitle;
+        }, 1200);
       };
-
-      html2pdf().set(opt).from(printContainer).save().then(() => {
-        disabledStyles.forEach(tag => tag.disabled = false);
-      });
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        const dialog = modal.querySelector('div');
+        dialog.classList.remove('scale-95');
+        dialog.classList.add('scale-100');
+      }, 50);
+    }
+    
+    function closePdfGuideModal() {
+      const modal = document.getElementById('pdf-guide-modal');
+      if (modal) {
+        const dialog = modal.querySelector('div');
+        dialog.classList.remove('scale-100');
+        dialog.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 200);
+      }
     }
 
     function exportToExcel() {

@@ -9,20 +9,201 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #f4f6f9; padding-top: 140px; padding-bottom: 50px; }
+    body { background-color: #f8fafc; padding-top: 145px; padding-bottom: 50px; }
     body, input, select, textarea, button { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; }
-    .nav-sections { position: fixed; top: 70px; left: 0; right: 0; background: #ffffff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000; padding: 10px 0; }
-    .nav-sections .nav-link { color: #0056b3; font-weight: 600; font-size: 14px; margin: 0 5px; border-radius: 20px; transition: all 0.3s; padding: 8px 15px; }
-    .nav-sections .nav-link:hover { background: #0056b3; color: white; }
-    .nav-sections .nav-link.active { background: #0056b3; color: white; }
-    .form-container { background: #ffffff; padding: 35px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-top: 20px; }
-    .form-header { text-align: center; background: linear-gradient(135deg, #0056b3, #0088cc); color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px; }
-    .section-block { scroll-margin-top: 90px; background: #fafafa; padding: 25px; border-radius: 10px; border: 1px solid #e3e6f0; margin-bottom: 30px; }
-    .section-title { color: #0056b3; font-weight: bold; border-bottom: 2px solid #0056b3; padding-bottom: 8px; margin-bottom: 20px; font-size: 18px; }
-    label { font-weight: 600; margin-top: 12px; color: #495057; font-size: 13px; display: block; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-    .required { color: red; }
-    .form-control, .form-select { border-radius: 6px; border: 1px solid #ced4da; padding: 8px 12px; font-size: 14px; }
-    .btn-submit { background: linear-gradient(135deg, #28a745, #218838); color: white; font-weight: bold; padding: 14px; font-size: 18px; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    
+    /* Premium Glassmorphic Navigation Bar */
+    .nav-sections { 
+      position: fixed; 
+      top: 70px; 
+      left: 0; 
+      right: 0; 
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05); 
+      z-index: 1000; 
+      padding: 12px 0; 
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .nav-sections .nav-link { 
+      color: #475569; 
+      font-weight: 600; 
+      font-size: 13.5px; 
+      margin: 0 6px; 
+      border-radius: 20px; 
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+      padding: 8px 16px; 
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+    .nav-sections .nav-link:hover { 
+      background: rgba(14, 165, 233, 0.08); 
+      color: #0284c7; 
+    }
+    .nav-sections .nav-link.active { 
+      background: linear-gradient(135deg, #0ea5e9, #0284c7); 
+      color: white; 
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35); 
+    }
+    
+    /* Modern Form Container */
+    .form-container { 
+      background: #ffffff; 
+      padding: 35px; 
+      border-radius: 16px; 
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); 
+      margin-top: 10px; 
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .form-header { 
+      text-align: center; 
+      background: linear-gradient(135deg, #0f172a, #1e293b); 
+      color: white; 
+      padding: 28px; 
+      border-radius: 12px; 
+      margin-bottom: 35px; 
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+    }
+    .form-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .form-header p {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    
+    /* Section Blocks */
+    .section-block { 
+      scroll-margin-top: 155px; 
+      background: #ffffff; 
+      padding: 28px; 
+      border-radius: 12px; 
+      border: 1px solid #e2e8f0; 
+      margin-bottom: 30px; 
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.01);
+      transition: all 0.3s ease;
+    }
+    .section-block:hover {
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      border-color: #cbd5e1;
+    }
+    .section-title { 
+      color: #0f172a; 
+      font-weight: 800; 
+      border-bottom: 2px solid #e2e8f0; 
+      padding-bottom: 8px; 
+      margin-bottom: 24px; 
+      font-size: 15px; 
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background: #0284c7;
+    }
+    
+    label { 
+      font-weight: 700; 
+      margin-top: 14px; 
+      color: #475569; 
+      font-size: 11.5px; 
+      display: block; 
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .required { color: #ef4444; }
+    
+    /* Polished Form Inputs */
+    .form-control, .form-select { 
+      border-radius: 8px; 
+      border: 1px solid #cbd5e1; 
+      padding: 10px 14px; 
+      font-size: 13.5px; 
+      color: #334155;
+      background-color: #f8fafc;
+      transition: all 0.2s ease;
+    }
+    .form-control:focus, .form-select:focus { 
+      border-color: #38bdf8; 
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+      outline: none;
+    }
+    .input-group .btn-outline-secondary {
+      border: 1px solid #cbd5e1;
+      border-left: none;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+    
+    /* Premium Radium Submit Button */
+    .btn-submit { 
+      background: linear-gradient(135deg, #10b981, #059669); 
+      color: white; 
+      font-weight: 700; 
+      padding: 14px; 
+      font-size: 16px; 
+      border: none; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); 
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #34d399, #10b981);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* Full-Screen Iframe Overlay */
+    .preview-overlay-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2500;
+      background-color: #0f172a;
+      border: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .preview-overlay-container.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .preview-overlay-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Pulsing Field Focus Animation */
+    @keyframes highlightPulse {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); border-color: #22c55e; }
+      70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); border-color: #22c55e; }
+      100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+    .highlight-field-pulse {
+      animation: highlightPulse 1.5s ease-out 2 !important;
+      border-color: #22c55e !important;
+    }
   </style>
 </head>
 <body>
@@ -703,11 +884,14 @@
     if (bankAccInput && ifscInput && bankAddressInput) {
       bankAccInput.addEventListener("input", function() {
         if (bankAccInput.value.trim() !== "") {
+          const medium = document.getElementById("medium").value;
+          const isKn = (medium === "ಕನ್ನಡ");
+
           if (ifscInput.value.trim() === "") {
             ifscInput.value = "SBIN0041068";
           }
           if (bankAddressInput.value.trim() === "") {
-            bankAddressInput.value = "STATE BANK OF INDIA";
+            bankAddressInput.value = isKn ? "ಸ್ಟೇಟ್ ಬ್ಯಾಂಕ್ ಆಫ್ ಇಂಡಿಯಾ" : "STATE BANK OF INDIA";
           }
         }
       });
@@ -717,19 +901,20 @@
     const transferNoInput = document.getElementsByName("transferNo")[0];
     if (transferNoInput) {
       transferNoInput.addEventListener("input", function() {
+        const medium = document.getElementById("medium").value;
+        const isKn = (medium === "ಕನ್ನಡ");
+
+        const boardSelect = document.getElementById("preschoolBoard");
+        const typeSelect = document.getElementById("preschoolType");
+        const nameInput = document.getElementsByName("preschoolName")[0];
+        const addressInput = document.getElementsByName("preschoolAddress")[0];
+        const distSelect = document.getElementById("prevDistrict");
+        const talukSelect = document.getElementById("prevTaluk");
+        const hobliInput = document.getElementsByName("prevHobli")[0];
+        const pinInput = document.getElementsByName("prevPinCode")[0];
+        const prevVillageInput = document.getElementsByName("prevVillage")[0];
+
         if (transferNoInput.value.trim() !== "") {
-          const medium = document.getElementById("medium").value;
-          const isKn = (medium === "ಕನ್ನಡ");
-
-          const boardSelect = document.getElementById("preschoolBoard");
-          const typeSelect = document.getElementById("preschoolType");
-          const nameInput = document.getElementsByName("preschoolName")[0];
-          const addressInput = document.getElementsByName("preschoolAddress")[0];
-          const distSelect = document.getElementById("prevDistrict");
-          const talukSelect = document.getElementById("prevTaluk");
-          const hobliInput = document.getElementsByName("prevHobli")[0];
-          const pinInput = document.getElementsByName("prevPinCode")[0];
-
           if (boardSelect && boardSelect.value === "") {
             boardSelect.value = isKn ? "ರಾಜ್ಯ ಮಂಡಳಿ" : "STATE BOARD";
           }
@@ -755,6 +940,22 @@
           if (pinInput && pinInput.value.trim() === "") {
             pinInput.value = "584134";
           }
+          if (prevVillageInput && prevVillageInput.value.trim() === "") {
+            prevVillageInput.value = isKn ? "ತೋಟದ ಮರ್ಚೆಡ್" : "Totad marded";
+          }
+        } else {
+          if (boardSelect) boardSelect.value = "";
+          if (typeSelect) typeSelect.value = "";
+          if (nameInput) nameInput.value = "";
+          if (addressInput) addressInput.value = "";
+          if (distSelect) {
+            distSelect.value = "";
+            document.getElementById("prevTaluk").innerHTML = isKn ? '<option value="">ಜಿಲ್ಲೆ ಆರಿಸಿ</option>' : '<option value="">Select District First</option>';
+          }
+          if (talukSelect) talukSelect.value = "";
+          if (hobliInput) hobliInput.value = "";
+          if (pinInput) pinInput.value = "";
+          if (prevVillageInput) prevVillageInput.value = "";
         }
       });
     }
@@ -880,7 +1081,7 @@
       
       let enrolmentDateInput = document.getElementById("enrolmentDate");
       if (enrolmentDateInput) {
-        enrolmentDateInput.value = dateString;
+        enrolmentDateInput.value = "";
       }
     }
   }
@@ -1171,23 +1372,10 @@
         mOccSelect.value = isKn ? "ಕೂಲಿ" : "LABOUR";
       }
 
-      // Previous School Address Details Defaults (ಜಿಲ್ಲೆ, ತಾಲೂಕು, ಹೊಬಳಿ, ಪಿನ್‌ಕೋಡ್)
-      const prevDistSelect = document.getElementById("prevDistrict");
-      if (prevDistSelect) {
-        prevDistSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
-        onPrevDistrictChange();
-      }
+      // Previous School Address Details Defaults - Removed to load only when TC Number is present
       const prevTalukSelect = document.getElementById("prevTaluk");
       if (prevTalukSelect) {
-        prevTalukSelect.value = isKn ? "ರಾಯಚೂರು" : "Raichur";
-      }
-      const prevHobliInput = document.getElementsByName("prevHobli")[0];
-      if (prevHobliInput) {
-        prevHobliInput.value = isKn ? "ಕಲಮಲ" : "KALAMA";
-      }
-      const prevPinInput = document.getElementsByName("prevPinCode")[0];
-      if (prevPinInput) {
-        prevPinInput.value = "584134";
+        prevTalukSelect.innerHTML = isKn ? '<option value="">ಜಿಲ್ಲೆ ಆರಿಸಿ</option>' : '<option value="">Select District First</option>';
       }
     }
   }
@@ -1425,6 +1613,18 @@
       } else {
         window.location.href = "NewAdmission.html";
       }
+    } else if (event.data && event.data.action === 'backToForm') {
+      let previewContainer = document.getElementById("preview-container");
+      if (previewContainer) {
+        previewContainer.classList.remove("active");
+      }
+      showFormSection('student-details');
+    } else if (event.data && event.data.action === 'editField') {
+      let previewContainer = document.getElementById("preview-container");
+      if (previewContainer) {
+        previewContainer.classList.remove("active");
+      }
+      focusAndHighlightField(event.data.fieldName);
     }
   });
 
@@ -1436,10 +1636,10 @@
     document.getElementById("school-details").classList.remove("d-none");
     document.getElementById("submitBtn").classList.remove("d-none");
     
-    // Hide preview container if it exists
+    // Hide full-screen preview overlay if active
     let previewContainer = document.getElementById("preview-container");
     if (previewContainer) {
-      previewContainer.classList.add("d-none");
+      previewContainer.classList.remove("active");
     }
     
     // Highlight active nav link
@@ -1474,38 +1674,56 @@
     // Save to localStorage
     localStorage.setItem("admissionData", JSON.stringify(data));
 
-    
-    // Hide all form sections and submit button
-    document.getElementById("student-details").classList.add("d-none");
-    document.getElementById("banking-details").classList.add("d-none");
-    document.getElementById("parents-details").classList.add("d-none");
-    document.getElementById("school-details").classList.add("d-none");
-    document.getElementById("submitBtn").classList.add("d-none");
-    
-    // Show preview container
+    // Show preview container as full-screen overlay
     let previewContainer = document.getElementById("preview-container");
     if (!previewContainer) {
       previewContainer = document.createElement("div");
       previewContainer.id = "preview-container";
-      previewContainer.style.width = "100%";
-      previewContainer.style.marginTop = "20px";
-      previewContainer.innerHTML = `<iframe id="preview-iframe" src="Preview.html" style="width: 100%; height: 1300px; border: 1px solid #ced4da; border-radius: 8px;"></iframe>`;
-      document.querySelector(".form-container").appendChild(previewContainer);
-    } else {
-      previewContainer.classList.remove("d-none");
-      // Reload iframe to pick up fresh localStorage
-      let iframe = document.getElementById("preview-iframe");
-      if (iframe) {
-        iframe.src = iframe.src;
-      }
+      previewContainer.className = "preview-overlay-container";
+      previewContainer.innerHTML = `<iframe id="preview-iframe" class="preview-overlay-iframe" src="Preview.html"></iframe>`;
+      document.body.appendChild(previewContainer);
     }
+    
+    // Reload iframe to pick up fresh localStorage
+    let iframe = document.getElementById("preview-iframe");
+    if (iframe) {
+      iframe.src = "Preview.html";
+    }
+    
+    // Smooth activate transition
+    setTimeout(() => {
+      previewContainer.classList.add("active");
+    }, 50);
     
     // Highlight preview nav link
     let activeLink = document.querySelector('.nav-sections a[href="#preview-container"]');
     updateActiveNavLink(activeLink);
   }
 
-   function updateActiveNavLink(activeLinkEl) {
+  function focusAndHighlightField(fieldName) {
+    let el = document.getElementById(fieldName) || document.getElementsByName(fieldName)[0];
+    if (!el) {
+      console.warn("Field not found for focus/edit: " + fieldName);
+      return;
+    }
+    
+    // Determine which section block this element is in
+    let section = el.closest('.section-block');
+    if (section) {
+      showFormSection(section.id);
+    }
+    
+    // Focus, scroll and trigger pulsing glow animation
+    el.focus();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    el.classList.add('highlight-field-pulse');
+    setTimeout(() => {
+      el.classList.remove('highlight-field-pulse');
+    }, 3000);
+  }
+
+  function updateActiveNavLink(activeLinkEl) {
     if (!activeLinkEl) return;
     document.querySelectorAll(".nav-sections .nav-link").forEach(link => {
       link.classList.remove("active");
@@ -1631,14 +1849,14 @@
           transferNo: "TC-2026-11",
           transferDate: "2026-05-31",
           studentSts: "Active",
-          enrolmentNo: "ENR-0012",
+          enrolmentNo: "",
           prevDistrict: "Raichur",
           prevTaluk: "Raichur",
           prevHobli: "Marched",
           prevPinCode: "584101",
           prevVillage: "Marched",
           formDate: "2026-06-01",
-          enrolmentDate: "2026-06-02"
+          enrolmentDate: ""
         };
         populateForm(mockStudent);
       }
