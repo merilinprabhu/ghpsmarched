@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supabase Diagnostics</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #0f172a; color: #f1f5f9; }
+    h1 { color: #818cf8; }
+    pre { background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; overflow-x: auto; max-height: 400px; }
+    .success { color: #34d399; }
+    .error { color: #f87171; }
+  </style>
+</head>
+<body>
+  <h1>Supabase Diagnostic Report</h1>
+  <div id="status">Loading session...</div>
+
+  <h2>1. Active Session Details</h2>
+  <pre id="session-info">None</pre>
+
+  <h2>2. Database Profile Details</h2>
+  <pre id="profile-info">None</pre>
+
+  <h2>3. Templates Query (Without school_id filter)</h2>
+  <pre id="templates-all">None</pre>
+
+  <h2>4. Templates Query (With school_id filter)</h2>
+  <pre id="templates-filtered">None</pre>
+
+  <h2>5. Admissions Query (Without school_id filter)</h2>
+  <pre id="admissions-all">None</pre>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    async function runDiagnostics() {
+      const statusEl = document.getElementById('status');
+      try {
+        // 1. Get session
+        const { data: { session }, error: sessionErr } = await supabaseClient.auth.getSession();
+        if (sessionErr) throw sessionErr;
+        
+        if (!session) {
+          statusEl.innerHTML = '<span class="error">Not Logged In. Please log in first at index.html!</span>';
+          return;
+        }
+        
+        statusEl.innerHTML = '<span class="success">Logged in. Running database queries...</span>';
+        
+        const user = session.user;
+        document.getElementById('session-info').innerText = JSON.stringify({
+          email: user.email,
+          id: user.id,
+          user_metadata: user.user_metadata,
+          expires_at: new Date(session.expires_at * 1000).toLocaleString()
+        }, null, 2);
+
+        // 2. Query profile
+        const { data: profile, error: profileErr } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        document.getElementById('profile-info').innerText = profileErr 
+          ? `Error: ${profileErr.message}` 
+          : JSON.stringify(profile, null, 2);
+
+        // 3. Query all templates
+        const { data: allTemplates, error: templatesAllErr } = await supabaseClient
+          .from('incentive_templates')
+          .select('*');
+        
+        document.getElementById('templates-all').innerText = templatesAllErr 
+          ? `Error: ${templatesAllErr.message}` 
+          : `Count: ${allTemplates ? allTemplates.length : 0}\n\n` + JSON.stringify(allTemplates, null, 2);
+
+        // 4. Query templates with filter
+        const schoolId = user.user_metadata?.school_id || (profile ? profile.school_id : null);
+        if (schoolId) {
+          const { data: filteredTemplates, error: templatesFilteredErr } = await supabaseClient
+            .from('incentive_templates')
+            .select('*')
+            .eq('school_id', schoolId);
+          
+          document.getElementById('templates-filtered').innerText = templatesFilteredErr 
+            ? `Error: ${templatesFilteredErr.message}` 
+            : `Count: ${filteredTemplates ? filteredTemplates.length : 0}\n\n` + JSON.stringify(filteredTemplates, null, 2);
+        } else {
+          document.getElementById('templates-filtered').innerText = "Skipped (school_id is null/undefined)";
+        }
+
+        // 5. Query admissions
+        const { data: admissions, error: admissionsErr } = await supabaseClient
+          .from('admissions')
+          .select('id, student_name, school_id')
+          .limit(5);
+        
+        document.getElementById('admissions-all').innerText = admissionsErr 
+          ? `Error: ${admissionsErr.message}` 
+          : `Count: ${admissions ? admissions.length : 0}\n\n` + JSON.stringify(admissions, null, 2);
+          
+        statusEl.innerHTML = '<span class="success">Diagnostics completed successfully.</span>';
+      } catch (err) {
+        statusEl.innerHTML = `<span class="error">Diagnostics failed: ${err.message}</span>`;
+      }
+    }
+
+    runDiagnostics();
+  </script>
+</body>
+</html>

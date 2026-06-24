@@ -156,6 +156,7 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
     window.onload = async function() {
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -316,17 +317,14 @@
           .eq('id', data.user.id)
           .single();
 
+        if (profile) {
+          localStorage.setItem('school_id', profile.school_id || '');
+          localStorage.setItem('user_role', profile.role || '');
+        }
+
         if (profile && profile.role !== 'developer' && profile.is_approved === false) {
           await supabaseClient.auth.signOut();
           showMessage("ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ಮುಖ್ಯೋಪಾಧ್ಯಾಯರು ಇನ್ನೂ ಅನುಮೋದಿಸಿಲ್ಲ. ದಯವಿಟ್ಟು ಅನುಮೋದನೆಗಾಗಿ ಕಾಯಿರಿ. / Your account has not been approved by the Headmaster yet. Please wait for approval.", false);
-          return;
-        }
-
-        if (profile && profile.role === 'developer') {
-          showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", true);
-          setTimeout(() => {
-            window.location.href = "developer.html";
-          }, 1200);
           return;
         }
 
@@ -339,7 +337,7 @@
               .single();
             
             if (school) {
-              if (school.is_approved === false) {
+              if (school.is_approved === false && profile.role !== 'developer') {
                 await supabaseClient.auth.signOut();
                 showMessage("ನಿಮ್ಮ ಶಾಲೆಯು ಇನ್ನೂ ಡೆವಲಪರ್‌ನಿಂದ ಅನುಮೋದಿಸಲ್ಪಟ್ಟಿಲ್ಲ. ದಯವಿಟ್ಟು ಅನುಮೋದನೆಗಾಗಿ ಕಾಯಿರಿ.", false);
                 return;
@@ -355,6 +353,14 @@
           localStorage.removeItem('school_name_en');
           localStorage.removeItem('school_name_kn');
           localStorage.removeItem('school_udise');
+        }
+
+        if (profile && profile.role === 'developer') {
+          showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", true);
+          setTimeout(() => {
+            window.location.href = "developer.html";
+          }, 1200);
+          return;
         }
 
         const name = profile ? profile.name : (data.user.user_metadata.name || "ಬಳಕೆದಾರ");

@@ -51,18 +51,7 @@
       .footer-signature { display: flex !important; justify-content: space-between !important; margin-top: 50px !important; font-weight: bold !important; font-size: 10px !important; }
     }
   
-        /* Sidebar Hover Collapsed Styles */
-    @media (min-width: 768px) {
-      aside {
-        width: 70px !important;
-        min-width: 70px !important;
-        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
-        overflow-x: hidden;
-      }
-      aside:hover {
-        width: 256px !important;
-        min-width: 256px !important;
-      }
+        
       
       /* Hide elements by default */
       aside .sidebar-text,
@@ -190,167 +179,12 @@
 <body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
 
   <div class="no-print">
-        <!-- Dark Header Bar -->
-    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
-          <i class="fa-solid fa-arrow-left text-sm"></i>
-        </a>
-        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
-        <div>
-          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
-          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
-        </div>
-      </div>
-      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
-        <!-- Dashboard Link -->
-        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
-          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
-        </a>
-        <!-- Theme Selector -->
-        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
-          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
-          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="gray">Gray</option>
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-          </select>
-        </div>
-        
-        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
-          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
-          <span id="headerUser" class="font-semibold text-slate-200">User</span>
-        </div>
-        <div>
-          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
-          <span id="liveClock" class="font-bold text-emerald-400"></span>
-        </div>
-      </div>
-    </div>
+          <div id="navbar-placeholder"></div>
 
     <!-- Main Outer Container -->
-    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
+    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6">
       
-      <!-- Aside Menu -->
-      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
-        <div class="space-y-6">
-          <div>
-            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
-            <nav class="space-y-1 text-xs" id="sidebarNav">
-              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
-              </a>
-              
-              <!-- Accordion Items -->
-              <!-- Teachers -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
-                  </span>
-                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Students -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
-                  </span>
-                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
-                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
-                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
-                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
-                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Academic -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
-                  </span>
-                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
-                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
-                  <li><a href="FlnAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">FLN Assessment</span></a></li>
-                </ul>
-              </div>
-
-              <a href="custom_reports.html" id="nav-CustomReports" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-file-invoice text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Custom Reports</span>
-              </a>
-              <!-- Incentives -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
-                  </span>
-                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Attendance -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-attendance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-650 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-amber-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Attendance</span>
-                  </span>
-                  <i id="menu-attendance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-attendance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-amber-600 font-semibold transition"><span class="sidebar-text">Manage Attendance</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Finance -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-finance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-wallet text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Finance</span>
-                  </span>
-                  <i id="menu-finance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-finance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-rose-600 font-semibold transition"><span class="sidebar-text">Exam Fee Collection</span></a></li>
-                </ul>
-              </div>
-
-              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
-            </nav>
-          </div>
-
-          <div class="pt-3 border-t border-slate-100">
-            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Govt Portals</span>
-            <div class="space-y-1.5 text-[11px] font-semibold">
-              <a href="https://sts.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-globe text-indigo-400 w-4 text-center"></i> <span class="sidebar-text">SATS / STS Portal</span></a>
-              <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-utensils text-orange-400 w-4 text-center"></i> <span class="sidebar-text">Mid-Day Meals Login</span></a>
-              <a href="https://choas.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-file-invoice text-emerald-400 w-4 text-center"></i> <span class="sidebar-text">Shikshana Kirana</span></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
-          <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
-          <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
-        </div>
-      </aside>
+      
 
       <!-- Main Contents Container -->
       <main class="flex-grow bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
@@ -750,6 +584,7 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
     const standardColumns = [
       { id: 'app_no', labelKn: 'ವಿದ್ಯಾರ್ಥಿ ಐಡಿ / App No', labelEn: 'Student ID / App No' },
@@ -862,8 +697,10 @@
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12; h = h ? h : 12;
       m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
-      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
-      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+      const clockEl = document.getElementById('liveClock');
+      if (clockEl) clockEl.innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      const dateEl = document.getElementById('liveDate');
+      if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -998,7 +835,7 @@
       const tbody = document.getElementById('students-table-body');
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = session?.user?.user_metadata?.school_id;
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
         let query = supabaseClient.from('admissions').select('*');
         if (schoolId) {
@@ -1991,7 +1828,7 @@
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = session?.user?.user_metadata?.school_id || null;
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
         const createdBy = session?.user?.id || null;
 
         const dbRows = parsedCSVStudents.map(s => {
@@ -2362,44 +2199,98 @@
     }
 
     function exportToPdf() {
-      if (typeof html2pdf === 'undefined') {
-        alert("PDF ಲೈಬ್ರರಿ ಲೋಡ್ ಆಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಪಕ್ಕದಲ್ಲೇ ಇರುವ 'Print' ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.");
-        return;
-      }
+      const filterCls = document.getElementById('class-filter').value || "All Classes";
+      const count = document.getElementById('total-count').textContent;
+      const schoolNameEn = (localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED").toUpperCase();
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್";
 
-      const filterCls = document.getElementById('class-filter').value || "All_Classes";
+      const filename = `Student_List_${filterCls.replace(' ', '_')}`;
+
+      const printWin = window.open('', '_blank');
       
-      const printContainer = document.createElement('div');
-      printContainer.style.padding = '20px';
-      printContainer.style.backgroundColor = '#ffffff';
-      printContainer.style.color = '#000000';
-      printContainer.style.fontFamily = "'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif";
-      printContainer.style.width = '1050px'; 
-
-      const styleEl = document.createElement('style');
-      styleEl.innerText = `
-        .print-header-title { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-        .print-title-h1 { font-size: 16px; font-weight: 800; color: #000000; margin: 0; text-transform: uppercase; }
-        .print-title-h2 { font-size: 12px; font-weight: 700; color: #000000; margin: 5px 0 0 0; }
-        .print-meta-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; color: #000000; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 8px; margin-top: 15px; border: 1px solid #000000; background-color: #ffffff; }
-        th, td { border: 1px solid #000000; padding: 6px 4px; text-align: center; }
-        th { background-color: #000000 !important; color: #ffffff !important; font-weight: bold; }
-        td { background-color: #ffffff !important; color: #000000 !important; }
-        .print-signatures-row { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: bold; color: #000000; }
-      `;
-      printContainer.appendChild(styleEl);
-
-      printContainer.innerHTML += `
-        <div class="print-header-title">
-          <h1 class="print-title-h1">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
-          <h2 class="print-title-h2">ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳು / Student Enrollment Records</h2>
-          <div class="print-meta-row">
-            <span>ತರಗತಿ / Class: ${filterCls}</span>
-            <span>ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Count: ${document.getElementById('total-count').textContent}</span>
-            <span>ದಿನಾಂಕ / Date: ${new Date().toLocaleDateString('kn-IN')}</span>
-          </div>
-        </div>
+      const styleHtml = `
+        <style>
+          @page {
+            size: A4 landscape;
+            margin: 15mm;
+          }
+          body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+          }
+          .header h1 {
+            font-size: 15px;
+            font-weight: 800;
+            margin: 0;
+            color: #000000;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .header h2 {
+            font-size: 12px;
+            margin: 6px 0 0 0;
+            font-weight: 700;
+            color: #000000;
+          }
+          .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 12px;
+            color: #000000;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 8.5px;
+            border: 1px solid #000000;
+            background-color: #ffffff;
+          }
+          th, td {
+            border: 1px solid #000000;
+            padding: 6px 5px;
+            text-align: center;
+          }
+          th {
+            background-color: #f1f5f9 !important;
+            color: #000000 !important;
+            font-weight: 750;
+            text-transform: uppercase;
+          }
+          td {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+          }
+          .footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            font-size: 10px;
+            font-weight: bold;
+            page-break-inside: avoid;
+          }
+          .sig-box {
+            text-align: center;
+            width: 250px;
+          }
+          .sig-line {
+            border-top: 1px dashed #000000;
+            margin-top: 40px;
+            padding-top: 5px;
+          }
+        </style>
       `;
 
       const originalTable = document.querySelector('table');
@@ -2415,28 +2306,41 @@
       tableClone.querySelectorAll('.no-print').forEach(el => el.parentNode.removeChild(el));
       tableClone.querySelectorAll('.hidden.print\\:table-cell').forEach(el => el.classList.remove('hidden', 'print:table-cell'));
 
-      printContainer.appendChild(tableClone);
-      
-      printContainer.innerHTML += `
-        <div class="print-signatures-row">
-          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+      const bodyHtml = `
+        <div class="header">
+          <h1>${schoolNameEn}</h1>
+          <h2>${schoolNameKn}</h2>
+          <h2 style="font-size: 11px; margin-top: 4px;">ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳು / Student Enrollment Records</h2>
+          <div class="meta">
+            <span>ತರಗತಿ / Class: ${filterCls}</span>
+            <span>ವಿದ್ಯಾರ್ಥಿ ಸಂಖ್ಯೆ / Total Count: ${count}</span>
+            <span>ದಿನಾಂಕ / Date: ${new Date().toLocaleDateString('kn-IN')}</span>
+          </div>
         </div>
       `;
 
-      const opt = {
-        margin:       [15, 15, 15, 15],
-        filename:     `Student_List_${filterCls.replace(' ', '_')}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 1.5, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      };
+      printWin.document.write('<html><head><title>' + filename + '</title>' + styleHtml + '</head><body>');
+      printWin.document.write(bodyHtml);
+      printWin.document.write(tableClone.outerHTML);
+      printWin.document.write(`
+        <div class="footer">
+          <div class="sig-box">
+            <div class="sig-line">ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</div>
+          </div>
+          <div class="sig-box">
+            <div class="sig-line">ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</div>
+          </div>
+        </div>
+      `);
+      printWin.document.write('</body></html>');
+      
+      printWin.document.close();
+      printWin.focus();
 
-      html2pdf().set(opt).from(printContainer).save().then(() => {
-        showToast("PDF ಯಶಸ್ವಿಯಾಗಿ ಡೌನ್‌ಲೋಡ್ ಆಗಿದೆ!", "success");
-      }).catch((err) => {
-        alert("PDF export error: " + err.message);
-      });
+      setTimeout(() => {
+        printWin.print();
+        printWin.close();
+      }, 500);
     }
 
     function showToast(title, message, type = "success") {
@@ -2517,7 +2421,7 @@
           let schoolNameEn = localStorage.getItem('school_name_en');
           let schoolNameKn = localStorage.getItem('school_name_kn');
           
-          if (!schoolNameEn && user.user_metadata?.school_id) {
+          if (!schoolNameEn && (user.user_metadata?.school_id || localStorage.getItem("school_id"))) {
             try {
               const { data: school } = await supabaseClient
                 .from('schools')
@@ -2689,6 +2593,7 @@
       document.getElementById('student-detail-modal').classList.add('hidden');
     }
   </script>
+  <script src="navbar.js"></script>
 </body>
 </html>
 

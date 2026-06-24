@@ -37,6 +37,10 @@
       </div>
     </div>
     <div class="text-right text-xs mt-2 sm:mt-0 bg-slate-800/60 px-3 py-1.5 rounded-lg border border-slate-700/50 flex items-center gap-3 flex-wrap justify-end">
+        <!-- Admin Panel Link (visible only when managing a school) -->
+        <a href="admin.html" id="devAdminPanelLink" class="hidden bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-rose-500/30 no-print" title="Admin Panel">
+          <i class="fa-solid fa-shield-halved text-[10px]"></i> Admin Panel
+        </a>
         <!-- Dashboard Link -->
         <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
           <i class="fa-solid fa-house text-[10px]"></i> Dashboard
@@ -179,6 +183,7 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
     function updateClock() {
       const now = new Date();
@@ -224,6 +229,8 @@
         if (school) {
           document.getElementById('activeSchoolName').innerText = school.school_name_en;
           document.getElementById('activeSchoolSection').classList.remove('hidden');
+          const devAdminLink = document.getElementById('devAdminPanelLink');
+          if (devAdminLink) devAdminLink.classList.remove('hidden');
         }
       }
 
@@ -489,6 +496,8 @@
         localStorage.removeItem('school_udise');
 
         document.getElementById('activeSchoolSection').classList.add('hidden');
+        const devAdminLink = document.getElementById('devAdminPanelLink');
+        if (devAdminLink) devAdminLink.classList.add('hidden');
         showToast("Exit", "Exited school management mode.", "success");
         loadSchoolsData();
       } catch (err) {

@@ -152,162 +152,12 @@
 </head>
 <body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
 
-  <div>
-        <!-- Dark Header Bar -->
-    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
-        <div>
-          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
-          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
-        </div>
-      </div>
-      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
-        <!-- Theme Selector -->
-        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
-          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
-          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="gray">Gray</option>
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-          </select>
-        </div>
-        
-        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
-          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
-          <span id="headerUser" class="font-semibold text-slate-200">User</span>
-        </div>
-        <div>
-          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
-          <span id="liveClock" class="font-bold text-emerald-400"></span>
-        </div>
-      </div>
-    </div>
+  <div id="navbar-placeholder"></div>
 
-    <!-- Main Outer Container -->
-    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
+  <!-- Main Outer Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6">
+    <div class="flex flex-col gap-6">
       
-      <!-- Aside Menu -->
-      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
-        <div class="space-y-6">
-          <div>
-            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
-            <nav class="space-y-1 text-xs" id="sidebarNav">
-              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
-              </a>
-              
-              <!-- Accordion Items -->
-              <!-- Teachers -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
-                  </span>
-                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Students -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
-                  </span>
-                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
-                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
-                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
-                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
-                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Academic -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
-                  </span>
-                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
-                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
-                  <li><a href="FlnAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">FLN Assessment</span></a></li>
-                </ul>
-              </div>
-
-              <a href="custom_reports.html" id="nav-CustomReports" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-file-invoice text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Custom Reports</span>
-              </a>
-              <!-- Incentives -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
-                  </span>
-                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Attendance -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-attendance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-amber-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Attendance</span>
-                  </span>
-                  <i id="menu-attendance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-attendance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-amber-600 font-semibold transition"><span class="sidebar-text">Manage Attendance</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Finance -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-finance')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-wallet text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Finance</span>
-                  </span>
-                  <i id="menu-finance-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-finance" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="#" class="block py-1.5 text-slate-500 hover:text-rose-600 font-semibold transition"><span class="sidebar-text">Exam Fee Collection</span></a></li>
-                </ul>
-              </div>
-
-              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
-            </nav>
-          </div>
-
-          <div class="pt-3 border-t border-slate-100">
-            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Govt Portals</span>
-            <div class="space-y-1.5 text-[11px] font-semibold">
-              <a href="https://sts.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-globe text-indigo-400 w-4 text-center"></i> <span class="sidebar-text">SATS / STS Portal</span></a>
-              <a href="#" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-utensils text-orange-400 w-4 text-center"></i> <span class="sidebar-text">Mid-Day Meals Login</span></a>
-              <a href="https://choas.karnataka.gov.in" target="_blank" class="flex items-center gap-2 px-2 py-1.5 text-slate-500 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition"><i class="fa-solid fa-file-invoice text-emerald-400 w-4 text-center"></i> <span class="sidebar-text">Shikshana Kirana</span></a>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
-          <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
-          <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
-        </div>
-      </aside>
-
       <!-- Main Contents Container -->
       <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
         
@@ -557,6 +407,7 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
     let currentEnrollmentView = 'gender';
     let cachedClassData = null;
@@ -574,8 +425,10 @@
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12; h = h ? h : 12;
       m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
-      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
-      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+      const clockEl = document.getElementById('liveClock');
+      if (clockEl) clockEl.innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      const dateEl = document.getElementById('liveDate');
+      if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -663,7 +516,21 @@
       // Display username
       const user = session.user;
       const name = user.user_metadata.name || user.email;
-      document.getElementById('liveUser').innerText = name;
+      const liveUserEl = document.getElementById('liveUser'); if (liveUserEl) liveUserEl.innerText = name;
+
+      // Ensure school_id is resolved and stored in localStorage to prevent race conditions
+      let sId = user.user_metadata?.school_id || localStorage.getItem('school_id');
+      if (!sId) {
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('school_id')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (profile?.school_id) {
+          sId = profile.school_id;
+          localStorage.setItem('school_id', sId);
+        }
+      }
 
       // Initialize responsive accordion sidebar
       initSidebar();
@@ -680,7 +547,7 @@
     async function loadDashboardData() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = session?.user?.user_metadata?.school_id;
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
         let query = supabaseClient.from('admissions').select('enroll_class, gender, caste, is_admitted');
         if (schoolId) {
@@ -1015,7 +882,7 @@
           let schoolNameEn = localStorage.getItem('school_name_en');
           let schoolNameKn = localStorage.getItem('school_name_kn');
           
-          if (!schoolNameEn && user.user_metadata?.school_id) {
+          if (!schoolNameEn && (user.user_metadata?.school_id || localStorage.getItem("school_id"))) {
             try {
               const { data: school } = await supabaseClient
                 .from('schools')
@@ -1080,6 +947,7 @@
       }
     }
 </script>
+  <script src="navbar.js"></script>
 </body>
 </html>
 

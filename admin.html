@@ -138,137 +138,20 @@
   </style>
 </head>
 <body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
-  <div>
-    <!-- Dark Header Bar -->
-    <div class="w-full bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row justify-between items-center border-b border-white/10 shadow-sm flex-shrink-0">
-      <div class="flex items-center gap-3">
-        <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="h-8 w-auto object-contain rounded-lg">
-        <div>
-          <h1 class="text-sm md:text-base font-bold uppercase tracking-wider text-indigo-100">Government Higher Primary School, Marched</h1>
-          <p class="text-[10px] text-indigo-300/70 font-semibold tracking-widest uppercase">School Management & Information Portal</p>
-        </div>
-      </div>
-      <div class="text-right text-xs mt-2 sm:mt-0 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 flex items-center gap-3 flex-wrap justify-end">
-        <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30" title="Dashboard">
-          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
-        </a>
-        <div class="flex items-center gap-1.5 border-r border-white/10 pr-3 mr-1">
-          <span class="text-slate-400 mr-1 font-medium"><i class="fa-solid fa-palette text-indigo-400"></i> Theme:</span>
-          <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-800 text-white border border-white/20 rounded px-1.5 py-0.5 text-xs font-semibold focus:outline-none cursor-pointer">
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="gray">Gray</option>
-            <option value="blue">Blue</option>
-            <option value="green">Green</option>
-          </select>
-        </div>
-        
-        <div class="flex items-center gap-2 border-r border-white/10 pr-3 mr-1 text-slate-300">
-          <i class="fa-solid fa-user-circle text-sm text-indigo-400"></i>
-          <span id="headerUser" class="font-semibold text-slate-200">User</span>
-        </div>
-        <div>
-          <span id="liveDate" class="text-slate-400 mr-2 font-medium"></span>
-          <span id="liveClock" class="font-bold text-emerald-400"></span>
-        </div>
-      </div>
-    </div>
+  <div id="navbar-placeholder"></div>
 
-    <!-- White Navigation Tabs Bar -->
-    <div class="w-full bg-white border-b border-slate-200/80 px-6 flex justify-center sm:justify-start gap-8 text-sm no-print">
-      <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn active py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಾಲಾ ಮಾಹಿತಿ / School Settings</button>
-      <button onclick="switchTab('approvals')" id="tab-approvals" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ / Teacher Approvals <span id="pendingBadge" class="hidden bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1">0</span></button>
-      <button onclick="switchTab('allotment')" id="tab-allotment" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ತರಗತಿ ನಿಯೋಜನೆ / Class Allotment</button>
-    </div>
+  <!-- White Navigation Tabs Bar -->
+  <div class="w-full bg-white border-b border-slate-200/80 px-6 flex justify-center sm:justify-start gap-8 text-sm no-print">
+    <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn active py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಾಲಾ ಮತ್ತು ಸೈಟ್ ವಿನ್ಯಾಸ ಮಾಹಿತಿ / School & Site Design Settings</button>
+    <button onclick="switchTab('approvals')" id="tab-approvals" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ / Teacher Approvals <span id="pendingBadge" class="hidden bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1">0</span></button>
+    <button onclick="switchTab('allotment')" id="tab-allotment" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ತರಗತಿ ನಿಯೋಜನೆ / Class Allotment</button>
+    <button onclick="switchTab('register')" id="tab-register" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಹೊಸ ಶಿಕ್ಷಕರ ನೋಂದಣಿ / Register Teacher</button>
+    <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಪುಟಗಳ ಪ್ರವೇಶ ನಿಯಂತ್ರಣ / Feature Permissions</button>
+  </div>
 
-    <!-- Main Outer Container -->
-    <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6 flex flex-col md:flex-row gap-6">
-      <!-- Sidebar Navigation -->
-      <aside class="w-full md:w-64 flex-shrink-0 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm h-fit flex flex-col justify-between min-h-[520px]">
-        <div class="space-y-6">
-          <div>
-            <span class="text-[9px] font-bold text-slate-400 tracking-wider uppercase block px-2 mb-2">Navigation</span>
-            <nav class="space-y-1 text-xs" id="sidebarNav">
-              <a href="dashboard.html" id="nav-Dashboard" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-chart-pie text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Dashboard</span>
-              </a>
-              
-              <!-- Teachers -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-teachers')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-chalkboard-user text-emerald-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Teachers</span>
-                  </span>
-                  <i id="menu-teachers-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-teachers" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="teachers.html" class="block py-1.5 text-slate-500 hover:text-emerald-600 font-semibold transition"><span class="sidebar-text">Teacher Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Students -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-students')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-graduation-cap text-sky-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Students</span>
-                  </span>
-                  <i id="menu-students-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-students" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="NewAdmission.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission</span></a></li>
-                  <li><a href="NewAdmissionList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">New Admission List</span></a></li>
-                  <li><a href="StudentList.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">View Students</span></a></li>
-                  <li><a href="StudentUpdate.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Update Details</span></a></li>
-                  <li><a href="ApaarModule.html" class="block py-1.5 text-slate-500 hover:text-sky-600 font-semibold transition"><span class="sidebar-text">Aadhar Update</span></a></li>
-                </ul>
-              </div>
-
-              <!-- Academic -->
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-academic')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-book-open text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Academic</span>
-                  </span>
-                  <i id="menu-academic-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-academic" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="BridgeCourse.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">Bridge Course</span></a></li>
-                  <li><a href="CceAssessmet.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">CCE Assessment</span></a></li>
-                  <li><a href="LbaAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">LBA Assessment</span></a></li>
-                  <li><a href="FlnAssessment.html" class="block py-1.5 text-slate-500 hover:text-pink-600 font-semibold transition"><span class="sidebar-text">FLN Assessment</span></a></li>
-                </ul>
-              </div>
-
-              <a href="custom_reports.html" id="nav-CustomReports" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                <i class="fa-solid fa-file-invoice text-pink-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Custom Reports</span>
-              </a>
-
-              <div class="nav-item">
-                <button onclick="toggleAccordion('menu-incentives')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 transition">
-                  <span class="flex items-center gap-2">
-                    <i class="fa-solid fa-gift text-indigo-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Incentives</span>
-                  </span>
-                  <i id="menu-incentives-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
-                </button>
-                <ul id="menu-incentives" class="hidden pl-9 mt-1 space-y-1 border-l-2 border-slate-100 ml-5">
-                  <li><a href="incentives.html" class="block py-1.5 text-slate-500 hover:text-indigo-600 font-semibold transition"><span class="sidebar-text">Incentives Dashboard</span></a></li>
-                </ul>
-              </div>
-
-              <a href="admin.html" id="nav-Admin" class="flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold text-rose-700 bg-rose-50 border border-rose-250 transition">
-                <i class="fa-solid fa-shield-halved text-rose-500 text-sm w-5 text-center"></i> <span class="sidebar-text">HM Admin Panel</span>
-              </a>
-
-              <button onclick="handleLogout()" class="w-full mt-4 text-left flex items-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-red-600 hover:bg-red-50 transition border-0"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm w-5 text-center"></i> <span class="sidebar-text">Logout</span></button>
-            </nav>
-          </div>
-          <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 mt-6 px-2 flex-shrink-0 developer-info">
-            <p class="uppercase tracking-wider text-[8px] font-bold text-slate-400">Developer</p>
-            <p class="font-bold text-slate-700 text-xs mt-0.5">Marilin Prabhu</p>
-          </div>
-        </div>
-      </aside>
-
+  <!-- Main Outer Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6">
+    <div class="flex flex-col gap-6">
       <!-- Main Contents Container -->
       <main class="flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-6 min-w-0">
         
@@ -280,8 +163,13 @@
               👑
             </div>
             <div>
-              <h2 class="text-base font-bold tracking-tight">ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ನಿಯಂತ್ರಣ ಫಲಕ</h2>
-              <p class="text-[10px] text-slate-300 font-medium">ಶಾಲಾ ಮಾಹಿತಿ, ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ ಮತ್ತು ತರಗತಿ ನಿಯೋಜನೆ ನಿರ್ವಹಣೆ.</p>
+              <h2 class="text-base font-extrabold tracking-tight text-white flex flex-col gap-0.5">
+                <span id="bannerSchoolNameEn" class="text-rose-350 font-black tracking-wider uppercase">GHPS MARCHED</span>
+                <span id="bannerSchoolNameKn" class="text-xs font-semibold text-slate-300">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್</span>
+              </h2>
+              <div class="h-px w-10 bg-rose-500 my-1.5"></div>
+              <h3 class="text-xs font-bold text-white flex items-center gap-1"><i class="fa-solid fa-user-gear text-rose-450"></i> ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ನಿಯಂತ್ರಣ ಫಲಕ / HM Admin Panel</h3>
+              <p class="text-[9px] text-slate-400 font-medium mt-0.5">ಶಾಲಾ ಮಾಹಿತಿ, ಶಿಕ್ಷಕರ ಅನುಮೋದನೆ ಮತ್ತು ತರಗತಿ ನಿಯೋಜನೆ ನಿರ್ವಹಣೆ.</p>
             </div>
           </div>
           <span class="relative z-10 text-xs bg-rose-500/20 text-rose-350 px-3.5 py-1.5 rounded-full font-bold border border-rose-500/30 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved"></i> ಶಾಲಾ ಆಡಳಿತ / Head Master Console</span>
@@ -289,30 +177,71 @@
 
         <!-- 1. School Settings Tab -->
         <div id="view-settings" class="space-y-5">
-          <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-school text-rose-500"></i> ಶಾಲೆಯ ಮೂಲ ಮಾಹಿತಿ ತಿದ್ದುಪಡಿ / School Settings</h3>
-            <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
-            
-            <form id="schoolSettingsForm" onsubmit="handleSchoolUpdate(event)" class="space-y-4 max-w-lg">
-              <div>
-                <label class="block text-xs font-bold text-slate-650 mb-1">School Name (English) *</label>
-                <input type="text" id="schNameEn" placeholder="e.g. GHPS MARCHED" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all uppercase" required>
+          <form id="schoolSettingsForm" onsubmit="handleSchoolUpdate(event)" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Card 1: School Settings -->
+              <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-school text-rose-500"></i> ಶಾಲಾ ಮಾಹಿತಿ / School Settings</h3>
+                <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1">School Name (English) *</label>
+                    <input type="text" id="schNameEn" placeholder="e.g. GHPS MARCHED" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all uppercase" required>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+                    <input type="text" id="schNameKn" placeholder="ಉದಾ. ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1">School UDISE Code *</label>
+                    <input type="text" id="schUdise" placeholder="e.g. 29060709801" maxlength="11" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-mono" required>
+                  </div>
+                </div>
               </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-650 mb-1">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
-                <input type="text" id="schNameKn" placeholder="ಉದಾ. ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+              
+              <!-- Card 2: Site Design Settings -->
+              <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-palette text-rose-500"></i> ಸೈಟ್ ವಿನ್ಯಾಸ ಸೆಟ್ಟಿಂಗ್ಸ್ / Site Design Settings</h3>
+                <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1">Menu Navigation Style (ಮೆನು ನ್ಯಾವಿಗೇಷನ್ ಶೈಲಿ) *</label>
+                    <select id="schNavLayout" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all bg-white">
+                      <option value="default_top">Default Top Menu Bar / ಡೀಫಾಲ್ಟ್ ಟಾಪ್ ಬಾರ್</option>
+                      <option value="modern_top">Modern Top Menu Bar / ಮಾಡರ್ನ್ ಟಾಪ್ ಬಾರ್</option>
+                      <option value="side">Left Sidebar Layout / ಎಡ ಸೈಡ್ ಬಾರ್</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-2">School Logo (ಶಾಲಾ ಲಾಂಛನ / ಲೋಗೋ ಅಪ್‌ಲೋಡ್)</label>
+                    <div class="flex items-center gap-3">
+                      <!-- Preview image -->
+                      <img id="schLogoPreview" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" class="w-14 h-14 object-contain rounded-xl border border-slate-200 bg-slate-50 shadow-inner p-1">
+                      
+                      <!-- Custom file upload styled button -->
+                      <div class="relative flex-1">
+                        <input type="file" id="schLogoFile" accept="image/*" class="hidden" onchange="previewLogoFile(this)">
+                        <label for="schLogoFile" class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-xl transition duration-200 shadow-sm bg-white">
+                          <i class="fa-solid fa-cloud-arrow-up text-rose-500"></i> ಫೈಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Choose File
+                        </label>
+                        <p class="text-[9px] text-slate-400 mt-1.5 font-semibold">Square size (PNG/JPG) of max 800KB is recommended.</p>
+                      </div>
+                    </div>
+                    <!-- Hidden input to hold Base64 logo value -->
+                    <input type="hidden" id="schLogoUrl">
+                  </div>
+                </div>
               </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-650 mb-1">School UDISE Code *</label>
-                <input type="text" id="schUdise" placeholder="e.g. 29060709801" maxlength="11" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-mono" required>
-              </div>
-              <div class="pt-2">
-                <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer">
-                  ಮಾಹಿತಿ ಉಳಿಸಿ / Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+
+            <div class="flex justify-center pt-2">
+              <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-8 py-3 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-2">
+                <i class="fa-solid fa-floppy-disk"></i> ಮಾಹಿತಿ ಉಳಿಸಿ / Save Changes
+              </button>
+            </div>
+          </form>
         </div>
 
         <!-- 2. Teacher Approvals Tab -->
@@ -353,6 +282,16 @@
               <span class="text-[10px] bg-sky-50 text-sky-700 border border-sky-200 px-3 py-1.5 rounded-xl font-bold font-semibold uppercase">ಒಬ್ಬ ಶಿಕ್ಷಕನಿಗೆ ಹಲವು ತರಗತಿಗಳನ್ನು ನಿಯೋಜಿಸಲು ಟಿಕ್ ಮಾಡಿ ಉಳಿಸಿ.</span>
             </div>
             
+            <!-- Search Filter -->
+            <div class="flex justify-start items-center">
+              <div class="relative w-full sm:w-72">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                  <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" id="allotmentSearch" oninput="filterAllotmentGrid()" placeholder="ಶಿಕ್ಷಕರ ಹೆಸರು ಹುಡುಕಿ / Search Teacher Name..." class="pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs w-full focus:outline-none focus:ring-2 focus:ring-sky-400 font-medium">
+              </div>
+            </div>
+            
             <div class="overflow-x-auto border border-slate-200 rounded-xl bg-slate-50/20">
               <table class="w-full text-left text-xs border-collapse">
                 <thead>
@@ -384,6 +323,298 @@
           </div>
         </div>
 
+        <!-- 4. Register Teacher Tab -->
+        <div id="view-register" class="hidden space-y-4">
+          <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              <!-- Left Column: Form (7 cols) -->
+              <div class="lg:col-span-7 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-user-plus text-rose-500"></i> ಹೊಸ ಶಿಕ್ಷಕರ ನೇರ ನೋಂದಣಿ / Register New Teacher</h3>
+                <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+                
+                <form id="directTeacherRegisterForm" onsubmit="handleDirectTeacherRegister(event)" class="space-y-4">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold text-slate-650 mb-1">Full Name (ಪೂರ್ಣ ಹೆಸರು) *</label>
+                      <input type="text" id="dirName" placeholder="e.g. Ramesh K" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-650 mb-1">Username (ಬಳಕೆದಾರರ ಹೆಸರು) *</label>
+                      <input type="text" id="dirUsername" placeholder="e.g. ramesh123" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-mono" required>
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-bold text-slate-650 mb-1">Phone Number (ದೂರವಾಣಿ ಸಂಖ್ಯೆ) *</label>
+                      <input type="tel" id="dirPhone" placeholder="e.g. 9876543210" maxlength="10" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all font-mono" required>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-bold text-slate-650 mb-1">Email Address (ಇಮೇಲ್ ವಿಳಾಸ) *</label>
+                      <input type="email" id="dirEmail" placeholder="e.g. ramesh@school.com" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1">Password (ಪಾಸ್‌ವರ್ಡ್) *</label>
+                    <input type="password" id="dirPassword" placeholder="••••••••" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
+                  </div>
+
+                  <div class="flex items-center gap-2 pt-2">
+                    <input type="checkbox" id="dirAutoCreateStaff" checked class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer">
+                    <label for="dirAutoCreateStaff" class="text-xs font-bold text-slate-650 cursor-pointer select-none">
+                      ಸಿಬ್ಬಂದಿ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ (ಟಿಕ್ ಮಾಡಿ) / Also add to Teachers Staff List automatically
+                    </label>
+                  </div>
+                  
+                  <div class="pt-2">
+                    <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                      <i class="fa-solid fa-user-check"></i> ನೋಂದಾಯಿಸಿ / Register Account
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Right Column: Currently Registered Users List (5 cols) -->
+              <div class="lg:col-span-5 space-y-4 border-t lg:border-t-0 lg:border-l border-slate-200 pt-6 lg:pt-0 lg:pl-8">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-users text-rose-500"></i> ನೋಂದಾಯಿತ ಬಳಕೆದಾರರ ಪಟ್ಟಿ / Registered Users</h3>
+                <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+
+                <div class="overflow-y-auto max-h-[450px] pr-2 space-y-3" id="registeredUsersListContainer">
+                  <p class="text-xs text-slate-400 font-semibold py-4 text-center">ಬಳಕೆದಾರರ ಪಟ್ಟಿ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Loading...</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Feature Permissions Tab -->
+        <div id="view-permissions" class="hidden space-y-4">
+          <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4 max-w-4xl">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-lock text-rose-500"></i> ಪುಟಗಳ ಪ್ರವೇಶ ನಿಯಂತ್ರಣ / Feature Permissions</h3>
+            <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
+            <p class="text-[11px] text-slate-400 font-bold uppercase">ಶಿಕ್ಷಕರು ಪೋರ್ಟಲ್‌ನಲ್ಲಿ ಯಾವ ಪುಟಗಳನ್ನು ಬಳಸಬಹುದು ಎಂಬುದನ್ನು ಇಲ್ಲಿ ನಿರ್ಧರಿಸಿ. / Control which pages teachers can access on the portal.</p>
+            
+            <form id="featurePermissionsForm" onsubmit="handlePermissionsUpdate(event)" class="space-y-6 pt-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- 1. New Admission -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-graduation-cap text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ಹೊಸ ದಾಖಲಾತಿ ಅರ್ಜಿ / New Admission</span>
+                      <span class="text-[9px] text-slate-450 truncate">NewAdmission.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permNewAdmission" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 2. Admission List -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-list-check text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ದಾಖಲಾತಿ ಅರ್ಜಿ ಪಟ್ಟಿ / Admission List</span>
+                      <span class="text-[9px] text-slate-455 truncate">NewAdmissionList.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permAdmissionList" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 3. View Students -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-users-line text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ವಿದ್ಯಾರ್ಥಿ ವಿವರ ವೀಕ್ಷಣೆ / View Students</span>
+                      <span class="text-[9px] text-slate-455 truncate">StudentList.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permStudentList" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 4. Update Details -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-user-pen text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ವಿದ್ಯಾರ್ಥಿ ಮಾಹಿತಿ ತಿದ್ದುಪಡಿ / Update Details</span>
+                      <span class="text-[9px] text-slate-455 truncate">StudentUpdate.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permStudentUpdate" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 5. Aadhar Update -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-id-card text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ಆಧಾರ್ ತಿದ್ದುಪಡಿ / Aadhar Update</span>
+                      <span class="text-[9px] text-slate-455 truncate">ApaarModule.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permAadharUpdate" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 6. Bridge Course -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-road text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ಸೇತುಬಂಧ ಕೋರ್ಸ್ / Bridge Course</span>
+                      <span class="text-[9px] text-slate-455 truncate">BridgeCourse.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permBridgeCourse" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 7. CCE Assessment -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-pen-to-square text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">CCE ಮೌಲ್ಯಮಾಪನ / CCE Assessment</span>
+                      <span class="text-[9px] text-slate-455 truncate">CceAssessmet.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permCceAssessment" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 8. LBA Assessment -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-square-poll-vertical text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">LBA ಮೌಲ್ಯಮಾಪನ / LBA Assessment</span>
+                      <span class="text-[9px] text-slate-455 truncate">LbaAssessment.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permLbaAssessment" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 9. FLN Assessment -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-chart-simple text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">FLN ಮೌಲ್ಯಮಾಪನ / FLN Assessment</span>
+                      <span class="text-[9px] text-slate-455 truncate">FlnAssessment.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permFlnAssessment" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 10. Custom Reports -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-file-invoice text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ವರದಿಗಳು / Custom Reports</span>
+                      <span class="text-[9px] text-slate-455 truncate">custom_reports.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permCustomReports" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 11. Incentives -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-gift text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ಸೌಲಭ್ಯಗಳು / Incentives</span>
+                      <span class="text-[9px] text-slate-455 truncate">incentives.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permIncentives" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+                <!-- 12. Staff Directory -->
+                <div class="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow transition">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-650 flex items-center justify-center flex-shrink-0">
+                      <i class="fa-solid fa-chalkboard-user text-xs"></i>
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-xs font-bold text-slate-800 truncate">ಶಿಕ್ಷಕರ ಸಿಬ್ಬಂದಿ ವಿವರ / Staff Directory</span>
+                      <span class="text-[9px] text-slate-455 truncate">teachers.html</span>
+                    </div>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
+                    <input type="checkbox" id="permTeachersDirectory" class="sr-only peer">
+                    <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
+
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                  <i class="fa-solid fa-floppy-disk"></i> ಪ್ರವೇಶ ಅನುಮತಿ ಉಳಿಸಿ / Save Permissions
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
       </main>
     </div>
   </div>
@@ -407,6 +638,7 @@
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
     const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
     const classesList = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -416,8 +648,10 @@
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12; h = h ? h : 12;
       m = m < 10 ? '0'+m : m; s = s < 10 ? '0'+s : s;
-      document.getElementById('liveClock').innerText = h + ':' + m + ':' + s + ' ' + ampm;
-      document.getElementById('liveDate').innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
+      const clockEl = document.getElementById('liveClock');
+      if (clockEl) clockEl.innerText = h + ':' + m + ':' + s + ' ' + ampm;
+      const dateEl = document.getElementById('liveDate');
+      if (dateEl) dateEl.innerText = now.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' });
     }
     setInterval(updateClock, 1000); updateClock();
 
@@ -439,16 +673,18 @@
     }
 
     function switchTab(tabId) {
-      const tabs = ['settings', 'approvals', 'allotment'];
+      const tabs = ['settings', 'approvals', 'allotment', 'register', 'permissions'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         const view = document.getElementById(`view-${t}`);
-        if (t === tabId) {
-          btn.classList.add('active');
-          view.classList.remove('hidden');
-        } else {
-          btn.classList.remove('active');
-          view.classList.add('hidden');
+        if (btn && view) {
+          if (t === tabId) {
+            btn.classList.add('active');
+            view.classList.remove('hidden');
+          } else {
+            btn.classList.remove('active');
+            view.classList.add('hidden');
+          }
         }
       });
     }
@@ -456,6 +692,7 @@
     let currentSchoolId = null;
     let currentUserProfile = null;
     let registeredProfiles = [];
+    let allTeachersStaff = [];
 
     document.addEventListener("DOMContentLoaded", async function() {
       // Init theme
@@ -502,6 +739,26 @@
       await loadRegisteredProfiles();
     });
 
+    window.previewLogoFile = function(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        if (file.size > 800 * 1024) {
+          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಲೋಗೋ ಚಿತ್ರವು 800KB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು. / Image must be less than 800KB.", "error");
+          input.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Data = e.target.result;
+          document.getElementById('schLogoPreview').src = base64Data;
+          document.getElementById('schLogoUrl').value = base64Data;
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
     async function loadSchoolSettings() {
       if (!currentSchoolId) return;
       try {
@@ -516,10 +773,124 @@
           document.getElementById('schNameEn').value = school.school_name_en || '';
           document.getElementById('schNameKn').value = school.school_name_kn || '';
           document.getElementById('schUdise').value = school.udise_code || '';
+          
+          const bannerEn = document.getElementById('bannerSchoolNameEn');
+          const bannerKn = document.getElementById('bannerSchoolNameKn');
+          if (bannerEn) bannerEn.innerText = school.school_name_en || '';
+          if (bannerKn) bannerKn.innerText = school.school_name_kn || '';
+        }
+
+        // Fetch web_design navigation layout preference from school_settings
+        const { data: configData, error: configErr } = await supabaseClient
+          .from('school_settings')
+          .select('*')
+          .eq('school_id', currentSchoolId)
+          .eq('settings_key', 'web_design')
+          .maybeSingle();
+
+        if (configData && configData.settings_value) {
+          const layout = configData.settings_value.nav_layout || 'default_top';
+          const logo = configData.settings_value.logo_url || '';
+          document.getElementById('schNavLayout').value = layout;
+          document.getElementById('schLogoUrl').value = logo;
+          if (logo) {
+            document.getElementById('schLogoPreview').src = logo;
+          } else {
+            document.getElementById('schLogoPreview').src = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+          }
+          localStorage.setItem('school_nav_layout', layout);
+          localStorage.setItem('school_logo_url', logo);
+        } else {
+          document.getElementById('schNavLayout').value = 'default_top';
+          document.getElementById('schLogoUrl').value = '';
+          document.getElementById('schLogoPreview').src = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+          localStorage.setItem('school_nav_layout', 'default_top');
+          localStorage.setItem('school_logo_url', '');
+        }
+
+        // Fetch feature permissions from school_settings
+        const { data: permData } = await supabaseClient
+          .from('school_settings')
+          .select('*')
+          .eq('school_id', currentSchoolId)
+          .eq('settings_key', 'feature_permissions')
+          .maybeSingle();
+
+        const keys = [
+          { id: 'permNewAdmission', key: 'new_admission' },
+          { id: 'permAdmissionList', key: 'admission_list' },
+          { id: 'permStudentList', key: 'student_list' },
+          { id: 'permStudentUpdate', key: 'student_update' },
+          { id: 'permAadharUpdate', key: 'aadhar_update' },
+          { id: 'permBridgeCourse', key: 'bridge_course' },
+          { id: 'permCceAssessment', key: 'cce_assessment' },
+          { id: 'permLbaAssessment', key: 'lba_assessment' },
+          { id: 'permFlnAssessment', key: 'fln_assessment' },
+          { id: 'permCustomReports', key: 'custom_reports' },
+          { id: 'permIncentives', key: 'incentives' },
+          { id: 'permTeachersDirectory', key: 'teachers_directory' }
+        ];
+
+        if (permData && permData.settings_value) {
+          keys.forEach(k => {
+            const val = permData.settings_value[k.key] === true;
+            const el = document.getElementById(k.id);
+            if (el) el.checked = val;
+          });
+          localStorage.setItem('school_permissions', JSON.stringify(permData.settings_value));
+        } else {
+          keys.forEach(k => {
+            const el = document.getElementById(k.id);
+            if (el) el.checked = false;
+          });
+          localStorage.removeItem('school_permissions');
         }
       } catch (err) {
         console.error("Error loading school details:", err);
         showToast("Error", "ಶಾಲೆಯ ವಿವರ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.", "error");
+      }
+    }
+
+    async function handlePermissionsUpdate(event) {
+      event.preventDefault();
+      if (!currentSchoolId) return;
+
+      const settingsVal = {
+        new_admission: document.getElementById('permNewAdmission').checked,
+        admission_list: document.getElementById('permAdmissionList').checked,
+        student_list: document.getElementById('permStudentList').checked,
+        student_update: document.getElementById('permStudentUpdate').checked,
+        aadhar_update: document.getElementById('permAadharUpdate').checked,
+        bridge_course: document.getElementById('permBridgeCourse').checked,
+        cce_assessment: document.getElementById('permCceAssessment').checked,
+        lba_assessment: document.getElementById('permLbaAssessment').checked,
+        fln_assessment: document.getElementById('permFlnAssessment').checked,
+        custom_reports: document.getElementById('permCustomReports').checked,
+        incentives: document.getElementById('permIncentives').checked,
+        teachers_directory: document.getElementById('permTeachersDirectory').checked
+      };
+
+      try {
+        const { error } = await supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: currentSchoolId,
+            settings_key: 'feature_permissions',
+            settings_value: settingsVal
+          });
+
+        if (error) throw error;
+
+        localStorage.setItem('school_permissions', JSON.stringify(settingsVal));
+        
+        if (window.applyNavLayout) {
+          window.applyNavLayout(localStorage.getItem('school_nav_layout') || 'default_top');
+        }
+
+        showToast("ಪ್ರವೇಶ ಅನುಮತಿ ಉಳಿಸಲಾಗಿದೆ", "ಪುಟಗಳ ಪ್ರವೇಶ ನಿಯಂತ್ರಣ ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ.", "success");
+      } catch (err) {
+        console.error("Error saving permissions:", err);
+        showToast("Error", "ಪ್ರವೇಶ ನಿಯಂತ್ರಣ ಅಪ್‌ಡೇಟ್ ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
       }
     }
 
@@ -530,6 +901,8 @@
       const schEn = document.getElementById('schNameEn').value.trim();
       const schKn = document.getElementById('schNameKn').value.trim();
       const schUdise = document.getElementById('schUdise').value.trim();
+      const navLayout = document.getElementById('schNavLayout').value;
+      const logoUrl = document.getElementById('schLogoUrl').value.trim();
 
       if (!schEn || !schKn || !schUdise) {
         showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
@@ -537,6 +910,7 @@
       }
 
       try {
+        // 1. Update school details in schools table
         const { error } = await supabaseClient
           .from('schools')
           .update({
@@ -548,11 +922,37 @@
 
         if (error) throw error;
 
+        // 2. Save web design navigation style & logo to school_settings
+        const { error: settingsError } = await supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: currentSchoolId,
+            settings_key: 'web_design',
+            settings_value: { 
+              nav_layout: navLayout,
+              logo_url: logoUrl
+            }
+          });
+
+        if (settingsError) throw settingsError;
+
         localStorage.setItem('school_name_en', schEn);
         localStorage.setItem('school_name_kn', schKn);
         localStorage.setItem('school_udise', schUdise);
+        localStorage.setItem('school_nav_layout', navLayout);
+        localStorage.setItem('school_logo_url', logoUrl);
 
-        showToast("ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಲಾಗಿದೆ", "ಶಾಲೆಯ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "success");
+        const bannerEn = document.getElementById('bannerSchoolNameEn');
+        const bannerKn = document.getElementById('bannerSchoolNameKn');
+        if (bannerEn) bannerEn.innerText = schEn;
+        if (bannerKn) bannerKn.innerText = schKn;
+
+        showToast("ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಲಾಗಿದೆ", "ಶಾಲೆಯ ವಿವರಗಳು ಮತ್ತು ವೆಬ್ ವಿನ್ಯಾಸವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "success");
+
+        // Dynamically apply layout changes instantly if the function exists
+        if (window.applyNavLayout) {
+          window.applyNavLayout(navLayout, logoUrl);
+        }
       } catch (err) {
         console.error("Error updating school:", err);
         showToast("Error", "ಶಾಲಾ ಮಾಹಿತಿ ಅಪ್‌ಡೇಟ್ ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
@@ -571,8 +971,21 @@
         if (error) throw error;
         registeredProfiles = data || [];
 
+        // Fetch teachers staff records as well
+        const { data: staffData, error: staffErr } = await supabaseClient
+          .from('teachers')
+          .select('*')
+          .eq('school_id', currentSchoolId);
+
+        if (staffErr) {
+          console.error("Error loading teachers staff list:", staffErr);
+        } else {
+          allTeachersStaff = staffData || [];
+        }
+
         renderApprovalsQueue();
         renderAllotmentGrid();
+        renderRegisteredUsersList();
       } catch (err) {
         console.error("Error fetching profiles:", err);
       }
@@ -661,12 +1074,26 @@
       }
     }
 
+    function filterAllotmentGrid() {
+      renderAllotmentGrid();
+    }
+
     function renderAllotmentGrid() {
       const tbody = document.getElementById('allotmentTableBody');
       tbody.innerHTML = '';
 
       // Only show approved teachers (include HM / Admins but exclude developer)
-      const approved = registeredProfiles.filter(p => p.is_approved === true && p.role !== 'developer');
+      let approved = registeredProfiles.filter(p => p.is_approved === true && p.role !== 'developer');
+
+      // Apply search filter
+      const queryEl = document.getElementById('allotmentSearch');
+      const query = queryEl ? queryEl.value.trim().toLowerCase() : '';
+      if (query) {
+        approved = approved.filter(p => 
+          (p.name || '').toLowerCase().includes(query) || 
+          (p.phone || '').toLowerCase().includes(query)
+        );
+      }
 
       if (approved.length === 0) {
         tbody.innerHTML = `
@@ -684,6 +1111,10 @@
         const isSelf = p.id === currentUserProfile.id;
         const assigned = p.assigned_classes || [];
         
+        // Find matching staff record in teachers table
+        const staffRecord = allTeachersStaff.find(t => t.contact === p.phone || t.name === p.name);
+        const hasStaff = !!staffRecord;
+
         // Build class checkboxes
         let checkboxesHtml = '';
         classesList.forEach(cls => {
@@ -703,10 +1134,44 @@
           </select>
         `;
 
-        tr.innerHTML = `
+        let nameHtml = `
           <td class="py-3.5 px-4 text-left font-bold text-slate-800">
-            ${p.name || '-'} ${isSelf ? '<span class="text-[9px] bg-slate-100 text-slate-550 border px-1.5 py-0.5 rounded ml-1 font-semibold">You</span>' : ''}
+            <div class="flex flex-col">
+              <span class="flex items-center gap-1">
+                ${p.name || '-'} 
+                ${isSelf ? '<span class="text-[9px] bg-slate-100 text-slate-550 border px-1.5 py-0.5 rounded font-semibold">You</span>' : ''}
+              </span>
+              <span class="text-[10px] text-slate-400 font-mono font-medium">${p.phone || '-'}</span>
+        `;
+        
+        if (!hasStaff) {
+          nameHtml += `
+            <div class="mt-1 flex flex-wrap items-center gap-1.5">
+              <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                ⚠️ ಸಿಬ್ಬಂದಿ ವಿವರ ಇಲ್ಲ / No Staff Record
+              </span>
+              <button onclick="createStaffRecordFromProfile('${p.id}', '${p.name}', '${p.phone}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-0.5 rounded text-[9px] transition cursor-pointer border-0 flex items-center gap-0.5 shadow-sm">
+                <i class="fa-solid fa-user-plus text-[8px]"></i> ವಿವರ ಸೃಷ್ಟಿಸಿ / Create Staff
+              </button>
+            </div>
+          `;
+        } else {
+          nameHtml += `
+            <div class="mt-1">
+              <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                ✅ ಸಿಬ್ಬಂದಿ ದಾಖಲೆ ಇದೆ / Staff OK (ID: ${staffRecord.teacher_id})
+              </span>
+            </div>
+          `;
+        }
+        
+        nameHtml += `
+            </div>
           </td>
+        `;
+
+        tr.innerHTML = `
+          ${nameHtml}
           <td class="py-3.5 px-2 text-center">${roleDropdown}</td>
           ${checkboxesHtml}
           <td class="py-3.5 px-4 text-center">
@@ -716,6 +1181,62 @@
           </td>
         `;
         tbody.appendChild(tr);
+      });
+    }
+
+    function renderRegisteredUsersList() {
+      const container = document.getElementById('registeredUsersListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Include HM and developer users in the list, sorting by role and name
+      const sorted = [...registeredProfiles].sort((a, b) => {
+        if (a.role === b.role) {
+          return (a.name || '').localeCompare(b.name || '');
+        }
+        // Dev first, Admin second, Teacher third
+        const roleOrder = { 'developer': 1, 'Admin': 2, 'Teacher': 3 };
+        return (roleOrder[a.role] || 4) - (roleOrder[b.role] || 4);
+      });
+
+      if (sorted.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 font-semibold py-4 text-center">ಯಾವುದೇ ಬಳಕೆದಾರರು ಕಂಡುಬಂದಿಲ್ಲ. / No users found.</p>`;
+        return;
+      }
+
+      sorted.forEach(p => {
+        const item = document.createElement('div');
+        item.className = "flex items-center justify-between p-3 rounded-2xl bg-white border border-slate-200/60 shadow-sm hover:shadow-md transition duration-200";
+        
+        let roleBadge = '';
+        if (p.role === 'developer') {
+          roleBadge = `<span class="bg-indigo-55 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded-md text-[8px] font-bold">Dev</span>`;
+        } else if (p.role === 'Admin') {
+          roleBadge = `<span class="bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded-md text-[8px] font-bold">HM / Admin</span>`;
+        } else {
+          roleBadge = `<span class="bg-slate-50 text-slate-650 border border-slate-200 px-1.5 py-0.5 rounded-md text-[8px] font-bold">Teacher</span>`;
+        }
+
+        const approvedBadge = p.is_approved 
+          ? `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded-md text-[8px] font-bold">Approved</span>`
+          : `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded-md text-[8px] font-bold animate-pulse">Pending</span>`;
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-600 flex items-center justify-center font-bold text-xs">
+              ${(p.name || '?').charAt(0).toUpperCase()}
+            </div>
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-slate-800">${p.name || '-'}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${p.username || p.email || '-'}</span>
+            </div>
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            ${roleBadge}
+            ${approvedBadge}
+          </div>
+        `;
+        container.appendChild(item);
       });
     }
 
@@ -757,6 +1278,146 @@
       }
     }
 
+    async function handleDirectTeacherRegister(event) {
+      event.preventDefault();
+      if (!currentSchoolId) {
+        showToast("Error", "ಶಾಲೆಯ ಐಡಿ ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.", "error");
+        return;
+      }
+
+      const name = document.getElementById('dirName').value.trim();
+      const username = document.getElementById('dirUsername').value.trim();
+      const phone = document.getElementById('dirPhone').value.trim();
+      const email = document.getElementById('dirEmail').value.trim();
+      const password = document.getElementById('dirPassword').value;
+      const autoCreateStaff = document.getElementById('dirAutoCreateStaff').checked;
+
+      if (!name || !username || !phone || !email || !password) {
+        showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
+        return;
+      }
+
+      if (phone.length !== 10 || isNaN(phone)) {
+        showToast("Error", "ದೂರವಾಣಿ ಸಂಖ್ಯೆಯು 10 ಅಂಕೆಗಳನ್ನು ಹೊಂದಿರಬೇಕು.", "error");
+        return;
+      }
+
+      if (password.length < 6) {
+        showToast("Error", "ಪಾಸ್‌ವರ್ಡ್ ಕನಿಷ್ಠ 6 ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರಬೇಕು.", "error");
+        return;
+      }
+
+      showToast("ನೋಂದಾಯಿಸಲಾಗುತ್ತಿದೆ...", "ಶಿಕ್ಷಕರ ಖಾತೆಯನ್ನು ಸೃಜಿಸಲಾಗುತ್ತಿದೆ, ದಯವಿಟ್ಟು ಕಾಯಿರಿ...", "success");
+
+      try {
+        // Create secondary client to avoid logging out the current Headmaster
+        const tempClient = supabase.createClient(supabaseUrl, supabaseKey, {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+          }
+        });
+
+        const { data, error } = await tempClient.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              name: name,
+              username: username,
+              phone: phone,
+              role: 'Teacher',
+              school_id: currentSchoolId
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        if (data.user) {
+          // Insert into profiles table using primary logged-in client
+          const { error: profileErr } = await supabaseClient
+            .from('profiles')
+            .insert({
+              id: data.user.id,
+              email: email,
+              name: name,
+              username: username,
+              phone: phone,
+              role: 'Teacher',
+              school_id: currentSchoolId,
+              is_approved: true, // Automatically approved by HM!
+              assigned_classes: []
+            });
+
+          if (profileErr) throw profileErr;
+
+          // Optionally create employee record in teachers table
+          if (autoCreateStaff) {
+            const { error: staffErr } = await supabaseClient
+              .from('teachers')
+              .insert({
+                teacher_id: 'T-' + Math.floor(1000 + Math.random() * 9000),
+                name: name,
+                gender: 'ಗಂಡು (Male)', // default
+                contact: phone,
+                school_id: currentSchoolId,
+                designation: 'Assistant Teacher'
+              });
+            
+            if (staffErr) {
+              console.error("Direct registration: staff creation failed:", staffErr);
+            }
+          }
+
+          showToast("ನೋಂದಣಿ ಯಶಸ್ವಿಯಾಗಿದೆ", `${name} ಅವರ ಖಾತೆಯನ್ನು ಸೃಜಿಸಲಾಗಿದೆ.`, "success");
+          
+          // Reset form fields
+          document.getElementById('directTeacherRegisterForm').reset();
+
+          // Refresh tables
+          await loadRegisteredProfiles();
+          
+          // Switch to Allotment grid
+          switchTab('allotment');
+        }
+      } catch (err) {
+        console.error("Direct registration failed:", err);
+        showToast("ನೋಂದಣಿ ವಿಫಲವಾಗಿದೆ", err.message, "error");
+      }
+    }
+
+    async function createStaffRecordFromProfile(profileId, name, phone) {
+      if (!currentSchoolId) {
+        showToast("Error", "ಶಾಲೆಯ ಐಡಿ ಕಂಡುಬಂದಿಲ್ಲ.", "error");
+        return;
+      }
+      
+      const teacherId = 'T-' + Math.floor(1000 + Math.random() * 9000);
+      
+      try {
+        const { error } = await supabaseClient
+          .from('teachers')
+          .insert({
+            teacher_id: teacherId,
+            name: name,
+            gender: 'ಗಂಡು (Male)', // default, they can edit in teachers.html
+            contact: phone,
+            school_id: currentSchoolId,
+            designation: 'Assistant Teacher'
+          });
+
+        if (error) throw error;
+
+        showToast("ಸಿಬ್ಬಂದಿ ವಿವರ ಸೃಜಿಸಲಾಗಿದೆ", `${name} ಅವರ ಸಿಬ್ಬಂದಿ ವಿವರವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೃಜಿಸಲಾಗಿದೆ.`, "success");
+        await loadRegisteredProfiles();
+      } catch (err) {
+        console.error("Create staff record failed:", err);
+        showToast("Error", "ಸಿಬ್ಬಂದಿ ವಿವರ ಸೃಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
+      }
+    }
+
     async function handleLogout() {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
@@ -788,5 +1449,7 @@
       }, 3500);
     }
   </script>
+  <script src="navbar.js"></script>
 </body>
 </html>
+

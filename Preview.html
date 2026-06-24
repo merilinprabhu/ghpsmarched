@@ -282,6 +282,24 @@
             color: #444;
         }
 
+        .qr-box {
+            border: 1.2px solid black;
+            border-radius: 8px;
+            width: 110px;
+            height: 140px;
+            text-align: center;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            box-sizing: border-box;
+            position: absolute;
+            left: 0;
+            top: -10px;
+        }
+
         /* Header Info Bar style */
         .info-bar {
             position: relative;
@@ -353,8 +371,13 @@
         }
 
         .empty-field {
-            color: #ccc;
+            color: #cbd5e1;
             font-weight: normal;
+            display: inline-block;
+            min-width: 50px;
+            border-bottom: 1.2px dotted #cbd5e1;
+            height: 14px;
+            vertical-align: middle;
         }
 
         /* Digit boxes for Aadhaar numbers */
@@ -501,6 +524,12 @@
                 width: 210mm !important;
                 height: 297mm !important;
                 padding: 8mm 10mm !important;
+            }
+
+            .empty-field {
+                border-bottom: none !important;
+                min-width: auto !important;
+                display: inline !important;
             }
         }
 
@@ -691,212 +720,6 @@
             transform: translateY(-1px);
         }
 
-        /* Custom PDF Download Guide Modal Styles */
-        .pdf-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-        .pdf-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .pdf-modal-card {
-            background: #1e293b;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            padding: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(14, 165, 233, 0.15);
-            color: #fff;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .pdf-modal-overlay.active .pdf-modal-card {
-            transform: scale(1);
-        }
-        .pdf-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-        .pdf-modal-title-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .pdf-modal-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #f43f5e, #e11d48);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
-        }
-        .pdf-modal-title {
-            font-size: 15px;
-            font-weight: 800;
-            color: #fff;
-            margin: 0;
-            line-height: 1.2;
-        }
-        .pdf-modal-subtitle {
-            font-size: 9px;
-            font-weight: 700;
-            color: #38bdf8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin: 2px 0 0 0;
-        }
-        .pdf-modal-close {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: #94a3b8;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-        .pdf-modal-close:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-        .pdf-modal-body {
-            font-size: 12px;
-            line-height: 1.5;
-        }
-        .pdf-modal-info-box {
-            background: rgba(14, 165, 233, 0.1);
-            border: 1px solid rgba(14, 165, 233, 0.2);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 16px;
-        }
-        .pdf-modal-info-title {
-            font-weight: 700;
-            color: #38bdf8;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .pdf-modal-settings-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-        @media(min-width: 480px) {
-            .pdf-modal-settings-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .grid-colspan-2 {
-                grid-column: span 2;
-            }
-        }
-        .pdf-modal-setting-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 10px 12px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .pdf-modal-setting-card i {
-            font-size: 14px;
-            margin-top: 2px;
-        }
-        .pdf-modal-setting-card.highlight {
-            border-color: rgba(34, 197, 94, 0.3);
-            background: rgba(34, 197, 94, 0.05);
-        }
-        .pdf-modal-setting-card.highlight i {
-            color: #22c55e;
-        }
-        .pdf-modal-setting-name {
-            font-weight: 700;
-            color: #cbd5e1;
-            font-size: 11px;
-            display: block;
-        }
-        .pdf-modal-setting-val {
-            font-weight: 700;
-            color: #38bdf8;
-            font-size: 11.5px;
-            display: block;
-            margin-top: 1px;
-        }
-        .pdf-modal-setting-val.green {
-            color: #22c55e;
-        }
-        .pdf-modal-setting-val.orange {
-            color: #fb923c;
-        }
-        .pdf-modal-footer {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-        .pdf-modal-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-        .pdf-modal-btn-cancel {
-            background: rgba(255, 255, 255, 0.08);
-            color: #cbd5e1;
-        }
-        .pdf-modal-btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-        .pdf-modal-btn-confirm {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-        }
-        .pdf-modal-btn-confirm:hover {
-            background: linear-gradient(135deg, #34d399, #10b981);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-            transform: translateY(-1px);
-        }
-
         /* Screen-only Click-to-Edit Hover Styles */
         @media screen {
             .editable-preview-field {
@@ -978,6 +801,12 @@
 
                                         <!-- Official Header Section -->
                     <div class="header-section">
+                        <!-- QR Code Box aligned to the top-left of the page -->
+                        <div class="qr-box" id="preview-qr-container">
+                            <img id="preview-qr-code" style="width: 100px; height: 100px; display: none;" alt="QR Code">
+                            <div id="qr-box-text" style="font-size: 8px; color: #555; text-align: center; font-weight: bold;">QR Code<br>ಕ್ಯೂಆರ್ ಕೋಡ್</div>
+                        </div>
+
                         <!-- Photo Box aligned to the top-right of the page -->
                         <div class="photo-box">
                             <div class="photo-box-text">
@@ -1388,6 +1217,7 @@
         const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
         const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
 
         // Safe localStorage helpers to prevent crash on local file:/// URLs
         function safeGetItem(key) {
@@ -1892,6 +1722,25 @@
             document.getElementById('preview_app_no').textContent = data.appNo || '';
             document.getElementById('preview_footer_app_no').textContent = `${data.appNo || '______'}/${ACADEMIC_YEAR}`;
 
+            // Generate and show QR Code
+            try {
+                const qrImg = document.getElementById('preview-qr-code');
+                if (qrImg) {
+                    const studentNameStr = data.nameEnglish || data.studentName || '';
+                    const fatherNameStr = data.fatherNameAz || data.fatherNameKn || '';
+                    const stsStr = data.studentSts || '';
+                    const appNoStr = data.appNo || '';
+                    const dobStr = data.dob || '';
+                    
+                    const qrPayload = `App No: ${appNoStr}\nName: ${studentNameStr}\nDOB: ${dobStr}\nSTS: ${stsStr}\nFather: ${fatherNameStr}`;
+                    
+                    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(qrPayload)}`;
+                    qrImg.style.display = 'block';
+                }
+            } catch (qrErr) {
+                console.error("QR Code loading error:", qrErr);
+            }
+
             // Footer Names
             const footerName = data.studentName || data.nameEnglish || '';
             const footerFather = data.fatherNameKn || data.fatherNameAz || '';
@@ -2041,7 +1890,11 @@
             document.getElementById('preview_office_adm_date').textContent = data.enrolmentDate ? formatReadableDate(data.enrolmentDate) : '';
 
             // Calculate age
-            const refDate = data.enrolmentDate || "2026-06-01";
+            let refDate = data.enrolmentDate;
+            if (!refDate) {
+                const d = new Date();
+                refDate = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+            }
             const age = calculateAge(data.dob, refDate);
             if (age) {
                 document.getElementById('preview_age_yrs').textContent = age.years;
@@ -2236,123 +2089,18 @@
 
         function downloadPdf() {
             const pdfName = getAdmissionPdfFilename();
-            showPdfDownloadModal(pdfName, function() {
-                window.print();
-            });
-        }
-
-        /* Bilingual A4 Portrait PDF Guide Modal */
-        function showPdfDownloadModal(pdfName, printCallback) {
-            let modal = document.getElementById('pdf-guide-modal');
-            if (!modal) {
-                const modalContainer = document.createElement('div');
-                modalContainer.innerHTML = `
-                    <div id="pdf-guide-modal" class="pdf-modal-overlay">
-                        <div class="pdf-modal-card">
-                            <div class="pdf-modal-header">
-                                <div class="pdf-modal-title-group">
-                                    <div class="pdf-modal-icon">
-                                        <i class="fa-solid fa-file-pdf"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="pdf-modal-title">ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಸಹಾಯಕಿ</h3>
-                                        <p class="pdf-modal-subtitle">Professional PDF Guide (Portrait)</p>
-                                    </div>
-                                </div>
-                                <button onclick="closePdfGuideModal()" class="pdf-modal-close">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="pdf-modal-body">
-                                <div class="pdf-modal-info-box">
-                                    <div class="pdf-modal-info-title">
-                                        <i class="fa-solid fa-circle-info"></i> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಏಕೆ? / Why Browser Print?
-                                    </div>
-                                    <p style="margin: 0; font-size: 11px; color: #cbd5e1; line-height: 1.4;">
-                                        ಕನ್ನಡ ಅಕ್ಷರಗಳು ಮತ್ತು ಕೋಷ್ಟಕಗಳು ಯಾವುದೇ ಕಾಗುಣಿತ ದೋಷವಿಲ್ಲದೆ ಅತಿ ಸುಂದರವಾಗಿ ಮೂಡಿಬರಲು ಹಾಗೂ <b>ಪಿಡಿಎಫ್‌ನಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲು (Copyable text)</b> ಬ್ರೌಸರ್ ಪ್ರಿಂಟಿಂಗ್ ಅತ್ಯುತ್ತಮ ವಿಧಾನವಾಗಿದೆ.
-                                    </p>
-                                </div>
-
-                                <div style="margin-bottom: 12px;">
-                                    <h4 style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">ಅಗತ್ಯವಿರುವ ಸೆಟ್ಟಿಂಗ್‌ಗಳು / Required Settings:</h4>
-                                    <div class="pdf-modal-settings-grid">
-                                        <div class="pdf-modal-setting-card">
-                                            <i class="fa-solid fa-print" style="color: #38bdf8;"></i>
-                                            <div>
-                                                <span class="pdf-modal-setting-name">Destination (ಗುರಿ)</span>
-                                                <span class="pdf-modal-setting-val">Save as PDF</span>
-                                            </div>
-                                        </div>
-                                        <div class="pdf-modal-setting-card">
-                                            <i class="fa-solid fa-arrows-up-down" style="color: #38bdf8;"></i>
-                                            <div>
-                                                <span class="pdf-modal-setting-name">Layout (ವಿನ್ಯಾಸ)</span>
-                                                <span class="pdf-modal-setting-val orange">Portrait (ಉದ್ದವಾಗಿ)</span>
-                                            </div>
-                                        </div>
-                                        <div class="pdf-modal-setting-card grid-colspan-2 highlight">
-                                            <i class="fa-solid fa-square-check"></i>
-                                            <div>
-                                                <span class="pdf-modal-setting-name" style="color: #86efac;">Background Graphics (ಹಿನ್ನೆಲೆ ಚಿತ್ರಗಳು)</span>
-                                                <span class="pdf-modal-setting-val green">MUST BE ENABLED / ಆನ್ ಇರಲೇಬೇಕು</span>
-                                            </div>
-                                        </div>
-                                        <div class="pdf-modal-setting-card grid-colspan-2">
-                                            <i class="fa-solid fa-square-xmark" style="color: #f43f5e;"></i>
-                                            <div>
-                                                <span class="pdf-modal-setting-name">Headers & Footers (ಹೆಡರ್/ಫೂಟರ್)</span>
-                                                <span class="pdf-modal-setting-val" style="color: #94a3b8;">DISABLED / ಆಫ್ ಮಾಡಿ</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 10px; font-size: 10px; color: #34d399; display: flex; gap: 8px; align-items: start; font-weight: 600;">
-                                    <i class="fa-solid fa-lightbulb" style="margin-top: 1px;"></i>
-                                    <span>ಸೂಚನೆ: ಪ್ರಿಂಟ್ ಸಂವಾದದಲ್ಲಿ "Background Graphics" ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಮಾಡುವುದರಿಂದ ಆಧಾರ್ ಇನ್‌ಪುಟ್ ಪೆಟ್ಟಿಗೆಗಳು ಮತ್ತು ಬಾರ್ಡರ್‌ಗಳು ಸರಿಯಾಗಿ ಮೂಡಿಬರುತ್ತವೆ!</span>
-                                </div>
-                            </div>
-                            
-                            <div class="pdf-modal-footer">
-                                <button onclick="closePdfGuideModal()" class="pdf-modal-btn pdf-modal-btn-cancel">
-                                    ರದ್ದು / Cancel
-                                </button>
-                                <button id="pdf-confirm-btn" class="pdf-modal-btn pdf-modal-btn-confirm">
-                                    <i class="fa-solid fa-download"></i> ಈಗ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(modalContainer.firstElementChild);
-                modal = document.getElementById('pdf-guide-modal');
-            }
-            
-            const confirmBtn = document.getElementById('pdf-confirm-btn');
-            confirmBtn.onclick = function() {
-                closePdfGuideModal();
-                const oldTitle = document.title;
-                document.title = pdfName;
-                printCallback();
-                setTimeout(() => {
-                    document.title = oldTitle;
-                }, 1200);
-            };
-            
-            modal.classList.add('active');
-        }
-
-        function closePdfGuideModal() {
-            const modal = document.getElementById('pdf-guide-modal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
+            const oldTitle = document.title;
+            document.title = pdfName;
+            window.print();
+            setTimeout(() => {
+                document.title = oldTitle;
+            }, 1200);
         }
 
         /* Quick-Edit Messaging Bridge */
         const fieldMappings = {
             'preview_name': 'nameEnglish',
+            'preview_caste': 'caste',
             'preview_subcaste': 'subCaste',
             'preview_mother_tongue': 'motherTongue',
             'preview_mobile': 'mobileNumber',
@@ -2460,6 +2208,12 @@
                 typeTd.id = 'preview_type_container';
                 fieldMappings['preview_type_container'] = 'preschoolType';
             }
+            // 9. Class standard selection
+            let classTd = document.getElementById('p_class_lkg')?.closest('td');
+            if (classTd) {
+                classTd.id = 'preview_class_container';
+                fieldMappings['preview_class_container'] = 'enrollClass';
+            }
 
             // Bind click listeners and classes to cells
             for (let id in fieldMappings) {
@@ -2512,6 +2266,7 @@
                                 // Clear localStorage
                                 safeRemoveItem('admissionData');
                                 safeRemoveItem('editMode');
+                                safeRemoveItem('admissionFormDraft');
                                 
                                 if (window.parent && window.parent !== window) {
                                     window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
@@ -2538,6 +2293,7 @@
                         alert("Local simulation: Data submitted successfully!\n" + JSON.stringify(window.admissionData, null, 2));
                         safeRemoveItem('admissionData');
                         safeRemoveItem('editMode');
+                        safeRemoveItem('admissionFormDraft');
                         if (window.parent && window.parent !== window) {
                             window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
                         } else {
@@ -2642,7 +2398,7 @@
                     };
 
                     if (session && session.user) {
-                        payload.school_id = session.user.user_metadata?.school_id || null;
+                        payload.school_id = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
                         payload.created_by = session.user.id || null;
                     }
 
@@ -2717,7 +2473,7 @@
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session && session.user) {
-                    const schoolId = session.user.user_metadata?.school_id;
+                    const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
                     if (schoolId) {
                         const { data: school, error } = await supabaseClient
                             .from('schools')
