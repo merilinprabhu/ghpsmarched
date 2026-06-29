@@ -1,0 +1,150 @@
+1351:     }
+1352: 
+1353:     function handleCSVUpload(event) {
+1354:       const file = event.target.files[0];
+1355:       if (!file) return;
+1356: 
+1357:       const reader = new FileReader();
+1358:       reader.onload = function(e) {
+1359:         const text = e.target.result;
+1360:         processCSVData(text);
+1361:       };
+1362:       reader.readAsText(file);
+1363:     }
+1364: 
+1365:     function processCSVData(csvText) {
+1366:       const lines = csvText.split('\n');
+1367:       if (lines.length < 3) {
+1368:         showToast("ದೋಷ: ಅಮಾನ್ಯವಾದ CSV ಫೈಲ್", "error");
+1369:         return;
+1370:       }
+1371: 
+1372:       let parsedCount = 0;
+1373:       // Loop lines starting from line 2
+1374:       for (let i = 2; i < lines.length; i++) {
+1375:         const line = lines[i].trim();
+1376:         if (!line) continue;
+1377: 
+1378:         const cells = line.split(',').map(c => c.replace(/^["']|["']$/g, '').trim());
+1379:         if (cells.length < 4) continue;
+1380: 
+1381:         const stsNo = cells[1];
+1382:         // Match student by STS number
+1383:         const matchedStudent = students.find(st => st.app_no === stsNo);
+1384:         if (matchedStudent) {
+1385:           const sId = matchedStudent.id;
+1386:           if (!evaluations[sId]) evaluations[sId] = {};
+1387: 
+1388:           // Extract grades starting from column 4 (O1)
+1389:           let cellIdx = 4;
+1390:           // Kannada
+1391:           for (let j = 1; j <= KANNADA_COLS.length; j++) {
+1392:             const val = cells[cellIdx] || '';
+1393:             if (['BB', 'B', 'P', 'A'].includes(val.toUpperCase())) {
+1394:               evaluations[sId][`col_${j}`] = val.toUpperCase();
+1395:             }
+1396:             cellIdx++;
+1397:           }
+1398:           // Maths
+1399:           for (let j = 10; j <= TOTAL_COLS_COUNT; j++) {
+1400:             const val = cells[cellIdx] || '';
+1401:             if (['BB', 'B', 'P', 'A'].includes(val.toUpperCase())) {
+1402:               evaluations[sId][`col_${j}`] = val.toUpperCase();
+1403:             }
+1404:             cellIdx++;
+1405:           }
+1406:           parsedCount++;
+1407:         }
+1408:       }
+1409: 
+1410:       if (parsedCount > 0) {
+1411:         showToast(`${parsedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಆಮದು ಮಾಡಿಕೊಳ್ಳಲಾಗಿದೆ!`, "success");
+1412:         renderGrid();
+1413:       } else {
+1414:         showToast("ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಹೊಂದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.", "warning");
+1415:       }
+1416:     }
+1417: 
+1418:     function downloadCSVTemplate() {
+1419:       const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+1420:       KANNADA_COLS.forEach((col, idx) => {
+1421:         row1.push(`FL Kannada (Col ${idx+1})`);
+1422:       });
+1423:       MATH_COLS.forEach((col, idx) => {
+1424:         row1.push(`FL Math (Col ${idx+10})`);
+1425:       });
+1426: 
+1427:       const row2 = ["", "", "", ""];
+1428:       KANNADA_COLS.forEach((col) => {
+1429:         row2.push(col);
+1430:       });
+1431:       MATH_COLS.forEach((col) => {
+1432:         row2.push(col);
+1433:       });
+1434: 
+1435:       const sampleRow = ["1", "STS123456", "Sample Student En / Kn", "Sample Father En / Kn"];
+1436:       for (let i = 0; i < TOTAL_COLS_COUNT; i++) {
+1437:         sampleRow.push("A");
+1438:       }
+1439: 
+1440:       let csvContent = "\uFEFF"; 
+1441:       csvContent += row1.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+1442:       csvContent += row2.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
+1443:       csvContent += sampleRow.map(r => `"${r.replace(/"/g, '""')}"`).join(",") + "\r\n";
+1444: 
+1445:       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+1446:       const url = URL.createObjectURL(blob);
+1447:       const link = document.createElement("a");
+1448:       link.setAttribute("href", url);
+1449:       link.setAttribute("download", "FLN_Assessment_Template.csv");
+1450:       document.body.appendChild(link);
+1451:       link.click();
+1452:       document.body.removeChild(link);
+1453:     }
+1454: 
+1455:     function exportToCSV() {
+1456:       if (students.length === 0) {
+1457:         showToast("ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ", "warning");
+1458:         return;
+1459:       }
+1460: 
+1461:       const className = classFilter.value;
+1462:       const dateVal = dateFilter.value;
+1463: 
+1464:       const row1 = ["Sl. No", "STS Number", "Student Name", "Father Name"];
+1465:       KANNADA_COLS.forEach((col, idx) => {
+1466:         row1.push(`FL Kannada (Col ${idx+1})`);
+1467:       });
+1468:       MATH_COLS.forEach((col, idx) => {
+1469:         row1.push(`FL Math (Col ${idx+10})`);
+1470:       });
+1471: 
+1472:       const row2 = ["", "", "", ""];
+1473:       KANNADA_COLS.forEach((col) => {
+1474:         row2.push(col);
+1475:       });
+1476:       MATH_COLS.forEach((col) => {
+1477:         row2.push(col);
+1478:       });
+1479: 
+1480:       const csvRows = [row1, row2];
+1481: 
+1482:       students.forEach((student, index) => {
+1483:         const outcomes = evaluations[student.id] || {};
+1484:         let nameEn = (student.name_english || '').trim().toUpperCase();
+1485:         let nameKn = (student.student_name || '').trim();
+1486:         let nameStr = nameEn;
+1487:         if (nameKn) nameStr = nameEn ? `${nameEn} / ${nameKn}` : nameKn;
+1488: 
+1489:         let fatherEn = (student.father_name_az || '').trim().toUpperCase();
+1490:         let fatherKn = (student.father_name_kn || '').trim();
+1491:         let fatherStr = fatherEn;
+1492:         if (fatherKn) fatherStr = fatherEn ? `${fatherEn} / ${fatherKn}` : fatherKn;
+1493: 
+1494:         const studentRow = [
+1495:           index + 1,
+1496:           student.app_no || '-',
+1497:           nameStr || '-',
+1498:           fatherStr || '-'
+1499:         ];
+1500: 

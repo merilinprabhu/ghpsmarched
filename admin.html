@@ -1039,12 +1039,16 @@
 
     async function approveTeacher(profileId, name) {
       try {
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
           .from('profiles')
           .update({ is_approved: true })
-          .eq('id', profileId);
+          .eq('id', profileId)
+          .select();
 
         if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error("ಅನುಮತಿ ನಿರಾಕರಿಸಲಾಗಿದೆ ಅಥವಾ ರೆಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು fix_admin_approval_and_rls.sql ರನ್ ಮಾಡಿ. / Permission denied. Run fix_admin_approval_and_rls.sql.");
+        }
 
         showToast("ಅನುಮೋದಿಸಲಾಗಿದೆ / Approved", `${name} ಅವರ ಖಾತೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅನುಮೋದಿಸಲಾಗಿದೆ.`, "success");
         await loadRegisteredProfiles();
@@ -1083,19 +1087,54 @@
       tbody.innerHTML = '';
 
       // Only show approved teachers (include HM / Admins but exclude developer)
-      let approved = registeredProfiles.filter(p => p.is_approved === true && p.role !== 'developer');
+      const approvedProfiles = registeredProfiles.filter(p => p.is_approved === true && p.role !== 'developer');
+
+      let mergedTeachers = [];
+
+      // 1. Add approved profiles
+      approvedProfiles.forEach(p => {
+        // Find matching staff record in teachers table
+        const staffRecord = allTeachersStaff.find(t => t.contact === p.phone || t.name === p.name);
+        mergedTeachers.push({
+          id: p.id,
+          name: p.name,
+          phone: p.phone,
+          role: p.role,
+          assigned_classes: p.assigned_classes || [],
+          is_profile: true,
+          profile_record: p,
+          staff_record: staffRecord
+        });
+      });
+
+      // 2. Add teachers from the teachers table who DO NOT have a matching approved profile
+      allTeachersStaff.forEach(t => {
+        const hasMatchingProfile = approvedProfiles.some(p => p.phone === t.contact || p.name === t.name);
+        if (!hasMatchingProfile) {
+          mergedTeachers.push({
+            id: t.id || t.teacher_id,
+            name: t.name,
+            phone: t.contact,
+            role: 'Teacher', // Default role
+            assigned_classes: t.assigned_classes || [],
+            is_profile: false,
+            profile_record: null,
+            staff_record: t
+          });
+        }
+      });
 
       // Apply search filter
       const queryEl = document.getElementById('allotmentSearch');
       const query = queryEl ? queryEl.value.trim().toLowerCase() : '';
       if (query) {
-        approved = approved.filter(p => 
-          (p.name || '').toLowerCase().includes(query) || 
-          (p.phone || '').toLowerCase().includes(query)
+        mergedTeachers = mergedTeachers.filter(t => 
+          (t.name || '').toLowerCase().includes(query) || 
+          (t.phone || '').toLowerCase().includes(query)
         );
       }
 
-      if (approved.length === 0) {
+      if (mergedTeachers.length === 0) {
         tbody.innerHTML = `
           <tr>
             <td colspan="15" class="text-center py-6 text-slate-400">ಯಾವುದೇ ಶಿಕ್ಷಕರು ಕಂಡುಬಂದಿಲ್ಲ.</td>
@@ -1104,16 +1143,12 @@
         return;
       }
 
-      approved.forEach(p => {
+      mergedTeachers.forEach(t => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition-colors text-center";
         
-        const isSelf = p.id === currentUserProfile.id;
-        const assigned = p.assigned_classes || [];
-        
-        // Find matching staff record in teachers table
-        const staffRecord = allTeachersStaff.find(t => t.contact === p.phone || t.name === p.name);
-        const hasStaff = !!staffRecord;
+        const isSelf = t.is_profile && t.id === currentUserProfile.id;
+        const assigned = t.assigned_classes || [];
 
         // Build class checkboxes
         let checkboxesHtml = '';
@@ -1121,45 +1156,57 @@
           const isChecked = assigned.includes(cls) ? 'checked' : '';
           checkboxesHtml += `
             <td class="py-3.5 px-1.5">
-              <input type="checkbox" class="teacher-class-chk font-bold cursor-pointer w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-350" data-teacher-id="${p.id}" data-class="${cls}" ${isChecked}>
+              <input type="checkbox" class="teacher-class-chk font-bold cursor-pointer w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-350" data-teacher-id="${t.id}" data-class="${cls}" ${isChecked}>
             </td>
           `;
         });
 
         // Current role selector dropdown
-        const roleDropdown = `
-          <select class="teacher-role-sel bg-slate-50 border border-slate-300 rounded-lg p-1 text-[11px] font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none" data-teacher-id="${p.id}" ${isSelf ? 'disabled' : ''}>
-            <option value="Teacher" ${p.role === 'Teacher' ? 'selected' : ''}>Teacher</option>
-            <option value="Admin" ${p.role === 'Admin' ? 'selected' : ''}>Admin (HM)</option>
+        const roleDropdown = t.is_profile ? `
+          <select class="teacher-role-sel bg-slate-50 border border-slate-300 rounded-lg p-1 text-[11px] font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none" data-teacher-id="${t.id}" ${isSelf ? 'disabled' : ''}>
+            <option value="Teacher" ${t.role === 'Teacher' ? 'selected' : ''}>Teacher</option>
+            <option value="Admin" ${t.role === 'Admin' ? 'selected' : ''}>Admin (HM)</option>
           </select>
+        ` : `
+          <span class="text-[10px] text-slate-400 font-bold bg-slate-100 px-2 py-1 rounded-md">Teacher</span>
         `;
 
         let nameHtml = `
           <td class="py-3.5 px-4 text-left font-bold text-slate-800">
             <div class="flex flex-col">
               <span class="flex items-center gap-1">
-                ${p.name || '-'} 
+                ${t.name || '-'} 
                 ${isSelf ? '<span class="text-[9px] bg-slate-100 text-slate-550 border px-1.5 py-0.5 rounded font-semibold">You</span>' : ''}
               </span>
-              <span class="text-[10px] text-slate-400 font-mono font-medium">${p.phone || '-'}</span>
+              <span class="text-[10px] text-slate-400 font-mono font-medium">${t.phone || '-'}</span>
         `;
         
-        if (!hasStaff) {
-          nameHtml += `
-            <div class="mt-1 flex flex-wrap items-center gap-1.5">
-              <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
-                ⚠️ ಸಿಬ್ಬಂದಿ ವಿವರ ಇಲ್ಲ / No Staff Record
-              </span>
-              <button onclick="createStaffRecordFromProfile('${p.id}', '${p.name}', '${p.phone}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-0.5 rounded text-[9px] transition cursor-pointer border-0 flex items-center gap-0.5 shadow-sm">
-                <i class="fa-solid fa-user-plus text-[8px]"></i> ವಿವರ ಸೃಷ್ಟಿಸಿ / Create Staff
-              </button>
-            </div>
-          `;
+        if (t.is_profile) {
+          if (!t.staff_record) {
+            nameHtml += `
+              <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                  ⚠️ ಸಿಬ್ಬಂದಿ ವಿವರ ಇಲ್ಲ / No Staff Record
+                </span>
+                <button onclick="createStaffRecordFromProfile('${t.id}', '${t.name}', '${t.phone}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-2 py-0.5 rounded text-[9px] transition cursor-pointer border-0 flex items-center gap-0.5 shadow-sm">
+                  <i class="fa-solid fa-user-plus text-[8px]"></i> ವಿವರ ಸೃಷ್ಟಿಸಿ / Create Staff
+                </button>
+              </div>
+            `;
+          } else {
+            nameHtml += `
+              <div class="mt-1">
+                <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                  ✅ ಲಾಗಿನ್ ಮತ್ತು ಸಿಬ್ಬಂದಿ ಸಕ್ರಿಯ / Account & Staff Active (ID: ${t.staff_record.teacher_id})
+                </span>
+              </div>
+            `;
+          }
         } else {
           nameHtml += `
-            <div class="mt-1">
-              <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
-                ✅ ಸಿಬ್ಬಂದಿ ದಾಖಲೆ ಇದೆ / Staff OK (ID: ${staffRecord.teacher_id})
+            <div class="mt-1 flex flex-wrap items-center gap-1.5">
+              <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 rounded text-[9px] font-bold">
+                👤 ಸಿಬ್ಬಂದಿ ಮಾತ್ರ (ಲಾಗಿನ್ ಇಲ್ಲ) / Staff Only (No Account)
               </span>
             </div>
           `;
@@ -1175,7 +1222,7 @@
           <td class="py-3.5 px-2 text-center">${roleDropdown}</td>
           ${checkboxesHtml}
           <td class="py-3.5 px-4 text-center">
-            <button onclick="saveTeacherAllotment('${p.id}', '${p.name}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition border-0 cursor-pointer shadow-sm">
+            <button onclick="saveTeacherAllotment('${t.id}', '${t.name}', ${t.is_profile})" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg text-[10px] transition border-0 cursor-pointer shadow-sm">
               <i class="fa-solid fa-floppy-disk mr-1"></i> Save
             </button>
           </td>
@@ -1240,17 +1287,20 @@
       });
     }
 
-    async function saveTeacherAllotment(teacherId, teacherName) {
+    async function saveTeacherAllotment(teacherId, teacherName, isProfile) {
       // 1. Get Selected Role
-      const roleSel = document.querySelector(`.teacher-role-sel[data-teacher-id="${teacherId}"]`);
-      const newRole = roleSel ? roleSel.value : 'Teacher';
+      let newRole = 'Teacher';
+      if (isProfile) {
+        const roleSel = document.querySelector(`.teacher-role-sel[data-teacher-id="${teacherId}"]`);
+        newRole = roleSel ? roleSel.value : 'Teacher';
+      }
 
       // 2. Get All Allotted Classes
       const chks = document.querySelectorAll(`.teacher-class-chk[data-teacher-id="${teacherId}"]:checked`);
       const selectedClasses = Array.from(chks).map(c => c.getAttribute('data-class'));
 
       // Check one school one admin warning
-      if (newRole === 'Admin') {
+      if (isProfile && newRole === 'Admin') {
         const otherAdmins = registeredProfiles.filter(p => p.role === 'Admin' && p.id !== teacherId && p.is_approved === true);
         if (otherAdmins.length > 0) {
           if (!confirm(`ಗಮನಿಸಿ: ಈ ಶಾಲೆಯಲ್ಲಿ ಈಗಾಗಲೇ ಅಡ್ಮಿನ್ (${otherAdmins[0].name}) ಇದ್ದಾರೆ. ಒಬ್ಬರಿಗಿಂತ ಹೆಚ್ಚು ಅಡ್ಮಿನ್ ನಿಯೋಜಿಸಲು ಬಯಸುವಿರಾ?\nNote: There is already an Admin (${otherAdmins[0].name}) in this school. Are you sure you want to add another Admin role?`)) {
@@ -1260,17 +1310,63 @@
       }
 
       try {
-        const { error } = await supabaseClient
-          .from('profiles')
-          .update({
-            role: newRole,
-            assigned_classes: selectedClasses
-          })
-          .eq('id', teacherId);
+        if (isProfile) {
+          // Update profiles table
+          const { data: updatedProfiles, error: profErr } = await supabaseClient
+            .from('profiles')
+            .update({
+              role: newRole,
+              assigned_classes: selectedClasses
+            })
+            .eq('id', teacherId)
+            .select();
 
-        if (error) throw error;
+          if (profErr) throw profErr;
+          if (!updatedProfiles || updatedProfiles.length === 0) {
+            throw new Error("ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. RLS ಅನುಮತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ. / Profile update failed. Check RLS permissions.");
+          }
 
-        showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", `${teacherName} ಅವರ ತರಗತಿ/ರೋಲ್ ನಿಯೋಜನೆ ಉಳಿಸಲಾಗಿದೆ.`, "success");
+          // Sync to teachers table if matching staff record exists
+          const prof = registeredProfiles.find(p => p.id === teacherId);
+          if (prof) {
+            const staffRecord = allTeachersStaff.find(t => t.contact === prof.phone || t.name === prof.name);
+            if (staffRecord) {
+              const staffIdField = staffRecord.id ? 'id' : 'teacher_id';
+              const staffIdVal = staffRecord.id || staffRecord.teacher_id;
+              
+              const { error: staffErr } = await supabaseClient
+                .from('teachers')
+                .update({ assigned_classes: selectedClasses })
+                .eq(staffIdField, staffIdVal);
+                
+              if (staffErr) {
+                console.error("Failed to sync assigned_classes to teachers table:", staffErr);
+              }
+            }
+          }
+        } else {
+          // Save directly to teachers table (using the database ID or teacher_id)
+          const staffRecord = allTeachersStaff.find(t => t.id === teacherId || t.teacher_id === teacherId);
+          if (!staffRecord) {
+            throw new Error("ಶಿಕ್ಷಕರ ದಾಖಲೆ ಕಂಡುಬಂದಿಲ್ಲ. / Staff record not found.");
+          }
+          
+          const staffIdField = staffRecord.id ? 'id' : 'teacher_id';
+          const staffIdVal = staffRecord.id || staffRecord.teacher_id;
+
+          const { data: updatedTeachers, error: staffErr } = await supabaseClient
+            .from('teachers')
+            .update({ assigned_classes: selectedClasses })
+            .eq(staffIdField, staffIdVal)
+            .select();
+
+          if (staffErr) throw staffErr;
+          if (!updatedTeachers || updatedTeachers.length === 0) {
+            throw new Error("ಶಿಕ್ಷಕರ ಕೋಷ್ಟಕದಲ್ಲಿ ನವೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. fix_admin_approval_and_rls.sql ರನ್ ಆಗಿದೆಯೇ ಪರೀಕ್ಷಿಸಿ. / Staff update failed. Ensure fix_admin_approval_and_rls.sql is run.");
+          }
+        }
+
+        showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", `${teacherName} ಅವರ ತರಗತಿ ನಿಯೋಜನೆ ಉಳಿಸಲಾಗಿದೆ.`, "success");
         await loadRegisteredProfiles();
       } catch (err) {
         console.error("Save allotment error:", err);

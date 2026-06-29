@@ -2508,6 +2508,44 @@
 
         function mapDatabaseRowToAdmissionData(row) {
             const clean = (val) => (val === null || val === undefined) ? "" : val;
+            
+            // Check if swapped
+            const categoryCodes = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS', 'OBC'];
+            const socialClassUpper = (row.social_class || '').toString().trim().toUpperCase();
+            const casteUpper = (row.caste || '').toString().trim().toUpperCase();
+            
+            const isCasteCategory = categoryCodes.includes(casteUpper) || 
+                                    casteUpper === 'CATEGORY-1' || 
+                                    casteUpper === 'CAT-1' ||
+                                    casteUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                    casteUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                                    
+            const isSocialClassCategory = categoryCodes.includes(socialClassUpper) || 
+                                          socialClassUpper === 'CATEGORY-1' || 
+                                          socialClassUpper === 'CAT-1' ||
+                                          socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                          socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+            
+            let socialClass = row.social_class;
+            let caste = row.caste;
+            let studentCaste = row.student_caste;
+            
+            if (isCasteCategory && !isSocialClassCategory) {
+                // Swapped row! Correct it
+                socialClass = row.caste;
+                caste = row.student_caste;
+                studentCaste = row.social_class;
+            }
+            
+            // Normalize gender
+            let gender = row.gender;
+            if (gender) {
+                const g = gender.toString().toLowerCase().trim();
+                const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+                const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+                gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : gender);
+            }
+
             return {
                 id: clean(row.id),
                 academicYear: clean(row.academic_year),
@@ -2516,13 +2554,13 @@
                 studentName: clean(row.student_name),
                 nameEnglish: clean(row.name_english),
                 enrollClass: clean(row.enroll_class),
-                gender: clean(row.gender),
+                gender: clean(gender),
                 dob: clean(row.dob),
                 studentAadhaar: clean(row.student_aadhaar),
                 religion: clean(row.religion),
-                socialClass: clean(row.social_class),
-                studentCaste: clean(row.student_caste),
-                caste: clean(row.caste),
+                socialClass: clean(socialClass),
+                studentCaste: clean(studentCaste),
+                caste: clean(caste),
                 motherTongue: clean(row.mother_tongue),
                 mobileNumber: clean(row.mobile_number),
                 specialNeed: clean(row.special_need),
@@ -2556,7 +2594,7 @@
                 motherNameAz: clean(row.mother_name_az),
                 enrolmentNo: clean(row.enrolment_no),
                 enrolmentDate: clean(row.enrolment_date),
-                subCaste: clean(row.student_caste || row.sub_caste),
+                subCaste: clean(studentCaste || row.sub_caste),
                 hobli: clean(row.hobli),
                 pinCode: clean(row.pin_code),
                 mobileNo1: clean(row.mobile_no_1),
@@ -2643,6 +2681,38 @@
                 if (dataStr) {
                     try {
                         window.admissionData = JSON.parse(dataStr);
+                        if (window.admissionData) {
+                            const categoryCodes = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS', 'OBC'];
+                            const socialClassUpper = (window.admissionData.socialClass || '').toString().trim().toUpperCase();
+                            const casteUpper = (window.admissionData.caste || '').toString().trim().toUpperCase();
+                            
+                            const isCasteCategory = categoryCodes.includes(casteUpper) || 
+                                                    casteUpper === 'CATEGORY-1' || 
+                                                    casteUpper === 'CAT-1' ||
+                                                    casteUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                                    casteUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                                                    
+                            const isSocialClassCategory = categoryCodes.includes(socialClassUpper) || 
+                                                          socialClassUpper === 'CATEGORY-1' || 
+                                                          socialClassUpper === 'CAT-1' ||
+                                                          socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                                          socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                            
+                            if (isCasteCategory && !isSocialClassCategory) {
+                                const tempSocial = window.admissionData.socialClass;
+                                window.admissionData.socialClass = window.admissionData.caste;
+                                window.admissionData.caste = window.admissionData.subCaste;
+                                window.admissionData.subCaste = tempSocial;
+                            }
+                            
+                            let gender = window.admissionData.gender;
+                            if (gender) {
+                                const g = gender.toString().toLowerCase().trim();
+                                const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+                                const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+                                window.admissionData.gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : gender);
+                            }
+                        }
                     } catch(e) {
                         console.error("Local data parsing failed", e);
                     }

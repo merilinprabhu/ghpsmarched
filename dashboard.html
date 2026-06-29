@@ -266,11 +266,42 @@
                 <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic mt-0.5">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</p>
               </div>
               
-              <!-- Segmented Control View Switcher -->
+              <!-- Segmented Control View Switcher (Column mode) -->
               <div class="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 text-[10px] font-bold self-start sm:self-auto no-print">
                 <button type="button" onclick="switchEnrollmentView('gender')" id="btn-view-gender" class="px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 shadow-sm">ಲಿಂಗಾವಾರು / Gender</button>
-                <button type="button" onclick="switchEnrollmentView('caste')" id="btn-view-caste" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">ವರ್ಗಾವಾರು / Caste</button>
-                <button type="button" onclick="switchEnrollmentView('all')" id="btn-view-all" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">ಎಲ್ಲಾ / All</button>
+                <button type="button" onclick="switchEnrollmentView('caste')" id="btn-view-caste" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200">ವರ್ಗಾವಾರು / Caste</button>
+                <button type="button" onclick="switchEnrollmentView('all')" id="btn-view-all" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200">ಎಲ್ಲಾ / All</button>
+              </div>
+            </div>
+
+            <!-- Combined Multi-select filters in same line row -->
+            <div class="flex flex-wrap items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/60 no-print text-[10px] font-bold">
+              <!-- Class Group Filter Controls -->
+              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 flex-wrap gap-y-1">
+                <span class="px-2.5 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ತರಗತಿ ಗುಂಪು / Class Groups:</span>
+                <button type="button" onclick="toggleClassGroupFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-slate-700 shadow-sm">All</button>
+                <button type="button" onclick="toggleClassGroupFilter('lkg-ukg')" id="btn-filter-lkg-ukg" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">LKG-UKG</button>
+                <button type="button" onclick="toggleClassGroupFilter('1-5')" id="btn-filter-1-5" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">1-5</button>
+                <button type="button" onclick="toggleClassGroupFilter('6-7')" id="btn-filter-6-7" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-7</button>
+                <button type="button" onclick="toggleClassGroupFilter('6-8')" id="btn-filter-6-8" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-8</button>
+                <button type="button" onclick="toggleClassGroupFilter('6-10')" id="btn-filter-6-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-10</button>
+                <button type="button" onclick="toggleClassGroupFilter('9-10')" id="btn-filter-9-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">9-10</button>
+              </div>
+
+              <!-- Gender Multi-select -->
+              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40">
+                <span class="px-2 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ಲಿಂಗ / Gender:</span>
+                <button type="button" onclick="toggleGenderFilter('Boy')" id="btn-filter-gender-Boy" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Boys</button>
+                <button type="button" onclick="toggleGenderFilter('Girl')" id="btn-filter-gender-Girl" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Girls</button>
+              </div>
+
+              <!-- Caste Multi-select -->
+              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 flex-wrap gap-y-1">
+                <span class="px-2 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ವರ್ಗ / Caste:</span>
+                <button type="button" onclick="toggleCasteFilter('SC')" id="btn-filter-caste-SC" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">SC</button>
+                <button type="button" onclick="toggleCasteFilter('ST')" id="btn-filter-caste-ST" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">ST</button>
+                <button type="button" onclick="toggleCasteFilter('OBC')" id="btn-filter-caste-OBC" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">OBC</button>
+                <button type="button" onclick="toggleCasteFilter('Others')" id="btn-filter-caste-Others" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Others</button>
               </div>
             </div>
             
@@ -410,8 +441,21 @@
     window.supabaseClient = supabaseClient;
 
     let currentEnrollmentView = 'gender';
+    let selectedClassGroups = ['all'];
     let cachedClassData = null;
+    let allStudents = [];
+    let selectedGenders = ['Boy', 'Girl'];
+    let selectedCastes = ['SC', 'ST', 'OBC', 'Others'];
     const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+    const classGroups = {
+      'all': ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+      'lkg-ukg': ['LKG', 'UKG'],
+      '1-5': ['1', '2', '3', '4', '5'],
+      '6-7': ['6', '7'],
+      '6-8': ['6', '7', '8'],
+      '6-10': ['6', '7', '8', '9', '10'],
+      '9-10': ['9', '10']
+    };
     const classLabels = {
       'LKG': 'LKG', 'UKG': 'UKG',
       '1': '1', '2': '2', '3': '3', '4': '4',
@@ -542,14 +586,12 @@
     async function handleLogout() {
       await supabaseClient.auth.signOut();
       window.location.href = "index.html";
-    }
-
-    async function loadDashboardData() {
+    }    async function loadDashboardData() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('enroll_class, gender, caste, is_admitted');
+        let query = supabaseClient.from('admissions').select('enroll_class, gender, caste, social_class, is_admitted');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -561,100 +603,46 @@
           return;
         }
 
-        const admittedList = admissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false');
-        const pendingList = admissions.filter(s => s.is_admitted === false || s.is_admitted === 'false');
-
-        let totalStudents = admittedList.length;
-        let pendingCount = pendingList.length;
-        let boys = 0;
-        let girls = 0;
-        let castes = { 'SC': 0, 'ST': 0, 'OBC': 0, 'Others': 0 };
-
-        const classData = {};
-        classes.forEach(c => {
-          classData[c] = { b: 0, g: 0, sc: 0, st: 0, obc: 0, oth: 0 };
-        });
-
-        function normalizeClass(classStr) {
-          if (!classStr) return "";
-          let clean = classStr.toString().trim().toLowerCase();
+        function normalizeStudentRow(student) {
+          const categoryCodes = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS', 'OBC'];
+          const socialClassUpper = (student.social_class || '').toString().trim().toUpperCase();
+          const casteUpper = (student.caste || '').toString().trim().toUpperCase();
           
-          if (!clean.includes("lkg")) {
-            clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+          const isCasteCategory = categoryCodes.includes(casteUpper) || 
+                                  casteUpper === 'CATEGORY-1' || 
+                                  casteUpper === 'CAT-1' ||
+                                  casteUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                  casteUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                                  
+          const isSocialClassCategory = categoryCodes.includes(socialClassUpper) || 
+                                        socialClassUpper === 'CATEGORY-1' || 
+                                        socialClassUpper === 'CAT-1' ||
+                                        socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                        socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+          
+          let social_class = student.social_class;
+          let caste = student.caste;
+          
+          if (isCasteCategory && !isSocialClassCategory) {
+            social_class = student.caste;
+            caste = student.social_class;
           }
           
-          if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
-          if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
-          
-          if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
-          if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
-          if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
-          if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
-          if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
-          if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
-          if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
-          if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
-          if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
-          if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
-          
-          return classStr.toString().trim();
+          // Determine gender robustly
+          const g = (student.gender || '').toString().toLowerCase().trim();
+          const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+          const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+          const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
+
+          return { ...student, social_class, caste, gender };
         }
 
-        admittedList.forEach(student => {
-          const gLower = (student.gender || '').toLowerCase().trim();
-          const isBoy = gLower === 'boy' || gLower === 'boys' || gLower === 'male' || gLower === 'ಗಂಡು' || gLower === 'ಗಂಡು (male)';
-          const isGirl = gLower === 'girl' || gLower === 'girls' || gLower === 'female' || gLower === 'ಹೆಣ್ಣು' || gLower === 'ಹೆಣ್ಣು (female)';
+        const admittedList = admissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').map(normalizeStudentRow);
+        const pendingList = admissions.filter(s => s.is_admitted === false || s.is_admitted === 'false').map(normalizeStudentRow);
 
-          if (isBoy) {
-            boys++;
-          } else if (isGirl) {
-            girls++;
-          }
-
-          const cst = (student.caste || '').toUpperCase();
-          let isSC = cst.includes('SC');
-          let isST = cst.includes('ST');
-          let isOBC = cst.includes('OBC') || cst.includes('C1') || cst.includes('2A') || cst.includes('3A') || cst.includes('3B');
-
-          if (isSC) {
-            castes['SC']++;
-          } else if (isST) {
-            castes['ST']++;
-          } else if (isOBC) {
-            castes['OBC']++;
-          } else {
-            castes['Others']++;
-          }
-
-          let cls = normalizeClass(student.enroll_class);
-          if (cls && classData[cls]) {
-            if (isBoy) classData[cls].b++;
-            else if (isGirl) classData[cls].g++;
-
-            if (isSC) classData[cls].sc++;
-            else if (isST) classData[cls].st++;
-            else if (isOBC) classData[cls].obc++;
-            else classData[cls].oth++;
-          }
-        });
-
-        document.getElementById('totalStudents').innerText = totalStudents;
-        document.getElementById('genderStats').innerHTML = `
-          <span class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-md text-[11px] font-bold border border-sky-100/50 dark:border-sky-900/30">
-            <i class="fa-solid fa-mars text-[10px] opacity-75"></i> Boys: ${boys}
-          </span>
-          <span class="text-slate-300 dark:text-slate-700">/</span>
-          <span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-450 px-2 py-0.5 rounded-md text-[11px] font-bold border border-rose-100/50 dark:border-rose-900/30">
-            <i class="fa-solid fa-venus text-[10px] opacity-75"></i> Girls: ${girls}
-          </span>
-        `;
-        document.getElementById('casteStats').innerHTML = `
-          <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${castes['SC']}</span>
-          <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${castes['ST']}</span>
-          <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${castes['OBC']}</span>
-          <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${castes['Others']}</span>
-        `;
-
+        allStudents = admittedList;
+        
+        const pendingCount = pendingList.length;
         const pendingBadge = document.getElementById('pendingBadge');
         if (pendingBadge) {
           if (pendingCount > 0) {
@@ -665,12 +653,145 @@
           }
         }
 
-        cachedClassData = classData;
-        renderClasswiseTable();
+        updateDashboardStats();
 
       } catch (err) {
         console.error("Dashboard calculation error:", err);
       }
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      
+      return classStr.toString().trim();
+    }
+
+    function updateDashboardStats() {
+      if (!allStudents) return;
+
+      updateFilterButtonsUI();
+
+      let activeClasses = [];
+      selectedClassGroups.forEach(g => {
+        const clsList = classGroups[g] || [];
+        clsList.forEach(c => {
+          if (!activeClasses.includes(c)) {
+            activeClasses.push(c);
+          }
+        });
+      });
+      activeClasses.sort((a, b) => classes.indexOf(a) - classes.indexOf(b));
+
+      const filteredList = allStudents.filter(student => {
+        const cls = normalizeClass(student.enroll_class);
+        if (!activeClasses.includes(cls)) return false;
+
+        if (!selectedGenders.includes(student.gender)) return false;
+
+        const scVal = (student.social_class || '').toUpperCase().trim();
+        let casteGroup = 'Others';
+        if (scVal === 'SC' || scVal.includes('SCHEDULED CASTE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಜಾತಿ') || scVal === 'ಪ.ಜಾತಿ' || scVal === 'ಪ.ಜಾ') {
+          casteGroup = 'SC';
+        } else if (scVal === 'ST' || scVal.includes('SCHEDULED TRIBE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಪಂಗಡ') || scVal === 'ಪ.ಪಂಗಡ' || scVal === 'ಪ.ಪಂ') {
+          casteGroup = 'ST';
+        } else if (['OBC', 'C1', '2A', '2B', '3A', '3B', 'CATEGORY-1', 'CAT-1', 'C-1'].includes(scVal) || 
+                   scVal.includes('OBC') || scVal.includes('C-1') || scVal.includes('2-A') || scVal.includes('2-B') || 
+                   scVal.includes('3-A') || scVal.includes('3-B') || scVal.includes('ಹಿಂದುಳಿದ ವರ್ಗ') || scVal.includes('ಹಿ.ವರ್ಗ')) {
+          casteGroup = 'OBC';
+        }
+        
+        if (!selectedCastes.includes(casteGroup)) return false;
+
+        return true;
+      });
+
+      let totalStudents = filteredList.length;
+      let boys = 0;
+      let girls = 0;
+      let castes = { 'SC': 0, 'ST': 0, 'OBC': 0, 'Others': 0 };
+
+      const classData = {};
+      classes.forEach(c => {
+        classData[c] = { b: 0, g: 0, sc: 0, st: 0, obc: 0, oth: 0 };
+      });
+
+      filteredList.forEach(student => {
+        const isBoy = student.gender === 'Boy';
+        const isGirl = student.gender === 'Girl';
+
+        if (isBoy) {
+          boys++;
+        } else if (isGirl) {
+          girls++;
+        }
+
+        const scVal = (student.social_class || '').toUpperCase().trim();
+        let isSC = scVal === 'SC' || scVal.includes('SCHEDULED CASTE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಜಾತಿ') || scVal === 'ಪ.ಜಾತಿ' || scVal === 'ಪ.ಜಾ';
+        let isST = scVal === 'ST' || scVal.includes('SCHEDULED TRIBE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಪಂಗಡ') || scVal === 'ಪ.ಪಂಗಡ' || scVal === 'ಪ.ಪಂ';
+        let isOBC = ['OBC', 'C1', '2A', '2B', '3A', '3B', 'CATEGORY-1', 'CAT-1', 'C-1'].includes(scVal) || 
+                    scVal.includes('OBC') || scVal.includes('C-1') || scVal.includes('2-A') || scVal.includes('2-B') || 
+                    scVal.includes('3-A') || scVal.includes('3-B') || scVal.includes('ಹಿಂದುಳಿದ ವರ್ಗ') || scVal.includes('ಹಿ.ವರ್ಗ');
+
+        if (isSC) {
+          castes['SC']++;
+        } else if (isST) {
+          castes['ST']++;
+        } else if (isOBC) {
+          castes['OBC']++;
+        } else {
+          castes['Others']++;
+        }
+
+        let cls = normalizeClass(student.enroll_class);
+        if (cls && classData[cls]) {
+          if (isBoy) classData[cls].b++;
+          else if (isGirl) classData[cls].g++;
+
+          if (isSC) classData[cls].sc++;
+          else if (isST) classData[cls].st++;
+          else if (isOBC) classData[cls].obc++;
+          else classData[cls].oth++;
+        }
+      });
+
+      document.getElementById('totalStudents').innerText = totalStudents;
+      document.getElementById('genderStats').innerHTML = `
+        <span class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-md text-[11px] font-bold border border-sky-100/50 dark:border-sky-900/30">
+          <i class="fa-solid fa-mars text-[10px] opacity-75"></i> Boys: ${boys}
+        </span>
+        <span class="text-slate-300 dark:text-slate-700">/</span>
+        <span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-455 px-2 py-0.5 rounded-md text-[11px] font-bold border border-rose-100/50 dark:border-rose-900/30">
+          <i class="fa-solid fa-venus text-[10px] opacity-75"></i> Girls: ${girls}
+        </span>
+      `;
+      document.getElementById('casteStats').innerHTML = `
+        <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${castes['SC']}</span>
+        <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${castes['ST']}</span>
+        <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${castes['OBC']}</span>
+        <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${castes['Others']}</span>
+      `;
+
+      cachedClassData = classData;
+      renderClasswiseTable();
     }
 
     function switchEnrollmentView(viewMode) {
@@ -681,13 +802,99 @@
         const btn = document.getElementById(`btn-view-${m}`);
         if (!btn) return;
         if (m === viewMode) {
-          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm";
+          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 shadow-sm";
         } else {
-          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200";
+          btn.className = "px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200";
         }
       });
 
       renderClasswiseTable();
+    }
+
+    function toggleGenderFilter(gender) {
+      const idx = selectedGenders.indexOf(gender);
+      if (idx > -1) {
+        if (selectedGenders.length > 1) {
+          selectedGenders.splice(idx, 1);
+        }
+      } else {
+        selectedGenders.push(gender);
+      }
+      updateFilterButtonsUI();
+      updateDashboardStats();
+    }
+
+    function toggleCasteFilter(caste) {
+      const idx = selectedCastes.indexOf(caste);
+      if (idx > -1) {
+        if (selectedCastes.length > 1) {
+          selectedCastes.splice(idx, 1);
+        }
+      } else {
+        selectedCastes.push(caste);
+      }
+      updateFilterButtonsUI();
+      updateDashboardStats();
+    }
+
+    function toggleClassGroupFilter(groupName) {
+      if (groupName === 'all') {
+        selectedClassGroups = ['all'];
+      } else {
+        const allIdx = selectedClassGroups.indexOf('all');
+        if (allIdx > -1) {
+          selectedClassGroups.splice(allIdx, 1);
+        }
+        
+        const idx = selectedClassGroups.indexOf(groupName);
+        if (idx > -1) {
+          if (selectedClassGroups.length > 1) {
+            selectedClassGroups.splice(idx, 1);
+          } else {
+            selectedClassGroups = ['all'];
+          }
+        } else {
+          selectedClassGroups.push(groupName);
+        }
+      }
+      updateFilterButtonsUI();
+      updateDashboardStats();
+    }
+
+    function updateFilterButtonsUI() {
+      const groups = ['all', 'lkg-ukg', '1-5', '6-7', '6-8', '6-10', '9-10'];
+      groups.forEach(g => {
+        const btn = document.getElementById(`btn-filter-${g}`);
+        if (!btn) return;
+        const isActive = selectedClassGroups.includes(g);
+        if (isActive) {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-indigo-150 dark:border-slate-700 shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
+        }
+      });
+
+      ['Boy', 'Girl'].forEach(g => {
+        const btn = document.getElementById(`btn-filter-gender-${g}`);
+        if (!btn) return;
+        const isActive = selectedGenders.includes(g);
+        if (isActive) {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-150 dark:border-slate-700 shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
+        }
+      });
+
+      ['SC', 'ST', 'OBC', 'Others'].forEach(c => {
+        const btn = document.getElementById(`btn-filter-caste-${c}`);
+        if (!btn) return;
+        const isActive = selectedCastes.includes(c);
+        if (isActive) {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-150 dark:border-slate-700 shadow-sm";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-lg transition-all text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
+        }
+      });
     }
 
     function renderClasswiseTable() {
@@ -737,7 +944,26 @@
       if (!tbody) return;
       tbody.innerHTML = '';
 
-      classes.forEach(c => {
+      let sumBoys = 0;
+      let sumGirls = 0;
+      let sumSC = 0;
+      let sumST = 0;
+      let sumOBC = 0;
+      let sumOth = 0;
+      let sumTotal = 0;
+
+      let activeClasses = [];
+      selectedClassGroups.forEach(g => {
+        const clsList = classGroups[g] || [];
+        clsList.forEach(c => {
+          if (!activeClasses.includes(c)) {
+            activeClasses.push(c);
+          }
+        });
+      });
+      activeClasses.sort((a, b) => classes.indexOf(a) - classes.indexOf(b));
+
+      activeClasses.forEach(c => {
         const bCount = cachedClassData[c].b;
         const gCount = cachedClassData[c].g;
         const scCount = cachedClassData[c].sc;
@@ -745,6 +971,14 @@
         const obcCount = cachedClassData[c].obc;
         const othCount = cachedClassData[c].oth;
         const total = bCount + gCount;
+
+        sumBoys += bCount;
+        sumGirls += gCount;
+        sumSC += scCount;
+        sumST += stCount;
+        sumOBC += obcCount;
+        sumOth += othCount;
+        sumTotal += total;
 
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors duration-150';
@@ -767,7 +1001,7 @@
             </td>
             <td class="px-4 py-2.5 text-center">
               <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
-                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-450 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
+                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
                 <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
               </button>
             </td>
@@ -775,16 +1009,20 @@
         } else if (currentEnrollmentView === 'caste') {
           cellsHtml += `
             <td class="px-4 py-2.5 text-center">
-              <span class="inline-flex items-center justify-center min-w-[32px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-2 py-1 rounded-md text-xs font-bold border border-emerald-100/50 dark:border-emerald-900/30">${scCount}</span>
+              <button onclick="handleCasteClick('${classLabels[c]}', 'SC')" 
+                      class="inline-flex items-center justify-center min-w-[32px] bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-2 py-1 rounded-md text-xs font-bold transition border border-emerald-100/50 dark:border-emerald-900/30">${scCount}</button>
             </td>
             <td class="px-4 py-2.5 text-center">
-              <span class="inline-flex items-center justify-center min-w-[32px] bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-2 py-1 rounded-md text-xs font-bold border border-teal-100/50 dark:border-teal-900/30">${stCount}</span>
+              <button onclick="handleCasteClick('${classLabels[c]}', 'ST')" 
+                      class="inline-flex items-center justify-center min-w-[32px] bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-2 py-1 rounded-md text-xs font-bold transition border border-teal-100/50 dark:border-teal-900/30">${stCount}</button>
             </td>
             <td class="px-4 py-2.5 text-center">
-              <span class="inline-flex items-center justify-center min-w-[32px] bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded-md text-xs font-bold border border-indigo-100/50 dark:border-indigo-900/30">${obcCount}</span>
+              <button onclick="handleCasteClick('${classLabels[c]}', 'OBC')" 
+                      class="inline-flex items-center justify-center min-w-[32px] bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded-md text-xs font-bold transition border border-indigo-100/50 dark:border-indigo-900/30">${obcCount}</button>
             </td>
             <td class="px-4 py-2.5 text-center">
-              <span class="inline-flex items-center justify-center min-w-[32px] bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-2 py-1 rounded-md text-xs font-bold border border-slate-200/50 dark:border-slate-700/30">${othCount}</span>
+              <button onclick="handleCasteClick('${classLabels[c]}', 'OTHERS')" 
+                      class="inline-flex items-center justify-center min-w-[32px] bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 px-2 py-1 rounded-md text-xs font-bold transition border border-slate-200/50 dark:border-slate-700/30">${othCount}</button>
             </td>
           `;
         } else { // 'all'
@@ -797,16 +1035,16 @@
             </td>
             <td class="px-4 py-2.5 text-center">
               <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
-                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-450 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
+                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
                 <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
               </button>
             </td>
             <td class="px-4 py-2.5 text-center">
               <div class="flex items-center justify-center gap-1 flex-wrap">
-                <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${scCount}</span>
-                <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${stCount}</span>
-                <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${obcCount}</span>
-                <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${othCount}</span>
+                <button onclick="handleCasteClick('${classLabels[c]}', 'SC')" class="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${scCount}</button>
+                <button onclick="handleCasteClick('${classLabels[c]}', 'ST')" class="bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${stCount}</button>
+                <button onclick="handleCasteClick('${classLabels[c]}', 'OBC')" class="bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${obcCount}</button>
+                <button onclick="handleCasteClick('${classLabels[c]}', 'OTHERS')" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-355 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${othCount}</button>
               </div>
             </td>
           `;
@@ -814,22 +1052,116 @@
 
         cellsHtml += `
           <td class="px-4 py-2.5 text-center">
-            <span class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
+            <button onclick="handleTotalClick('${classLabels[c]}')" 
+                    class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold transition border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
               ${total}
-            </span>
+            </button>
           </td>
         `;
 
         row.innerHTML = cellsHtml;
         tbody.appendChild(row);
       });
+
+      // 3. Render Total Row
+      const totalRow = document.createElement('tr');
+      totalRow.className = 'bg-slate-100 dark:bg-slate-800/80 font-bold border-t-2 border-slate-200 dark:border-slate-700/60';
+
+      let totalRowHtml = `
+        <td class="px-4 py-3 text-slate-900 dark:text-white font-extrabold text-xs">
+          Total / ಒಟ್ಟು
+        </td>
+      `;
+
+      if (currentEnrollmentView === 'gender') {
+        totalRowHtml += `
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Boys')" 
+                    class="inline-flex items-center gap-1 bg-sky-100/70 dark:bg-sky-950/60 hover:bg-sky-200/70 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-extrabold transition border border-sky-200/55 dark:border-sky-900/50">
+              <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${sumBoys}
+            </button>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Girls')" 
+                    class="inline-flex items-center gap-1 bg-rose-100/70 dark:bg-rose-950/60 hover:bg-rose-200/70 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-extrabold transition border border-rose-200/55 dark:border-rose-900/50">
+              <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${sumGirls}
+            </button>
+          </td>
+        `;
+      } else if (currentEnrollmentView === 'caste') {
+        totalRowHtml += `
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'SC')" 
+                    class="inline-flex items-center justify-center min-w-[32px] bg-emerald-100/70 dark:bg-emerald-950/40 hover:bg-emerald-200/70 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-450 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-emerald-250/50 dark:border-emerald-900/30">${sumSC}</button>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'ST')" 
+                    class="inline-flex items-center justify-center min-w-[32px] bg-teal-100/70 dark:bg-teal-950/40 hover:bg-teal-200/70 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-450 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-teal-250/50 dark:border-teal-900/30">${sumST}</button>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OBC')" 
+                    class="inline-flex items-center justify-center min-w-[32px] bg-indigo-100/70 dark:bg-indigo-950/40 hover:bg-indigo-200/70 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-indigo-250/50 dark:border-indigo-900/30">${sumOBC}</button>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OTHERS')" 
+                    class="inline-flex items-center justify-center min-w-[32px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-slate-200/50 dark:border-slate-700/30">${sumOth}</button>
+          </td>
+        `;
+      } else { // 'all'
+        totalRowHtml += `
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Boys')" 
+                    class="inline-flex items-center gap-1 bg-sky-100/70 dark:bg-sky-950/60 hover:bg-sky-200/70 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-extrabold transition border border-sky-200/55 dark:border-sky-900/50">
+              <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${sumBoys}
+            </button>
+          </td>
+          <td class="px-4 py-3 text-center">
+            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Girls')" 
+                    class="inline-flex items-center gap-1 bg-rose-100/70 dark:bg-rose-950/60 hover:bg-rose-200/70 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-extrabold transition border border-rose-200/55 dark:border-rose-900/50">
+              <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${sumGirls}
+            </button>
+          </td>
+          <td class="px-4 py-3 text-center text-xs">
+            <div class="flex items-center justify-center gap-1 flex-wrap font-extrabold">
+              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'SC')" class="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${sumSC}</button>
+              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'ST')" class="bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${sumST}</button>
+              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OBC')" class="bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${sumOBC}</button>
+              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OTHERS')" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-355 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${sumOth}</button>
+            </div>
+          </td>
+        `;
+      }
+
+      totalRowHtml += `
+        <td class="px-4 py-3 text-center">
+          <button onclick="handleTotalClick('${activeClasses.join(',')}')" 
+                  class="inline-flex items-center justify-center min-w-[36px] bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-2.5 py-1.5 rounded-md text-xs font-black transition border border-slate-300 dark:border-slate-650 shadow-sm text-slate-900 dark:text-slate-100">
+            ${sumTotal}
+          </button>
+        </td>
+      `;
+
+      totalRow.innerHTML = totalRowHtml;
+      tbody.appendChild(totalRow);
     }
 
-    function handleGenderClick(c, g) {
-      const genderVal = (g === 'Boys') ? 'Boy' : 'Girl';
-      window.location.href = `StudentList.html?class=${c}&gender=${genderVal}`;
+    function handleGenderClick(classesStr, gender) {
+      const genderVal = (gender === 'Boys') ? 'Boy' : 'Girl';
+      const categoriesParam = selectedCastes.join(',');
+      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&gender=${genderVal}&category=${encodeURIComponent(categoriesParam)}`;
     }
-  
+
+    function handleCasteClick(classesStr, category) {
+      const gendersParam = selectedGenders.join(',');
+      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&category=${category}&gender=${encodeURIComponent(gendersParam)}`;
+    }
+
+    function handleTotalClick(classesStr) {
+      const gendersParam = selectedGenders.join(',');
+      const categoriesParam = selectedCastes.join(',');
+      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&gender=${encodeURIComponent(gendersParam)}&category=${encodeURIComponent(categoriesParam)}`;
+    }
+
     // Sidebar & Theme helpers
     
 

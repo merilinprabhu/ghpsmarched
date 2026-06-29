@@ -1,0 +1,100 @@
+841:                 window.parent.postMessage({ action: 'backToForm' }, '*');
+842:                 return;
+843:             }
+844: 
+845:             const urlParams = new URLSearchParams(window.location.search);
+846:             if (urlParams.get('id') || (window.admissionData && window.admissionData.id)) {
+847:                 if (window.opener) {
+848:                     window.close();
+849:                 } else {
+850:                     window.location.href = "NewAdmissionList.html";
+851:                 }
+852:                 return;
+853:             }
+854: 
+855:             if (typeof google !== 'undefined' && google.script && google.script.run) {
+856:                 google.script.run.withSuccessHandler(function(url) {
+857:                     window.open(url + "?page=newadmission", "_top");
+858:                 }).getWebAppUrl();
+859:             } else {
+860:                 window.location.href = "NewAdmission.html";
+861:             }
+862:         }
+863: 
+864:         // Trigger native print
+865:         function printApplication() {
+866:             window.print();
+867:         }
+868: 
+869:         function getAdmissionPdfFilename() {
+870:             const data = window.admissionData || {};
+871:             const appNo = (data.appNo || '').trim();
+872:             const medium = (data.medium || '').trim();
+873:             const studentName = (data.nameEnglish || data.studentName || '').trim();
+874:             const fatherName = (data.fatherNameAz || data.fatherNameKn || '').trim();
+875:             
+876:             let parts = [];
+877:             if (appNo) parts.push(appNo);
+878:             if (medium) parts.push(medium);
+879:             if (studentName) parts.push(studentName);
+880:             if (fatherName) parts.push(fatherName);
+881:             
+882:             const filename = parts.length > 0 ? parts.join(' ') : 'admission_form';
+883:             return filename.replace(/[\\/:*?"<>|]/g, '');
+884:         }
+885: 
+886:         function downloadPdf() {
+887:             const pdfName = getAdmissionPdfFilename();
+888:             const oldTitle = document.title;
+889:             document.title = pdfName;
+890:             window.print();
+891:             setTimeout(() => {
+892:                 document.title = oldTitle;
+893:             }, 1200);
+894:         }
+895: 
+896:         /* Quick-Edit Messaging Bridge */
+897:         const fieldMappings = {
+898:             'preview_name': 'nameEnglish',
+899:             'preview_caste': 'caste',
+900:             'preview_subcaste': 'subCaste',
+901:             'preview_mother_tongue': 'motherTongue',
+902:             'preview_mobile': 'mobileNumber',
+903:             'preview_email': 'email',
+904:             'preview_student_caste_cert': 'studentCasteCert',
+905:             'preview_student_income_cert': 'studentIncomeCert',
+906:             'preview_bank_acc': 'bankAccNo',
+907:             'preview_ifsc': 'ifscCode',
+908:             'preview_bank_addr': 'bankAddress',
+909:             'preview_scholarship_no': 'scholarshipNo',
+910:             'preview_bpl_no': 'bplCardNo',
+911:             'preview_bhagya_bond': 'bhagyalakshmiBond',
+912:             'preview_village': 'address',
+913:             'preview_hobli': 'hobli',
+914:             'preview_taluk': 'taluk',
+915:             'preview_district': 'district',
+916:             'preview_pincode': 'pinCode',
+917:             'preview_mobile1': 'mobileNo1',
+918:             'preview_father_occupation': 'fatherOccupation',
+919:             'preview_father_caste_cert': 'fatherCasteCert',
+920:             'preview_father_income_cert': 'fatherIncomeCert',
+921:             'preview_father_email': 'fatherEmail',
+922:             'preview_mobile2': 'mobileNo2',
+923:             'preview_mother_occupation': 'motherOccupation',
+924:             'preview_mother_caste_cert': 'motherCasteCert',
+925:             'preview_mother_income_cert': 'motherIncomeCert',
+926:             'preview_mother_email': 'motherEmail',
+927:             'preview_prev_school_name': 'preschoolName',
+928:             'preview_tc_no': 'transferNo',
+929:             'preview_ps_village': 'prevVillage',
+930:             'preview_ps_hobli': 'prevHobli',
+931:             'preview_ps_taluk': 'prevTaluk',
+932:             'preview_ps_district': 'prevDistrict',
+933:             'preview_ps_pincode': 'prevPinCode',
+934:             'preview_office_sts': 'studentSts',
+935:             'preview_office_adm_no': 'enrolmentNo',
+936:             'preview_dob_figures': 'dob',
+937:             'preview_dob_words': 'dob',
+938:             'preview_father_name_kn': 'fatherNameKn',
+939:             'preview_father_name_az': 'fatherNameAz',
+940:             'preview_mother_name_kn': 'motherNameKn',

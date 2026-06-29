@@ -768,8 +768,8 @@
       { id: 'student_aadhaar', labelKn: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar', labelEn: 'Aadhaar' },
       { id: 'religion', labelKn: 'ಧರ್ಮ / Religion', labelEn: 'Religion' },
       { id: 'social_class', labelKn: 'ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category', labelEn: 'Social Category' },
-      { id: 'student_caste', labelKn: 'ಜಾತಿ / Caste', labelEn: 'Caste' },
-      { id: 'caste', labelKn: 'ಉಪಜಾತಿ / Sub-Caste', labelEn: 'Sub-Caste' },
+      { id: 'caste', labelKn: 'ಜಾತಿ / Caste', labelEn: 'Caste' },
+      { id: 'student_caste', labelKn: 'ಉಪಜಾತಿ / Sub-Caste', labelEn: 'Sub-Caste' },
       { id: 'mother_tongue', labelKn: 'ಮಾತೃಭಾಷೆ / Mother Tongue', labelEn: 'Mother Tongue' },
       { id: 'mobile_number', labelKn: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile No', labelEn: 'Mobile No' },
       { id: 'special_need', labelKn: 'ವಿಶೇಷ ಅಗತ್ಯತೆ / Special Need', labelEn: 'Special Need' },
@@ -969,18 +969,40 @@
       
       if (classParam) {
         const classFilter = document.getElementById('class-filter');
-        if (classFilter) classFilter.value = normalizeClass(classParam);
+        if (classFilter) {
+          let optionExists = false;
+          for (let i = 0; i < classFilter.options.length; i++) {
+            if (classFilter.options[i].value === classParam) {
+              optionExists = true;
+              break;
+            }
+          }
+          if (!optionExists) {
+            const opt = document.createElement('option');
+            opt.value = classParam;
+            opt.text = classParam.includes(',') ? `Class Group (${classParam})` : `Class ${classParam}`;
+            classFilter.appendChild(opt);
+          }
+          classFilter.value = classParam;
+        }
       }
       if (genderParam) {
         const genderFilter = document.getElementById('gender-filter');
         if (genderFilter) {
-          let mappedGender = genderParam;
-          if (genderParam.toLowerCase() === 'boy' || genderParam.toLowerCase() === 'male' || genderParam.toLowerCase() === 'boys') {
-            mappedGender = 'Boy';
-          } else if (genderParam.toLowerCase() === 'girl' || genderParam.toLowerCase() === 'female' || genderParam.toLowerCase() === 'girls') {
-            mappedGender = 'Girl';
+          let optionExists = false;
+          for (let i = 0; i < genderFilter.options.length; i++) {
+            if (genderFilter.options[i].value === genderParam) {
+              optionExists = true;
+              break;
+            }
           }
-          genderFilter.value = mappedGender;
+          if (!optionExists) {
+            const opt = document.createElement('option');
+            opt.value = genderParam;
+            opt.text = genderParam.includes(',') ? `Genders (${genderParam})` : genderParam;
+            genderFilter.appendChild(opt);
+          }
+          genderFilter.value = genderParam;
         }
       }
       if (mediumParam) {
@@ -989,12 +1011,63 @@
       }
       if (categoryParam) {
         const categoryFilter = document.getElementById('category-filter');
-        if (categoryFilter) categoryFilter.value = categoryParam.toUpperCase();
+        if (categoryFilter) {
+          let optionExists = false;
+          for (let i = 0; i < categoryFilter.options.length; i++) {
+            if (categoryFilter.options[i].value.toUpperCase() === categoryParam.toUpperCase()) {
+              optionExists = true;
+              break;
+            }
+          }
+          if (!optionExists) {
+            const opt = document.createElement('option');
+            opt.value = categoryParam;
+            opt.text = categoryParam.includes(',') ? `Categories (${categoryParam})` : categoryParam;
+            categoryFilter.appendChild(opt);
+          }
+          categoryFilter.value = categoryParam;
+        }
       }
       if (statusParam) {
         const statusFilter = document.getElementById('status-filter');
         if (statusFilter) statusFilter.value = statusParam;
       }
+    }
+
+    function normalizeStudentRow(student) {
+      const categoryCodes = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS', 'OBC'];
+      const socialClassUpper = (student.social_class || '').toString().trim().toUpperCase();
+      const casteUpper = (student.caste || '').toString().trim().toUpperCase();
+      
+      const isCasteCategory = categoryCodes.includes(casteUpper) || 
+                              casteUpper === 'CATEGORY-1' || 
+                              casteUpper === 'CAT-1' ||
+                              casteUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                              casteUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                              
+      const isSocialClassCategory = categoryCodes.includes(socialClassUpper) || 
+                                    socialClassUpper === 'CATEGORY-1' || 
+                                    socialClassUpper === 'CAT-1' ||
+                                    socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                    socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+      
+      let social_class = student.social_class;
+      let caste = student.caste;
+      let student_caste = student.student_caste;
+      
+      if (isCasteCategory && !isSocialClassCategory) {
+        social_class = student.caste;
+        caste = student.student_caste;
+        student_caste = student.social_class;
+      }
+      
+      // Determine gender robustly
+      const g = (student.gender || '').toString().toLowerCase().trim();
+      const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+      const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+      const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
+
+      return { ...student, social_class, caste, student_caste, gender };
     }
 
     async function fetchStudentsDatabase() {
@@ -1013,24 +1086,25 @@
         if (error) throw error;
 
         allStudentsData = (data || []).map(s => {
-          const mapped = { ...s };
-          mapped.realId = s.id;
-          mapped.id = s.app_no || s.id;
-          mapped.name = s.name_english || s.student_name || '';
-          mapped.student_name_kn = s.student_name || '';
-          mapped.name_english = s.name_english || '';
-          mapped.className = s.enroll_class;
-          mapped.gender = (s.gender && (s.gender.toUpperCase() === 'BOY' || s.gender.toUpperCase() === 'MALE' || s.gender.toUpperCase() === 'BOYS' || s.gender === 'ಗಂಡು')) ? 'Boy' : 'Girl';
-          mapped.father = s.father_name_az || s.father_name_kn || '';
-          mapped.father_name_kn = s.father_name_kn || '';
-          mapped.father_name_az = s.father_name_az || '';
-          mapped.mother = s.mother_name_az || s.mother_name_kn || '';
-          mapped.mother_name_kn = s.mother_name_kn || '';
-          mapped.mother_name_az = s.mother_name_az || '';
-          mapped.aadhaar = s.student_aadhaar;
-          mapped.mobile = s.mobile_number;
-          mapped.isAdmitted = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
-          mapped.specialNeed = s.special_need;
+          const normalized = normalizeStudentRow(s);
+          const mapped = { ...normalized };
+          mapped.realId = normalized.id;
+          mapped.id = normalized.app_no || normalized.id;
+          mapped.name = normalized.name_english || normalized.student_name || '';
+          mapped.student_name_kn = normalized.student_name || '';
+          mapped.name_english = normalized.name_english || '';
+          mapped.className = normalized.enroll_class;
+          mapped.gender = normalized.gender;
+          mapped.father = normalized.father_name_az || normalized.father_name_kn || '';
+          mapped.father_name_kn = normalized.father_name_kn || '';
+          mapped.father_name_az = normalized.father_name_az || '';
+          mapped.mother = normalized.mother_name_az || normalized.mother_name_kn || '';
+          mapped.mother_name_kn = normalized.mother_name_kn || '';
+          mapped.mother_name_az = normalized.mother_name_az || '';
+          mapped.aadhaar = normalized.student_aadhaar;
+          mapped.mobile = normalized.mobile_number;
+          mapped.isAdmitted = normalized.is_admitted === undefined || normalized.is_admitted === null ? true : normalized.is_admitted;
+          mapped.specialNeed = normalized.special_need;
           return mapped;
         });
 
@@ -1092,12 +1166,22 @@
           (student.aadhaar || '').toUpperCase().includes(q) ||
           (student.mobile || '').toUpperCase().includes(q);
 
-        let classMatch = !selectedClass;
-        if (selectedClass) {
-          classMatch = normalizeClass(student.className) === normalizeClass(selectedClass);
+        let classMatch = !selectedClass || selectedClass === 'ALL';
+        if (!classMatch) {
+          const selectedClasses = selectedClass.split(',').map(c => normalizeClass(c.trim()));
+          classMatch = selectedClasses.includes(normalizeClass(student.className));
         }
 
-        const genderMatch = !selectedGender || student.gender === selectedGender;
+        let genderMatch = !selectedGender || selectedGender === 'ALL';
+        if (!genderMatch) {
+          const selectedGendersList = selectedGender.split(',').map(g => {
+            let clean = g.trim().toLowerCase();
+            if (clean === 'boy' || clean === 'boys' || clean === 'male') return 'Boy';
+            if (clean === 'girl' || clean === 'girls' || clean === 'female') return 'Girl';
+            return g.trim();
+          });
+          genderMatch = selectedGendersList.includes(student.gender);
+        }
 
         // Religion Filter
         const studentRel = student.religion ? student.religion.trim() : '';
@@ -1112,8 +1196,11 @@
           (student.medium || '').toLowerCase() === selectedMedium.toLowerCase();
 
         // Category Filter
-        const categoryMatch = !selectedCategory || 
-          (student.social_class || '').toUpperCase() === selectedCategory.toUpperCase();
+        let categoryMatch = !selectedCategory || selectedCategory === 'ALL';
+        if (!categoryMatch) {
+          const selectedCategoriesList = selectedCategory.split(',').map(c => c.trim().toUpperCase());
+          categoryMatch = selectedCategoriesList.includes((student.social_class || '').toUpperCase().trim());
+        }
 
         // Status Filter
         let statusMatch = true;
@@ -1550,9 +1637,9 @@
       { id: 'gender', label: 'Gender (ಲಿಂಗ Boy/Girl)', default: 'Girl' },
       { id: 'student_aadhaar', label: 'Student Aadhaar (ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್)', default: '123456789012' },
       { id: 'religion', label: 'Religion (ಧರ್ಮ)', default: 'Hindu' },
-      { id: 'caste', label: 'Social Category (ಸಾಮಾಜಿಕ ವರ್ಗ SC/ST/2A/etc)', default: '2A' },
-      { id: 'student_caste', label: 'Caste (ಜಾತಿ)', default: 'Kuruba' },
-      { id: 'social_class', label: 'Social Class (ಸಬ್ ಕಾಸ್ಟ್)', default: 'Kuruba' },
+      { id: 'social_class', label: 'Social Category (ಸಾಮಾಜಿಕ ವರ್ಗ SC/ST/2A/etc)', default: '2A' },
+      { id: 'caste', label: 'Caste (ಜಾತಿ)', default: 'Kuruba' },
+      { id: 'student_caste', label: 'Social Class (ಸಬ್ ಕಾಸ್ಟ್)', default: 'Kuruba' },
       { id: 'mother_tongue', label: 'Mother Tongue (ಮಾತೃಭಾಷೆ)', default: 'Kannada' },
       { id: 'mobile_number', label: 'Mobile Number (ಮೊಬೈಲ್ ಸಂಖ್ಯೆ)', default: '9876543210' },
       { id: 'special_need', label: 'Special Need CWSN (ಅಂಗವೈಕಲ್ಯ)', default: 'NONE' },

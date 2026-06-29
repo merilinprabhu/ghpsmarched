@@ -337,7 +337,7 @@
       <div id="navbar-placeholder"></div>
 
     <!-- Main Outer Container -->
-  <div class="<div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6"> no-print">
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6">
     
 
     <!-- Main Workspace -->
@@ -517,13 +517,7 @@
                 <i class="fa-solid fa-trash"></i> Delete / ಅಳಿಸಿ
               </button>
               
-              <button onclick="triggerPrint()" title="Print Page" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
-                <i class="fa-solid fa-print"></i>
-              </button>
 
-              <button onclick="exportToPdf()" title="Export PDF" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
-                <i class="fa-solid fa-file-pdf text-rose-500"></i>
-              </button>
 
               <button onclick="exportToExcel()" title="Export Excel" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
                 <i class="fa-solid fa-file-excel text-emerald-600"></i>
@@ -628,6 +622,7 @@
   <div id="toast-notif" class="fixed bottom-5 right-5 bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition transform translate-y-20 opacity-0 z-[100] max-w-sm border border-slate-800">
     <p id="toast-message" class="text-xs font-semibold"></p>
   </div>
+  </div> <!-- End of no-print -->
 
   <script>
     // Supabase Credentials

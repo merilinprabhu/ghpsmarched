@@ -1,0 +1,35 @@
+1031:                             <tr>
+1032:                                 <td class="center">28</td>
+1033:                                 <td data-key="father_aadhaar">ತಂದೆಯ ಆಧಾರ್ ಸಂಖ್ಯೆ</td>
+1034:                                 <td colspan="2">
+1035:                                     <div class="digit-boxes" id="preview_father_aadhaar"></div>
+1036:                                     <span style="margin-left: 20px;"><span data-key="occupation">ಉದ್ಯೋಗ</span> :- <span class="bold" id="preview_father_occupation"></span></span>
+1037:                                 </td>
+1038:                             </tr>
+1039:                             <tr>
+1040:                                 <td class="center">29</td>
+1041:                                 <td data-key="father_caste_cert">ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣ ಪತ್ರದ ಸಂಖ್ಯೆ</td>
+1042:                                 <td class="bold" id="preview_father_caste_cert"></td>
+1043:                                 <td class="bold">ಇ-ಮೇಲ್ :- <span id="preview_father_email" style="font-weight: normal;"></span></td>
+1044:                             </tr>
+1045:                         </tbody>
+1046:                     </table>
+1047: 
+1048:                 </div>
+1049: 
+1050:                 <div class="footer">
+1051:                     <div>
+1052:                         <span data-key="student_name">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು</span>: <span id="preview_footer_name" class="bold"></span> &nbsp;|&nbsp; <span data-key="father_name">ತಂದೆಯ ಹೆಸರು</span>: <span id="preview_footer_father" class="bold"></span>
+1053:                     </div>
+1054:                     <div class="right">
+1055:                         <span data-key="page_no">Page no.</span> 01<br>
+1056:                         <span data-key="school_footer">Government Higher Primary School Marched Dist. Tq. Raichur</span>
+1057:                     </div>
+1058:                 </div>
+1059:             </div>
+1060: 
+1061:             
+1062:             <div class="page" id="page2">
+1063:                 <div class="content-wrapper">
+1064:                     
+1065:                     <div class="right" style="font-size: 11px; margin-bottom: 8px; font-weight: bold;">

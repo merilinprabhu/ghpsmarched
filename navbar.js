@@ -145,7 +145,8 @@
         { name: "Bridge Course", href: "BridgeCourse.html" },
         { name: "CCE Assessment", href: "CceAssessmet.html" },
         { name: "LBA Assessment", href: "LbaAssessment.html" },
-        { name: "FLN Assessment", href: "FlnAssessment.html" }
+        { name: "FLN Assessment", href: "FlnAssessment.html" },
+        { name: "Attendance Management", href: "Attendance.html" }
       ]
     },
     { name: "Custom Reports", href: "custom_reports.html", icon: "fa-file-invoice", color: "text-purple-400" },
@@ -162,7 +163,7 @@
       icon: "fa-calendar-check",
       color: "text-orange-400",
       items: [
-        { name: "Manage Attendance", href: "#" }
+        { name: "Manage Attendance", href: "Attendance.html" }
       ]
     },
     {
@@ -324,24 +325,31 @@
 
             <!-- Right Pane: Row 1 (Title/Controls) & Row 2 (Nav Bar) -->
             <div class="flex-1 flex flex-col justify-between min-w-0">
-              <!-- Row 1: Brand & Controls -->
-              <div class="w-full px-5 lg:px-7 py-3 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5">
+              <!-- Row 1: Brand (School Title) -->
+              <div class="w-full px-5 lg:px-7 py-2.5 flex justify-start items-center border-b border-slate-900/5">
                 <!-- Brand Text -->
                 <div class="min-w-0">
                   <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
                   <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
                 </div>
+              </div>
+
+              <!-- Row 2: Status Bar (Controls) -->
+              <div class="w-full px-5 lg:px-7 py-2 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5 bg-slate-900/[0.01]">
+                <!-- Status/Date info left, other controls right -->
+                <div class="flex items-center gap-2 text-xs">
+                  <div class="flex items-center gap-3 bg-slate-950/95 border border-slate-800/60 rounded-xl px-2.5 py-1.5 shadow-inner">
+                    <span id="liveDate" class="hidden sm:inline text-[10px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                    <div class="hidden sm:inline w-px h-3 bg-slate-800"></div>
+                    <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs tracking-wider glow-text-emerald"></span>
+                  </div>
+                </div>
 
                 <!-- Right Controls -->
                 <div class="flex items-center gap-2 text-xs flex-shrink-0">
-                  <!-- Digital Clock (XL screen only) -->
-                  <div class="hidden xl:flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-xl px-2.5 py-1.5 shadow-inner">
-                    <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs tracking-wider glow-text-emerald"></span>
-                  </div>
-
                   <!-- Theme Selector -->
                   <div class="hidden sm:flex items-center gap-2 bg-slate-900/5 border border-slate-900/10 rounded-xl px-2.5 py-1.5 shadow-sm">
-                    <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500"></i> Theme:</span>
+                    <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Theme:</span>
                     <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-xs font-bold focus:outline-none cursor-pointer">
                       <option class="bg-slate-900 text-white" value="light">Light</option>
                       <option class="bg-slate-900 text-white" value="dark">Dark</option>
@@ -353,18 +361,18 @@
 
                   <!-- User Badge Capsule -->
                   <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-3 py-1.5 shadow-inner">
-                    <i class="fa-solid fa-user-circle text-indigo-500"></i>
+                    <i class="fa-solid fa-user-circle text-indigo-500 text-xs"></i>
                     <span id="headerUser" class="font-bold text-slate-850 text-xs truncate max-w-[80px] sm:max-w-[120px]">User</span>
                   </div>
 
                   <!-- Logout Button -->
                   <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-3 py-1.5 rounded-full text-xs font-bold transition duration-300 cursor-pointer flex items-center gap-1 shadow-sm glow-shadow-red-hover">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Logout</span>
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> <span class="hidden sm:inline">Logout</span>
                   </button>
 
                   <!-- Hamburger menu button -->
                   <button id="mobileMenuBtn" class="flex lg:hidden items-center justify-center p-2 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                    <i class="fa-solid fa-bars text-base"></i>
+                    <i class="fa-solid fa-bars text-sm"></i>
                   </button>
                 </div>
               </div>
@@ -415,26 +423,31 @@
 
             <!-- Right Pane: Row 1 (Title/Controls) & Row 2 (Nav Bar) -->
             <div class="flex-1 flex flex-col justify-between min-w-0">
-              <!-- Row 1: Brand Header -->
-              <div class="w-full px-5 md:px-7 py-3 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5">
+              <!-- Row 1: Brand (School Title) -->
+              <div class="w-full px-5 md:px-7 py-2.5 flex justify-start items-center border-b border-slate-900/5">
                 <!-- Brand Text -->
                 <div class="min-w-0">
                   <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
                   <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-widest uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
                 </div>
+              </div>
 
-                <!-- Controls -->
-                <div class="flex items-center gap-2 md:gap-4 text-xs flex-shrink-0">
-                  <!-- Digital Neon Clock -->
-                  <div class="hidden md:flex items-center gap-3 bg-slate-950/95 border border-slate-800/60 rounded-2xl px-3 py-1.5 shadow-inner">
-                    <span id="liveDate" class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                    <div class="w-px h-3 bg-slate-800"></div>
+              <!-- Row 2: Status Bar (Controls) -->
+              <div class="w-full px-5 md:px-7 py-2 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5 bg-slate-900/[0.01]">
+                <!-- Clock / Date Left -->
+                <div class="flex items-center gap-2 text-xs">
+                  <div class="flex items-center gap-3 bg-slate-950/95 border border-slate-800/60 rounded-2xl px-3 py-1.5 shadow-inner">
+                    <span id="liveDate" class="hidden sm:inline text-[10px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                    <div class="hidden sm:inline w-px h-3 bg-slate-800"></div>
                     <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs tracking-wider glow-text-emerald"></span>
                   </div>
+                </div>
 
+                <!-- Controls Right -->
+                <div class="flex items-center gap-2 md:gap-4 text-xs flex-shrink-0">
                   <!-- Theme Selector -->
                   <div class="hidden sm:flex items-center gap-2 bg-slate-900/5 border border-slate-900/10 rounded-2xl px-3 py-1.5 shadow-sm transition-all duration-300">
-                    <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500"></i> Theme:</span>
+                    <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Theme:</span>
                     <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 rounded text-xs font-bold focus:outline-none cursor-pointer">
                       <option class="bg-slate-900 text-white" value="light">Light</option>
                       <option class="bg-slate-900 text-white" value="dark">Dark</option>
@@ -446,18 +459,18 @@
                   
                   <!-- User Badge -->
                   <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-3.5 py-1.5 shadow-inner transition-all duration-300 group">
-                    <i class="fa-solid fa-user-circle text-base text-indigo-500 group-hover:scale-105 transition-transform"></i>
+                    <i class="fa-solid fa-user-circle text-xs text-indigo-500 group-hover:scale-105 transition-transform"></i>
                     <span id="headerUser" class="font-bold text-slate-850 text-xs truncate max-w-[90px] md:max-w-[140px]">User</span>
                   </div>
 
                   <!-- Logout Button -->
                   <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Logout</span>
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i> <span class="hidden sm:inline">Logout</span>
                   </button>
 
                   <!-- Hamburger menu button -->
                   <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-2 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                    <i class="fa-solid fa-bars text-lg"></i>
+                    <i class="fa-solid fa-bars text-sm"></i>
                   </button>
                 </div>
               </div>
@@ -588,7 +601,7 @@
             <div class="w-full">
               <button onclick="toggleSidebarAccordion('${sidebarCollapseId}')" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-all duration-200 focus:outline-none ${activeClassDesktop}">
                 <span class="flex items-center gap-2">
-                  <i class="fa-solid ${item.icon} ${item.color} text-sm"></i>
+                  <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
                   <span>${item.name}</span>
                 </span>
                 <i id="${sidebarCollapseId}-arrow" class="fa-solid fa-chevron-right text-[9px] opacity-70 transition-transform duration-200 ${!isCollapsed ? 'rotate-90' : ''}"></i>
@@ -615,7 +628,7 @@
           menuHtmlDesktop += `
             <div class="nav-dropdown-item group relative">
               <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ${activeClassDesktop} transition focus:outline-none cursor-pointer">
-                <i class="fa-solid ${item.icon} ${item.color} text-sm"></i>
+                <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
                 <span>${item.name}</span>
                 <i class="fa-solid fa-chevron-down text-[9px] opacity-70 ml-0.5 group-hover:rotate-180 transition-transform duration-200"></i>
               </button>
@@ -637,7 +650,7 @@
           <div class="border-b border-slate-900/50">
             <button onclick="toggleMobileAccordion('${mobileCollapseId}')" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg ${activeClassMobile} transition text-left focus:outline-none">
               <span class="flex items-center gap-2">
-                <i class="fa-solid ${item.icon} ${item.color} text-sm"></i>
+                <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
                 <span>${item.name}</span>
               </span>
               <i id="${mobileCollapseId}-arrow" class="fa-solid fa-chevron-right text-[10px] opacity-50 transition-transform duration-200"></i>
@@ -656,7 +669,7 @@
         // Direct link (Desktop)
         menuHtmlDesktop += `
           <a href="${item.href}" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ${activeClassDesktop} transition">
-            <i class="fa-solid ${item.icon} ${item.color} text-sm"></i>
+            <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
             <span>${item.name}</span>
           </a>
         `;
@@ -664,7 +677,7 @@
         // Direct link (Mobile)
         menuHtmlMobile += `
           <a href="${item.href}" class="flex items-center gap-2 px-3 py-2.5 rounded-lg ${activeClassMobile} transition">
-            <i class="fa-solid ${item.icon} ${item.color} text-sm"></i>
+            <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
             <span>${item.name}</span>
           </a>
         `;

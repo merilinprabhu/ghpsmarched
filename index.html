@@ -3,153 +3,281 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GHPS Marched - Modern Portal</title>
+  <title>GHPS Marched - Portal Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;850&family=Noto+Sans+Kannada:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;
+    }
+    .font-outfit {
+      font-family: 'Outfit', sans-serif;
+    }
+    /* Colorful Glassmorphic Card */
     .glass-card {
       background: rgba(255, 255, 255, 0.45);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25),
+                  0 0 40px rgba(255, 255, 255, 0.5);
     }
+    /* Light Glass Input Fields */
     .glass-input {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      color: #1e1b4b;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.03);
     }
+    .glass-input:focus {
+      background: rgba(255, 255, 255, 0.95);
+      border-color: rgba(99, 102, 241, 0.6);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.12),
+                  inset 0 1px 2px rgba(99, 102, 241, 0.05);
+      outline: none;
+    }
+    /* Animated Gradient Background Blobs */
     .animate-pulse-slow {
-      animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      animation: pulse 9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .animate-pulse-delayed {
+      animation: pulse 9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      animation-delay: 4.5s;
     }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.15; }
-      50% { transform: scale(1.1); opacity: 0.25; }
+      0%, 100% { transform: scale(1) translate(0px, 0px); opacity: 0.35; }
+      50% { transform: scale(1.2) translate(15px, 15px); opacity: 0.55; }
+    }
+    /* Smooth Transitions */
+    .form-transition {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    /* Custom Neon Glow Text */
+    .glow-text-indigo {
+      text-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
     }
   </style>
 </head>
-<body class="bg-[#0f172a] bg-gradient-to-tr from-[#0f172a] via-[#1e1b4b] to-[#0f172a] flex flex-col items-center justify-center min-h-screen py-10 px-4 relative">
+<body class="bg-gradient-to-tr from-[#e0e7ff] via-[#fae8ff] to-[#fef3c7] text-[#1e1b4b] flex flex-col items-center justify-center min-h-screen py-12 px-4 relative overflow-x-hidden select-none">
   
-  <div class="absolute w-[500px] h-[500px] bg-indigo-600 rounded-full blur-[120px] opacity-20 -top-40 -left-20 pointer-events-none animate-pulse-slow"></div>
-  <div class="absolute w-[500px] h-[500px] bg-blue-500 rounded-full blur-[120px] opacity-20 -bottom-40 -right-20 pointer-events-none animate-pulse-slow" style="animation-delay: 3s;"></div>
+  <!-- Glowing Background Orbs -->
+  <div class="absolute w-[500px] h-[500px] bg-indigo-300 rounded-full blur-[100px] opacity-40 -top-40 -left-25 pointer-events-none animate-pulse-slow"></div>
+  <div class="absolute w-[500px] h-[500px] bg-pink-300 rounded-full blur-[100px] opacity-35 -bottom-40 -right-25 pointer-events-none animate-pulse-delayed"></div>
+  <div class="absolute w-[400px] h-[400px] bg-amber-200 rounded-full blur-[90px] opacity-30 top-1/3 left-1/3 pointer-events-none animate-pulse-slow" style="animation-delay: 2s;"></div>
 
-  <div class="glass-card p-8 rounded-3xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] w-full max-w-md transform transition-all duration-500">
-    
-    <div class="text-center mb-6">
-      <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-2xl border border-white/20 shadow-lg mb-4 overflow-hidden p-1.5"><img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="w-full h-full object-contain"></div>
-      <h1 class="text-xl font-bold text-white tracking-wide uppercase">GHPS Marched</h1>
-      <p class="text-[11px] font-semibold text-indigo-200 tracking-widest uppercase opacity-80 mt-1">Govt Higher Primary School</p>
-      <div class="w-12 h-[3px] bg-gradient-to-r from-blue-400 to-indigo-400 mx-auto mt-3 rounded-full"></div>
+  <!-- Logo and Branding -->
+  <div class="text-center mb-8 z-10">
+    <div class="inline-flex items-center justify-center w-24 h-24 bg-white/45 rounded-3xl border border-white/60 shadow-xl mb-4 p-2 relative group overflow-hidden">
+      <!-- Glow behind logo -->
+      <div class="absolute inset-0 bg-indigo-500/10 opacity-0 group-hover:opacity-100 transition duration-500 blur-md"></div>
+      <img src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo" class="w-full h-full object-contain relative z-10 transition-transform duration-500 group-hover:scale-105">
     </div>
-
-    <h2 id="formTitle" class="text-sm font-medium mb-6 text-center text-indigo-100/80 tracking-wide">School Management System</h2>
-
-    <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4">
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">User Name / ಬಳಕೆದಾರರ ಹೆಸರು</label>
-        <input type="text" id="loginUsername" placeholder="User Name / ಬಳಕೆದಾರರ ಹೆಸರು" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
-      </div>
-      <div>
-        <div class="flex justify-between items-center mb-1.5 ml-1">
-          <label class="text-white text-xs font-semibold tracking-wider uppercase opacity-90">Password</label>
-          <a href="#" onclick="toggleForm('forgot')" class="text-xs text-indigo-300 hover:text-white font-medium transition">Forgot Password?</a>
-        </div>
-        <input type="password" id="loginPassword" placeholder="••••••••" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
-      </div>
-      <div class="pt-3">
-        <button type="submit" class="w-full bg-gradient-to-tr from-indigo-600 to-violet-500 hover:from-indigo-700 hover:to-violet-600 active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all duration-300 text-sm tracking-wide shadow-lg shadow-indigo-950/40">Login</button>
-      </div>
-      <p class="mt-6 text-xs text-center text-indigo-200/70">New user? <a href="#" onclick="toggleForm('register')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Register here</a></p>
-    </form>
-
-    <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" class="hidden space-y-4">
-      <!-- Registration Type Selection -->
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">I want to / ನನ್ನ ಆಯ್ಕೆ</label>
-        <select id="regType" onchange="toggleRegFields(this.value)" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
-          <option value="new_school">Register a New School / ಹೊಸ ಶಾಲೆ ನೋಂದಾಯಿಸಿ</option>
-          <option value="join_school">Join an Existing School / ಹಾಲಿ ಶಾಲೆಗೆ ಸೇರಿ</option>
-        </select>
-      </div>
-
-      <!-- New School Input Fields -->
-      <div id="newSchoolFields" class="space-y-3">
-        <div>
-          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">School Name (English) *</label>
-          <input type="text" id="schoolNameEn" placeholder="e.g. GHPS MARCHED" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
-        </div>
-        <div>
-          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
-          <input type="text" id="schoolNameKn" placeholder="ಉದಾ. ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
-        </div>
-        <div>
-          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">School UDISE Code *</label>
-          <input type="text" id="schoolUdise" placeholder="e.g. 29060709801" maxlength="11" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm">
-        </div>
-      </div>
-
-      <!-- Join Existing School Fields -->
-      <div id="joinSchoolFields" class="hidden">
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Select School / ಶಾಲೆ ಆರಿಸಿ *</label>
-        <select id="regSchoolSelect" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
-          <option value="">-- Select a School / ಶಾಲೆ ಆರಿಸಿ --</option>
-        </select>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Full Name</label>
-          <input type="text" id="regName" placeholder="Full Name" class="glass-input w-full px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
-        </div>
-        <div>
-          <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Username</label>
-          <input type="text" id="regUsername" placeholder="username123" class="glass-input w-full px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
-        </div>
-      </div>
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Phone Number</label>
-        <input type="tel" id="regPhone" placeholder="9876543210" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
-      </div>
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Email Address</label>
-        <input type="email" id="regEmail" placeholder="name@school.com" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
-      </div>
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Password</label>
-        <input type="password" id="regPassword" placeholder="••••••••" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-800 text-sm" required>
-      </div>
-      <div id="roleSelectionField">
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Role</label>
-        <select id="regRole" class="glass-input w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 text-gray-700 text-sm bg-white/70">
-          <option value="Teacher">Teacher</option>
-          <option value="Admin">Admin</option>
-        </select>
-      </div>
-      <div class="pt-2">
-        <button type="submit" class="w-full bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all duration-300 text-sm tracking-wide shadow-lg shadow-emerald-950/30">Register Account</button>
-      </div>
-      <p class="mt-4 text-xs text-center text-indigo-200/70">Already have an account? <a href="#" onclick="toggleForm('login')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Login here</a></p>
-    </form>
-
-    <form id="forgotForm" onsubmit="event.preventDefault(); handleForgotPassword();" class="hidden space-y-4">
-      <p class="text-xs text-indigo-200/80 text-center mb-2">ನಿಮ್ಮ ಖಾತೆಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ. ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ಕಳುಹಿಸಲಾಗುವುದು.</p>
-      <div>
-        <label class="block text-white text-xs font-semibold tracking-wider uppercase mb-1.5 ml-1 opacity-90">Registered Email</label>
-        <input type="email" id="forgotEmail" placeholder="name@school.com" class="glass-input w-full px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white/80 transition-all text-gray-800 text-sm shadow-inner" required>
-      </div>
-      <div class="pt-2">
-        <button type="submit" class="w-full bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all duration-300 text-sm tracking-wide shadow-lg shadow-amber-950/30">Reset Password</button>
-      </div>
-      <p class="mt-6 text-xs text-center text-indigo-200/70">Back to <a href="#" onclick="toggleForm('login')" class="text-blue-300 hover:text-white font-semibold hover:underline transition ml-1">Login</a></p>
-    </form>
-
-    <div id="message" class="mt-4 text-xs text-center hidden p-3 rounded-xl font-medium border backdrop-blur-md"></div>
+    <h1 class="text-2xl font-outfit font-black tracking-wider text-indigo-950 uppercase">GHPS Marched</h1>
+    <p class="text-[10px] font-outfit font-black text-indigo-700/90 tracking-widest uppercase mt-1">Govt Higher Primary School • ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ</p>
+    <div class="w-16 h-[4px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 mx-auto mt-4 rounded-full"></div>
   </div>
 
-  <footer class="mt-8 text-center text-indigo-300/50 text-xs tracking-wider">
-    <p class="font-light">Designed & Developed by <span class="font-medium text-indigo-200 hover:text-white transition cursor-pointer border-b border-indigo-400/30 pb-0.5">Marilin Prabhu</span></p>
+  <!-- Glassmorphic Card Container -->
+  <div id="formCard" class="glass-card p-8 rounded-[32px] w-full max-w-md z-10 relative overflow-hidden transition-all duration-300">
+    
+    <!-- Decorative top gradient border line -->
+    <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
+    <h2 id="formTitle" class="text-xs font-black uppercase text-center text-indigo-850 tracking-widest mb-6 font-outfit">School Management System</h2>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();" class="space-y-4 form-transition">
+      <div class="space-y-1.5">
+        <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">User Name / ಬಳಕೆದಾರರ ಹೆಸರು</label>
+        <div class="relative">
+          <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+          <input type="text" id="loginUsername" placeholder="User Name / Email" class="glass-input w-full pl-11 pr-4 py-3 rounded-2xl text-sm" required>
+        </div>
+      </div>
+      
+      <div class="space-y-1.5">
+        <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Password / ಪಾಸ್‌ವರ್ಡ್</label>
+        <div class="relative">
+          <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+          <input type="password" id="loginPassword" placeholder="••••••••" class="glass-input w-full pl-11 pr-4 py-3 rounded-2xl text-sm" required>
+        </div>
+        <div class="text-right px-1">
+          <a href="#" onclick="toggleForm('forgot')" class="text-[10px] text-indigo-650 hover:text-indigo-855 font-bold transition hover:underline">Forgot Password? / ಪಾಸ್‌ವರ್ಡ್ ಮರೆತಿರಾ?</a>
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-400 active:scale-[0.98] text-white font-bold py-3.5 rounded-2xl transition-all duration-300 text-xs tracking-wider uppercase shadow-lg shadow-indigo-500/25 border-0">
+          <i class="fa-solid fa-right-to-bracket mr-1.5 text-sm"></i> Login / ಲಾಗಿನ್
+        </button>
+      </div>
+      
+      <p class="mt-6 text-[11px] text-center text-slate-600 font-medium">
+        New user? <a href="#" onclick="toggleForm('register')" class="text-indigo-650 hover:text-indigo-850 font-bold transition ml-1 hover:underline">Register here / ನೋಂದಾಯಿಸಿ</a>
+      </p>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="registerForm" onsubmit="event.preventDefault(); handleRegister();" class="hidden space-y-4 form-transition">
+      <!-- 2 Column Grid for landscape styling -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Left Column: School Details -->
+        <div class="space-y-4">
+          <h3 class="text-[11px] font-bold text-indigo-750/90 uppercase tracking-wider border-b border-indigo-150/40 pb-1 ml-1"><i class="fa-solid fa-school mr-1.5 text-xs text-indigo-600"></i> School Details / ಶಾಲೆಯ ವಿವರಗಳು</h3>
+          
+          <!-- Registration Type Selection -->
+          <div class="space-y-1.5">
+            <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Registration Type / ನನ್ನ ಆಯ್ಕೆ</label>
+            <div class="relative">
+              <i class="fa-solid fa-building-circle-check absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+              <select id="regType" onchange="toggleRegFields(this.value)" class="glass-input w-full pl-11 pr-4 py-3 rounded-2xl text-sm bg-white appearance-none cursor-pointer">
+                <option value="new_school">Register a New School / ಹೊಸ ಶಾಲೆ ನೋಂದಾಯಿಸಿ</option>
+                <option value="join_school">Join an Existing School / ಹಾಲಿ ಶಾಲೆಗೆ ಸೇರಿ</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-indigo-750 pointer-events-none text-xs"></i>
+            </div>
+          </div>
+
+          <!-- New School Input Fields -->
+          <div id="newSchoolFields" class="space-y-3">
+            <div class="space-y-1.5">
+              <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">School Name (English) *</label>
+              <div class="relative">
+                <i class="fa-solid fa-school absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+                <input type="text" id="schoolNameEn" placeholder="e.g. GHPS MARCHED" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs uppercase">
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+              <div class="relative">
+                <i class="fa-solid fa-school-flag absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+                <input type="text" id="schoolNameKn" placeholder="ಉದಾ. ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs">
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">School UDISE Code (11 digits) *</label>
+              <div class="relative">
+                <i class="fa-solid fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+                <input type="text" id="schoolUdise" placeholder="e.g. 29060709801" maxlength="11" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs font-mono">
+              </div>
+            </div>
+          </div>
+
+          <!-- Join Existing School Fields -->
+          <div id="joinSchoolFields" class="hidden space-y-1.5">
+            <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Select School / ಶಾಲೆ ಆರಿಸಿ *</label>
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass-location absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+              <select id="regSchoolSelect" class="glass-input w-full pl-11 pr-10 py-3 rounded-2xl text-xs bg-white appearance-none cursor-pointer">
+                <option value="">-- Select a School --</option>
+              </select>
+              <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-indigo-750 pointer-events-none text-xs"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Column: Personal & Credentials Details -->
+        <div class="space-y-4">
+          <h3 class="text-[11px] font-bold text-indigo-750/90 uppercase tracking-wider border-b border-indigo-150/40 pb-1 ml-1"><i class="fa-solid fa-user-shield mr-1.5 text-xs text-indigo-600"></i> Profile Details / ಪ್ರೊಫೈಲ್ ವಿವರಗಳು</h3>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Full Name</label>
+              <div class="relative">
+                <i class="fa-solid fa-address-card absolute left-3 top-1/2 -translate-y-1/2 text-indigo-750 text-xs"></i>
+                <input type="text" id="regName" placeholder="Full Name" class="glass-input w-full pl-8 pr-3 py-2.5 rounded-xl text-xs" required>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Username</label>
+              <div class="relative">
+                <i class="fa-solid fa-user-tag absolute left-3 top-1/2 -translate-y-1/2 text-indigo-750 text-xs"></i>
+                <input type="text" id="regUsername" placeholder="username" class="glass-input w-full pl-8 pr-3 py-2.5 rounded-xl text-xs" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="space-y-1.5">
+            <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Phone Number</label>
+            <div class="relative">
+              <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+              <input type="tel" id="regPhone" placeholder="Mobile Number" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs" required>
+            </div>
+          </div>
+          
+          <div class="space-y-1.5">
+            <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Email Address</label>
+            <div class="relative">
+              <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+              <input type="email" id="regEmail" placeholder="email@school.com" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs" required>
+            </div>
+          </div>
+          
+          <div class="space-y-1.5">
+            <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Password</label>
+            <div class="relative">
+              <i class="fa-solid fa-key absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+              <input type="password" id="regPassword" placeholder="••••••••" class="glass-input w-full pl-11 pr-4 py-2.5 rounded-xl text-xs" required>
+            </div>
+          </div>
+          
+          <div id="roleSelectionField" class="hidden">
+            <label class="block text-slate-400 text-[10px] font-bold tracking-wider uppercase ml-1">Role</label>
+            <select id="regRole" class="glass-input w-full px-4 py-2.5 rounded-xl text-xs bg-white">
+              <option value="Teacher">Teacher</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-4 flex flex-col items-center">
+        <button type="submit" class="w-full md:w-3/4 bg-gradient-to-r from-emerald-600 to-teal-650 hover:from-emerald-555 hover:to-teal-550 active:scale-[0.98] text-white font-bold py-3.5 rounded-2xl transition-all duration-300 text-xs tracking-wider uppercase shadow-lg shadow-emerald-500/20 border-0">
+          <i class="fa-solid fa-user-plus mr-1.5 text-sm"></i> Register Account / ನೋಂದಾಯಿಸಿ
+        </button>
+      </div>
+      
+      <p class="mt-4 text-[11px] text-center text-slate-650 font-medium">
+        Already have an account? <a href="#" onclick="toggleForm('login')" class="text-indigo-650 hover:text-indigo-855 font-bold transition ml-1 hover:underline">Login here / ಲಾಗಿನ್</a>
+      </p>
+    </form>
+
+    <!-- FORGOT PASSWORD FORM -->
+    <form id="forgotForm" onsubmit="event.preventDefault(); handleForgotPassword();" class="hidden space-y-4 form-transition">
+      <p class="text-[11px] text-indigo-950/70 text-center leading-relaxed mb-4">
+        ನಿಮ್ಮ ಖಾತೆಯ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ. ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ನಿಮ್ಮ ಇಮೇಲ್‌ಗೆ ಕಳುಹಿಸಲಾಗುವುದು.
+      </p>
+      
+      <div class="space-y-1.5">
+        <label class="block text-indigo-900/80 text-[10px] font-bold tracking-wider uppercase ml-1">Registered Email</label>
+        <div class="relative">
+          <i class="fa-solid fa-envelope-open-text absolute left-4 top-1/2 -translate-y-1/2 text-indigo-750 text-sm"></i>
+          <input type="email" id="forgotEmail" placeholder="name@school.com" class="glass-input w-full pl-11 pr-4 py-3 rounded-2xl text-sm" required>
+        </div>
+      </div>
+      
+      <div class="pt-2">
+        <button type="submit" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-550 hover:to-orange-500 active:scale-[0.98] text-white font-bold py-3.5 rounded-2xl transition-all duration-300 text-xs tracking-wider uppercase shadow-lg shadow-amber-500/20 border-0">
+          <i class="fa-solid fa-paper-plane mr-1.5 text-xs"></i> Send Reset Link / ಲಿಂಕ್ ಕಳುಹಿಸಿ
+        </button>
+      </div>
+      
+      <p class="mt-6 text-[11px] text-center text-slate-600 font-medium">
+        Back to <a href="#" onclick="toggleForm('login')" class="text-indigo-650 hover:text-indigo-850 font-bold transition ml-1 hover:underline">Login / ಲಾಗಿನ್</a>
+      </p>
+    </form>
+
+    <!-- Unified Toast Message Bar inside card -->
+    <div id="message" class="mt-4 text-[11px] text-center hidden p-3.5 rounded-2xl font-bold border backdrop-blur-md transition-all duration-300"></div>
+  </div>
+
+  <footer class="mt-8 text-center text-indigo-900/60 text-[10px] tracking-widest uppercase font-bold z-10 select-none">
+    <p>Designed & Developed for <span class="text-indigo-800 hover:text-indigo-950 transition cursor-pointer border-b border-indigo-300 hover:border-indigo-500 pb-0.5">GHPS Marched</span></p>
   </footer>
 
   <script>
@@ -236,33 +364,47 @@
     function toggleForm(type) {
       document.getElementById('message').classList.add('hidden');
       
-      document.getElementById('loginForm').classList.add('hidden');
-      document.getElementById('registerForm').classList.add('hidden');
-      document.getElementById('forgotForm').classList.add('hidden');
+      const login = document.getElementById('loginForm');
+      const register = document.getElementById('registerForm');
+      const forgot = document.getElementById('forgotForm');
+      const card = document.getElementById('formCard');
+      
+      login.classList.add('hidden');
+      register.classList.add('hidden');
+      forgot.classList.add('hidden');
       
       if (type === 'register') {
-        document.getElementById('registerForm').classList.remove('hidden');
+        register.classList.remove('hidden');
         document.getElementById('formTitle').innerText = "Register Account";
         document.getElementById('regType').value = "new_school";
         toggleRegFields("new_school");
+        
+        // Expand card to landscape style (780px wide)
+        card.style.maxWidth = '780px';
       } else if (type === 'forgot') {
-        document.getElementById('forgotForm').classList.remove('hidden');
+        forgot.classList.remove('hidden');
         document.getElementById('formTitle').innerText = "Reset Password";
+        
+        // Reset card to normal width
+        card.style.maxWidth = '448px';
       } else {
-        document.getElementById('loginForm').classList.remove('hidden');
+        login.classList.remove('hidden');
         document.getElementById('formTitle').innerText = "School Management System";
+        
+        // Reset card to normal width
+        card.style.maxWidth = '448px';
       }
     }
 
     function showMessage(text, isSuccess) {
       const msgDiv = document.getElementById('message');
       msgDiv.innerText = text;
-      msgDiv.classList.remove('hidden', 'bg-red-500/20', 'text-red-200', 'border-red-500/30', 'bg-emerald-500/20', 'text-emerald-200', 'border-emerald-500/30');
+      msgDiv.classList.remove('hidden', 'bg-red-500/10', 'text-red-650', 'border-red-500/20', 'bg-emerald-500/10', 'text-emerald-650', 'border-emerald-500/20');
       
       if (isSuccess) {
-        msgDiv.classList.add('bg-emerald-500/20', 'text-emerald-200', 'border-emerald-500/30');
+        msgDiv.classList.add('bg-emerald-500/10', 'text-emerald-650', 'border-emerald-500/20');
       } else {
-        msgDiv.classList.add('bg-red-500/20', 'text-red-200', 'border-red-500/30');
+        msgDiv.classList.add('bg-red-500/10', 'text-red-650', 'border-red-500/20');
       }
       msgDiv.classList.remove('hidden');
     }
@@ -271,12 +413,11 @@
       const userInput = document.getElementById('loginUsername').value.trim();
       const pass = document.getElementById('loginPassword').value;
       if(!userInput || !pass) { showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false); return; }
-      showMessage("ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ...", true);
+      showMessage("ಲಾಗಿನ್ ಆಗುತ್ತಿದೆ... / Logging in...", true);
 
       try {
         let email = userInput;
 
-        // If it doesn't look like an email address, treat as username and lookup email
         if (!userInput.includes('@')) {
           const { data: profile, error: lookupErr } = await supabaseClient
             .from('profiles')
@@ -310,7 +451,6 @@
           return;
         }
 
-        // Fetch user profile from the database (including role)
         const { data: profile, error: profileErr } = await supabaseClient
           .from('profiles')
           .select('name, school_id, role, is_approved')
@@ -356,7 +496,7 @@
         }
 
         if (profile && profile.role === 'developer') {
-          showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ!", true);
+          showMessage("ಡೆವಲಪರ್ ಲಾಗಿನ್ ಯಶಸ್ವಿಯಾಗಿದೆ! / Developer Login Successful!", true);
           setTimeout(() => {
             window.location.href = "developer.html";
           }, 1200);
@@ -376,15 +516,15 @@
 
     async function handleRegister() {
       const regType = document.getElementById('regType').value;
-      const name = document.getElementById('regName').value;
-      const username = document.getElementById('regUsername').value;
-      const phone = document.getElementById('regPhone').value;
-      const email = document.getElementById('regEmail').value;
+      const name = document.getElementById('regName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
       const pass = document.getElementById('regPassword').value;
       const role = document.getElementById('regRole').value;
 
       if(!name || !username || !phone || !email || !pass) {
-        showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", false);
+        showMessage("ದಯವಿಟ್ಟು ಎಲ್ಲಾ ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ. / Please fill in all fields.", false);
         return;
       }
 
@@ -400,9 +540,8 @@
           return;
         }
 
-        showMessage("ಹೊಸ ಶಾಲೆಯನ್ನು ನಮೂದಿಸಲಾಗುತ್ತಿದೆ...", true);
+        showMessage("ಹೊಸ ಶಾಲೆಯನ್ನು ನಮೂದಿಸಲಾಗುತ್ತಿದೆ... / Registering School...", true);
         try {
-          // Check if UDISE code already exists
           const { data: existingSch, error: checkErr } = await supabaseClient
             .from('schools')
             .select('id')
@@ -411,11 +550,10 @@
 
           if (checkErr) throw checkErr;
           if (existingSch) {
-            showMessage("ಈ UDISE ಕೋಡ್ ಹೊಂದಿರುವ ಶಾಲೆ ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲ್ಪಟ್ಟಿದೆ.", false);
+            showMessage("ಈ UDISE ಕೋಡ್ ಹೊಂದಿರುವ ಶಾಲೆ ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲ್ಪಟ್ಟಿದೆ. / School with this UDISE already registered.", false);
             return;
           }
 
-          // Insert school
           const { data: newSch, error: insertSchErr } = await supabaseClient
             .from('schools')
             .insert({
@@ -436,12 +574,12 @@
       } else {
         schoolId = document.getElementById('regSchoolSelect').value;
         if (!schoolId) {
-          showMessage("ದಯವಿಟ್ಟು ನಿಮ್ಮ ಶಾಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.", false);
+          showMessage("ದಯವಿಟ್ಟು ನಿಮ್ಮ ಶಾಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. / Please select a school.", false);
           return;
         }
       }
 
-      showMessage("ಖಾತೆಯನ್ನು ಸೃಷ್ಟಿಸಲಾಗುತ್ತಿದೆ...", true);
+      showMessage("ಖಾತೆಯನ್ನು ಸೃಷ್ಟಿಸಲಾಗುತ್ತಿದೆ... / Registering User...", true);
 
       try {
         const { data, error } = await supabaseClient.auth.signUp({
@@ -464,21 +602,46 @@
         }
 
         if (data.user) {
-          // Insert details to profiles table
-          const isApproved = (role === 'Admin'); // Admins approved by default, teachers wait for admin approval
-          const { error: profileErr } = await supabaseClient
+          const isApproved = (role === 'Admin'); 
+          
+          let profileData = {
+            id: data.user.id,
+            email: email,
+            name: name,
+            username: username,
+            phone: phone,
+            role: role,
+            school_id: schoolId,
+            is_approved: isApproved,
+            assigned_classes: []
+          };
+
+          let { error: profileErr } = await supabaseClient
             .from('profiles')
-            .insert({
-              id: data.user.id,
-              email: email,
-              name: name,
-              username: username,
-              phone: phone,
-              role: role,
-              school_id: schoolId,
-              is_approved: isApproved,
-              assigned_classes: []
-            });
+            .insert(profileData);
+
+          if (profileErr) {
+            const isMissingColumns = profileErr.message && (
+              profileErr.message.includes("assigned_classes") || 
+              profileErr.message.includes("is_approved")
+            );
+            if (isMissingColumns) {
+              console.warn("Schema cache mismatch. Retrying profile insert without missing columns...");
+              const fallbackData = {
+                id: data.user.id,
+                email: email,
+                name: name,
+                username: username,
+                phone: phone,
+                role: role,
+                school_id: schoolId
+              };
+              const { error: fallbackErr } = await supabaseClient
+                .from('profiles')
+                .insert(fallbackData);
+              profileErr = fallbackErr;
+            }
+          }
 
           if (profileErr) {
             console.error("Profiles insertion error:", profileErr);
@@ -486,7 +649,7 @@
             return;
           }
 
-          showMessage("ನೋಂದಣಿ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಯವಿಟ್ಟು ಲಾಗಿನ್ ಮಾಡಿ.", true);
+          showMessage("ನೋಂದಣಿ ಯಶಸ್ವಿಯಾಗಿದೆ! ದಯವಿಟ್ಟು ಲಾಗಿನ್ ಮಾಡಿ. / Registration successful! Please login.", true);
           setTimeout(() => toggleForm('login'), 2000);
         }
       } catch (err) {
@@ -495,16 +658,16 @@
     }
 
     async function handleForgotPassword() {
-      const email = document.getElementById('forgotEmail').value;
+      const email = document.getElementById('forgotEmail').value.trim();
       if(!email) { showMessage("ದಯವಿಟ್ಟು ಇಮೇಲ್ ಐಡಿ ನಮೂದಿಸಿ.", false); return; }
-      showMessage("ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...", true);
+      showMessage("ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... / Verifying...", true);
 
       try {
         const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email);
         if (error) {
           showMessage(error.message, false);
         } else {
-          showMessage("ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ನಿಮ್ಮ ಇಮೇಲ್‌ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.", true);
+          showMessage("ಪಾಸ್‌ವರ್ಡ್ ಮರುಹೊಂದಿಸುವ ಲಿಂಕ್ ಅನ್ನು ನಿಮ್ಮ ಇಮೇಲ್‌ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ. / Password reset link sent to email.", true);
         }
       } catch (err) {
         showMessage("ದೋಷ: " + err.message, false);
@@ -513,4 +676,3 @@
   </script>
 </body>
 </html>
-

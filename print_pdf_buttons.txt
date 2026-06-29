@@ -1,0 +1,211 @@
+File: BridgeCourse.html | Line: 825 | Type: button
+Content: <button id="btn-export-pdf-top" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-sm"></i>
+                  </button>
+--------------------------------------------------
+File: BridgeCourse.html | Line: 829 | Type: button
+Content: <button id="btn-print-top" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-sm"></i>
+                  </button>
+--------------------------------------------------
+File: CceAssessmet.html | Line: 398 | Type: button
+Content: <button id="btn-export-pdf" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-rose-600 dark:text-rose-400 border border-rose-200/50 dark:border-rose-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden rose-glow">
+                  <i class="fa-solid fa-file-pdf text-lg"></i>
+                </button>
+--------------------------------------------------
+File: CceAssessmet.html | Line: 402 | Type: button
+Content: <button id="btn-print" onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="hover:bg-sky-50 dark:hover:bg-sky-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-sky-600 dark:text-sky-400 border border-sky-200/50 dark:border-sky-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden sky-glow">
+                  <i class="fa-solid fa-print text-lg"></i>
+                </button>
+--------------------------------------------------
+File: CceAssessmet.html | Line: 674 | Type: button
+Content: <button onclick="exportIndividualReportCardToPdf()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold py-1.5 px-4 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> PDF ಡೌನ್‌ಲೋಡ್</button>
+--------------------------------------------------
+File: CceAssessmet.html | Line: 675 | Type: button
+Content: <button onclick="printIndividualReportCard()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1.5 px-5 rounded-xl shadow transition text-xs border-0 cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-print"></i> ಮುದ್ರಣ / Print</button>
+--------------------------------------------------
+File: custom_reports.html | Line: 231 | Type: button
+Content: <button onclick="exitDetailView()" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 flex items-center gap-1.5 mb-2 border-none bg-transparent cursor-pointer no-print">
+                <i class="fa-solid fa-arrow-left"></i> ಬ್ಯಾಕ್ ಟು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Back
+              </button>
+--------------------------------------------------
+File: custom_reports.html | Line: 249 | Type: button
+Content: <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: custom_reports.html | Line: 257 | Type: button
+Content: <button onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-print text-slate-400 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: dashboard.html | Line: 304 | Type: a
+Content: <a href="StudentList.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-sky-50/50 hover:to-white dark:hover:from-sky-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-sky-350 dark:hover:border-sky-900/50 text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-sky-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-address-book"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-sky-700 dark:group-hover:text-sky-400 font-bold">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Student Directory</span>
+                  </div>
+                </a>
+--------------------------------------------------
+File: dashboard.html | Line: 314 | Type: a
+Content: <a href="teachers.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-emerald-350 dark:hover:border-emerald-900/50 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 font-bold">ಶಿಕ್ಷಕರ ವಿವರ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Teacher Directory</span>
+                  </div>
+                </a>
+--------------------------------------------------
+File: dashboard.html | Line: 324 | Type: a
+Content: <a href="BridgeCourse.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-pink-50/50 hover:to-white dark:hover:from-pink-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-pink-350 dark:hover:border-pink-900/50 text-slate-700 dark:text-slate-300 hover:text-pink-700 dark:hover:text-pink-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-pink-50 dark:bg-pink-950/50 text-pink-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-book-open"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-pink-700 dark:group-hover:text-pink-400 font-bold">ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Bridge Course</span>
+                  </div>
+                </a>
+--------------------------------------------------
+File: dashboard.html | Line: 334 | Type: a
+Content: <a href="StudentUpdate.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-amber-50/50 hover:to-white dark:hover:from-amber-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-amber-350 dark:hover:border-amber-900/50 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-user-pen"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-amber-400 font-bold">ವಿವರ ತಿದ್ದುಪಡಿ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Update Info</span>
+                  </div>
+                </a>
+--------------------------------------------------
+File: dashboard.html | Line: 344 | Type: a
+Content: <a href="FlnAssessment.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-indigo-50/50 hover:to-white dark:hover:from-indigo-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-indigo-350 dark:hover:border-indigo-900/50 text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
+                  <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                    <i class="fa-solid fa-chart-line"></i>
+                  </div>
+                  <div>
+                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 font-bold">FLN ಮೌಲ್ಯಮಾಪನ</span>
+                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">FLN Assessment</span>
+                  </div>
+                </a>
+--------------------------------------------------
+File: developer.html | Line: 30 | Type: a
+Content: <a href="dashboard.html" class="bg-slate-800 hover:bg-slate-700 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md no-underline no-print" title="Back to Dashboard">
+          <i class="fa-solid fa-arrow-left text-sm"></i>
+        </a>
+--------------------------------------------------
+File: developer.html | Line: 41 | Type: a
+Content: <a href="admin.html" id="devAdminPanelLink" class="hidden bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-rose-500/30 no-print" title="Admin Panel">
+          <i class="fa-solid fa-shield-halved text-[10px]"></i> Admin Panel
+        </a>
+--------------------------------------------------
+File: developer.html | Line: 45 | Type: a
+Content: <a href="dashboard.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1.5 transition no-underline border border-indigo-500/30 no-print" title="Dashboard">
+          <i class="fa-solid fa-house text-[10px]"></i> Dashboard
+        </a>
+--------------------------------------------------
+File: FlnAssessment.html | Line: 520 | Type: button
+Content: <button onclick="triggerPrint()" title="Print Page" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-print"></i>
+              </button>
+--------------------------------------------------
+File: FlnAssessment.html | Line: 524 | Type: button
+Content: <button onclick="exportToPdf()" title="Export PDF" class="bg-slate-50 hover:bg-slate-100 text-slate-700 px-3 py-2.5 rounded-xl border border-slate-200 transition flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-500"></i>
+              </button>
+--------------------------------------------------
+File: incentives.html | Line: 401 | Type: button
+Content: <button onclick="exitDetailView()" class="text-xs font-bold text-indigo-500 hover:text-indigo-600 flex items-center gap-1.5 mb-2 border-none bg-transparent cursor-pointer no-print">
+                <i class="fa-solid fa-arrow-left"></i> ಬ್ಯಾಕ್ ಟು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Back
+              </button>
+--------------------------------------------------
+File: incentives.html | Line: 423 | Type: button
+Content: <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-500 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: incentives.html | Line: 431 | Type: button
+Content: <button onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-print text-slate-400 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: LbaAssessment.html | Line: 297 | Type: button
+Content: <button id="btn-save-pdf" onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: LbaAssessment.html | Line: 301 | Type: button
+Content: <button id="btn-print-report" onclick="triggerPrint()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: NewAdmissionList.html | Line: 310 | Type: button
+Content: <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-pdf text-rose-600 text-base md:text-lg"></i>
+            </button>
+--------------------------------------------------
+File: NewAdmissionList.html | Line: 314 | Type: button
+Content: <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-print text-slate-600 text-base md:text-lg"></i>
+            </button>
+--------------------------------------------------
+File: NewAdmissionList.html | Line: 393 | Type: button
+Content: <button onclick="printSelectedStudentForm()" id="mass-print-btn" class="bg-sky-660 hover:bg-sky-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-print text-[10px]"></i> Print / ಪ್ರಿಂಟ್
+            </button>
+--------------------------------------------------
+File: NewAdmissionList.html | Line: 397 | Type: button
+Content: <button onclick="downloadSelectedStudentPdf()" id="mass-pdf-btn" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-pdf text-[10px]"></i> PDF / ಪಿಡಿಎಫ್
+            </button>
+--------------------------------------------------
+File: NewAdmissionList.html | Line: 559 | Type: button
+Content: <button id="modal-print-btn" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-4 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> Print Form
+        </button>
+--------------------------------------------------
+File: Preview.html | Line: 778 | Type: button
+Content: <button type="button" class="btn-premium-action btn-premium-print" onclick="printApplication()">
+        <span id="lbl-print">Export</span> <i class="fa-solid fa-print"></i>
+      </button>
+--------------------------------------------------
+File: Preview.html | Line: 783 | Type: button
+Content: <button type="button" class="btn-premium-action btn-premium-pdf" onclick="downloadPdf()">
+        <span id="lbl-pdf">Export</span> <i class="fa-solid fa-file-pdf"></i>
+      </button>
+--------------------------------------------------
+File: StudentList.html | Line: 324 | Type: button
+Content: <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-pdf text-rose-600 dark:text-rose-500 text-base md:text-lg"></i>
+            </button>
+--------------------------------------------------
+File: StudentList.html | Line: 328 | Type: button
+Content: <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-base md:text-lg"></i>
+            </button>
+--------------------------------------------------
+File: StudentList.html | Line: 405 | Type: button
+Content: <button onclick="printSelectedApplicationForm()" id="mass-print-btn" class="bg-sky-650 hover:bg-sky-600 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-invoice text-[10px]"></i> Print Form / ಮುದ್ರಣ
+            </button>
+--------------------------------------------------
+File: StudentList.html | Line: 409 | Type: button
+Content: <button onclick="downloadSelectedStudentPdf()" id="mass-pdf-btn" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-pdf text-[10px]"></i> PDF / ಪಿಡಿಎಫ್
+            </button>
+--------------------------------------------------
+File: teachers.html | Line: 489 | Type: button
+Content: <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------
+File: teachers.html | Line: 497 | Type: button
+Content: <button onclick="printReport()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
+              </button>
+--------------------------------------------------

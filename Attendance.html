@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Management - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    
+    .radiant-card-indigo {
+      background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-indigo:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.15), 0 0 15px 1px rgba(99, 102, 241, 0.05);
+    }
+    
+    .radiant-card-emerald {
+      background: linear-gradient(135deg, #ffffff 0%, #ecfdf5 100%);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-emerald:hover {
+      transform: translateY(-4px);
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.15), 0 0 15px 1px rgba(16, 185, 129, 0.05);
+    }
+
+    .radiant-card-amber {
+      background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .radiant-card-amber:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.4);
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.15), 0 0 15px 1px rgba(245, 158, 11, 0.05);
+    }
+
+    body[data-theme="dark"] .radiant-card-indigo {
+      background: linear-gradient(135deg, #1e293b 0%, #312e81 100%) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.2) !important;
+      color: #f8fafc;
+    }
+    body[data-theme="dark"] .radiant-card-indigo:hover {
+      border-color: rgba(99, 102, 241, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.4), 0 0 20px 2px rgba(99, 102, 241, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-emerald {
+      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%) !important;
+      border-color: rgba(16, 185, 129, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.2) !important;
+      color: #f8fafc;
+    }
+    body[data-theme="dark"] .radiant-card-emerald:hover {
+      border-color: rgba(16, 185, 129, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(16, 185, 129, 0.4), 0 0 20px 2px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    body[data-theme="dark"] .radiant-card-amber {
+      background: linear-gradient(135deg, #1e293b 0%, #78350f 100%) !important;
+      border-color: rgba(245, 158, 11, 0.3) !important;
+      box-shadow: 0 4px 20px -2px rgba(245, 158, 11, 0.2) !important;
+      color: #f8fafc;
+    }
+    body[data-theme="dark"] .radiant-card-amber:hover {
+      border-color: rgba(245, 158, 11, 0.7) !important;
+      box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.4), 0 0 20px 2px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    /* Theme override helper classes */
+    body[data-theme="dark"] {
+      background-color: #0f172a !important;
+      color: #f1f5f9;
+    }
+    body[data-theme="dark"] .bg-white {
+      background-color: #1e293b !important;
+      color: #f8fafc;
+    }
+    body[data-theme="dark"] .text-slate-900 {
+      color: #f8fafc !important;
+    }
+    body[data-theme="dark"] .text-slate-800 {
+      color: #e2e8f0 !important;
+    }
+    body[data-theme="dark"] .text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    body[data-theme="dark"] .text-slate-600 {
+      color: #94a3b8 !important;
+    }
+    body[data-theme="dark"] .text-slate-500 {
+      color: #64748b !important;
+    }
+    body[data-theme="dark"] .border-slate-200 {
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] .border-slate-100 {
+      border-color: #1e293b !important;
+    }
+    body[data-theme="dark"] .bg-slate-50 {
+      background-color: #1e293b/60 !important;
+    }
+    body[data-theme="dark"] .bg-slate-100 {
+      background-color: #334155 !important;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    body[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+    body[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Shared Navigation Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <main class="max-w-[95%] lg:max-w-[1400px] mx-auto w-full p-4 md:p-6 flex-grow flex flex-col gap-6">
+    
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm">
+      <div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-calendar-check text-indigo-500 text-xl"></i>
+          <h1 class="text-lg md:text-xl font-extrabold text-slate-900 dark:text-white">ಹಾಜರಾತಿ ನಿರ್ವಹಣೆ / Attendance Management</h1>
+        </div>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-semibold tracking-wide">Manage daily class attendance, monthly totals, and yearly summaries efficiently.</p>
+      </div>
+      <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl border border-slate-250/50 dark:border-slate-700/50">
+        <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-white dark:bg-slate-950 text-indigo-650 dark:text-indigo-400 shadow-sm border border-slate-200/40 dark:border-slate-800/40">ಅಂಕಿ-ಅಂಶಗಳು / Dashboard</button>
+        <button id="tab-btn-entry" onclick="switchTab('entry')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">ಹಾಜರಾತಿ ದಾಖಲಾತಿ / Attendance Entry</button>
+        <button id="tab-btn-report" onclick="switchTab('report')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">ಮಾಸಿಕ ವರದಿ / Monthly Report</button>
+      </div>
+    </div>
+
+    <!-- Alert Message for missing database table -->
+    <div id="db-alert" class="hidden flex items-start gap-3 bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 p-4 rounded-2xl text-xs font-bold">
+      <i class="fa-solid fa-triangle-exclamation text-base mt-0.5"></i>
+      <div>
+        <h4 class="font-extrabold">ಸ್ಥಳೀಯ ಮೋಡ್ ಸಕ್ರಿಯವಾಗಿದೆ / Local Fallback Active</h4>
+        <p class="mt-1 font-semibold text-slate-600 dark:text-slate-400 leading-relaxed">Supabase database does not have the `attendance` table yet. Attendance records will be saved to your local storage. To save to the database, run the SQL script `create_attendance_table.sql` in your database manager.</p>
+      </div>
+    </div>
+
+    <!-- Tab 1: Dashboard View -->
+    <div id="tab-content-dashboard" class="flex flex-col gap-6">
+      
+      <!-- Stats Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="radiant-card-indigo p-5 rounded-2xl flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase block">Today's Attendance</span>
+            <span id="stat-today-pct" class="text-2xl font-black text-slate-900 dark:text-white mt-1 block">0%</span>
+            <span id="stat-today-fraction" class="text-[10px] text-slate-500 mt-1 block">0/0 Present</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400">
+            <i class="fa-solid fa-users-rectangle text-xl"></i>
+          </div>
+        </div>
+
+        <div class="radiant-card-emerald p-5 rounded-2xl flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase block">Highest Class Attendance</span>
+            <span id="stat-highest-class" class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">-</span>
+            <span id="stat-highest-pct" class="text-[10px] text-slate-500 mt-1 block">0% Attendance</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 dark:text-emerald-400">
+            <i class="fa-solid fa-circle-up text-xl"></i>
+          </div>
+        </div>
+
+        <div class="radiant-card-amber p-5 rounded-2xl flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase block">Lowest Class Attendance</span>
+            <span id="stat-lowest-class" class="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block">-</span>
+            <span id="stat-lowest-pct" class="text-[10px] text-slate-500 mt-1 block">0% Attendance</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 dark:text-amber-400">
+            <i class="fa-solid fa-circle-down text-xl"></i>
+          </div>
+        </div>
+
+        <div class="radiant-card-indigo p-5 rounded-2xl flex items-center justify-between shadow-sm">
+          <div>
+            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase block">Total Working Days (Jun)</span>
+            <span id="stat-total-working" class="text-2xl font-black text-slate-900 dark:text-white mt-1 block">22 Days</span>
+            <span class="text-[10px] text-slate-500 mt-1 block">Current Academic Month</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-500 dark:text-indigo-400">
+            <i class="fa-solid fa-calendar-days text-xl"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classwise Summary & Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm lg:col-span-2">
+          <h3 class="text-sm font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-bars-progress text-indigo-500"></i> ತರಗತಿವಾರು ಇಂದಿನ ಹಾಜರಾತಿ ಪ್ರಗತಿ / Classwise Today's Attendance
+          </h3>
+          <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-800/60 rounded-xl custom-scrollbar">
+            <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-800 font-bold text-slate-700 dark:text-slate-300">
+                  <th class="p-3">Class / ತರಗತಿ</th>
+                  <th class="p-3 text-center">Total Students / ಒಟ್ಟು</th>
+                  <th class="p-3 text-center">Present / ಹಾಜರು</th>
+                  <th class="p-3 text-center">Absent / ಗೈರು</th>
+                  <th class="p-3 text-center">Attendance % / ಪ್ರತಿಶತ</th>
+                </tr>
+              </thead>
+              <tbody id="class-summary-body" class="divide-y divide-slate-100 dark:divide-slate-800/40 text-slate-650 dark:text-slate-300 font-medium">
+                <!-- Dynamically filled -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm">
+          <h3 class="text-sm font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-chart-pie text-indigo-500"></i> ಇಂದು ಹಾಜರಾತಿ ವಿಂಗಡಣೆ / Today's Attendance Share
+          </h3>
+          <div class="relative flex items-center justify-center h-64">
+            <canvas id="todayShareChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Tab 2: Attendance Entry View -->
+    <div id="tab-content-entry" class="hidden flex flex-col gap-6">
+      
+      <!-- Filter Bar -->
+      <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm flex flex-col md:flex-row flex-wrap items-center gap-4 justify-between text-xs font-bold">
+        <div class="flex flex-wrap items-center gap-4 w-full md:w-auto">
+          <!-- Class Selector -->
+          <div class="flex flex-col gap-1 w-full sm:w-40">
+            <label class="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold">ತರಗತಿ / Class:</label>
+            <select id="entry-class-select" onchange="loadStudentsForEntry()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-550 transition text-slate-800 dark:text-white">
+              <option value="LKG">LKG</option>
+              <option value="UKG">UKG</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7">Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+          </div>
+
+          <!-- Attendance Type Selector -->
+          <div class="flex flex-col gap-1 w-full sm:w-48">
+            <label class="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold">ಹಾಜರಾತಿ ವಿಧ / Type:</label>
+            <select id="entry-type-select" onchange="handleTypeChange()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-550 transition text-slate-800 dark:text-white">
+              <option value="daily">Daily Attendance / ದಿನನಿತ್ಯದ ಹಾಜರಾತಿ</option>
+              <option value="monthly">Monthly Attendance / ಮಾಸಿಕ ಹಾಜರಾತಿ</option>
+              <option value="yearly">Yearly Attendance / ವಾರ್ಷಿಕ ಹಾಜರಾತಿ</option>
+            </select>
+          </div>
+
+          <!-- Period Pickers (Dynamic depending on type) -->
+          <div id="picker-daily" class="flex flex-col gap-1 w-full sm:w-44">
+            <label class="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold">ದಿನಾಂಕ / Date:</label>
+            <input type="date" id="entry-date-picker" onchange="loadStudentsForEntry()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-550 transition text-slate-800 dark:text-white">
+          </div>
+
+          <div id="picker-monthly" class="hidden flex flex-col gap-1 w-full sm:w-44">
+            <label class="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold">ತಿಂಗಳು / Month:</label>
+            <input type="month" id="entry-month-picker" onchange="loadStudentsForEntry()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-550 transition text-slate-800 dark:text-white">
+          </div>
+
+          <div id="picker-yearly" class="hidden flex flex-col gap-1 w-full sm:w-44">
+            <label class="text-slate-400 dark:text-slate-500 text-[10px] uppercase font-bold">ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Year:</label>
+            <select id="entry-year-picker" onchange="loadStudentsForEntry()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-2.5 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-550 transition text-slate-800 dark:text-white">
+              <option value="2026-27">2026-27</option>
+              <option value="2025-26">2025-26</option>
+              <option value="2024-25">2024-25</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Total Working Days Selector (Visible only in monthly/yearly mode) -->
+        <div id="working-days-container" class="hidden flex flex-col gap-1 w-full sm:w-40 border-l-0 md:border-l border-slate-200/60 dark:border-slate-700/40 md:pl-4">
+          <label class="text-amber-600 dark:text-amber-400 text-[10px] uppercase font-black flex items-center gap-1">
+            <i class="fa-solid fa-calendar-check"></i> ಒಟ್ಟು ಕೆಲಸದ ದಿನಗಳು / Working Days:
+          </label>
+          <input type="number" id="total-working-days" value="22" min="1" max="365" oninput="validateAllWorkingDays()" class="bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-2 font-black focus:outline-none focus:ring-2 focus:ring-amber-500 transition text-amber-700 dark:text-amber-400">
+        </div>
+      </div>
+
+      <!-- Attendance Data Entry Grid -->
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm flex flex-col gap-4">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h2 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-user-pen text-indigo-550"></i> ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Attendance Matrix
+          </h2>
+          <!-- Batch Actions for Daily Attendance -->
+          <div id="daily-batch-actions" class="flex gap-2 text-[10px] font-bold">
+            <button onclick="setAllAttendance('present')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/50 text-emerald-700 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-check-double"></i> All Present</button>
+            <button onclick="setAllAttendance('absent')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200/50 text-rose-700 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-ban"></i> All Absent</button>
+          </div>
+        </div>
+
+        <div id="entry-loading" class="flex flex-col items-center justify-center p-8">
+          <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-500 mb-2"></i>
+          <p class="text-xs font-bold text-slate-500 dark:text-slate-450">ವಿದ್ಯಾರ್ಥಿ ವಿವರ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
+        </div>
+
+        <div id="entry-grid-container" class="hidden overflow-x-auto border border-slate-200/60 dark:border-slate-800/60 rounded-xl custom-scrollbar bg-slate-50/20">
+          <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 font-extrabold text-slate-700 dark:text-slate-200 text-center">
+                <th class="p-3 text-left w-16">Sl.No</th>
+                <th class="p-3 text-left w-36">STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂ.</th>
+                <th class="p-3 text-left">Student Name (English / ಕನ್ನಡ)</th>
+                <th class="p-3 w-32">Gender</th>
+                <th class="p-3 w-64 text-center">Attendance Status / Value</th>
+                <th class="p-3 w-48 text-center">Status Badge</th>
+              </tr>
+            </thead>
+            <tbody id="entry-grid-body" class="divide-y divide-slate-100 dark:divide-slate-800/40 text-slate-650 dark:text-slate-300 font-semibold">
+              <!-- JS dynamically fills -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Action Buttons -->
+        <div id="entry-actions-container" class="hidden flex justify-between items-center mt-3 pt-3 border-t border-slate-150 dark:border-slate-800">
+          <p id="validation-summary-msg" class="text-xs font-black text-rose-550 dark:text-rose-400 hidden flex items-center gap-1">
+            <i class="fa-solid fa-triangle-exclamation"></i> ದಯವಿಟ್ಟು ಒಟ್ಟು ಕೆಲಸದ ದಿನಗಳ ಮಿತಿಯನ್ನು ಮೀರಿದ ಹಾಜರಾತಿ ದಿನಗಳನ್ನು ಸರಿಪಡಿಸಿ!
+          </p>
+          <div class="flex gap-3 ml-auto">
+            <button onclick="loadStudentsForEntry()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-xl font-bold transition text-xs border border-slate-200/50 dark:border-slate-700/50">ರದ್ದುಮಾಡಿ / Cancel</button>
+            <button id="btn-save-attendance" onclick="saveAttendanceRecords()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2.5 rounded-xl font-bold transition text-xs shadow-sm flex items-center gap-2">
+              <i class="fa-solid fa-floppy-disk"></i> ಹಾಜರಾತಿ ಉಳಿಸಿ / Save Attendance
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Tab 3: Monthly Report View -->
+    <div id="tab-content-report" class="hidden flex flex-col gap-6">
+      
+      <!-- Integrated Student-wise Yearly Matrix Card -->
+      <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200/50 dark:border-slate-800/60 shadow-sm flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 dark:border-slate-850 pb-3 no-print">
+          <div>
+            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <i class="fa-solid fa-table-cells text-indigo-550"></i> ತರಗತಿವಾರು ವಿದ್ಯಾರ್ಥಿ ಹಾಜರಾತಿ ಮ್ಯಾಟ್ರಿಕ್ಸ್ / Classwise Student Monthly Attendance Ledger
+            </h3>
+            <p class="text-[10px] text-slate-450 mt-1 font-semibold">Shows students class-wise with their monthly attendance days (June - May).</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <select id="report-academic-year" onchange="loadYearlyMatrixReport()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+              <option value="2026-27">Academic Year 2026-27</option>
+              <option value="2025-26">Academic Year 2025-26</option>
+              <option value="2027-28">Academic Year 2027-28</option>
+            </select>
+            <select id="report-class-filter" onchange="filterMatrixReport()" class="p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-550 text-slate-800 dark:text-white font-semibold cursor-pointer">
+              <option value="">All Classes</option>
+              <option value="LKG">LKG</option>
+              <option value="UKG">UKG</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7">Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+            <input type="text" id="report-search" oninput="filterMatrixReport()" placeholder="Search Student name or STS..." class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold shadow-inner">
+            <button onclick="printMatrixReport()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-750 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border border-indigo-200/30 flex items-center gap-1.5"><i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ / Print</button>
+            <button onclick="exportMatrixToExcel()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-755 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border border-emerald-250/30 flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Excel</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-800/60 rounded-xl custom-scrollbar bg-slate-50/10 max-h-[600px]">
+          <table id="matrix-report-table" class="w-full text-[11px] text-left border-collapse whitespace-nowrap">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 font-extrabold text-slate-700 dark:text-slate-200 text-center">
+                <th class="p-3 text-left w-12">Sl</th>
+                <th class="p-3 text-left w-20">Class</th>
+                <th class="p-3 text-left w-24">STS No</th>
+                <th class="p-3 text-left">Student Name (English/ಕನ್ನಡ)</th>
+                <th class="p-3 w-16">Jun</th>
+                <th class="p-3 w-16">Jul</th>
+                <th class="p-3 w-16">Aug</th>
+                <th class="p-3 w-16">Sep</th>
+                <th class="p-3 w-16">Oct</th>
+                <th class="p-3 w-16">Nov</th>
+                <th class="p-3 w-16">Dec</th>
+                <th class="p-3 w-16">Jan</th>
+                <th class="p-3 w-16">Feb</th>
+                <th class="p-3 w-16">Mar</th>
+                <th class="p-3 w-16">Apr</th>
+                <th class="p-3 w-16">May</th>
+                <th class="p-3 w-20">Total</th>
+              </tr>
+            </thead>
+            <tbody id="matrix-report-body" class="divide-y divide-slate-100 dark:divide-slate-800/40 text-slate-650 dark:text-slate-300 font-semibold text-center">
+              <!-- JS dynamically fills -->
+            </tbody>
+            <tfoot id="matrix-report-footer" class="bg-slate-100 dark:bg-slate-800/90 border-t-2 border-slate-200 dark:border-slate-750 font-extrabold text-slate-800 dark:text-slate-100 text-center">
+              <!-- JS dynamically fills -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-2.5 text-center text-xs text-slate-400 mt-auto flex-shrink-0">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 dark:text-slate-300 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <!-- Toast system -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900/95 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+    <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white" id="toast-icon">
+      <i class="fa-solid fa-check text-sm"></i>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Record saved successfully.</p>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    let isSupabaseAttendanceAvailable = true;
+    let allStudents = [];
+    let attendanceRecords = []; // Existing records cached
+    let activeTab = 'dashboard';
+    let currentSchoolId = null;
+    let todayChart = null;
+
+    // Check if table exists
+    async function checkAttendanceTable() {
+      try {
+        const { error } = await supabaseClient.from('attendance').select('id').limit(1);
+        if (error && error.code === '42P01') {
+          isSupabaseAttendanceAvailable = false;
+          document.getElementById('db-alert').classList.remove('hidden');
+        }
+      } catch (e) {
+        isSupabaseAttendanceAvailable = false;
+        document.getElementById('db-alert').classList.remove('hidden');
+      }
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      ['dashboard', 'entry', 'report'].forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-content-${t}`);
+        if (!btn || !content) return;
+        if (t === tabName) {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-white dark:bg-slate-950 text-indigo-650 dark:text-indigo-400 shadow-sm border border-slate-200/40 dark:border-slate-800/40";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-550 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white";
+          content.classList.add('hidden');
+        }
+      });
+
+      if (tabName === 'dashboard') {
+        loadDashboardStats();
+      } else if (tabName === 'report') {
+        loadYearlyMatrixReport();
+      } else {
+        loadStudentsForEntry();
+      }
+    }
+
+    function handleTypeChange() {
+      const type = document.getElementById('entry-type-select').value;
+      ['daily', 'monthly', 'yearly'].forEach(t => {
+        const picker = document.getElementById(`picker-${t}`);
+        if (t === type) picker.classList.remove('hidden');
+        else picker.classList.add('hidden');
+      });
+
+      const workingContainer = document.getElementById('working-days-container');
+      const totalWorkingInput = document.getElementById('total-working-days');
+      if (type === 'daily') {
+        workingContainer.classList.add('hidden');
+      } else {
+        workingContainer.classList.remove('hidden');
+        totalWorkingInput.value = (type === 'monthly') ? '22' : '220';
+      }
+
+      loadStudentsForEntry();
+    }
+
+    window.onload = async function() {
+      await initUserAndTheme();
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const user = session.user;
+      currentSchoolId = user.user_metadata?.school_id || localStorage.getItem('school_id');
+
+      // Set default dates
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('entry-date-picker').value = today;
+      const currentMonth = new Date().toISOString().substring(0, 7);
+      document.getElementById('entry-month-picker').value = currentMonth;
+
+      await checkAttendanceTable();
+      
+      // Load initial students & dashboard stats
+      await fetchStudents();
+      
+      if (allStudents.length > 0) {
+        const classesOrder = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'LKG', 'UKG'];
+        let defaultClass = '1';
+        for (const c of classesOrder) {
+          const count = allStudents.filter(s => normalizeClass(s.enroll_class) === c).length;
+          if (count > 0) {
+            defaultClass = c;
+            break;
+          }
+        }
+        document.getElementById('entry-class-select').value = defaultClass;
+      }
+
+      await loadDashboardStats();
+    };
+
+    async function fetchStudents() {
+      try {
+        let query = supabaseClient.from('admissions').select('id, name_english, student_name, enroll_class, gender, is_admitted, app_no');
+        if (currentSchoolId) {
+          query = query.eq('school_id', currentSchoolId);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+
+        allStudents = (data || [])
+          .filter(s => s.is_admitted !== false && s.is_admitted !== 'false')
+          .map(student => {
+            const g = (student.gender || '').toString().toLowerCase().trim();
+            const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+            const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+            const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
+            return { ...student, gender };
+          });
+      } catch (err) {
+        console.error("Failed to load students:", err);
+      }
+    }
+
+    async function loadDashboardStats() {
+      if (allStudents.length === 0) await fetchStudents();
+
+      const today = new Date().toISOString().split('T')[0];
+      let todayRecords = [];
+
+      if (isSupabaseAttendanceAvailable) {
+        try {
+          const { data, error } = await supabaseClient
+            .from('attendance')
+            .select('student_id, present_days, working_days, class_name')
+            .eq('attendance_type', 'daily')
+            .eq('attendance_date', today);
+          if (!error) todayRecords = data || [];
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        const local = localStorage.getItem(`local_attendance_${currentSchoolId}`) || '[]';
+        const parsed = JSON.parse(local);
+        todayRecords = parsed.filter(r => r.attendance_type === 'daily' && r.attendance_date === today);
+      }
+
+      // Compute aggregates
+      let totalPresent = 0;
+      let totalStudentsToday = allStudents.length;
+      
+      const classSummary = {};
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      classes.forEach(c => {
+        classSummary[c] = { total: 0, present: 0, absent: 0 };
+      });
+
+      allStudents.forEach(s => {
+        const cls = normalizeClass(s.enroll_class);
+        if (classSummary[cls]) {
+          classSummary[cls].total++;
+          // check if record exists for today
+          const rec = todayRecords.find(r => r.student_id === s.id);
+          if (rec) {
+            if (rec.present_days === 1) {
+              classSummary[cls].present++;
+              totalPresent++;
+            } else {
+              classSummary[cls].absent++;
+            }
+          } else {
+            // Default to present if no record entered yet
+            classSummary[cls].present++;
+            totalPresent++;
+          }
+        }
+      });
+
+      // Render summary cards
+      const presentPct = totalStudentsToday > 0 ? Math.round((totalPresent / totalStudentsToday) * 100) : 0;
+      document.getElementById('stat-today-pct').innerText = `${presentPct}%`;
+      document.getElementById('stat-today-fraction').innerText = `${totalPresent}/${totalStudentsToday} Present / ಹಾಜರು`;
+
+      // Find highest & lowest class
+      let highestClass = '-', lowestClass = '-';
+      let highestPct = -1, lowestPct = 101;
+
+      classes.forEach(c => {
+        const s = classSummary[c];
+        if (s.total > 0) {
+          const pct = Math.round((s.present / s.total) * 100);
+          if (pct > highestPct) {
+            highestPct = pct;
+            highestClass = c;
+          }
+          if (pct < lowestPct) {
+            lowestPct = pct;
+            lowestClass = c;
+          }
+        }
+      });
+
+      document.getElementById('stat-highest-class').innerText = highestClass !== '-' ? `Class ${highestClass}` : '-';
+      document.getElementById('stat-highest-pct').innerText = highestPct >= 0 ? `${highestPct}% Attendance` : '0% Attendance';
+      
+      document.getElementById('stat-lowest-class').innerText = lowestClass !== '-' ? `Class ${lowestClass}` : '-';
+      document.getElementById('stat-lowest-pct').innerText = lowestPct <= 100 ? `${lowestPct}% Attendance` : '0% Attendance';
+
+      // Render Table
+      const tbody = document.getElementById('class-summary-body');
+      tbody.innerHTML = '';
+      classes.forEach(c => {
+        const s = classSummary[c];
+        if (s.total > 0) {
+          const pct = Math.round((s.present / s.total) * 100);
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition border-b border-slate-100 dark:border-slate-850';
+          tr.innerHTML = `
+            <td class="p-3 text-slate-850 dark:text-white font-extrabold">${c}</td>
+            <td class="p-3 text-center font-bold text-slate-700 dark:text-slate-300">${s.total}</td>
+            <td class="p-3 text-center text-emerald-600 dark:text-emerald-450 font-bold">${s.present}</td>
+            <td class="p-3 text-center text-rose-600 dark:text-rose-450 font-bold">${s.absent}</td>
+            <td class="p-3 text-center">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black ${pct >= 85 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}">${pct}%</span>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+
+      // Render Share Chart
+      const absentCount = totalStudentsToday - totalPresent;
+      renderShareChart(totalPresent, absentCount);
+    }
+
+    function renderShareChart(present, absent) {
+      const ctx = document.getElementById('todayShareChart');
+      if (!ctx) return;
+      if (todayChart) todayChart.destroy();
+
+      todayChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Present / ಹಾಜರು', 'Absent / ಗೈರು'],
+          datasets: [{
+            data: [present, absent],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderWidth: 2,
+            borderColor: document.body.getAttribute('data-theme') === 'dark' ? '#0f172a' : '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: document.body.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#334155',
+                font: { weight: 'bold', size: 11 }
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    async function loadStudentsForEntry() {
+      const entryClass = document.getElementById('entry-class-select').value;
+      const type = document.getElementById('entry-type-select').value;
+      
+      const gridBody = document.getElementById('entry-grid-body');
+      const loader = document.getElementById('entry-loading');
+      const container = document.getElementById('entry-grid-container');
+      const actions = document.getElementById('entry-actions-container');
+
+      loader.classList.remove('hidden');
+      container.classList.add('hidden');
+      actions.classList.add('hidden');
+
+      // Filter students in active class
+      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
+      
+      if (classStudents.length === 0) {
+        loader.classList.add('hidden');
+        gridBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500 font-bold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಈ ತರಗತಿಯಲ್ಲಿ ಇಲ್ಲ / No students in this class</td></tr>`;
+        container.classList.remove('hidden');
+        return;
+      }
+
+      // Fetch existing records for active parameters
+      let existingRecords = [];
+      const dateVal = document.getElementById('entry-date-picker').value;
+      const monthVal = document.getElementById('entry-month-picker').value;
+      const yearVal = document.getElementById('entry-year-picker').value;
+
+      if (isSupabaseAttendanceAvailable) {
+        try {
+          let query = supabaseClient.from('attendance')
+            .select('student_id, present_days, working_days, remarks')
+            .eq('class_name', entryClass)
+            .eq('attendance_type', type);
+          
+          if (type === 'daily') query = query.eq('attendance_date', dateVal);
+          else if (type === 'monthly') query = query.eq('attendance_month', monthVal);
+          else if (type === 'yearly') query = query.eq('attendance_year', yearVal);
+
+          const { data, error } = await query;
+          if (!error) existingRecords = data || [];
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        const local = localStorage.getItem(`local_attendance_${currentSchoolId}`) || '[]';
+        const parsed = JSON.parse(local);
+        existingRecords = parsed.filter(r => 
+          r.class_name === entryClass && 
+          r.attendance_type === type &&
+          (type === 'daily' ? r.attendance_date === dateVal :
+           type === 'monthly' ? r.attendance_month === monthVal :
+           r.attendance_year === yearVal)
+        );
+      }
+
+      gridBody.innerHTML = '';
+      classStudents.forEach((student, index) => {
+        const record = existingRecords.find(r => r.student_id === student.id);
+        const nameDisplay = `${student.name_english || ''} <span class="block text-[10px] text-slate-450 dark:text-slate-500 font-medium mt-0.5">${student.student_name || ''}</span>`;
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition text-center border-b border-slate-100 dark:border-slate-850';
+        
+        let controlHtml = '';
+        let badgeHtml = '';
+
+        if (type === 'daily') {
+          const isPresent = record ? (record.present_days === 1) : true; // Default to present
+          controlHtml = `
+            <div class="flex items-center justify-center gap-2">
+              <button type="button" onclick="setRowStatus('${student.id}', 1)" id="btn-present-${student.id}" class="px-3 py-1.5 rounded-xl font-bold transition text-[10px] ${isPresent ? 'bg-emerald-500 text-white shadow-sm border border-emerald-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}">ಹಾಜರು / Present</button>
+              <button type="button" onclick="setRowStatus('${student.id}', 0)" id="btn-absent-${student.id}" class="px-3 py-1.5 rounded-xl font-bold transition text-[10px] ${!isPresent ? 'bg-rose-500 text-white shadow-sm border border-rose-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}">ಗೈರು / Absent</button>
+              <input type="hidden" id="input-present-${student.id}" value="${isPresent ? '1' : '0'}">
+            </div>
+          `;
+          badgeHtml = `<span id="badge-${student.id}" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${isPresent ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}">${isPresent ? 'Present' : 'Absent'}</span>`;
+        } else {
+          // Monthly or Yearly
+          const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
+          const val = record ? record.present_days : maxDays; // Default to full attendance
+          controlHtml = `
+            <div class="flex items-center justify-center gap-2">
+              <input type="number" id="input-present-${student.id}" value="${val}" min="0" max="${maxDays}" oninput="validateRowAttendance('${student.id}')" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-center font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-slate-800 dark:text-white">
+              <span class="text-slate-400 text-xs">/ <span class="total-days-label font-bold">${maxDays}</span></span>
+            </div>
+          `;
+          badgeHtml = `<span id="badge-${student.id}" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">Saved: ${val} Days</span>`;
+        }
+
+        tr.innerHTML = `
+          <td class="p-3 text-slate-450 dark:text-slate-500 font-bold text-left">${index + 1}</td>
+          <td class="p-3 text-left font-mono font-bold text-slate-600 dark:text-slate-400">${student.app_no || '-'}</td>
+          <td class="p-3 text-left font-bold text-slate-800 dark:text-white">${nameDisplay}</td>
+          <td class="p-3 text-slate-500 dark:text-slate-400 font-bold">${student.gender}</td>
+          <td class="p-3">${controlHtml}</td>
+          <td class="p-3">${badgeHtml}</td>
+        `;
+        gridBody.appendChild(tr);
+      });
+
+      loader.classList.add('hidden');
+      container.classList.remove('hidden');
+      actions.classList.remove('hidden');
+
+      // Adjust batch actions visibility
+      const batchContainer = document.getElementById('daily-batch-actions');
+      if (type === 'daily') batchContainer.classList.remove('hidden');
+      else batchContainer.classList.add('hidden');
+
+      validateAllWorkingDays();
+    }
+
+    function setRowStatus(studentId, val) {
+      const input = document.getElementById(`input-present-${studentId}`);
+      if (!input) return;
+      input.value = val;
+
+      const pBtn = document.getElementById(`btn-present-${studentId}`);
+      const aBtn = document.getElementById(`btn-absent-${studentId}`);
+      const badge = document.getElementById(`badge-${studentId}`);
+
+      if (val === 1) {
+        pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-emerald-500 text-white shadow-sm border border-emerald-500";
+        aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+        badge.innerText = "Present";
+      } else {
+        pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+        aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-rose-500 text-white shadow-sm border border-rose-500";
+        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20";
+        badge.innerText = "Absent";
+      }
+    }
+
+    function setAllAttendance(status) {
+      allStudents.forEach(student => {
+        const input = document.getElementById(`input-present-${student.id}`);
+        if (input) {
+          setRowStatus(student.id, status === 'present' ? 1 : 0);
+        }
+      });
+    }
+
+    function validateRowAttendance(studentId) {
+      const input = document.getElementById(`input-present-${studentId}`);
+      if (!input) return;
+
+      const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
+      const val = parseInt(input.value) || 0;
+      const badge = document.getElementById(`badge-${studentId}`);
+
+      if (val > maxDays) {
+        input.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20', 'text-rose-600');
+        input.classList.remove('border-slate-200', 'bg-slate-50', 'dark:bg-slate-800');
+        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20";
+        badge.innerText = "Error: Exceeded Days";
+      } else {
+        input.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20', 'text-rose-600');
+        input.classList.add('border-slate-200', 'bg-slate-50', 'dark:bg-slate-800');
+        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20";
+        badge.innerText = `Ready: ${val} Days`;
+      }
+
+      validateAllWorkingDays();
+    }
+
+    function validateAllWorkingDays() {
+      const type = document.getElementById('entry-type-select').value;
+      const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
+      
+      // Update all labels displaying denominator working days
+      const labels = document.querySelectorAll('.total-days-label');
+      labels.forEach(l => l.innerText = maxDays);
+
+      let hasErrors = false;
+
+      if (type !== 'daily') {
+        allStudents.forEach(student => {
+          const input = document.getElementById(`input-present-${student.id}`);
+          if (input) {
+            const val = parseInt(input.value) || 0;
+            if (val > maxDays) {
+              hasErrors = true;
+              // Highlight row error
+              input.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20', 'text-rose-600');
+              const badge = document.getElementById(`badge-${student.id}`);
+              if (badge) {
+                badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20";
+                badge.innerText = "Error: Exceeded Days";
+              }
+            } else {
+              input.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/20', 'text-rose-600');
+              const badge = document.getElementById(`badge-${student.id}`);
+              if (badge && badge.innerText.includes("Error")) {
+                badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20";
+                badge.innerText = `Ready: ${val} Days`;
+              }
+            }
+          }
+        });
+      }
+
+      const saveBtn = document.getElementById('btn-save-attendance');
+      const errorMsg = document.getElementById('validation-summary-msg');
+
+      if (hasErrors) {
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        errorMsg.classList.remove('hidden');
+      } else {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        errorMsg.classList.add('hidden');
+      }
+    }
+
+    async function saveAttendanceRecords() {
+      const entryClass = document.getElementById('entry-class-select').value;
+      const type = document.getElementById('entry-type-select').value;
+      const dateVal = document.getElementById('entry-date-picker').value;
+      const monthVal = document.getElementById('entry-month-picker').value;
+      const yearVal = document.getElementById('entry-year-picker').value;
+      const workingDays = parseInt(document.getElementById('total-working-days').value) || 22;
+
+      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
+      
+      const recordsToSave = [];
+      classStudents.forEach(student => {
+        const input = document.getElementById(`input-present-${student.id}`);
+        if (input) {
+          const val = parseInt(input.value) || 0;
+          recordsToSave.push({
+            school_id: currentSchoolId,
+            student_id: student.id,
+            class_name: entryClass,
+            attendance_type: type,
+            attendance_date: type === 'daily' ? dateVal : null,
+            attendance_month: type === 'monthly' ? monthVal : null,
+            attendance_year: type === 'yearly' ? yearVal : null,
+            working_days: type === 'daily' ? 1 : workingDays,
+            present_days: val,
+            status: type === 'daily' ? (val === 1 ? 'present' : 'absent') : null,
+            updated_at: new Date().toISOString()
+          });
+        }
+      });
+
+      document.getElementById('btn-save-attendance').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
+
+      if (isSupabaseAttendanceAvailable) {
+        try {
+          const { error } = await supabaseClient
+            .from('attendance')
+            .upsert(recordsToSave, { onConflict: 'student_id,attendance_type,attendance_date,attendance_month,attendance_year' });
+          if (error) throw error;
+
+          showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", "ಹಾಜರಾತಿ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ.", "success");
+        } catch (err) {
+          console.error("Supabase saving failed, writing to local storage instead:", err);
+          fallbackToLocalStorageSave(recordsToSave);
+        }
+      } else {
+        fallbackToLocalStorageSave(recordsToSave);
+      }
+
+      document.getElementById('btn-save-attendance').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> ಹಾಜರಾತಿ ಉಳಿಸಿ / Save Attendance';
+      loadStudentsForEntry();
+    }
+
+    function fallbackToLocalStorageSave(records) {
+      const localKey = `local_attendance_${currentSchoolId}`;
+      const existingStr = localStorage.getItem(localKey) || '[]';
+      let existing = JSON.parse(existingStr);
+
+      records.forEach(newRec => {
+        // Remove existing conflict record
+        existing = existing.filter(r => !(
+          r.student_id === newRec.student_id &&
+          r.attendance_type === newRec.attendance_type &&
+          (newRec.attendance_type === 'daily' ? r.attendance_date === newRec.attendance_date :
+           newRec.attendance_type === 'monthly' ? r.attendance_month === newRec.attendance_month :
+           r.attendance_year === newRec.attendance_year)
+        ));
+        // Add new record
+        existing.push(newRec);
+      });
+
+      localStorage.setItem(localKey, JSON.stringify(existing));
+      showToast("ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ / Saved Locally", "ಹಾಜರಾತಿ ವಿವರಗಳನ್ನು ಬ್ರೌಸರ್ ಸ್ಟೋರೇಜ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ.", "success");
+    }
+
+    // --- MONTHLY REPORT & SETUP GUIDE FUNCTIONS ---
+    // --- INTEGRATED STUDENT-WISE YEARLY MATRIX FUNCTIONS ---
+    let matrixData = {}; // Stores { studentId: { '2026-06': { present: X, working: Y }, ... } }
+    let processedMatrixStudents = [];
+    let matrixMonths = [];
+
+    async function loadYearlyMatrixReport() {
+      if (allStudents.length === 0) {
+        await fetchStudents();
+      }
+      const acadYear = document.getElementById('report-academic-year').value; // e.g. "2026-27"
+      const matrixBody = document.getElementById('matrix-report-body');
+      if (!matrixBody) return;
+      matrixBody.innerHTML = '<tr><td colspan="16" class="p-6 text-center"><i class="fa-solid fa-circle-notch fa-spin text-indigo-500 mb-2 block mx-auto text-lg"></i>ವರ್ಷದ ವರದಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ / Loading yearly matrix...</td></tr>';
+
+      const parts = acadYear.split('-');
+      const startYear = parseInt(parts[0]);
+      const endYear = 2000 + parseInt(parts[1]); // e.g. 2027
+
+      // Generate the 12 month strings: June to Dec of startYear, Jan to May of endYear
+      matrixMonths = [
+        `${startYear}-06`, `${startYear}-07`, `${startYear}-08`, `${startYear}-09`, `${startYear}-10`, `${startYear}-11`, `${startYear}-12`,
+        `${endYear}-01`, `${endYear}-02`, `${endYear}-03`, `${endYear}-04`, `${endYear}-05`
+      ];
+
+      const startDate = `${startYear}-06-01`;
+      const endDate = `${endYear}-05-31`;
+
+      let monthlyRecords = [];
+      let dailyRecords = [];
+
+      if (isSupabaseAttendanceAvailable) {
+        try {
+          // Fetch monthly records
+          const { data: mData } = await supabaseClient
+            .from('attendance')
+            .select('*')
+            .eq('attendance_type', 'monthly')
+            .in('attendance_month', matrixMonths);
+          monthlyRecords = mData || [];
+
+          // Fetch daily records
+          const { data: dData } = await supabaseClient
+            .from('attendance')
+            .select('*')
+            .eq('attendance_type', 'daily')
+            .gte('attendance_date', startDate)
+            .lte('attendance_date', endDate);
+          dailyRecords = dData || [];
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        const local = localStorage.getItem(`local_attendance_${currentSchoolId}`) || '[]';
+        const parsed = JSON.parse(local);
+        monthlyRecords = parsed.filter(r => r.attendance_type === 'monthly' && matrixMonths.includes(r.attendance_month));
+        dailyRecords = parsed.filter(r => r.attendance_type === 'daily' && r.attendance_date && r.attendance_date >= startDate && r.attendance_date <= endDate);
+      }
+
+      // Initialize matrixData for all students
+      matrixData = {};
+      allStudents.forEach(s => {
+        matrixData[s.id] = {};
+        matrixMonths.forEach(m => {
+          matrixData[s.id][m] = null; // default to null
+        });
+      });
+
+      // 1. Process Monthly Records
+      monthlyRecords.forEach(rec => {
+        if (matrixData[rec.student_id]) {
+          matrixData[rec.student_id][rec.attendance_month] = {
+            present: rec.present_days,
+            working: rec.working_days
+          };
+        }
+      });
+
+      // 2. Process Daily Records (aggregate them into matrixData monthly keys if null)
+      const studentMonthDailies = {}; // Key: studentId_YYYY-MM
+      dailyRecords.forEach(rec => {
+        if (!rec.attendance_date) return;
+        const m = rec.attendance_date.substring(0, 7); // e.g. "2026-06"
+        const key = `${rec.student_id}_${m}`;
+        if (!studentMonthDailies[key]) {
+          studentMonthDailies[key] = { present: 0, working: 0 };
+        }
+        studentMonthDailies[key].working++;
+        studentMonthDailies[key].present += (rec.present_days || 0);
+      });
+
+      Object.keys(studentMonthDailies).forEach(key => {
+        const [studentId, m] = key.split('_');
+        if (matrixData[studentId] && matrixData[studentId][m] === null) {
+          matrixData[studentId][m] = {
+            present: studentMonthDailies[key].present,
+            working: studentMonthDailies[key].working
+          };
+        }
+      });
+
+      // Sort students classwise, then by name
+      const classOrder = { 'LKG': 0, 'UKG': 1, '1': 2, '2': 3, '3': 4, '4': 5, '5': 6, '6': 7, '7': 8, '8': 9, '9': 10, '10': 11 };
+      processedMatrixStudents = [...allStudents].sort((a, b) => {
+        const clsA = normalizeClass(a.enroll_class);
+        const clsB = normalizeClass(b.enroll_class);
+        const orderA = classOrder[clsA] !== undefined ? classOrder[clsA] : 99;
+        const orderB = classOrder[clsB] !== undefined ? classOrder[clsB] : 99;
+        if (orderA !== orderB) return orderA - orderB;
+        return (a.name_english || '').localeCompare(b.name_english || '');
+      });
+
+      filterMatrixReport();
+    }
+
+    function filterMatrixReport() {
+      const q = document.getElementById('report-search').value.trim().toUpperCase();
+      const selectedClass = document.getElementById('report-class-filter').value;
+      const matrixBody = document.getElementById('matrix-report-body');
+      if (!matrixBody) return;
+
+      const filtered = processedMatrixStudents.filter(s => {
+        const nameEn = (s.name_english || '').toUpperCase();
+        const nameKn = (s.student_name || '').toUpperCase();
+        const sts = (s.app_no || '').toUpperCase();
+        const matchesQuery = !q || nameEn.includes(q) || nameKn.includes(q) || sts.includes(q);
+
+        const cls = normalizeClass(s.enroll_class);
+        const matchesClass = !selectedClass || cls === selectedClass;
+        return matchesQuery && matchesClass;
+      });
+
+      // Initialize column totals
+      const colTotals = {};
+      matrixMonths.forEach(m => {
+        colTotals[m] = { present: 0, working: 0 };
+      });
+      let grandTotalPresent = 0;
+      let grandTotalWorking = 0;
+
+      matrixBody.innerHTML = '';
+      if (filtered.length === 0) {
+        matrixBody.innerHTML = '<tr><td colspan="17" class="p-6 text-center text-slate-500 font-bold">ಯಾವುದೇ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ / No records found</td></tr>';
+        return;
+      }
+
+      filtered.forEach((student, index) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition border-b border-slate-100 dark:border-slate-850 text-center text-[10px]';
+        const cls = normalizeClass(student.enroll_class);
+
+        let rowHtml = `
+          <td class="p-2.5 text-slate-450 dark:text-slate-500 font-bold text-left">${index + 1}</td>
+          <td class="p-2.5 font-extrabold text-slate-700 dark:text-slate-300 text-left">${cls}</td>
+          <td class="p-2.5 font-mono font-bold text-slate-650 dark:text-slate-450 text-left">${student.app_no || '-'}</td>
+          <td class="p-2.5 font-bold text-slate-850 dark:text-white text-left">
+            ${student.name_english || ''}
+            <span class="block text-[9px] text-slate-400 font-semibold mt-0.5">${student.student_name || ''}</span>
+          </td>
+        `;
+
+        let studentTotalPresent = 0;
+        let studentTotalWorking = 0;
+
+        matrixMonths.forEach(m => {
+          const cell = matrixData[student.id] ? matrixData[student.id][m] : null;
+          let displayVal = '-';
+          if (cell) {
+            const pct = cell.working > 0 ? Math.round((cell.present / cell.working) * 100) : 0;
+            const badgeClass = pct >= 85 ? 'text-emerald-500 font-bold' : pct >= 75 ? 'text-amber-500 font-bold' : 'text-rose-500 font-bold';
+            displayVal = `<span class="${badgeClass}">${cell.present} / ${cell.working}</span>`;
+            
+            studentTotalPresent += cell.present;
+            studentTotalWorking += cell.working;
+            colTotals[m].present += cell.present;
+            colTotals[m].working += cell.working;
+          }
+          rowHtml += `<td class="p-2.5 font-bold text-center">${displayVal}</td>`;
+        });
+
+        // Compute row total
+        let totalDisplay = '-';
+        if (studentTotalWorking > 0) {
+          const pct = Math.round((studentTotalPresent / studentTotalWorking) * 100);
+          const badgeClass = pct >= 85 ? 'text-emerald-500 font-black' : pct >= 75 ? 'text-amber-500 font-black' : 'text-rose-500 font-black';
+          totalDisplay = `<span class="${badgeClass}">${studentTotalPresent} / ${studentTotalWorking}</span>`;
+        }
+        rowHtml += `<td class="p-2.5 font-bold text-center border-l border-slate-200 dark:border-slate-850 bg-slate-50/50 dark:bg-slate-900/40">${totalDisplay}</td>`;
+
+        grandTotalPresent += studentTotalPresent;
+        grandTotalWorking += studentTotalWorking;
+
+        tr.innerHTML = rowHtml;
+        matrixBody.appendChild(tr);
+      });
+
+      // Render Footer Row
+      const footer = document.getElementById('matrix-report-footer');
+      if (footer) {
+        let footerHtml = `
+          <td colspan="4" class="p-3 text-left font-black text-slate-850 dark:text-white uppercase tracking-wider">Total / ಒಟ್ಟು</td>
+        `;
+        matrixMonths.forEach(m => {
+          const tot = colTotals[m];
+          let val = '-';
+          if (tot.working > 0) {
+            const pct = Math.round((tot.present / tot.working) * 100);
+            const badgeClass = pct >= 85 ? 'text-emerald-500 font-black' : pct >= 75 ? 'text-amber-500 font-black' : 'text-rose-500 font-black';
+            val = `<span class="${badgeClass}">${tot.present} / ${tot.working}</span>`;
+          }
+          footerHtml += `<td class="p-3 text-center">${val}</td>`;
+        });
+        
+        let grandVal = '-';
+        if (grandTotalWorking > 0) {
+          const pct = Math.round((grandTotalPresent / grandTotalWorking) * 100);
+          const badgeClass = pct >= 85 ? 'text-emerald-500 font-black' : pct >= 75 ? 'text-amber-500 font-black' : 'text-rose-500 font-black';
+          grandVal = `<span class="${badgeClass}">${grandTotalPresent} / ${grandTotalWorking}</span>`;
+        }
+        footerHtml += `<td class="p-3 text-center border-l border-slate-250 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-900/60">${grandVal}</td>`;
+        footer.innerHTML = footerHtml;
+      }
+    }
+
+    function printMatrixReport() {
+      const acadYear = document.getElementById('report-academic-year').value;
+      const printWindow = window.open('', '_blank');
+      
+      const matrixTableContent = document.getElementById('matrix-report-table').innerHTML;
+
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Classwise Student Monthly Attendance Ledger - ${acadYear}</title>
+          <style>
+            body { font-family: sans-serif; padding: 20px; }
+            h1 { text-align: center; font-size: 16px; margin-bottom: 5px; }
+            h2 { text-align: center; font-size: 12px; margin-top: 0; color: #475569; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9px; }
+            th, td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; }
+            th, tfoot td { background-color: #f1f5f9; font-weight: bold; }
+            .text-left { text-align: left; }
+            span.block { display: block; font-size: 8px; color: #64748b; }
+            .text-emerald-500 { color: #10b981; font-weight: bold; }
+            .text-amber-500 { color: #f59e0b; font-weight: bold; }
+            .text-rose-500 { color: #ef4444; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h1>Yearly Classwise Student Monthly Attendance Ledger</h1>
+          <h2>Academic Year ${acadYear}</h2>
+          <table>
+            ${matrixTableContent}
+          </table>
+          <script>window.print();<\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    function exportMatrixToExcel() {
+      const acadYear = document.getElementById('report-academic-year').value;
+      const monthNames = ["June", "July", "August", "September", "October", "November", "December", "January", "February", "March", "April", "May"];
+
+      const classFilter = document.getElementById('report-class-filter').value;
+      const q = document.getElementById('report-search').value.trim().toUpperCase();
+
+      const filtered = processedMatrixStudents.filter(s => {
+        const nameEn = (s.name_english || '').toUpperCase();
+        const nameKn = (s.student_name || '').toUpperCase();
+        const sts = (s.app_no || '').toUpperCase();
+        const matchesQuery = !q || nameEn.includes(q) || nameKn.includes(q) || sts.includes(q);
+
+        const cls = normalizeClass(s.enroll_class);
+        const matchesClass = !classFilter || cls === classFilter;
+        return matchesQuery && matchesClass;
+      });
+
+      const colTotals = {};
+      matrixMonths.forEach(m => {
+        colTotals[m] = { present: 0, working: 0 };
+      });
+      let grandTotalPresent = 0;
+      let grandTotalWorking = 0;
+
+      const data = filtered.map((student, index) => {
+        const row = {
+          "Sl.No": index + 1,
+          "Class": normalizeClass(student.enroll_class),
+          "STS Number": student.app_no || '-',
+          "Student Name (English)": student.name_english || '',
+          "Student Name (Kannada)": student.student_name || '',
+          "Gender": student.gender
+        };
+        
+        let studentTotalPresent = 0;
+        let studentTotalWorking = 0;
+
+        matrixMonths.forEach((m, idx) => {
+          const cell = matrixData[student.id] ? matrixData[student.id][m] : null;
+          if (cell) {
+            row[monthNames[idx]] = `${cell.present} / ${cell.working}`;
+            studentTotalPresent += cell.present;
+            studentTotalWorking += cell.working;
+            colTotals[m].present += cell.present;
+            colTotals[m].working += cell.working;
+          } else {
+            row[monthNames[idx]] = '-';
+          }
+        });
+
+        row["Total"] = studentTotalWorking > 0 ? `${studentTotalPresent} / ${studentTotalWorking}` : '-';
+        grandTotalPresent += studentTotalPresent;
+        grandTotalWorking += studentTotalWorking;
+
+        return row;
+      });
+
+      // Add a footer row
+      const footerRow = {
+        "Sl.No": "Total / ಒಟ್ಟು",
+        "Class": "",
+        "STS Number": "",
+        "Student Name (English)": "",
+        "Student Name (Kannada)": "",
+        "Gender": ""
+      };
+      matrixMonths.forEach((m, idx) => {
+        const tot = colTotals[m];
+        footerRow[monthNames[idx]] = tot.working > 0 ? `${tot.present} / ${tot.working}` : '-';
+      });
+      footerRow["Total"] = grandTotalWorking > 0 ? `${grandTotalPresent} / ${grandTotalWorking}` : '-';
+      data.push(footerRow);
+
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Student Matrix");
+      XLSX.writeFile(wb, `Classwise_Student_Attendance_Matrix_${acadYear}.xlsx`);
+      showToast("ಡೌನ್‌ಲೋಡ್ ಯಶಸ್ವಿಯಾಗಿದೆ / Export Success", "Excel ಮ್ಯಾಟ್ರಿಕ್ಸ್ ವರದಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.", "success");
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      return classStr.toString().trim();
+    }
+
+    async function initUserAndTheme() {
+      const savedTheme = localStorage.getItem('portal_theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          const user = session.user;
+          const headerUser = document.getElementById('headerUser');
+
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('name, role')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          const name = profile?.name || user.user_metadata?.name || user.email;
+          if (headerUser) headerUser.innerText = name;
+
+          let schoolNameEn = localStorage.getItem('school_name_en');
+          let schoolNameKn = localStorage.getItem('school_name_kn');
+          
+          if (!schoolNameEn && currentSchoolId) {
+            const { data: school } = await supabaseClient
+              .from('schools')
+              .select('school_name_en, school_name_kn')
+              .eq('id', currentSchoolId)
+              .single();
+            if (school) {
+              schoolNameEn = school.school_name_en || '';
+              schoolNameKn = school.school_name_kn || '';
+              localStorage.setItem('school_name_en', schoolNameEn);
+              localStorage.setItem('school_name_kn', schoolNameKn);
+            }
+          }
+
+          if (schoolNameEn) {
+            const walkerEn = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+            let nodeEn;
+            while (nodeEn = walkerEn.nextNode()) {
+              const val = nodeEn.nodeValue;
+              if (val.includes("GHPS Marched")) nodeEn.nodeValue = val.replace(/GHPS Marched/g, schoolNameEn);
+              else if (val.includes("GHPS MARCHED")) nodeEn.nodeValue = val.replace(/GHPS MARCHED/g, schoolNameEn.toUpperCase());
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error setting headers:", e);
+      }
+    }
+
+    function changeTheme(themeName) {
+      document.body.setAttribute('data-theme', themeName);
+      localStorage.setItem('portal_theme', themeName);
+    }
+
+    function showToast(title, message, type = "success") {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+
+      toastTitle.innerText = title;
+      toastMsg.innerText = message;
+
+      if (type === "success") {
+        toastIcon.className = "w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-check text-sm"></i>';
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-sm"></i>';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

@@ -267,13 +267,42 @@
       background-color: #bbf7d0 !important;
       color: #14532d !important;
     }
-    body[data-theme="green"] .bg-white,
-    body[data-theme="green"] aside,
-    body[data-theme="green"] main,
-    body[data-theme="green"] .form-container,
     body[data-theme="green"] .section-block {
       background-color: #f0fdf4 !important;
       border-color: #86efac !important;
+    }
+
+    /* Floating Action Bar Styles */
+    #floatingActionBar {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    }
+    
+    /* Custom Scrollbar for Modal */
+    #teacherProfileModal::-webkit-scrollbar {
+      width: 6px;
+    }
+    #teacherProfileModal::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #teacherProfileModal::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+    
+    /* Print Signatures row styling */
+    .print-signatures-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+      padding: 0 40px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .print-signatures-row span {
+      border-top: 1px solid black;
+      padding-top: 5px;
+      width: 200px;
+      text-align: center;
     }
 </style>
 </head>
@@ -485,17 +514,9 @@
               <button onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
                 <i class="fa-solid fa-file-import text-amber-600 text-lg md:text-xl"></i>
               </button>
-              <!-- Export PDF -->
-              <button onclick="exportToPdf()" title="ಪಿಡಿಎಫ್ ರಫ್ತು / Export PDF" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                <i class="fa-solid fa-file-pdf text-rose-600 text-lg md:text-xl"></i>
-              </button>
               <!-- Excel -->
               <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
                 <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
-              </button>
-              <!-- Print -->
-              <button onclick="printReport()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
-                <i class="fa-solid fa-print text-slate-600 text-lg md:text-xl"></i>
               </button>
             </div>
           </div>
@@ -504,7 +525,10 @@
           <div class="border border-slate-200 rounded-xl overflow-x-auto shadow-inner bg-slate-50/20">
             <table class="w-full text-left text-xs whitespace-nowrap">
               <thead>
-                <tr class="border-b bg-slate-100/80 text-slate-600 font-bold uppercase">
+                <tr class="border-b bg-slate-100/80 text-slate-650 font-bold uppercase">
+                  <th class="py-3.5 px-4 text-center w-10">
+                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="rounded border-slate-350 text-emerald-600 focus:ring-emerald-400 cursor-pointer w-4 h-4">
+                  </th>
                   <th class="py-3.5 px-4 text-center">SL.NO.</th>
                   <th class="py-3.5 px-4 cursor-pointer select-none hover:bg-slate-200/50 transition" onclick="sortTeachers('teacher_id')" data-sort-col="teacher_id" data-col="teacher_id">T. ID</th>
                   <th class="py-3.5 px-4 cursor-pointer select-none hover:bg-slate-200/50 transition" onclick="sortTeachers('name')" data-sort-col="name">TEACHER NAME</th>
@@ -523,7 +547,6 @@
                   <th class="py-3.5 px-4 cursor-pointer select-none hover:bg-slate-200/50 transition" onclick="sortTeachers('gpf_pran')" data-sort-col="gpf_pran" data-col="gpf_pran">GPF/PRAN NO.</th>
                   <th class="py-3.5 px-4 cursor-pointer select-none hover:bg-slate-200/50 transition" onclick="sortTeachers('pan')" data-sort-col="pan" data-col="pan">PAN NO.</th>
                   <th class="py-3.5 px-4 cursor-pointer select-none hover:bg-slate-200/50 transition" onclick="sortTeachers('contact')" data-sort-col="contact" data-col="contact">CONTACT NO.</th>
-                  <th class="py-3.5 px-4 text-center">ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="teachersTableBody" class="divide-y divide-slate-100 font-medium text-slate-700 bg-white">
@@ -1127,6 +1150,9 @@
         const row = document.createElement('tr');
         row.className = 'hover:bg-slate-50';
         row.innerHTML = `
+          <td class="py-2.5 px-4 text-center w-10">
+            <input type="checkbox" class="teacher-select-chk rounded border-slate-300 text-emerald-600 focus:ring-emerald-400 cursor-pointer w-4 h-4" data-id="${uniqueId}" onchange="handleRowSelectionChange()">
+          </td>
           <td class="py-2.5 px-4 text-center font-bold text-slate-400">${i + 1}</td>
           <td class="py-2.5 px-4 font-semibold text-slate-800" data-col="teacher_id">${t.teacher_id || '-'}</td>
           <td class="py-2.5 px-4 font-bold text-indigo-700">${t.name || '-'}</td>
@@ -1145,14 +1171,6 @@
           <td class="py-2.5 px-4" data-col="gpf_pran">${t.gpf_pran || '-'}</td>
           <td class="py-2.5 px-4" data-col="pan">${t.pan || '-'}</td>
           <td class="py-2.5 px-4" data-col="contact">${t.contact || '-'}</td>
-          <td class="py-2.5 px-4 text-center space-x-1 whitespace-nowrap">
-            <button onclick="editTeacher('${uniqueId}')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded-lg transition border border-indigo-200 font-bold">
-              <i class="fa-solid fa-pen"></i> Edit
-            </button>
-            <button onclick="deleteTeacher('${uniqueId}')" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 px-2 py-1 rounded-lg transition border border-rose-200 font-bold">
-              <i class="fa-solid fa-trash"></i> Delete
-            </button>
-          </td>
         `;
         tbody.appendChild(row);
       });
@@ -1160,6 +1178,11 @@
       // Update visibility of the newly rendered rows/headers
       updateColumnVisibility();
       updateTableHeaderIcons();
+      
+      // Reset floating action bar state on table rerender
+      const selectAllChk = document.getElementById('selectAllCheckbox');
+      if (selectAllChk) selectAllChk.checked = false;
+      handleRowSelectionChange();
     }
 
     // Filter Table Search
@@ -1745,7 +1768,808 @@
         console.error("Error loading user session for header:", e);
       }
     }
-</script>
+
+    // New Checkbox Selection & Modal functions for selection upgrade
+    function getSelectedTeacherIds() {
+      const checked = document.querySelectorAll('.teacher-select-chk:checked');
+      return Array.from(checked).map(chk => chk.getAttribute('data-id'));
+    }
+
+    window.handleRowSelectionChange = function() {
+      const ids = getSelectedTeacherIds();
+      const count = ids.length;
+      
+      const badge = document.getElementById('selectedCountBadge');
+      if (badge) badge.innerText = count;
+      
+      const allChks = document.querySelectorAll('.teacher-select-chk');
+      const selectAllChk = document.getElementById('selectAllCheckbox');
+      if (selectAllChk) {
+        selectAllChk.checked = (allChks.length > 0 && count === allChks.length);
+      }
+      
+      const bar = document.getElementById('floatingActionBar');
+      if (bar) {
+        if (count > 0) {
+          bar.classList.remove('translate-y-28', 'opacity-0');
+          bar.classList.add('translate-y-0', 'opacity-100');
+        } else {
+          bar.classList.remove('translate-y-0', 'opacity-100');
+          bar.classList.add('translate-y-28', 'opacity-0');
+        }
+      }
+      
+      const floatBtnView = document.getElementById('floatBtnView');
+      const floatBtnEdit = document.getElementById('floatBtnEdit');
+      
+      if (count === 1) {
+        if (floatBtnView) {
+          floatBtnView.disabled = false;
+          floatBtnView.classList.remove('opacity-45', 'cursor-not-allowed');
+        }
+        if (floatBtnEdit) {
+          floatBtnEdit.disabled = false;
+          floatBtnEdit.classList.remove('opacity-45', 'cursor-not-allowed');
+        }
+      } else {
+        if (floatBtnView) {
+          floatBtnView.disabled = true;
+          floatBtnView.classList.add('opacity-45', 'cursor-not-allowed');
+        }
+        if (floatBtnEdit) {
+          floatBtnEdit.disabled = true;
+          floatBtnEdit.classList.add('opacity-45', 'cursor-not-allowed');
+        }
+      }
+    };
+
+    window.toggleSelectAll = function(master) {
+      const allChks = document.querySelectorAll('.teacher-select-chk');
+      allChks.forEach(chk => {
+        chk.checked = master.checked;
+      });
+      handleRowSelectionChange();
+    };
+
+    let activeViewTeacherId = null;
+    window.viewSelectedTeacher = function() {
+      const ids = getSelectedTeacherIds();
+      if (ids.length !== 1) return;
+      
+      const teacherId = ids[0];
+      const t = allTeachers.find(item => item.id === teacherId || item.kgid === teacherId || item.teacher_id === teacherId);
+      if (!t) return;
+      
+      activeViewTeacherId = teacherId;
+      
+      document.getElementById('modalTeacherName').innerText = t.name || '-';
+      
+      const genderBadge = document.getElementById('modalTeacherGenderBadge');
+      genderBadge.innerText = t.gender || '-';
+      const isFemale = (t.gender || '').toLowerCase().includes('female') || (t.gender || '').toLowerCase().includes('ಹೆಣ್ಣು');
+      if (isFemale) {
+        genderBadge.className = "text-[9px] bg-pink-50 text-pink-700 border border-pink-200 px-2 py-0.5 rounded-full font-bold";
+        document.getElementById('modalGenderIcon').innerText = "👩";
+        document.getElementById('modalGenderIcon').className = "w-12 h-12 bg-gradient-to-tr from-pink-600 to-pink-400 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-md";
+      } else {
+        genderBadge.className = "text-[9px] bg-sky-50 text-sky-700 border border-sky-200 px-2 py-0.5 rounded-full font-bold";
+        document.getElementById('modalGenderIcon').innerText = "👨";
+        document.getElementById('modalGenderIcon').className = "w-12 h-12 bg-gradient-to-tr from-sky-600 to-sky-400 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-md";
+      }
+      
+      document.getElementById('modalTeacherDesignation').innerText = t.designation || '-';
+      document.getElementById('modalValId').innerText = t.teacher_id || '-';
+      document.getElementById('modalValDob').innerText = t.dob || '-';
+      document.getElementById('modalValContact').innerText = t.contact || '-';
+      document.getElementById('modalValAadhaar').innerText = t.aadhaar || '-';
+      document.getElementById('modalValQual').innerText = t.qualification || '-';
+      document.getElementById('modalValSubject').innerText = t.teaching_subject || '-';
+      document.getElementById('modalValDojService').innerText = t.doj_service || '-';
+      document.getElementById('modalValDojSchool').innerText = t.doj_school || '-';
+      document.getElementById('modalValKgid').innerText = t.kgid || '-';
+      document.getElementById('modalValBankAcc').innerText = (t.bank_name || '') + (t.account_no ? ` / A.C: ${t.account_no}` : '');
+      document.getElementById('modalValIfsc').innerText = t.ifsc || '-';
+      document.getElementById('modalValGpf').innerText = t.gpf_pran || '-';
+      document.getElementById('modalValPan').innerText = t.pan || '-';
+      
+      document.getElementById('teacherProfileModal').classList.remove('hidden');
+    };
+
+    window.closeProfileModal = function() {
+      document.getElementById('teacherProfileModal').classList.add('hidden');
+      activeViewTeacherId = null;
+    };
+
+    window.editSelectedTeacher = function() {
+      const ids = getSelectedTeacherIds();
+      if (ids.length !== 1) return;
+      editTeacher(ids[0]);
+    };
+
+    window.printSelectedProfiles = function() {
+      const ids = getSelectedTeacherIds();
+      if (ids.length === 0) return;
+      
+      const printWindow = window.open('', '_blank');
+      
+      const schoolNameEn = localStorage.getItem('school_name_en') || 'Government Higher Primary School, Marched';
+      const schoolNameKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Teacher Profile Print</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap');
+            body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; padding: 40px; color: #0f172a; background-color: #ffffff; }
+            .profile-card {
+              border: 1px solid #e2e8f0;
+              border-radius: 24px;
+              padding: 30px;
+              margin-bottom: 40px;
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.02);
+              page-break-after: always;
+            }
+            .profile-card:last-child {
+              page-break-after: avoid !important;
+            }
+            .header-bar {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              border-bottom: 1px solid #e2e8f0;
+              padding-bottom: 20px;
+              margin-bottom: 24px;
+            }
+            .avatar-icon {
+              width: 48px;
+              height: 48px;
+              color: #ffffff;
+              border-radius: 16px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 20px;
+              font-weight: bold;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .avatar-male {
+              background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            }
+            .avatar-female {
+              background: linear-gradient(135deg, #ec4899, #f43f5e);
+            }
+            .gender-badge {
+              font-size: 9px;
+              padding: 2px 8px;
+              border-radius: 99px;
+              font-weight: bold;
+              border: 1px solid;
+              margin-left: 8px;
+            }
+            .badge-male {
+              background: #f0f9ff;
+              color: #0284c7;
+              border-color: #bae6fd;
+            }
+            .badge-female {
+              background: #fdf2f8;
+              color: #db2777;
+              border-color: #fbcfe8;
+            }
+            .cols-container {
+              display: flex;
+              justify-content: space-between;
+              gap: 20px;
+              width: 100%;
+            }
+            .detail-col {
+              flex: 1;
+              min-width: 0;
+              border: 1px solid #f1f5f9;
+              border-radius: 16px;
+              padding: 20px;
+              background: #fafafa;
+            }
+            .col-title {
+              font-size: 11px;
+              font-weight: 800;
+              border-bottom: 1px solid #e2e8f0;
+              padding-bottom: 8px;
+              margin: 0 0 12px 0;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            }
+            .title-personal { color: #059669; }
+            .title-academic { color: #4f46e5; }
+            .title-financial { color: #d97706; }
+            .data-item {
+              margin-bottom: 10px;
+            }
+            .data-label {
+              display: block;
+              font-size: 9px;
+              color: #94a3b8;
+              font-weight: bold;
+              text-transform: uppercase;
+            }
+            .data-value {
+              font-size: 11px;
+              color: #334155;
+              font-weight: 600;
+            }
+            .data-value-mono {
+              font-family: monospace;
+            }
+            .data-value-highlight {
+              color: #4f46e5;
+              font-weight: 700;
+            }
+            .footer-sigs {
+              display: flex;
+              justify-content: space-between;
+              margin-top: 40px;
+              padding: 0 10px;
+            }
+            .sig-line {
+              border-top: 1px solid #94a3b8;
+              width: 200px;
+              text-align: center;
+              padding-top: 8px;
+              font-size: 10px;
+              font-weight: bold;
+              color: #64748b;
+              text-transform: uppercase;
+            }
+          </style>
+        </head>
+        <body>
+          <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px double #cbd5e1; padding-bottom: 15px;">
+            <h2 style="margin: 0; font-size: 18px; text-transform: uppercase;">${schoolNameEn}</h2>
+            <h3 style="margin: 5px 0 0 0; font-size: 12px; font-weight: normal; color: #475569;">${schoolNameKn}</h3>
+            <p style="margin: 3px 0 0 0; font-size: 10px; font-weight: bold; color: #94a3b8;">ಶಿಕ್ಷಕರ ವಿವರಗಳ ಪರಿಚಯ ಪತ್ರ / Teacher Profile Document</p>
+          </div>
+      `);
+      
+      ids.forEach(id => {
+        const t = allTeachers.find(item => item.id === id || item.kgid === id || item.teacher_id === id);
+        if (!t) return;
+        
+        const isFemale = (t.gender || '').toLowerCase().includes('female') || (t.gender || '').toLowerCase().includes('ಹೆಣ್ಣು');
+        
+        printWindow.document.write(`
+          <div class="profile-card">
+            <!-- Header -->
+            <div class="header-bar">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div class="avatar-icon ${isFemale ? 'avatar-female' : 'avatar-male'}">
+                  ${isFemale ? '👩' : '👨'}
+                </div>
+                <div>
+                  <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center;">
+                    ${t.name || '-'}
+                    <span class="gender-badge ${isFemale ? 'badge-female' : 'badge-male'}">
+                      ${t.gender || '-'}
+                    </span>
+                  </h2>
+                  <p style="font-size: 12px; color: #64748b; font-weight: 600; margin: 4px 0 0 0;">${t.designation || 'Assistant Teacher'}</p>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 10px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 4px 12px; border-radius: 99px; font-weight: bold; font-family: monospace;">
+                  ID: ${t.teacher_id || '-'}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Cols Container -->
+            <div class="cols-container">
+              <!-- Personal Details -->
+              <div class="detail-col">
+                <h4 class="col-title title-personal">👤 Personal Details</h4>
+                <div class="data-item">
+                  <span class="data-label">Date of Birth / ಜನ್ಮ ದಿನಾಂಕ</span>
+                  <span class="data-value">${t.dob || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Contact / ಮೊಬೈಲ್ ಸಂಖ್ಯೆ</span>
+                  <span class="data-value data-value-mono">${t.contact || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Aadhaar No / ಆಧಾರ್ ಸಂಖ್ಯೆ</span>
+                  <span class="data-value data-value-mono">${t.aadhaar || '-'}</span>
+                </div>
+              </div>
+              
+              <!-- Academic Details -->
+              <div class="detail-col">
+                <h4 class="col-title title-academic">🎓 Academic Details</h4>
+                <div class="data-item">
+                  <span class="data-label">Qualification / ವಿದ್ಯಾರ್ಹತೆ</span>
+                  <span class="data-value">${t.qualification || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Teaching Subject / ಬೋಧನಾ ವಿಷಯ</span>
+                  <span class="data-value data-value-highlight">${t.teaching_subject || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">DOJ Service / ಸೇವೆಗೆ ಸೇರಿದ ದಿನ</span>
+                  <span class="data-value">${t.doj_service || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">DOJ School / ಈ ಶಾಲೆಗೆ ಸೇರಿದ ದಿನ</span>
+                  <span class="data-value">${t.doj_school || '-'}</span>
+                </div>
+              </div>
+              
+              <!-- Financial Details -->
+              <div class="detail-col">
+                <h4 class="col-title title-financial">💼 Financial Details</h4>
+                <div class="data-item">
+                  <span class="data-label">KGID / ಕೆಜಿಐಡಿ</span>
+                  <span class="data-value data-value-mono">${t.kgid || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">Bank Name / ಬ್ಯಾಂಕ್</span>
+                  <span class="data-value">${(t.bank_name || '') + (t.account_no ? ` / A.C: ${t.account_no}` : '')}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">IFSC Code / ಐಎಫ್ಎಸ್‌ಸಿ</span>
+                  <span class="data-value data-value-mono">${t.ifsc || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">GPF/PRAN / ಜಿಪಿಎಫ್</span>
+                  <span class="data-value data-value-mono">${t.gpf_pran || '-'}</span>
+                </div>
+                <div class="data-item">
+                  <span class="data-label">PAN Number / ಪ್ಯಾನ್ ಕಾರ್ಡ್</span>
+                  <span class="data-value data-value-mono">${t.pan || '-'}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="footer-sigs">
+              <div class="sig-line">Prepared By</div>
+              <div class="sig-line">Head Master Signature (GHPS Marched)</div>
+            </div>
+          </div>
+        `);
+      });
+      
+      printWindow.document.write(`
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    };
+
+    window.exportSelectedProfilesPdf = function() {
+      const ids = getSelectedTeacherIds();
+      if (ids.length === 0) return;
+
+      const tempContainer = document.createElement('div');
+      tempContainer.style.position = 'absolute';
+      tempContainer.style.left = '-9999px';
+      tempContainer.style.top = '-9999px';
+      tempContainer.style.width = '800px';
+      tempContainer.style.background = '#ffffff';
+      tempContainer.style.padding = '20px';
+
+      const styleEl = document.createElement('style');
+      styleEl.innerText = `
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap');
+        .pdf-profile-card {
+          font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 20px;
+          padding: 24px;
+          margin-bottom: 30px;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+          page-break-after: always;
+        }
+        .pdf-profile-card:last-child {
+          page-break-after: avoid !important;
+        }
+      `;
+      tempContainer.appendChild(styleEl);
+
+      const schoolNameEn = localStorage.getItem('school_name_en') || 'Government Higher Primary School, Marched';
+      const schoolNameKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+
+      tempContainer.innerHTML += `
+        <div style="text-align: center; margin-bottom: 24px; border-bottom: 2px double #cbd5e1; padding-bottom: 12px; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">
+          <h2 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a; text-transform: uppercase;">${schoolNameEn}</h2>
+          <h3 style="margin: 4px 0 0 0; font-size: 11px; font-weight: 600; color: #475569;">${schoolNameKn}</h3>
+          <p style="margin: 2px 0 0 0; font-size: 9px; font-weight: 500; color: #94a3b8;">ಶಿಕ್ಷಕರ ವಿವರಗಳ ಪರಿಚಯ ಪತ್ರ / Teacher Profile Document</p>
+        </div>
+      `;
+
+      ids.forEach(id => {
+        const t = allTeachers.find(item => item.id === id || item.kgid === id || item.teacher_id === id);
+        if (!t) return;
+
+        const isFemale = (t.gender || '').toLowerCase().includes('female') || (t.gender || '').toLowerCase().includes('ಹೆಣ್ಣು');
+        
+        tempContainer.innerHTML += `
+          <div class="pdf-profile-card">
+            <!-- Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 20px;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; background: ${isFemale ? 'linear-gradient(135deg, #ec4899, #f43f5e)' : 'linear-gradient(135deg, #0284c7, #0ea5e9)'}; color: #ffffff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold;">
+                  ${isFemale ? '👩' : '👨'}
+                </div>
+                <div>
+                  <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 6px;">
+                    ${t.name || '-'}
+                    <span style="font-size: 8px; background: ${isFemale ? '#fdf2f8' : '#f0f9ff'}; color: ${isFemale ? '#db2777' : '#0284c7'}; border: 1px solid ${isFemale ? '#fbcfe8' : '#bae6fd'}; padding: 1px 6px; border-radius: 99px; font-weight: bold;">
+                      ${t.gender || '-'}
+                    </span>
+                  </h2>
+                  <p style="font-size: 11px; color: #64748b; font-weight: 600; margin: 2px 0 0 0;">${t.designation || 'Assistant Teacher'}</p>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 9px; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 3px 8px; border-radius: 99px; font-weight: bold; font-family: monospace;">
+                  ID: ${t.teacher_id || '-'}
+                </span>
+              </div>
+            </div>
+
+            <!-- 3 Columns Flexbox (Safe for html2pdf rendering) -->
+            <div style="display: flex; justify-content: space-between; gap: 15px; width: 100%;">
+              
+              <!-- Personal Details -->
+              <div style="flex: 1; min-width: 0; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px; background: #fafafa;">
+                <h4 style="font-size: 10px; font-weight: 800; color: #059669; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em;">
+                  👤 Personal
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Date of Birth</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600;">${t.dob || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Contact Number</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.contact || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Aadhaar Number</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.aadhaar || '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Academic Details -->
+              <div style="flex: 1; min-width: 0; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px; background: #fafafa;">
+                <h4 style="font-size: 10px; font-weight: 800; color: #4f46e5; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em;">
+                  🎓 Academic
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Qualification</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600;">${t.qualification || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Teaching Subject</span>
+                    <span style="font-size: 10px; color: #4f46e5; font-weight: 700;">${t.teaching_subject || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">DOJ Service</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600;">${t.doj_service || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">DOJ School</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600;">${t.doj_school || '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Financial Details -->
+              <div style="flex: 1; min-width: 0; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px; background: #fafafa;">
+                <h4 style="font-size: 10px; font-weight: 800; color: #d97706; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.05em;">
+                  💼 Financial
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">KGID Number</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.kgid || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Bank & Account</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600;">${(t.bank_name || '') + (t.account_no ? ` / A.C: ${t.account_no}` : '-')}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">IFSC Code</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.ifsc || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">GPF / PRAN</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.gpf_pran || '-'}</span>
+                  </div>
+                  <div>
+                    <span style="display: block; font-size: 8px; color: #94a3b8; font-weight: bold; text-transform: uppercase;">PAN Card</span>
+                    <span style="font-size: 10px; color: #334155; font-weight: 600; font-family: monospace;">${t.pan || '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Signatures -->
+            <div style="display: flex; justify-content: space-between; margin-top: 30px; padding: 0 10px;">
+              <div style="border-top: 1px solid #cbd5e1; width: 160px; text-align: center; padding-top: 6px; font-size: 8px; font-weight: bold; color: #64748b; text-transform: uppercase;">
+                Prepared By
+              </div>
+              <div style="border-top: 1px solid #cbd5e1; width: 220px; text-align: center; padding-top: 6px; font-size: 8px; font-weight: bold; color: #64748b; text-transform: uppercase;">
+                Head Master Signature (GHPS Marched)
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      document.body.appendChild(tempContainer);
+
+      const opt = {
+        margin:       [10, 10, 10, 10],
+        filename:     `Teacher_Profiles_${new Date().toISOString().slice(0,10)}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(tempContainer).save().then(() => {
+        document.body.removeChild(tempContainer);
+      }).catch((err) => {
+        console.error(err);
+        alert("PDF export error: " + err.message);
+        document.body.removeChild(tempContainer);
+      });
+    };
+
+    window.printSingleProfileFromModal = function() {
+      if (!activeViewTeacherId) return;
+      const originalChecked = getSelectedTeacherIds();
+      
+      const allChks = document.querySelectorAll('.teacher-select-chk');
+      allChks.forEach(chk => {
+        chk.checked = (chk.getAttribute('data-id') === activeViewTeacherId);
+      });
+      
+      printSelectedProfiles();
+      
+      allChks.forEach(chk => {
+        chk.checked = originalChecked.includes(chk.getAttribute('data-id'));
+      });
+    };
+
+    window.exportSingleProfilePdfFromModal = function() {
+      if (!activeViewTeacherId) return;
+      const originalChecked = getSelectedTeacherIds();
+      
+      const allChks = document.querySelectorAll('.teacher-select-chk');
+      allChks.forEach(chk => {
+        chk.checked = (chk.getAttribute('data-id') === activeViewTeacherId);
+      });
+      
+      exportSelectedProfilesPdf();
+      
+      allChks.forEach(chk => {
+        chk.checked = originalChecked.includes(chk.getAttribute('data-id'));
+      });
+    };
+
+    window.deleteSelectedTeachers = async function() {
+      const ids = getSelectedTeacherIds();
+      if (ids.length === 0) return;
+      
+      const names = ids.map(id => {
+        const t = allTeachers.find(item => item.id === id || item.kgid === id || item.teacher_id === id);
+        return t ? t.name : '';
+      }).filter(n => n !== '').join(', ');
+      
+      if (!confirm(`ಖಂಡಿತವಾಗಿಯೂ ಈ ಕೆಳಗಿನ ${ids.length} ಶಿಕ್ಷಕರ ವಿವರಗಳನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nAre you sure you want to delete these ${ids.length} teachers: ${names}?`)) {
+        return;
+      }
+      
+      try {
+        const dbIds = [];
+        const kgids = [];
+        const tids = [];
+        
+        ids.forEach(id => {
+          const t = allTeachers.find(item => item.id === id || item.kgid === id || item.teacher_id === id);
+          if (t) {
+            if (t.id) dbIds.push(t.id);
+            else if (t.kgid) kgids.push(t.kgid);
+            else if (t.teacher_id) tids.push(t.teacher_id);
+          }
+        });
+        
+        if (dbIds.length > 0) {
+          const { error } = await supabaseClient.from('teachers').delete().in('id', dbIds);
+          if (error) throw error;
+        }
+        if (kgids.length > 0) {
+          const { error } = await supabaseClient.from('teachers').delete().in('kgid', kgids);
+          if (error) throw error;
+        }
+        if (tids.length > 0) {
+          const { error } = await supabaseClient.from('teachers').delete().in('teacher_id', tids);
+          if (error) throw error;
+        }
+        
+        alert("ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ. / Deleted successfully.");
+        
+        const selectAllChk = document.getElementById('selectAllCheckbox');
+        if (selectAllChk) selectAllChk.checked = false;
+        
+        await loadTeachers();
+        handleRowSelectionChange();
+      } catch (err) {
+        alert("ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
+    };
+  </script>
+
+  <!-- Floating Action Bar -->
+  <div id="floatingActionBar" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-700/80 px-6 py-4 rounded-3xl shadow-2xl flex items-center justify-between gap-6 transition-all duration-300 transform translate-y-28 opacity-0 z-[90] min-w-[320px] sm:min-w-[500px]">
+    <div class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-extrabold text-sm" id="selectedCountBadge">0</span>
+      <span class="text-xs font-bold text-slate-700 dark:text-slate-200">ಶಿಕ್ಷಕರನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ / Selected</span>
+    </div>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2">
+      <button id="floatBtnView" onclick="viewSelectedTeacher()" title="ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ / View Profile" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 p-2.5 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-1.5 font-bold text-xs">
+        <i class="fa-solid fa-eye text-emerald-600 text-sm"></i> <span class="hidden sm:inline">View</span>
+      </button>
+      <button id="floatBtnEdit" onclick="editSelectedTeacher()" title="ಮಾರ್ಪಡಿಸಿ / Edit Teacher" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 p-2.5 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-1.5 font-bold text-xs">
+        <i class="fa-solid fa-pen text-indigo-600 text-sm"></i> <span class="hidden sm:inline">Edit</span>
+      </button>
+      <button id="floatBtnPrint" onclick="printSelectedProfiles()" title="ಪ್ರಿಂಟ್ ಮಾಡಿ / Print Profile" class="bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-300 p-2.5 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-1.5 font-bold text-xs">
+        <i class="fa-solid fa-print text-amber-600 text-sm"></i> <span class="hidden sm:inline">Print</span>
+      </button>
+      <button id="floatBtnPdf" onclick="exportSelectedProfilesPdf()" title="ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ / Download PDF" class="bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-950/60 text-sky-750 dark:text-sky-300 p-2.5 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-1.5 font-bold text-xs">
+        <i class="fa-solid fa-file-pdf text-sky-600 text-sm"></i> <span class="hidden sm:inline">PDF</span>
+      </button>
+      <button id="floatBtnDelete" onclick="deleteSelectedTeachers()" title="ಅಳಿಸಿ / Delete Selected" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-950/60 text-rose-700 dark:text-rose-300 p-2.5 rounded-xl transition cursor-pointer border-0 flex items-center justify-center gap-1.5 font-bold text-xs">
+        <i class="fa-solid fa-trash-can text-rose-600 text-sm"></i> <span class="hidden sm:inline">Delete</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Detailed Teacher Profile Modal -->
+  <div id="teacherProfileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative flex flex-col gap-6">
+      
+      <!-- Modal Header -->
+      <div class="flex justify-between items-start border-b dark:border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-gradient-to-tr from-emerald-600 to-teal-400 text-white rounded-2xl flex items-center justify-center text-xl font-bold shadow-md" id="modalGenderIcon">
+            👤
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+              <span id="modalTeacherName">Ramesh K</span>
+              <span id="modalTeacherGenderBadge" class="text-[9px] bg-slate-100 dark:bg-slate-800 text-slate-650 px-2 py-0.5 rounded-full font-bold">Male</span>
+            </h3>
+            <p class="text-xs text-slate-450 font-semibold mt-0.5" id="modalTeacherDesignation">Assistant Teacher</p>
+          </div>
+        </div>
+        <button onclick="closeProfileModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white w-8 h-8 rounded-full border-0 cursor-pointer flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Grid sections) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+        
+        <!-- Column 1: Personal Info -->
+        <div class="p-5 border border-slate-150 dark:border-slate-800 rounded-2xl bg-slate-50/30 dark:bg-slate-900/30 space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-1.5 flex items-center gap-1.5 text-emerald-600 uppercase tracking-wider text-[10px]">
+            <i class="fa-solid fa-user"></i> ವೈಯಕ್ತಿಕ ವಿವರ / Personal
+          </h4>
+          <div class="space-y-3">
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Teacher ID / ಐಡಿ</span>
+              <span id="modalValId" class="font-bold text-slate-700 dark:text-slate-300 font-mono">T-101</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Date of Birth / ಜನ್ಮ ದಿನಾಂಕ</span>
+              <span id="modalValDob" class="font-semibold text-slate-700 dark:text-slate-300">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Contact / மொಬೈಲ್ ಸಂಖ್ಯೆ</span>
+              <span id="modalValContact" class="font-bold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Aadhaar No / ಆಧಾರ್ ಸಂಖ್ಯೆ</span>
+              <span id="modalValAadhaar" class="font-semibold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 2: Academic Info -->
+        <div class="p-5 border border-slate-150 dark:border-slate-800 rounded-2xl bg-slate-50/30 dark:bg-slate-900/30 space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-1.5 flex items-center gap-1.5 text-indigo-600 uppercase tracking-wider text-[10px]">
+            <i class="fa-solid fa-graduation-cap"></i> ಶೈಕ್ಷಣಿಕ ವಿವರ / Academic
+          </h4>
+          <div class="space-y-3">
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Qualification / ವಿದ್ಯಾರ್ಹತೆ</span>
+              <span id="modalValQual" class="font-semibold text-slate-700 dark:text-slate-300">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Teaching Subject / ಬೋಧನಾ ವಿಷಯ</span>
+              <span id="modalValSubject" class="font-bold text-indigo-650 dark:text-indigo-400">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">DOJ Service / ಸೇವೆಗೆ ಸೇರಿದ ದಿನ</span>
+              <span id="modalValDojService" class="font-semibold text-slate-700 dark:text-slate-300">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">DOJ School / ಈ ಶಾಲೆಗೆ ಸೇರಿದ ದಿನ</span>
+              <span id="modalValDojSchool" class="font-semibold text-slate-700 dark:text-slate-300">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Finance Info -->
+        <div class="p-5 border border-slate-150 dark:border-slate-800 rounded-2xl bg-slate-50/30 dark:bg-slate-900/30 space-y-4">
+          <h4 class="font-bold text-slate-800 dark:text-slate-200 border-b dark:border-slate-800 pb-1.5 flex items-center gap-1.5 text-amber-600 uppercase tracking-wider text-[10px]">
+            <i class="fa-solid fa-wallet"></i> ಹಣಕಾಸು ವಿವರ / Financials
+          </h4>
+          <div class="space-y-3">
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">KGID Number / ಕೆಜಿಐಡಿ</span>
+              <span id="modalValKgid" class="font-semibold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">Bank & Account / ಬ್ಯಾಂಕ್ ಖಾತೆ</span>
+              <span id="modalValBankAcc" class="font-semibold text-slate-700 dark:text-slate-300">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">IFSC Code / ಐಎಫ್ಎಸ್‌ಸಿ</span>
+              <span id="modalValIfsc" class="font-bold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">GPF / PRAN No / ಜಿಪಿಎಫ್</span>
+              <span id="modalValGpf" class="font-semibold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+            <div>
+              <span class="block text-[10px] text-slate-400 font-bold">PAN Number / ಪ್ಯಾನ್ ಕಾರ್ಡ್</span>
+              <span id="modalValPan" class="font-bold text-slate-700 dark:text-slate-300 font-mono">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="border-t dark:border-slate-800 pt-4 flex justify-end gap-2">
+        <button onclick="printSingleProfileFromModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition border-0 cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-print"></i> Print Profile
+        </button>
+        <button onclick="exportSingleProfilePdfFromModal()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition border-0 cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-file-pdf"></i> Download PDF
+        </button>
+        <button onclick="closeProfileModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-4 py-2 rounded-xl text-xs transition border-0 cursor-pointer">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <script src="navbar.js"></script>
 </body>
 </html>

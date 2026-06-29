@@ -1138,6 +1138,42 @@
       }
     });
 
+    function normalizeStudentRow(student) {
+      const categoryCodes = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS', 'OBC'];
+      const socialClassUpper = (student.social_class || '').toString().trim().toUpperCase();
+      const casteUpper = (student.caste || '').toString().trim().toUpperCase();
+      
+      const isCasteCategory = categoryCodes.includes(casteUpper) || 
+                              casteUpper === 'CATEGORY-1' || 
+                              casteUpper === 'CAT-1' ||
+                              casteUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                              casteUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+                              
+      const isSocialClassCategory = categoryCodes.includes(socialClassUpper) || 
+                                    socialClassUpper === 'CATEGORY-1' || 
+                                    socialClassUpper === 'CAT-1' ||
+                                    socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' || 
+                                    socialClassUpper === 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
+      
+      let social_class = student.social_class;
+      let caste = student.caste;
+      let student_caste = student.student_caste;
+      
+      if (isCasteCategory && !isSocialClassCategory) {
+        social_class = student.caste;
+        caste = student.student_caste;
+        student_caste = student.social_class;
+      }
+      
+      // Determine gender robustly
+      const g = (student.gender || '').toString().toLowerCase().trim();
+      const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+      const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+      const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
+
+      return { ...student, social_class, caste, student_caste, gender };
+    }
+
     async function fetchRosterByClass(className) {
       const tbody = document.getElementById('student-roster-body');
       const emptyState = document.getElementById('empty-editor-state');
@@ -1151,11 +1187,11 @@
       emptyState.classList.remove('hidden');
       editForm.classList.add('hidden');
       saveBtn.classList.add('hidden');
-
+ 
       if (!className) {
         className = "ALL";
       }
-
+ 
       tbody.innerHTML = Array(5).fill(0).map((_, i) => `
         <tr class="border-b border-slate-150">
           <td class="p-3 text-center"><div class="skeleton-badge mx-auto"></div></td>
@@ -1171,25 +1207,25 @@
           <td class="p-3 text-center"><div class="skeleton-badge mx-auto"></div></td>
         </tr>
       `).join('');
-
+ 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
-
+ 
         let query = supabaseClient.from('admissions').select('*');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
-
+ 
         const { data, error } = await query;
-
+ 
         if (error) throw error;
-
+ 
         let filteredData = data || [];
         if (className && className !== 'ALL') {
           filteredData = filteredData.filter(s => normalizeClass(s.enroll_class) === normalizeClass(className));
         }
-
+ 
         activeRosterHeaders = [
           "ID", "STS No", "Academic Year", "Medium", 
           "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್", 
@@ -1206,53 +1242,56 @@
           "Mother Aadhaar", "Mother Occupation", "Preschool Board", "Preschool Type", "Preschool Name", 
           "Transfer No", "Transfer Date", "Student STS"
         ];
-
-        activeRosterStudents = filteredData.map(s => ({
-          "ID": s.id,
-          "STS No": s.app_no,
-          "Academic Year": s.academic_year,
-          "Medium": s.medium,
-          "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": s.student_name,
-          "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": s.name_english,
-          "Class": s.enroll_class,
-          "Date of Birth": s.dob,
-          "Gender": s.gender,
-          "Aadhaar Number": s.student_aadhaar,
-          "Religion": s.religion,
-          "Social Class": s.social_class,
-          "Student's Caste": s.caste,
-          "Sub-Caste": s.student_caste,
-          "Mother Tongue": s.mother_tongue,
-          "Mobile Number": s.mobile_number,
-          "Special Need": s.special_need,
-          "Special Category": s.special_category,
-          "Bhagyalakshmi Bond": s.bhagyalakshmi_bond,
-          "Age Reason": s.age_reason,
-          "Address": s.address,
-          "District": s.district,
-          "Taluk": s.taluk,
-          "Bank Account No": s.bank_acc_no,
-          "IFSC Code": s.ifsc_code,
-          "Bank Address": s.bank_address,
-          "Scholarship No": s.scholarship_no,
-          "Student Caste Cert": s.student_caste_cert,
-          "Student Income Cert": s.student_income_cert,
-          "BPL Card No": s.bpl_card_no,
-          "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": s.father_name_kn,
-          "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": s.father_name_az,
-          "Father Aadhaar": s.father_aadhaar,
-          "Father Occupation": s.father_occupation,
-          "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": s.mother_name_kn,
-          "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": s.mother_name_az,
-          "Mother Aadhaar": s.mother_aadhaar,
-          "Mother Occupation": s.mother_occupation,
-          "Preschool Board": s.preschool_board,
-          "Preschool Type": s.preschool_type,
-          "Preschool Name": s.preschool_name,
-          "Transfer No": s.transfer_no,
-          "Transfer Date": s.transfer_date,
-          "Student STS": s.student_sts
-        }));
+ 
+        activeRosterStudents = filteredData.map(s => {
+          const norm = normalizeStudentRow(s);
+          return {
+            "ID": norm.id,
+            "STS No": norm.app_no,
+            "Academic Year": norm.academic_year,
+            "Medium": norm.medium,
+            "Student Name Kannada / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ": norm.student_name,
+            "Student Name English / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಇಂಗ್ಲಿಷ್": norm.name_english,
+            "Class": norm.enroll_class,
+            "Date of Birth": norm.dob,
+            "Gender": norm.gender,
+            "Aadhaar Number": norm.student_aadhaar,
+            "Religion": norm.religion,
+            "Social Class": norm.social_class,
+            "Student's Caste": norm.caste,
+            "Sub-Caste": norm.student_caste,
+            "Mother Tongue": norm.mother_tongue,
+            "Mobile Number": norm.mobile_number,
+            "Special Need": norm.special_need,
+            "Special Category": norm.special_category,
+            "Bhagyalakshmi Bond": norm.bhagyalakshmi_bond,
+            "Age Reason": norm.age_reason,
+            "Address": norm.address,
+            "District": norm.district,
+            "Taluk": norm.taluk,
+            "Bank Account No": norm.bank_acc_no,
+            "IFSC Code": norm.ifsc_code,
+            "Bank Address": norm.bank_address,
+            "Scholarship No": norm.scholarship_no,
+            "Student Caste Cert": norm.student_caste_cert,
+            "Student Income Cert": norm.student_income_cert,
+            "BPL Card No": norm.bpl_card_no,
+            "Father Name Kannada / ತಂದೆಯ ಹೆಸರು ಕನ್ನಡ": norm.father_name_kn,
+            "Father Name English (Aadhaar) / ತಂದೆಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": norm.father_name_az,
+            "Father Aadhaar": norm.father_aadhaar,
+            "Father Occupation": norm.father_occupation,
+            "Mother Name Kannada / ತಾಯಿಯ ಹೆಸರು ಕನ್ನಡ": norm.mother_name_kn,
+            "Mother Name English (Aadhaar) / ತಾಯಿಯ ಹೆಸರು ಇಂಗ್ಲಿಷ್ (ಆಧಾರ್)": norm.mother_name_az,
+            "Mother Aadhaar": norm.mother_aadhaar,
+            "Mother Occupation": norm.mother_occupation,
+            "Preschool Board": norm.preschool_board,
+            "Preschool Type": norm.preschool_type,
+            "Preschool Name": norm.preschool_name,
+            "Transfer No": norm.transfer_no,
+            "Transfer Date": norm.transfer_date,
+            "Student STS": norm.student_sts
+          };
+        });
 
         applyRosterFiltersAndSort();
       } catch (err) {
