@@ -1713,6 +1713,21 @@
             if (!window.admissionData) return;
             const data = window.admissionData;
 
+            // Student Photo Rendering
+            const photoBox = document.querySelector('.photo-box');
+            if (photoBox) {
+                const photoVal = data.studentPhoto || data.student_photo || '';
+                if (photoVal) {
+                    photoBox.innerHTML = `<img src="${photoVal}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;" alt="Student Photo">`;
+                } else {
+                    photoBox.innerHTML = `
+                        <div class="photo-box-text">
+                            <span data-key="photo">${currentLang === 'kn' ? 'ಭಾವ ಚಿತ್ರ' : 'Photo'}</span>
+                        </div>
+                    `;
+                }
+            }
+
             // Update document title for native print PDF filename
             if (typeof getAdmissionPdfFilename === 'function') {
                 document.title = getAdmissionPdfFilename();
@@ -2395,7 +2410,8 @@
                         email: data.email || '',
                         preschool_address: data.preschoolAddress || '',
                         form_date: formattedFormDate,
-                        is_admitted: false
+                        is_admitted: false,
+                        student_photo: data.student_photo || data.studentPhoto || ''
                     };
 
                     if (session && session.user) {
@@ -2614,7 +2630,8 @@
                 age: clean(row.age),
                 email: clean(row.email),
                 preschoolAddress: clean(row.preschool_address),
-                formDate: clean(row.form_date)
+                formDate: clean(row.form_date),
+                studentPhoto: clean(row.student_photo)
             };
         }
 

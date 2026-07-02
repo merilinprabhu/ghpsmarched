@@ -1076,6 +1076,23 @@
     }
     const printArea = document.getElementById('printArea');
     if (!printArea) return;
+
+    // Auto-detect the table ID and build default print area if empty
+    const tableId = document.getElementById('competency-table') ? 'competency-table' :
+                    (document.getElementById('student-table') ? 'student-table' :
+                    (document.getElementById('admission-table') ? 'admission-table' : null));
+    if (tableId) {
+      window.activePrintConfig = {
+        tableId: tableId,
+        title: document.title || 'School Report / ಶಾಲಾ ವರದಿ',
+        class: document.getElementById('class-filter')?.value || document.getElementById('classFilter')?.value || '',
+        exam: document.getElementById('exam-type-filter')?.value || document.getElementById('examFilter')?.value || '',
+        subject: document.getElementById('subject-filter')?.value || document.getElementById('subjectFilter')?.value || '',
+        students: []
+      };
+      window.generateCustomPrint(false, true);
+      window.customPrintGenerated = true;
+    }
     
     const filename = window.location.pathname.split('/').pop() || '';
     if (filename === 'incentives.html') {
@@ -1132,6 +1149,10 @@
       `;
       headerNode.appendChild(barcodeBox);
     }
+  });
+
+  window.addEventListener('afterprint', function() {
+    window.customPrintGenerated = false;
   });
 
   // Global Print Settings Drawer State
@@ -1266,14 +1287,14 @@
     }, 200);
   };
 
-  window.generateCustomPrint = function(isPdf = false) {
+  window.generateCustomPrint = function(isPdf = false, justBuild = false) {
     try {
       const config = window.activePrintConfig;
       if (!config) return;
       
       const originalTable = document.getElementById(config.tableId);
       if (!originalTable) {
-        alert("Table not found in DOM: " + config.tableId);
+        if (!justBuild) alert("Table not found in DOM: " + config.tableId);
         return;
       }
       
@@ -1641,6 +1662,8 @@
               span.style.fontWeight = 'bold';
               if (el.tagName === 'SELECT') {
                 span.innerText = el.value || '-';
+              } else if (el.type === 'checkbox') {
+                span.innerText = el.checked ? '✓' : '✗';
               } else {
                 span.innerText = el.value !== undefined ? el.value : el.innerText;
               }
@@ -1809,6 +1832,10 @@
       sigRow.innerHTML = sigsHtml;
       printArea.appendChild(sigRow);
       
+      if (justBuild) {
+        return;
+      }
+      
       closePrintDrawer();
       
       // Trigger print/PDF
@@ -1866,7 +1893,7 @@
                 <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವರದಿ ಅಕ್ಷರಗಳ ಗಾತ್ರ / Print Font Size</label>
                   <select id="pdFontSize" class="w-full bg-white border border-slate-350 rounded-xl px-3 py-2 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer text-xs">
-                    <option value="6pt">6pt (અತ್ಯಂತ ಸಣ್ಣದು)</option>
+                    <option value="6pt">6pt (ಅತ್ಯಂತ ಸಣ್ಣದು)</option>
                     <option value="7pt">7pt</option>
                     <option value="8pt">8pt</option>
                     <option value="9pt" selected>9pt (ಸಾಧಾರಣ)</option>

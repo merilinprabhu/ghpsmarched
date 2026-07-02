@@ -19,10 +19,6 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     @media print {
-      @page {
-        size: A4 landscape;
-        margin: 10mm;
-      }
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
@@ -775,7 +771,7 @@
       document.getElementById('empty-state').classList.add('hidden');
       document.getElementById('competency-table').classList.add('hidden');
       document.getElementById('stats-bar').classList.add('hidden');
-      document.getElementById('btn-save-pdf').classList.add('hidden');
+      if (document.getElementById('btn-save-pdf')) document.getElementById('btn-save-pdf').classList.add('hidden');
       document.getElementById('btn-print-report').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
       if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.add('hidden');
@@ -881,7 +877,7 @@
       document.getElementById('grid-subtitle').innerText = `${classFilter.value} | ವಿಷಯ: ${subjectFilter.value}`;
       document.getElementById('competency-table').classList.remove('hidden');
       document.getElementById('stats-bar').classList.remove('hidden');
-      document.getElementById('btn-save-pdf').classList.remove('hidden');
+      if (document.getElementById('btn-save-pdf')) document.getElementById('btn-save-pdf').classList.remove('hidden');
       document.getElementById('btn-print-report').classList.remove('hidden');
       document.getElementById('btn-export-excel').classList.remove('hidden');
       if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.remove('hidden');
@@ -1096,7 +1092,7 @@
       document.getElementById('grid-subtitle').innerText = "ಯಾವುದೇ ತರಗತಿ ಅಥವಾ ವಿಷಯವನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ";
       hideActionButtons();
       document.getElementById('stats-bar').classList.add('hidden');
-      document.getElementById('btn-save-pdf').classList.add('hidden');
+      if (document.getElementById('btn-save-pdf')) document.getElementById('btn-save-pdf').classList.add('hidden');
       document.getElementById('btn-print-report').classList.add('hidden');
       document.getElementById('btn-export-excel').classList.add('hidden');
       if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.add('hidden');

@@ -558,6 +558,15 @@
           <label>ದಾಖಲಾತಿ ದಿನಾಂಕ / Enrolment Date</label>
           <input type="date" id="enrolmentDate" name="enrolmentDate" class="form-control" onchange="calculateExactAge()">
         </div>
+        <div class="col">
+          <label>ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ / Student Photo</label>
+          <input type="file" id="studentPhotoInput" class="form-control" accept="image/*" onchange="handleStudentPhotoUpload(event)">
+          <input type="hidden" id="student_photo" name="student_photo">
+          <div id="photoPreviewContainer" class="mt-2 d-none">
+            <img id="photoPreview" src="" alt="Student Photo Preview" class="rounded border bg-light p-1" style="max-height: 80px; max-width: 80px; object-fit: contain;">
+            <button type="button" class="btn btn-sm btn-danger mt-1 d-block" onclick="removeUploadedPhoto()" style="font-size: 10px; padding: 2px 6px;">Remove / ತೆಗೆದುಹಾಕಿ</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1236,6 +1245,63 @@
         "3B": ["Lingayat", "Veerashaiva", "Others"],
         "OTHERS": ["Brahmin", "Vaishya", "Others"]
       }
+    };
+  }
+
+  // Student Photo Upload Helper Functions
+  window.handleStudentPhotoUpload = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024 * 5) {
+      alert("ಫೋಟೋ ಗಾತ್ರ 5MB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು / Photo size must be less than 5MB");
+      event.target.value = "";
+      return;
+    }
+    
+    compressAndBase64Image(file, 120, 150, 0.7, function(base64Data) {
+      document.getElementById("student_photo").value = base64Data;
+      document.getElementById("photoPreview").src = base64Data;
+      document.getElementById("photoPreviewContainer").classList.remove("d-none");
+    });
+  };
+
+  window.removeUploadedPhoto = function() {
+    document.getElementById("studentPhotoInput").value = "";
+    document.getElementById("student_photo").value = "";
+    document.getElementById("photoPreview").src = "";
+    document.getElementById("photoPreviewContainer").classList.add("d-none");
+  };
+
+  function compressAndBase64Image(file, maxWidth, maxHeight, quality, callback) {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function(event) {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        callback(compressedBase64);
+      };
     };
   }
 
@@ -2161,7 +2227,8 @@
       age: clean(row.age),
       email: clean(row.email),
       preschoolAddress: clean(row.preschool_address),
-      formDate: clean(row.form_date)
+      formDate: clean(row.form_date),
+      student_photo: clean(row.student_photo)
     };
   }
 
@@ -2293,6 +2360,18 @@
     if (data.appNo) {
       const appNoEl = document.getElementById("appNo");
       if (appNoEl) appNoEl.value = data.appNo;
+    }
+
+    // Populate student photo if available
+    const photoData = data.student_photo || data.studentPhoto || '';
+    if (photoData) {
+      document.getElementById("student_photo").value = photoData;
+      document.getElementById("photoPreview").src = photoData;
+      document.getElementById("photoPreviewContainer").classList.remove("d-none");
+    } else {
+      document.getElementById("student_photo").value = "";
+      document.getElementById("photoPreview").src = "";
+      document.getElementById("photoPreviewContainer").classList.add("d-none");
     }
 
     window.isFormLoadingData = false;

@@ -419,7 +419,7 @@
 
         <!-- Scrollable Table Container -->
         <div class="max-h-[600px] overflow-auto custom-scrollbar border border-slate-100 rounded-xl shadow-sm" id="table-container">
-          <table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+          <table id="student-table" class="w-full text-left border-collapse text-xs whitespace-nowrap">
             <thead>
               <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider text-center">
                 <th class="p-3 text-center w-10 no-print">
@@ -453,7 +453,7 @@
   </div>
 
   <!-- CSV Preview & Import Modal -->
-  <div id="csv-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+  <div id="csv-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[85vh] overflow-hidden">
       <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -483,7 +483,7 @@
   </div>
 
   <!-- Manage Columns Modal -->
-  <div id="manage-columns-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+  <div id="manage-columns-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[85vh] overflow-hidden">
       <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
         <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -512,7 +512,7 @@
   </footer>
 
   <!-- Toast system -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-[2100]">
     <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white" id="toast-icon">
       <i class="fa-solid fa-check text-sm"></i>
     </div>
@@ -523,7 +523,7 @@
   </div>
 
   <!-- Quick Student Profile Modal -->
-  <div id="student-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4 no-print">
+  <div id="student-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
     <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden transition-all duration-300 modal-content">
       
       <!-- Modal Header -->
@@ -1365,15 +1365,28 @@
             } else if (col.id === 'student_name') {
               const nameEn = (s.name_english || '').trim().toUpperCase();
               const nameKn = (s.student_name_kn || '').trim();
+              const photoUrl = s.student_photo || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
               if (nameEn && nameKn) {
                 cellsHtml += `
                   <td class="p-3 text-left cursor-pointer hover:bg-slate-50 group" onclick="openStudentPreviewModal('${s.realId}')" title="Click to view detailed profile">
-                    <div class="font-bold text-slate-800 text-[11px] group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn, q)}</div>
-                    <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(nameKn, q)}</div>
+                    <div class="flex items-center gap-2">
+                      <img src="${photoUrl}" class="w-8 h-8 rounded-full border border-slate-200 object-cover flex-shrink-0">
+                      <div>
+                        <div class="font-bold text-slate-800 text-[11px] group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn, q)}</div>
+                        <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(nameKn, q)}</div>
+                      </div>
+                    </div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left cursor-pointer hover:text-sky-600 transition-colors" onclick="openStudentPreviewModal('${s.realId}')" title="Click to view detailed profile">${highlightMatch(nameEn || nameKn || '-', q)}</td>`;
+                cellsHtml += `
+                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 group" onclick="openStudentPreviewModal('${s.realId}')" title="Click to view detailed profile">
+                    <div class="flex items-center gap-2">
+                      <img src="${photoUrl}" class="w-8 h-8 rounded-full border border-slate-200 object-cover flex-shrink-0">
+                      <div class="font-semibold text-slate-800 text-[11px] text-left group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn || nameKn || '-', q)}</div>
+                    </div>
+                  </td>
+                `;
               }
             } else if (col.id === 'enroll_class') {
               cellsHtml += `<td class="p-3 text-center">${s.className}</td>`;
@@ -2069,62 +2082,14 @@
 
     // Export Helpers (Excel, PDF, Print)
     function printStudentList() {
-      const filterCls = document.getElementById('class-filter').value || "All Classes";
-      const count = document.getElementById('total-count').textContent;
-
-      const printWin = window.open('', '_blank');
-      
-      let styleHtml = `
-        <style>
-          body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #ffffff; color: #000000; font-size: 10px; margin: 10mm; }
-          table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 8px; border: 1px solid #000000; background-color: #ffffff; }
-          th, td { border: 1px solid #000000; padding: 6px 4px; text-align: center; }
-          th { background-color: #000000; color: #ffffff; font-weight: bold; }
-          td { background-color: #ffffff; color: #000000; }
-          .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-          .header h1 { font-size: 16px; font-weight: bold; margin: 0; }
-          .header h2 { font-size: 12px; margin: 5px 0 0 0; }
-          .meta { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-top: 10px; }
-          .footer { display: flex; justify-content: space-between; margin-top: 50px; font-size: 10px; font-weight: bold; }
-        </style>
-      `;
-
-      const originalTable = document.querySelector('table');
-      const clonedTable = originalTable.cloneNode(true);
-      clonedTable.querySelectorAll('input').forEach(input => {
-        const span = document.createElement('span');
-        span.innerText = input.value || '-';
-        input.parentNode.replaceChild(span, input);
+      window.openPrintDrawer({
+        tableId: 'student-table',
+        title: 'ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳು / Student Enrollment Records',
+        class: document.getElementById('class-filter').value || "All Classes",
+        exam: '',
+        subject: '',
+        students: students || []
       });
-
-      clonedTable.querySelectorAll('.no-print').forEach(el => el.parentNode.removeChild(el));
-      clonedTable.querySelectorAll('.hidden.print\\:table-cell').forEach(el => el.classList.remove('hidden', 'print:table-cell'));
-
-      let bodyHtml = `
-        <div class="header">
-          <h1>GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
-          <h2>ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳು / Student Enrollment Records</h2>
-          <div class="meta">
-            <span>Class: ${filterCls}</span>
-            <span>Total Students: ${count}</span>
-            <span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
-          </div>
-        </div>
-      `;
-      
-      printWin.document.write('<html><head><title>Student List</title>' + styleHtml + '</head><body>');
-      printWin.document.write(bodyHtml);
-      printWin.document.write(clonedTable.outerHTML);
-      printWin.document.write(`
-        <div class="footer">
-          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
-        </div>
-      `);
-      printWin.document.write('</body></html>');
-      printWin.document.close();
-      printWin.focus();
-      setTimeout(() => { printWin.print(); printWin.close(); }, 500);
     }
 
     function exportToExcel() {

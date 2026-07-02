@@ -151,10 +151,6 @@
     /* Print styling overrides */
     /* Print styling overrides */
     @media print {
-      @page {
-        size: A4 landscape;
-        margin: 12mm 15mm;
-      }
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
@@ -3349,7 +3345,6 @@
       printSettingsStyle.innerHTML = `
         @media print {
           @page {
-            size: A4 ${pageOrientationCss} !important;
             margin: 10mm 12mm !important;
           }
           #printArea table {
