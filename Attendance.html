@@ -399,7 +399,7 @@
               <option value="10">Class 10</option>
             </select>
             <input type="text" id="report-search" oninput="filterMatrixReport()" placeholder="Search Student name or STS..." class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold shadow-inner">
-            <button onclick="printMatrixReport()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-750 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border border-indigo-200/30 flex items-center gap-1.5"><i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ / Print</button>
+            <button onclick="printMatrixReport(false)" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-755 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border border-indigo-200/30 flex items-center gap-1.5"><i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ / Print</button>
             <button onclick="exportMatrixToExcel()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-755 px-3.5 py-1.5 rounded-xl text-xs font-bold transition shadow-sm border border-emerald-250/30 flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Excel</button>
           </div>
         </div>
@@ -557,8 +557,14 @@
             defaultClass = c;
             break;
           }
-        }
-        document.getElementById('entry-class-select').value = defaultClass;
+      }
+
+      // Check query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramClass = urlParams.get('class');
+      if (paramClass) {
+        document.getElementById('entry-class-select').value = paramClass;
+        loadStudentsForEntry();
       }
 
       await loadDashboardStats();
@@ -1247,11 +1253,13 @@
       }
     }
 
-    function printMatrixReport() {
+    function printMatrixReport(isPdf = false) {
       const acadYear = document.getElementById('report-academic-year').value;
       const printWindow = window.open('', '_blank');
       
       const matrixTableContent = document.getElementById('matrix-report-table').innerHTML;
+      const barcodeText = `Attendance.html|All||${acadYear}`;
+      const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeText)}&scale=2&rotate=N&includeText=false`;
 
       printWindow.document.write(`
         <html>
@@ -1259,8 +1267,12 @@
           <title>Classwise Student Monthly Attendance Ledger - ${acadYear}</title>
           <style>
             body { font-family: sans-serif; padding: 20px; }
-            h1 { text-align: center; font-size: 16px; margin-bottom: 5px; }
-            h2 { text-align: center; font-size: 12px; margin-top: 0; color: #475569; }
+            .header-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+            .header-info { text-align: left; flex-grow: 1; }
+            h1 { font-size: 16px; margin: 0; padding: 0; text-transform: uppercase; }
+            h2 { font-size: 12px; margin: 5px 0 0 0; color: #475569; }
+            .barcode-box { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 1.5px solid #000000; padding: 5px; background-color: #ffffff; margin-top: -5px; }
+            .barcode-lbl { font-size: 7px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; color: #000000; }
             table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9px; }
             th, td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; }
             th, tfoot td { background-color: #f1f5f9; font-weight: bold; }
@@ -1272,16 +1284,36 @@
           </style>
         </head>
         <body>
-          <h1>Yearly Classwise Student Monthly Attendance Ledger</h1>
-          <h2>Academic Year ${acadYear}</h2>
+          <div class="header-container">
+            <div class="header-info">
+              <h1>Yearly Classwise Student Monthly Attendance Ledger</h1>
+              <h2>Academic Year ${acadYear}</h2>
+            </div>
+            <div class="barcode-box">
+              <img src="${barcodeUrl}" style="height: 35px; width: 150px; object-fit: contain;" alt="Barcode">
+              <span class="barcode-lbl">SCAN IN PORTAL TO OPEN</span>
+            </div>
+          </div>
           <table>
             ${matrixTableContent}
           </table>
-          <script>window.print();<\/script>
+          <script>
+            window.onload = function() {
+              if (${isPdf}) {
+                alert("To download as a high-quality PDF:\\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\\n2. Click 'Save'.\\n\\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+              }
+              window.print();
+              window.close();
+            };
+          <\/script>
         </body>
         </html>
       `);
       printWindow.document.close();
+    }
+
+    function exportToPdf() {
+      printMatrixReport(true);
     }
 
     function exportMatrixToExcel() {

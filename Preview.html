@@ -2091,6 +2091,7 @@
             const pdfName = getAdmissionPdfFilename();
             const oldTitle = document.title;
             document.title = pdfName;
+            alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
             window.print();
             setTimeout(() => {
                 document.title = oldTitle;
@@ -2736,42 +2737,17 @@
             // Auto-PDF download handler
             if (urlParams.get('autoDownloadPdf') === 'true') {
                 setTimeout(() => {
-                    const element = document.getElementById('pages-wrapper');
-                    const pages = element.querySelectorAll('.page');
                     const pdfName = getAdmissionPdfFilename();
+                    const oldTitle = document.title;
+                    document.title = pdfName;
                     
-                    // Temporarily reset zoom transform
-                    const originalTransform = element.style.transform;
-                    element.style.transform = 'none';
-                    const originalMargins = [];
-                    pages.forEach(p => {
-                        originalMargins.push(p.style.marginBottom);
-                        p.style.marginBottom = '0px';
-                    });
-
-                    const opt = {
-                        margin:       0,
-                        filename:     pdfName + '.pdf',
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2, useCORS: true, logging: false },
-                        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                        pagebreak:    { mode: ['css', 'legacy'] }
-                    };
-
-                    html2pdf().set(opt).from(element).save().then(function() {
-                        element.style.transform = originalTransform;
-                        pages.forEach((p, idx) => {
-                            p.style.marginBottom = originalMargins[idx];
-                        });
-                        // Automatically close the window after download
-                        setTimeout(() => { window.close(); }, 1500);
-                    }).catch(function(err) {
-                        element.style.transform = originalTransform;
-                        pages.forEach((p, idx) => {
-                            p.style.marginBottom = originalMargins[idx];
-                        });
-                        console.error("Auto PDF generation failed", err);
-                    });
+                    alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+                    
+                    window.print();
+                    
+                    document.title = oldTitle;
+                    // Automatically close the window after download
+                    setTimeout(() => { window.close(); }, 1500);
                 }, 1500);
             }
         }

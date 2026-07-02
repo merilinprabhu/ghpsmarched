@@ -821,6 +821,11 @@
                   <button id="btn-export-excel-top" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
                     <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-sm"></i>
                   </button>
+
+                  <!-- Print -->
+                  <button id="btn-print-top" onclick="printPage()" title="ಮುದ್ರಿಸು / Print" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center w-8 h-8 shadow-sm">
+                    <i class="fa-solid fa-print text-slate-600 dark:text-slate-405 text-sm"></i>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1217,8 +1222,22 @@
         dateFilter.value = localToday.toISOString().split('T')[0];
       }
       
+      // Check query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramClass = urlParams.get('class');
+      const paramSubject = urlParams.get('subject');
+      const paramExam = urlParams.get('exam');
+      
+      if (paramClass && classFilter) classFilter.value = paramClass;
+      if (paramSubject && subjectFilter) subjectFilter.value = paramSubject;
+      if (paramExam && testTypeFilter) testTypeFilter.value = paramExam;
+      
       loadSchoolData();
       loadSaveHistory();
+      
+      if ((paramClass || paramSubject || paramExam) && classFilter.value && subjectFilter.value && testTypeFilter.value) {
+        loadRosterGrid();
+      }
     });
 
     async function loadSchoolData() {
@@ -1227,7 +1246,7 @@
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
         // Request gender, caste, and English name fields
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -2086,7 +2105,7 @@
       selectedStudents.forEach((student, index) => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50/80 transition text-center";
-        
+        tr.setAttribute('data-student-id', student.id);
         const sId = student.id;
         if (!evaluations[sId]) {
           evaluations[sId] = { c1: 'B', c2: 'B', c3: 'B', c4: 'B', c5: 'B', c6: 'B', c7: 'B', c8: 'B', c9: 'B', c10: 'B' };
@@ -2462,8 +2481,14 @@
     }
 
     function printPage() {
-      buildPrintArea();
-      window.print();
+      window.openPrintDrawer({
+        tableId: 'competency-table',
+        title: 'Bridge Course Assessment Report / ಸೇತುಬಂಧ ಮೌಲ್ಯಮಾಪನ ವರದಿ',
+        class: classFilter.value,
+        exam: testTypeFilter.value === 'PRE_TEST' ? 'Pre-Test' : 'Post-Test',
+        subject: subjectFilter.value,
+        students: selectedStudents
+      });
     }
 
     function showToast(title, message, type = "success") {
@@ -2507,27 +2532,14 @@
       // Build the print layout inside printArea
       buildPrintArea();
       
-      const printElement = document.getElementById('printArea');
-      if (!printElement) return;
-
       const testTypeStr = type === 'PRE_TEST' ? 'Pre-Test' : 'Post-Test';
       const pdfName = `BridgeCourse_Report_${cls.replace(/\s+/g, '_')}_${sub.replace(/\s+/g, '_')}_${testTypeStr}`;
 
-      const options = {
-        margin:       [10, 10, 10, 10],
-        filename:     pdfName + '.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-      };
-
-      // Direct A4 Landscape PDF download via html2pdf library
-      html2pdf().from(printElement).set(options).save().catch(err => {
-        console.error("PDF generation error:", err);
-        alert("PDF export failed. Launching browser print fallback instead...");
-        window.print();
-      });
+      const originalTitle = document.title;
+      document.title = pdfName;
+      alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+      window.print();
+      document.title = originalTitle;
     }
 
     function exportToCSV() {

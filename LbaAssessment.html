@@ -295,6 +295,11 @@
                 <i class="fa-solid fa-file-excel text-emerald-600 text-lg md:text-xl"></i>
               </button>
 
+              <!-- Print -->
+              <button id="btn-print-report" onclick="triggerPrint()" title="ಮುದ್ರಿಸು / Print" class="bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center hidden">
+                <i class="fa-solid fa-print text-slate-655 text-lg md:text-xl"></i>
+              </button>
+
             </div>
           </div>
 
@@ -616,6 +621,20 @@
 
       updateCfgSubjectDropdown();
       loadLessonsIntoConfigTextarea();
+
+      // Check query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramClass = urlParams.get('class');
+      const paramSubject = urlParams.get('subject');
+      
+      if (paramClass && classFilter) {
+        classFilter.value = paramClass;
+        classFilter.dispatchEvent(new Event('change'));
+        if (paramSubject && subjectFilter) {
+          subjectFilter.value = paramSubject;
+          subjectFilter.dispatchEvent(new Event('change'));
+        }
+      }
     });
 
     function toggleSettingsPanel() {
@@ -775,7 +794,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class').neq('is_admitted', false);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -789,10 +808,16 @@
           .map(s => ({
             id: s.id,
             student_name_kn: s.student_name || '',
+            student_name: s.student_name || '',
             name_english: s.name_english || '',
             father_name_kn: s.father_name_kn || '',
             father_name_az: s.father_name_az || '',
-            adminNo: s.app_no
+            mother_name_kn: s.mother_name_kn || '',
+            mother_name_az: s.mother_name_az || '',
+            gender: s.gender || '',
+            caste: s.caste || '',
+            adminNo: s.app_no,
+            app_no: s.app_no || ''
           }))
           .sort((a, b) => {
             const nameA = (a.name_english || a.student_name_kn || '').trim().toUpperCase();
@@ -917,6 +942,7 @@
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition";
         const sId = student.id;
+        tr.setAttribute('data-student-id', sId);
 
         if (!evaluations[sId]) {
           evaluations[sId] = {};
@@ -1230,24 +1256,18 @@
     }
 
     function triggerPrint() {
-      buildPrintArea();
-      window.print();
+      window.openPrintDrawer({
+        tableId: 'competency-table',
+        title: 'LBA Assessment Report / ಎಲ್.ಬಿ.ಎ ಮೌಲ್ಯಮಾಪನ ವರದಿ',
+        class: classFilter.value,
+        exam: '',
+        subject: subjectFilter.value,
+        students: students
+      });
     }
 
     function exportToPdf() {
-      const className = classFilter.value || 'ALL';
-      const dateVal = dateFilter.value || 'today';
-      const pdfName = `LBA_Assessment_Class_${className}_${dateVal.replace(/\s+/g, '_')}`;
-
-      const oldTitle = document.title;
-      document.title = pdfName;
-
-      buildPrintArea();
-      window.print();
-
-      setTimeout(() => {
-        document.title = oldTitle;
-      }, 1000);
+      triggerPrint();
     }
 
     function downloadCSVTemplate() {

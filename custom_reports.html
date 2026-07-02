@@ -1367,7 +1367,7 @@
       XLSX.writeFile(wb, `${selectedTemplate.name}_Report_Class_${document.getElementById('classSelector').value}.xlsx`);
     }
 
-    function printPage() {
+    function printPage(isPdf = false) {
       if (!selectedTemplate) return;
       const cls = document.getElementById('classSelector').value || 'All';
       const schoolNameEn = localStorage.getItem('school_name_en') || "Government Higher Primary School, Marched";
@@ -1418,7 +1418,17 @@
       `;
       printArea.appendChild(sigRow);
       
+      const originalTitle = document.title;
+      const cleanTitle = ((selectedTemplate.print_header || selectedTemplate.name) + " - Class " + cls).trim().replace(/[^a-zA-Z0-9\u0C80-\u0CFF\s_-]/g, '').replace(/\s+/g, '_');
+      document.title = cleanTitle;
+      
+      if (isPdf) {
+        alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+      }
+      
       window.print();
+      
+      document.title = originalTitle;
     }
 
     // CSV and PDF actions
@@ -1551,68 +1561,7 @@
     }
 
     function exportToPdf() {
-      if (!selectedTemplate) return;
-      const cls = document.getElementById('classSelector').value || 'All';
-      const schoolNameEn = localStorage.getItem('school_name_en') || "Government Higher Primary School, Marched";
-      
-      document.getElementById('print-school-name').innerText = schoolNameEn;
-      document.getElementById('print-title').innerText = selectedTemplate.print_header || selectedTemplate.name;
-      document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + cls;
-      document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
-      
-      const printArea = document.getElementById('printArea');
-      printArea.querySelectorAll('table, .print-signatures-row').forEach(el => el.remove());
-      
-      const originalTable = document.getElementById('recordsTable');
-      const tableClone = originalTable.cloneNode(true);
-      tableClone.removeAttribute('id');
-      tableClone.classList.remove('hidden');
-      
-      // Override inputs to plain text spans
-      const origInputs = originalTable.querySelectorAll('input, select');
-      const clonedInputs = tableClone.querySelectorAll('input, select');
-      
-      origInputs.forEach((orig, idx) => {
-        const replacement = document.createElement('span');
-        if (orig.type === 'checkbox') {
-          replacement.innerText = orig.checked ? 'Yes' : 'No';
-          replacement.className = 'font-bold';
-        } else {
-          replacement.innerText = orig.value !== '' ? orig.value : '-';
-          replacement.className = 'font-bold';
-        }
-        clonedInputs[idx].parentNode.replaceChild(replacement, clonedInputs[idx]);
-      });
-      
-      printArea.appendChild(tableClone);
-      
-      const sigRow = document.createElement('div');
-      sigRow.className = 'print-signatures-row';
-      const footerText = selectedTemplate.print_footer || "ಮುಖ್ಯಗುರುಗಳು / Head Master";
-      sigRow.innerHTML = `
-        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Sign</span>
-        <span>${footerText}</span>
-        <span>ಮುಖ್ಯಗುರುಗಳ ಸಹಿ / Head Master Sign</span>
-      `;
-      printArea.appendChild(sigRow);
-      
-      const printWrapper = document.getElementById('printWrapper');
-      printWrapper.classList.remove('hidden');
-      
-      const opt = {
-        margin:       10,
-        filename:     `${selectedTemplate.name.replace(/\s+/g, '_')}_Class_${cls}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 1.5, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-      };
-      
-      html2pdf().set(opt).from(printArea).save().then(() => {
-        printWrapper.classList.add('hidden');
-      }).catch(err => {
-        console.error(err);
-        printWrapper.classList.add('hidden');
-      });
+      printPage(true);
     }
   </script>
   <script src="navbar.js"></script>

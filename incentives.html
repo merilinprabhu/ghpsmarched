@@ -3,16 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GHPS Marched - Incentives Module (Sync Fixed)</title>
+  <title>Government Higher Primary School, Marched - Incentives Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
+    body[data-theme] table thead th { color: #ffffff !important; }
     .rotate-90 { transform: rotate(90deg); }
     .rotate-180 { transform: rotate(180deg); }
     .drag-handle { cursor: grab; }
@@ -149,6 +151,10 @@
     /* Print styling overrides */
     /* Print styling overrides */
     @media print {
+      @page {
+        size: A4 landscape;
+        margin: 12mm 15mm;
+      }
       body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
@@ -156,57 +162,93 @@
       }
       body > *:not(#printArea) { display: none !important; }
       #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
-      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 10px !important; margin-top: 15px !important; border: 1px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      
+      /* Professional Table Settings */
+      #printArea table { 
+        width: 100% !important; 
+        border-collapse: collapse !important; 
+        font-size: 10px !important; 
+        margin-top: 15px !important; 
+        border: 1.5px solid #000000 !important; 
+        background-color: #ffffff !important; 
+        table-layout: auto !important; 
+      }
+      #printArea tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      #printArea thead {
+        display: table-header-group !important;
+      }
       #printArea th, #printArea td { 
         border: 1px solid #000000 !important; 
-        padding: 6px 4px !important; 
+        padding: 6px 6px !important; 
         text-align: center !important; 
         min-width: 0 !important;
         width: auto !important;
         white-space: normal !important;
         word-break: break-word !important;
       }
-      #printArea th { font-weight: bold !important; background-color: #e2e8f0 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea th { 
+        font-weight: bold !important; 
+        background-color: #f1f5f9 !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+        border-bottom: 2px solid #000000 !important;
+      }
+      #printArea td { 
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
       
       /* Print Column Width Settings */
-      #printArea th:nth-child(1), #printArea td:nth-child(1) { width: 6% !important; }
-      #printArea th:nth-child(2), #printArea td:nth-child(2) { width: 14% !important; }
-      #printArea th:nth-child(3), #printArea td:nth-child(3) { width: 25% !important; }
-      #printArea .print-sign-col { width: 15% !important; min-width: 80px !important; }
+      #printArea th:nth-child(1), #printArea td:nth-child(1) { width: 5% !important; }
+      #printArea th:nth-child(2), #printArea td:nth-child(2) { width: 12% !important; }
+      #printArea th:nth-child(3), #printArea td:nth-child(3) { width: 28% !important; text-align: left !important; }
+      #printArea .print-sign-col { width: 15% !important; min-width: 90px !important; }
 
       /* Remarks block styling */
       #printArea .print-remarks-block {
-        margin-top: 20px !important;
-        margin-bottom: 20px !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
         font-size: 11px !important;
-        line-height: 1.5 !important;
+        line-height: 1.6 !important;
         color: #000000 !important;
         text-align: left !important;
         white-space: pre-wrap !important;
-        border: 1px dashed #aaaaaa !important;
-        padding: 8px !important;
+        border: 1px solid #000000 !important;
+        padding: 10px !important;
+        border-radius: 4px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
 
       /* Restructured Signatures (left/right) */
       #printArea .print-signatures-row { 
-        margin-top: 75px !important; 
-        margin-bottom: 35px !important; 
+        margin-top: 60px !important; 
+        margin-bottom: 25px !important; 
         display: flex !important; 
         justify-content: space-between !important; 
         align-items: center !important; 
         font-size: 11px !important; 
         font-weight: bold !important; 
         color: #000000 !important; 
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
 
       /* Shifted print footer (below signatures) */
       #printArea .print-footer-text-row {
-        margin-top: 20px !important;
+        margin-top: 15px !important;
         text-align: center !important;
         font-size: 11px !important;
         font-weight: bold !important;
         color: #000000 !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
     }
   </style>
@@ -215,10 +257,18 @@
 
   <!-- Printable Area (Hidden in browser) -->
   <div id="printArea" class="hidden">
-    <div class="text-center mb-6">
-      <h2 class="text-lg font-bold uppercase tracking-wider text-black" id="print-school-name">Government Higher Primary School, Marched</h2>
-      <p class="text-sm font-semibold uppercase text-black mt-1" id="print-title">Report Title</p>
-      <div class="print-meta-row mt-2 flex justify-between text-xs font-bold text-black border-b border-black pb-2">
+    <div class="mb-6">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+        <div style="text-align: left; flex-grow: 1;">
+          <h2 class="text-lg font-bold uppercase tracking-wider text-black" id="print-school-name" style="margin: 0; padding: 0;">Government Higher Primary School, Marched</h2>
+          <p class="text-sm font-semibold uppercase text-black mt-1" id="print-title" style="margin: 5px 0 0 0; padding: 0;">Report Title</p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; border: 1.5px solid #000000; padding: 6px; background-color: #ffffff; flex-shrink: 0; margin-top: -5px;">
+          <img id="printHeaderBarcode" style="height: 40px; width: 176px; object-fit: contain;" alt="Barcode">
+          <span style="font-size: 7px; font-weight: 900; color: #000000; letter-spacing: 0.5px; text-transform: uppercase;">SCAN IN PORTAL TO OPEN</span>
+        </div>
+      </div>
+      <div class="print-meta-row mt-3 flex justify-between text-xs font-bold text-black border-b border-black pb-2">
         <span id="print-class-lbl">ತರಗತಿ / Class: </span>
         <span id="print-date-lbl">ದಿನಾಂಕ / Date: </span>
       </div>
@@ -261,7 +311,14 @@
               </div>
             </div>
             
-            <div class="relative z-10 flex flex-wrap gap-2.5 text-xs font-bold no-print w-full md:w-auto justify-center">
+            <div class="relative z-10 flex flex-wrap gap-2.5 text-xs font-bold no-print w-full md:w-auto justify-center items-center">
+              <!-- Barcode Scan Input -->
+              <div class="relative min-w-[250px] shrink-0">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                  <i class="fa-solid fa-barcode text-sm text-indigo-400"></i>
+                </span>
+                <input type="text" id="barcodeScanInput" placeholder="ವರದಿ ಬಾರ್‌ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ... / Scan Barcode..." class="w-full pl-9 pr-4 py-3 bg-slate-800 hover:bg-slate-700/80 focus:bg-slate-800 text-white border border-white/10 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-400 shadow-lg transition-all duration-300">
+              </div>
               <button onclick="seedDefaultIncentives()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 py-3 rounded-2xl shadow-lg border border-white/10 transition-all duration-300 active:scale-[0.98] cursor-pointer flex items-center gap-2">
                 <i class="fa-solid fa-cloud-arrow-down text-indigo-400"></i> ಡಿಫಾಲ್ಟ್ ಲೋಡ್ ಮಾಡಿ / Load Defaults
               </button>
@@ -314,6 +371,31 @@
             </div>
           </div>
 
+          <!-- Classwise Summary Matrix Table -->
+          <div id="globalSummaryContainer" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-sm space-y-4 hidden">
+             <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-slate-800">
+               <div>
+                 <h3 class="text-sm font-black text-slate-850 dark:text-white flex items-center gap-2">
+                   <i class="fa-solid fa-table-list text-indigo-550"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ ಸಾರಾಂಶ / Classwise Distribution Summary Matrix
+                 </h3>
+                 <p class="text-[10px] text-slate-450 mt-1 font-semibold">ಶಾಲೆಯ ಎಲ್ಲಾ ತರಗತಿಗಳ ವಿತರಣಾ ಪ್ರಗತಿಯ ಮಾಸ್ಟರ್ ಕೋಷ್ಟಕ / Master table showing distribution progress for all classes.</p>
+               </div>
+               <button onclick="printSummaryReport()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                 <i class="fa-solid fa-print"></i> ಪ್ರಿಂಟ್ ಸಾರಾಂಶ / Print Summary
+               </button>
+             </div>
+             <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-2xl custom-scrollbar">
+               <table id="summaryMatrixTable" class="w-full text-center text-xs border-collapse">
+                 <thead>
+                   <!-- Generated dynamically in JS -->
+                 </thead>
+                 <tbody>
+                   <!-- Generated dynamically in JS -->
+                 </tbody>
+               </table>
+             </div>
+          </div>
+
           <!-- Created Templates List Grid -->
           <div class="space-y-4">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest px-1">ಸೃಜಿಸಲಾದ ಪುಟಗಳು / Created Incentive Pages</h3>
@@ -327,10 +409,10 @@
         </div>
 
         <!-- Backdrop for Sliding Drawer -->
-        <div id="drawerBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none no-print" onclick="hideCreateForm()"></div>
+        <div id="drawerBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[99998] transition-opacity duration-300 opacity-0 pointer-events-none no-print" onclick="hideCreateForm()"></div>
 
         <!-- Create Template Form Sliding Drawer -->
-        <div id="createFormContainer" class="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-full flex flex-col no-print">
+        <div id="createFormContainer" class="fixed inset-y-0 right-0 z-[99999] w-full max-w-2xl bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-full flex flex-col no-print">
           <form onsubmit="event.preventDefault(); handleCreateTemplate();" class="flex flex-col h-full m-0">
             <!-- Header -->
             <div class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md flex-shrink-0">
@@ -340,9 +422,44 @@
 
             <!-- Form content area (scrollable) -->
             <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪುಟದ ಹೆಸರು / Incentive Name *</label>
-                <input type="text" id="templateName" placeholder="e.g. Text Books / ಪಠ್ಯಪುಸ್ತಕಗಳು" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಪುಟದ ಹೆಸರು / Incentive Name *</label>
+                  <input type="text" id="templateName" placeholder="e.g. Text Books / ಪಠ್ಯಪುಸ್ತಕಗಳು" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white" required>
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ಲಭ್ಯವಿರುವ ಒಟ್ಟು ದಾಸ್ತಾನು / Total Stock Available (Optional)</label>
+                  <input type="number" id="templateStock" placeholder="e.g. 150" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                </div>
+              </div>
+
+              <!-- Predefined Quick-Add Student Fields -->
+              <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800 space-y-2.5">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳ ತ್ವರಿತ ಸೇರ್ಪಡೆ / Quick Link Student Details</label>
+                <p class="text-[9px] text-slate-400 font-semibold">ಈ ಕೆಳಗಿನ ಬಟನ್‌ಗಳನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದರೆ ಆ ವಿವರಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹಂಚಿಕೆ ಕೋಷ್ಟಕಕ್ಕೆ ಲಿಂಕ್ ಆಗುತ್ತವೆ / Click to instantly add columns linked to the student profile database.</p>
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <button type="button" onclick="quickAddLinkedField('ಕನ್ನಡ ಹೆಸರು / Student Name (KN)', 'student_name')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> ಕನ್ನಡ ಹೆಸರು
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ತಂದೆಯ ಹೆಸರು / Father\'s Name', 'father_name_az')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> ತಂದೆಯ ಹೆಸರು (Eng)
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ತಂದೆಯ ಹೆಸರು (ಕನ್ನಡ) / Father\'s Name (KN)', 'father_name_kn')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> ತಂದೆಯ ಹೆಸರು (ಕನ್ನಡ)
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ತಾಯಿಯ ಹೆಸರು / Mother\'s Name', 'mother_name_az')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> ತಾಯಿಯ ಹೆಸರು (Eng)
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No', 'student_sts')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> STS No
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ಲಿಂಗ / Gender', 'gender')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> Gender
+                  </button>
+                  <button type="button" onclick="quickAddLinkedField('ವರ್ಗ / Category', 'caste')" class="px-2.5 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-xl text-[10px] font-bold transition flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-plus text-indigo-500"></i> Category
+                  </button>
+                </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -362,6 +479,67 @@
                 <label for="includeSignColumn" class="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer select-none">ಪ್ರಿಂಟ್‌ನಲ್ಲಿ ಸಹಿ ಅಂಕಣ ಸೇರಿಸಿ / Include Student Signature Column in Print</label>
               </div>
 
+              <!-- Advanced Print Page Configuration -->
+              <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200/60 dark:border-slate-850 space-y-4 hidden">
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider">ಮುದ್ರಣ ಸಂರಚನೆ / Print Layout Settings</label>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">ಮುದ್ರಣದ ದೃಷ್ಟಿಕೋನ / Print Orientation</label>
+                    <select id="templatePrintOrientation" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+                      <option value="landscape" selected>ಲ್ಯಾಂಡ್‌ಸ್ಕೇಪ್ (ಅಗಲ) / Landscape</option>
+                      <option value="portrait">ಪೋರ್ಟ್ರೇಟ್ (ನೆಟ್ಟಗೆ) / Portrait</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">ಅಕ್ಷರಗಳ ಗಾತ್ರ / Print Font Size</label>
+                    <select id="templatePrintFontSize" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+                      <option value="small">ಸಣ್ಣದಾದ ಅಕ್ಷರ / Small (8.5px)</option>
+                      <option value="medium" selected>ಸಾಮಾನ್ಯ ಅಕ್ಷರ / Medium (10px)</option>
+                      <option value="large">ದೊಡ್ಡದಾದ ಅಕ್ಷರ / Large (12px)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="border-t border-slate-200/60 dark:border-slate-800/80 my-2 pt-3 space-y-2.5">
+                  <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">ವರದಿಯಲ್ಲಿ ತೋರಿಸಬೇಕಾದ ವಿವರಗಳು / Information to Include in Print</label>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" id="drawerPrintOptStudentKn" class="w-4 h-4 accent-indigo-600 cursor-pointer" checked>
+                      <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-slate-650 dark:text-slate-300">ವಿದ್ಯಾರ್ಥಿಯ ಕನ್ನಡ ಹೆಸರು</span>
+                        <span class="text-[9px] text-slate-450 dark:text-slate-500">Include Kannada Name</span>
+                      </div>
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" id="drawerPrintOptFather" class="w-4 h-4 accent-indigo-600 cursor-pointer" checked onchange="toggleDrawerFatherKnCheckbox()">
+                      <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-slate-650 dark:text-slate-300">ತಂದೆಯ ಹೆಸರು (Eng)</span>
+                        <span class="text-[9px] text-slate-450 dark:text-slate-500">Include Father Name</span>
+                      </div>
+                    </label>
+
+                    <label id="drawerPrintOptFatherKnWrapper" class="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" id="drawerPrintOptFatherKn" class="w-4 h-4 accent-indigo-600 cursor-pointer" checked>
+                      <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-slate-650 dark:text-slate-300">ತಂದೆಯ ಹೆಸರು (ಕನ್ನಡ)</span>
+                        <span class="text-[9px] text-slate-450 dark:text-slate-500">Father Name (KN)</span>
+                      </div>
+                    </label>
+
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                      <input type="checkbox" id="drawerPrintOptVerticalHeaders" class="w-4 h-4 accent-indigo-600 cursor-pointer">
+                      <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-slate-650 dark:text-slate-300">ಲಂಬ ಶೀರ್ಷಿಕೆಗಳು</span>
+                        <span class="text-[9px] text-slate-450 dark:text-slate-500">Rotate Child Headers</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ವರದಿ ವಿವರಣೆ / Report Remarks (Optional)</label>
                 <textarea id="templateReportRemarks" rows="2" placeholder="ವರದಿಯ ಬಗ್ಗೆ ವಿವರಣೆಯನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ... / Type report remarks here..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-900 text-slate-800 dark:text-white"></textarea>
@@ -371,9 +549,9 @@
                 <div class="mb-2">
                   <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">ವಿಭಾಗಗಳು (ಕಾಲಮ್‌ಗಳು) / Form Fields *</label>
                 </div>
-
+                
                 <div id="fieldsContainer" class="space-y-4">
-                  <!-- Dynamic Field Rows go here -->
+                  <!-- Dynamic fields populated here -->
                 </div>
 
                 <div class="mt-4">
@@ -402,7 +580,13 @@
                 <i class="fa-solid fa-arrow-left"></i> ಬ್ಯಾಕ್ ಟು ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Back
               </button>
               <h2 id="detailTitle" class="text-lg font-black text-slate-800">Incentive Category</h2>
-              <p id="detailSubtitle" class="text-xs text-slate-500 mt-1">ವಿತರಣೆ ನಿರ್ವಹಣೆ ಮತ್ತು ವರದಿ</p>
+              <div class="flex flex-wrap items-center gap-3 mt-1">
+                <p id="detailSubtitle" class="text-xs text-slate-500">ವಿತರಣೆ ನಿರ್ವಹಣೆ ಮತ್ತು ವರದಿ</p>
+                <div id="offlineSyncStatus" onclick="processSyncQueue()" class="hidden flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-black rounded-lg cursor-pointer transition select-none no-print" title="ಕ್ಲಿಕ್ ಮಾಡಿ ಸಿಂಕ್ ಮಾಡಿ / Click to Sync Now">
+                  <i class="fa-solid fa-cloud-arrow-up animate-pulse"></i> 
+                  <span id="offlineSyncText">ಆಫ್‌ಲೈನ್: 0 ಬಾಕಿ (Offline: 0 Pending)</span>
+                </div>
+              </div>
             </div>
 
             <div class="flex flex-wrap items-center gap-1.5 no-print">
@@ -414,14 +598,19 @@
               <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
                 <i class="fa-solid fa-file-csv text-teal-500 text-lg md:text-xl"></i>
               </button>
-              <!-- Import CSV -->
-              <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
-              <button onclick="document.getElementById('csvFileInput').click()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+              <!-- Import Excel / CSV -->
+              <input type="file" id="csvFileInput" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleCSVUpload(event)">
+              <button onclick="document.getElementById('csvFileInput').click()" title="ಎಕ್ಸೆಲ್ / ಸಿಎಸ್ವಿ ಆಮದು / Import Excel or CSV" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
                 <i class="fa-solid fa-file-import text-amber-500 text-lg md:text-xl"></i>
               </button>
               <!-- Excel -->
               <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
                 <i class="fa-solid fa-file-excel text-emerald-500 text-lg md:text-xl"></i>
+              </button>
+
+              <!-- Print -->
+              <button onclick="printPage()" title="ಪ್ರಿಂಟ್ / Print" class="bg-transparent hover:bg-slate-800 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 cursor-pointer flex items-center justify-center">
+                <i class="fa-solid fa-print text-slate-400 text-lg md:text-xl"></i>
               </button>
             </div>
           </div>
@@ -505,6 +694,14 @@
                   <span class="text-slate-500">ಬಾಕಿ ಇರುವ ಒಟ್ಟು ಐಟಮ್ಸ್:</span>
                   <span id="detailClassTotalPending" class="font-black text-amber-500">0</span>
                 </div>
+                <div id="detailStockRow" class="hidden flex justify-between items-center text-xs border-t border-slate-100 dark:border-slate-800 pt-2.5 mt-1">
+                  <span class="text-slate-500">ಒಟ್ಟು ದಾಸ್ತಾನು / Total Stock:</span>
+                  <span id="detailTotalStock" class="font-black text-slate-850 dark:text-white">0</span>
+                </div>
+                <div id="detailRemainingStockRow" class="hidden flex justify-between items-center text-xs">
+                  <span class="text-slate-500">ಉಳಿದ ದಾಸ್ತಾನು / Remaining:</span>
+                  <span id="detailRemainingStock" class="font-black text-emerald-600">0</span>
+                </div>
               </div>
               <div class="text-[10px] text-indigo-400 font-semibold bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 flex items-center gap-1.5">
                 <i class="fa-solid fa-info-circle"></i> ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಾಲಮ್‌ನ ಡೇಟಾ ಬದಲಾಯಿಸಿದರೆ ಅದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್ ಆಗುತ್ತದೆ.
@@ -538,6 +735,14 @@
                   <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
                   <span>Autosaver Active</span>
                 </div>
+
+                <button onclick="openQrScanner()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border-none cursor-pointer shadow-sm">
+                  <i class="fa-solid fa-qrcode"></i> ಕ್ಯೂಆರ್ ಸ್ಕ್ಯಾನ್ / Scan QR
+                </button>
+                
+                <button id="suggestSizesBtn" onclick="applySuggestedSizes()" class="hidden bg-amber-500 hover:bg-amber-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border-none cursor-pointer shadow-sm">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> ಸೈಜ್ ಸಲಹೆ / Suggest Sizes
+                </button>
               </div>
             </div>
 
@@ -548,9 +753,17 @@
             </div>
 
             <!-- Print Header Area -->
-            <div id="printHeaderArea" class="hidden print:block text-center mb-6">
-              <h2 id="printSchoolName" class="text-lg font-bold uppercase tracking-wider text-black">Government Higher Primary School, Marched</h2>
-              <p id="printHeaderTitle" class="text-sm font-semibold uppercase text-black mt-1"></p>
+            <div id="printHeaderArea" class="hidden print:block mb-6">
+              <div class="flex justify-between items-start gap-4">
+                <div class="text-left flex-grow">
+                  <h2 id="printSchoolName" class="text-lg font-bold uppercase tracking-wider text-black">Government Higher Primary School, Marched</h2>
+                  <p id="printHeaderTitle" class="text-sm font-semibold uppercase text-black mt-1"></p>
+                </div>
+                <div class="flex flex-col items-center gap-1 border border-slate-300 p-1.5 rounded-lg bg-white shrink-0">
+                  <img id="printHeaderBarcode" class="h-10 w-44 object-contain" alt="Barcode">
+                  <span class="text-[7px] font-black text-slate-700 tracking-wider">SCAN IN PORTAL TO OPEN</span>
+                </div>
+              </div>
               <div class="print-meta-row mt-2 flex justify-between text-xs font-bold text-black border-b border-black pb-2">
                 <span id="printClassLabel">ತರಗತಿ / Class: </span>
                 <span id="printDateLabel">ದಿನಾಂಕ / Date: </span>
@@ -589,6 +802,46 @@
 
       </main>
 
+    </div>
+  </div>
+
+  <!-- QR Scanner Modal -->
+  <div id="qrScannerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex justify-between items-center p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
+        <h3 class="text-sm font-black text-slate-850 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-qrcode text-indigo-550"></i> ವಿದ್ಯಾರ್ಥಿ ಕ್ಯೂಆರ್ ಸ್ಕ್ಯಾನರ್ / Student QR Scanner
+        </h3>
+        <button onclick="closeQrScanner()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-350 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 p-2 rounded-full cursor-pointer transition border-none flex items-center justify-center w-8 h-8">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 flex flex-col items-center gap-4">
+        <!-- Camera Selector -->
+        <div class="w-full">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಕ್ಯಾಮೆರಾ ಆಯ್ಕೆಮಾಡಿ / Select Camera</label>
+          <select id="qrCameraSelector" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-250 dark:border-slate-750 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer">
+            <option value="">ಲೋಡ್ ಆಗುತ್ತಿದೆ... / Loading cameras...</option>
+          </select>
+        </div>
+        
+        <!-- Scanner Feed Container -->
+        <div class="relative w-full aspect-square max-w-[280px] bg-black rounded-2xl overflow-hidden border-2 border-indigo-550 shadow-inner flex items-center justify-center">
+          <div id="qrScannerReader" class="w-full h-full"></div>
+          <div class="absolute inset-0 border-2 border-dashed border-white/30 pointer-events-none rounded-2xl m-6 animate-pulse"></div>
+        </div>
+        
+        <!-- Status / Feedback -->
+        <div id="qrScannerStatus" class="text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 mt-2">
+          ಕ್ಯೂಆರ್ ಕೋಡ್ ಅನ್ನು ಕ್ಯಾಮೆರಾ ಎದುರು ತೋರಿಸಿ / Show QR code to camera
+        </div>
+      </div>
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-end">
+        <button onclick="closeQrScanner()" class="bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-650 dark:text-slate-300 px-5 py-2.5 rounded-xl font-bold text-xs transition border-none cursor-pointer">ಬಂದ್ ಮಾಡಿ / Close</button>
+      </div>
     </div>
   </div>
 
@@ -680,6 +933,10 @@
     let originalColumns = [];
     let totalStudentsCount = 0;
     let allIncentiveRecords = [];
+    let studentAttendance = {}; // student_id -> percentage
+    let studentPhysicalData = {}; // student_id -> { height, weight }
+    let syncQueue = JSON.parse(localStorage.getItem('incentive_sync_queue') || '[]');
+    let html5QrScanner = null;
 
     document.addEventListener("DOMContentLoaded", async function() {
       await initUserAndTheme();
@@ -720,6 +977,21 @@
         }
       }
 
+      // Barcode Scan Input Event Listener
+      const barcodeInput = document.getElementById('barcodeScanInput');
+      if (barcodeInput) {
+        barcodeInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            const val = this.value.trim();
+            if (val) {
+              handleBarcodeScan(val);
+              this.value = ''; // clear input
+            }
+            e.preventDefault();
+          }
+        });
+      }
+
       loadIncentiveTemplates();
       addFieldRow(); // Add one default field row
     });
@@ -742,11 +1014,14 @@
         let studentsCount = 0;
         let distributedItemsCount = 0;
         
-        // 1. Get total students count
-        let studQuery = supabaseClient.from('admissions').select('id', { count: 'exact' });
+        // 1. Get total students count & class details
+        let studQuery = supabaseClient.from('admissions').select('id, enroll_class');
         if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
-        const { count: sCount } = await studQuery;
-        studentsCount = sCount || 0;
+        const { data: studData, error: studErr } = await studQuery;
+        if (studErr) throw studErr;
+
+        const admissionsList = studData || [];
+        studentsCount = admissionsList.length;
 
         // 2. Get total distributed records
         let incQuery = supabaseClient.from('student_incentives').select('template_id, values');
@@ -778,6 +1053,27 @@
         document.getElementById('statCompletion').innerText = completionPct + '%';
 
         renderTemplatesGrid();
+        renderGlobalSummaryMatrix(admissionsList);
+
+        // Handle URL parameters routing
+        const urlParams = new URLSearchParams(window.location.search);
+        const paramTemplateId = urlParams.get('template_id');
+        const paramClass = urlParams.get('class');
+        if (paramTemplateId) {
+          const t = templates.find(temp => temp.id === paramTemplateId);
+          if (t) {
+            enterDetailView(t.id);
+            if (paramClass) {
+              setTimeout(() => {
+                const selector = document.getElementById('classSelector');
+                if (selector) {
+                  selector.value = paramClass;
+                  loadClassData();
+                }
+              }, 300);
+            }
+          }
+        }
       } catch (err) {
         console.error("Error loading templates:", err);
         alert("ಡೇಟಾಬೇಸ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
@@ -791,9 +1087,17 @@
         document.querySelector('#createFormContainer button[type="submit"]').innerText = "ಕ್ರಿಯೇಟ್ ಪುಟ / Create Page";
         
         document.getElementById('templateName').value = '';
+        document.getElementById('templateStock').value = '';
         document.getElementById('templatePrintHeader').value = '';
         document.getElementById('templatePrintFooter').value = '';
         document.getElementById('includeSignColumn').checked = true;
+        document.getElementById('templatePrintOrientation').value = 'landscape';
+        document.getElementById('templatePrintFontSize').value = 'medium';
+        document.getElementById('drawerPrintOptStudentKn').checked = true;
+        document.getElementById('drawerPrintOptFather').checked = true;
+        document.getElementById('drawerPrintOptFatherKn').checked = true;
+        document.getElementById('drawerPrintOptVerticalHeaders').checked = false;
+        if (window.toggleDrawerFatherKnCheckbox) toggleDrawerFatherKnCheckbox();
         document.getElementById('templateReportRemarks').value = '';
         
         document.getElementById('fieldsContainer').innerHTML = '';
@@ -937,6 +1241,8 @@
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">ದಾಖಲಾತಿ ಕಾಲಮ್ / Admissions Column</label>
               <select onchange="updateAdmissionsDataAttrs('${rowId}'); updateFieldCardHeader('${rowId}');" class="admissions-col-select w-full px-3 py-2 rounded-lg border border-slate-200 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer">
+                <option value="name_english" ${linkColumnVal === 'name_english' ? 'selected' : ''}>Student Name (E) / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಇಂಗ್ಲೀಷ್)</option>
+                <option value="student_name" ${linkColumnVal === 'student_name' ? 'selected' : ''}>Student Name (K) / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಕನ್ನಡ)</option>
                 <option value="student_aadhaar" ${linkColumnVal === 'student_aadhaar' ? 'selected' : ''}>Aadhaar Number / ಆಧಾರ್ ಸಂಖ್ಯೆ</option>
                 <option value="name_aadhaar" ${linkColumnVal === 'name_aadhaar' ? 'selected' : ''}>Aadhaar Name / ಆಧಾರ್‌ನಲ್ಲಿರುವ ಹೆಸರು</option>
                 <option value="gender" ${linkColumnVal === 'gender' ? 'selected' : ''}>Gender / ಲಿಂಗ</option>
@@ -1262,7 +1568,14 @@
       const printFooterText = document.getElementById('templatePrintFooter').value.trim();
       const includeSign = document.getElementById('includeSignColumn').checked;
       const remarksVal = document.getElementById('templateReportRemarks').value.trim();
-      const printFooter = `${printFooterText}||${includeSign}||${remarksVal}`;
+      const stockVal = document.getElementById('templateStock').value.trim();
+      const orientVal = document.getElementById('templatePrintOrientation').value || 'landscape';
+      const fontSizeVal = document.getElementById('templatePrintFontSize').value || 'medium';
+      const printStudentKn = document.getElementById('drawerPrintOptStudentKn').checked;
+      const printFather = document.getElementById('drawerPrintOptFather').checked;
+      const printFatherKn = document.getElementById('drawerPrintOptFatherKn').checked;
+      const printVertical = document.getElementById('drawerPrintOptVerticalHeaders').checked;
+      const printFooter = `${printFooterText}||${includeSign}||${remarksVal}||${stockVal}||${orientVal}||${fontSizeVal}||${printStudentKn}||${printFather}||${printFatherKn}||${printVertical}`;
       const rows = document.querySelectorAll('#fieldsContainer > .field-card');
       
       const columns = [];
@@ -1391,6 +1704,7 @@
         editingTemplateId = null;
         originalColumns = [];
         document.getElementById('templateName').value = '';
+        document.getElementById('templateStock').value = '';
         document.getElementById('templatePrintHeader').value = '';
         document.getElementById('templatePrintFooter').value = '';
         document.getElementById('fieldsContainer').innerHTML = '';
@@ -1425,6 +1739,8 @@
         const card = document.createElement('div');
         card.className = "group relative overflow-hidden bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/40 dark:to-slate-900/60 border border-slate-200/60 dark:border-slate-800 p-5 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-1 hover:border-indigo-300 dark:hover:border-indigo-800/60 transition-all duration-300 flex flex-col justify-between gap-4";
         
+        const footerParts = (t.print_footer || '').split('||');
+        const stockVal = footerParts[3] ? parseInt(footerParts[3]) : 0;
         let cols = [];
         let fieldsList = '';
         try {
@@ -1486,14 +1802,22 @@
             </div>
 
             <!-- Progress Bar / Statistics -->
-            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-1">
+            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+              <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 dark:text-slate-500">
                 <span>ಪ್ರಗತಿ / Progress:</span>
                 <span class="text-indigo-600 dark:text-indigo-400 font-extrabold">${completionPct}% (${distributedCount}/${totalPossible})</span>
               </div>
               <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-full rounded-full" style="width: ${completionPct}%"></div>
               </div>
+              ${stockVal > 0 ? `
+              <div class="flex justify-between items-center text-[9px] font-semibold text-slate-450 dark:text-slate-500 pt-0.5">
+                <span>ದಾಸ್ತಾನು / Stock:</span>
+                <span class="${distributedCount > stockVal ? 'text-rose-550 dark:text-rose-450 font-bold' : 'text-slate-650 dark:text-slate-450 font-bold'}">
+                  ${distributedCount} / ${stockVal} ${distributedCount > stockVal ? '<i class="fa-solid fa-triangle-exclamation text-rose-500 ml-0.5" title="Distributed exceeds stock!"></i>' : ''}
+                </span>
+              </div>
+              ` : ''}
             </div>
           </div>
 
@@ -1528,6 +1852,14 @@
       document.getElementById('templatePrintFooter').value = footerParts[0] || '';
       document.getElementById('includeSignColumn').checked = footerParts[1] !== 'false';
       document.getElementById('templateReportRemarks').value = footerParts[2] || '';
+      document.getElementById('templateStock').value = footerParts[3] || '';
+      document.getElementById('templatePrintOrientation').value = footerParts[4] || 'landscape';
+      document.getElementById('templatePrintFontSize').value = footerParts[5] || 'medium';
+      document.getElementById('drawerPrintOptStudentKn').checked = footerParts[6] !== 'false';
+      document.getElementById('drawerPrintOptFather').checked = footerParts[7] !== 'false';
+      document.getElementById('drawerPrintOptFatherKn').checked = footerParts[8] !== 'false';
+      document.getElementById('drawerPrintOptVerticalHeaders').checked = footerParts[9] === 'true';
+      if (window.toggleDrawerFatherKnCheckbox) toggleDrawerFatherKnCheckbox();
       
       const container = document.getElementById('fieldsContainer');
       container.innerHTML = '';
@@ -1608,12 +1940,12 @@
       const headerTitle = selectedTemplate.print_header || selectedTemplate.name;
       document.getElementById('printHeaderTitle').innerText = headerTitle;
       
+      const footerParts = (selectedTemplate.print_footer || '').split('||');
       let footerText = "ಮುಖ್ಯಗುರುಗಳು / Head Master";
       let includeSign = true;
       if (selectedTemplate.print_footer && selectedTemplate.print_footer.includes('||')) {
-        const parts = selectedTemplate.print_footer.split('||');
-        footerText = parts[0];
-        includeSign = parts[1] !== 'false';
+        footerText = footerParts[0];
+        includeSign = footerParts[1] !== 'false';
       } else if (selectedTemplate.print_footer) {
         footerText = selectedTemplate.print_footer;
       }
@@ -1642,6 +1974,7 @@
 
       // Load Analytics Chart for the template
       loadProgressChartData();
+      renderGlobalStockDetails();
     }
 
     function exitDetailView() {
@@ -1905,6 +2238,20 @@
           incentiveData[rec.student_id] = rec.values || {};
         });
 
+        await fetchClassAttendanceAndSizes(studentIds, schoolId);
+
+        // Show/hide Suggest Sizes button based on template columns
+        const suggestBtn = document.getElementById('suggestSizesBtn');
+        const hasSizeCol = cols.some(c => {
+          const nameLower = c.name.toLowerCase();
+          return nameLower.includes("size") || nameLower.includes("ಅಳತೆ") || nameLower.includes("shoe") || nameLower.includes("ಶೂ") || nameLower.includes("uniform") || nameLower.includes("ಸಮವಸ್ತ್ರ");
+        });
+        if (hasSizeCol && suggestBtn) {
+          suggestBtn.classList.remove('hidden');
+        } else if (suggestBtn) {
+          suggestBtn.classList.add('hidden');
+        }
+
         renderDistributionTable();
       } catch (err) {
         console.error("Error loading class data:", err);
@@ -1928,6 +2275,7 @@
             <th class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center">STS No</th>
             <th class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left">Student Name</th>
             ${cols.map(col => `<th class="p-3 border-r border-slate-800 text-center min-w-[140px]">${col.name}</th>`).join('')}
+            <th class="p-3 border-r border-slate-800 text-center no-print w-24">Actions / ಕ್ರಿಯೆಗಳು</th>
           </tr>
         `;
       } else {
@@ -1965,7 +2313,7 @@
         }
         
         thead.innerHTML = `
-          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr1Html}</tr>
+          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr1Html}<th rowspan="2" class="p-3 border-r border-slate-800 text-center align-middle no-print w-24">Actions / ಕ್ರಿಯೆಗಳು</th></tr>
           <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr2Html}</tr>
         `;
       }
@@ -1979,6 +2327,7 @@
       const cls = document.getElementById('classSelector').value;
       students.forEach((student, index) => {
         const tr = document.createElement('tr');
+        tr.dataset.studentId = student.id;
         tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 font-medium";
         
         let colsHtml = '';
@@ -2071,11 +2420,25 @@
           fatherHtml = fatherEn || fatherKn ? `<span class="text-[10px] text-slate-400 dark:text-slate-500 block font-normal">(ತಂದೆ: ${fatherEn || fatherKn})</span>` : '';
         }
 
+        const attPct = studentAttendance[student.id];
+        let attWarningHtml = '';
+        if (attPct !== undefined) {
+          const isLow = attPct < 75;
+          attWarningHtml = `<div class="mt-1">${attWarningHtml = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-extrabold ${isLow ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}" title="Attendance / ಹಾಜರಾತಿ"><i class="fa-solid ${isLow ? 'fa-triangle-exclamation animate-bounce' : 'fa-circle-check'}"></i> ಹಾಜರಾತಿ: ${attPct}%</span>`}</div>`;
+        }
+
         tr.innerHTML = `
           <td class="p-3 text-center border-r border-slate-200 dark:border-slate-800 font-medium no-print">${index + 1}</td>
           <td class="p-3 border-r border-slate-200 dark:border-slate-800 font-mono text-slate-500 dark:text-slate-400 font-bold text-center">${student.app_no}</td>
-          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-left">${nameHtml}${fatherHtml}</td>
+          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-left">${nameHtml}${fatherHtml}${attWarningHtml}</td>
           ${colsHtml}
+          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-center align-middle no-print">
+            <div class="flex items-center justify-center">
+              <button onclick="sendParentAlert('${student.id}')" class="text-emerald-500 hover:text-emerald-600 transition p-1.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-none bg-transparent cursor-pointer flex items-center justify-center" title="ಪೋಷಕರಿಗೆ ವಾಟ್ಸಾಪ್ ಸಂದೇಶ ಕಳುಹಿಸಿ / Send WhatsApp Alert">
+                <i class="fa-brands fa-whatsapp text-sm"></i>
+              </button>
+            </div>
+          </td>
         `;
         
         tbody.appendChild(tr);
@@ -2104,6 +2467,11 @@
       }
       incentiveData[studentId][colName] = value;
 
+      if (!navigator.onLine) {
+        queueOfflineSave(studentId, colName, value);
+        return;
+      }
+
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
@@ -2124,11 +2492,20 @@
         if (error) throw error;
         hideSavingToast("Saved");
         
+        // Update local memory record for global stats sync
+        let rec = allIncentiveRecords.find(r => r.student_id === studentId && r.template_id === selectedTemplate.id);
+        if (!rec) {
+          rec = { student_id: studentId, template_id: selectedTemplate.id, values: {} };
+          allIncentiveRecords.push(rec);
+        }
+        rec.values = incentiveData[studentId];
+
         // Recalculate class stats in UI without full reload
         recalcTableStats();
+        renderGlobalStockDetails();
       } catch (err) {
-        console.error("Autosave failed:", err);
-        hideSavingToast("Failed to save", true);
+        console.error("Autosave failed, queueing offline:", err);
+        queueOfflineSave(studentId, colName, value);
       }
     }
 
@@ -2161,8 +2538,306 @@
       updateClassProgressStats(distributedCount, totalPossible);
     }
 
+    function renderGlobalStockDetails() {
+      if (!selectedTemplate) return;
+      const footerParts = (selectedTemplate.print_footer || '').split('||');
+      const stockVal = footerParts[3] ? parseInt(footerParts[3]) : 0;
+      
+      const stockRow = document.getElementById('detailStockRow');
+      const remainingRow = document.getElementById('detailRemainingStockRow');
+      
+      if (stockVal > 0) {
+        let globalDistributed = 0;
+        const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+        
+        allIncentiveRecords.forEach(row => {
+          if (row.template_id === selectedTemplate.id && row.values) {
+            cols.forEach(col => {
+              const val = row.values[col.name];
+              const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+              if (hasVal) {
+                globalDistributed++;
+              }
+            });
+          }
+        });
+        
+        const remaining = stockVal - globalDistributed;
+        
+        document.getElementById('detailTotalStock').innerText = stockVal;
+        
+        const remainingEl = document.getElementById('detailRemainingStock');
+        remainingEl.innerText = remaining;
+        if (remaining < 0) {
+          remainingEl.className = "font-black text-rose-550 dark:text-rose-450 flex items-center gap-1";
+          remainingEl.innerHTML = `${remaining} <i class="fa-solid fa-triangle-exclamation animate-bounce text-[10px]"></i>`;
+        } else {
+          remainingEl.className = "font-black text-emerald-600 dark:text-emerald-400";
+        }
+        
+        if (stockRow) stockRow.classList.remove('hidden');
+        if (remainingRow) remainingRow.classList.remove('hidden');
+      } else {
+        if (stockRow) stockRow.classList.add('hidden');
+        if (remainingRow) remainingRow.classList.add('hidden');
+      }
+    }
+
+    function quickAddLinkedField(label, databaseColumn) {
+      // Check if duplicate exists
+      const cards = document.querySelectorAll('.field-card');
+      for (let card of cards) {
+        const sourceSelect = card.querySelector('.field-source-select');
+        const colSelect = card.querySelector('.admissions-col-select');
+        if (sourceSelect && sourceSelect.value === 'admissions' && colSelect && colSelect.value === databaseColumn) {
+          alert('ಈ ಅಂಕಣ ಈಗಾಗಲೇ ಸೇರಿಸಲ್ಪಟ್ಟಿದೆ! / This column is already added!');
+          return;
+        }
+      }
+
+      // Add field card with pre-filled linked configuration
+      addFieldRow({
+        name: label,
+        linked: true,
+        linkSource: 'admissions',
+        linkColumn: databaseColumn
+      });
+      
+      // Expand the newly added card so the user can verify configuration
+      const container = document.getElementById('fieldsContainer');
+      const newCard = container.lastChild;
+      if (newCard) {
+        const panel = newCard.querySelector('.field-details-panel');
+        if (panel && panel.classList.contains('hidden')) {
+          toggleFieldCollapse(newCard.id);
+        }
+      }
+    }
+
+    function renderGlobalSummaryMatrix(admissionsList) {
+      const container = document.getElementById('globalSummaryContainer');
+      const table = document.getElementById('summaryMatrixTable');
+      if (!container || !table) return;
+
+      if (templates.length === 0 || admissionsList.length === 0) {
+        container.classList.add('hidden');
+        return;
+      }
+      container.classList.remove('hidden');
+
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      
+      // Group students by class
+      const classStudents = {};
+      classes.forEach(c => classStudents[c] = []);
+      admissionsList.forEach(s => {
+        const clsNorm = normalizeClass(s.enroll_class);
+        if (classStudents[clsNorm] !== undefined) {
+          classStudents[clsNorm].push(s.id);
+        }
+      });
+
+      // Group incentives values by student_id
+      const incentiveValuesMap = {};
+      allIncentiveRecords.forEach(rec => {
+        incentiveValuesMap[rec.student_id] = rec.values || {};
+      });
+
+      // Build table header
+      let theadHtml = `
+        <tr class="bg-slate-900 text-white font-bold text-center border-b border-slate-200">
+          <th class="p-3 text-left w-32">ತರಗತಿ / Class</th>
+          <th class="p-3 w-32">ಒಟ್ಟು ಮಕ್ಕಳು / Total Students</th>
+          ${templates.map(t => `<th class="p-3 min-w-[120px]">${t.name}</th>`).join('')}
+        </tr>
+      `;
+      
+      // Build table rows
+      let tbodyHtml = '';
+      
+      // Initialize totals
+      let grandTotalStudents = 0;
+      const templateTotalDistributed = {};
+      templates.forEach(t => {
+        templateTotalDistributed[t.id] = 0;
+      });
+
+      classes.forEach(cls => {
+        const studIds = classStudents[cls];
+        if (studIds.length === 0) return; // skip classes with no students
+
+        grandTotalStudents += studIds.length;
+
+        let rowHtml = `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 text-center font-semibold text-slate-700 dark:text-slate-350">
+            <td class="p-3 text-left font-black text-slate-850 dark:text-white">${cls}</td>
+            <td class="p-3 font-bold">${studIds.length}</td>
+        `;
+
+        templates.forEach(t => {
+          let distributedCount = 0;
+          let cols = [];
+          try {
+            cols = typeof t.columns === 'string' ? JSON.parse(t.columns) : t.columns;
+          } catch(e) {}
+
+          studIds.forEach(id => {
+            const vals = incentiveValuesMap[id] || {};
+            cols.forEach(col => {
+              const val = vals[col.name];
+              const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+              if (hasVal) {
+                distributedCount++;
+              }
+            });
+          });
+
+          templateTotalDistributed[t.id] += distributedCount;
+          
+          const possible = studIds.length * cols.length;
+          const pct = possible > 0 ? Math.round((distributedCount / possible) * 100) : 0;
+          
+          let colorClass = 'text-slate-400';
+          if (pct === 100) colorClass = 'text-emerald-600 dark:text-emerald-400 font-extrabold';
+          else if (pct > 0) colorClass = 'text-indigo-600 dark:text-indigo-400 font-extrabold';
+
+          rowHtml += `<td class="p-3 ${colorClass}">${distributedCount} / ${possible} <span class="text-[9px] font-medium opacity-80 block mt-0.5">(${pct}%)</span></td>`;
+        });
+
+        rowHtml += '</tr>';
+        tbodyHtml += rowHtml;
+      });
+
+      // Build total footer row
+      let footerHtml = `
+        <tr class="bg-slate-100 dark:bg-slate-900/60 font-black text-slate-850 dark:text-white border-t border-slate-200 dark:border-slate-800 text-center">
+          <td class="p-3 text-left">Total / ಒಟ್ಟು</td>
+          <td class="p-3">${grandTotalStudents}</td>
+      `;
+
+      templates.forEach(t => {
+        let cols = [];
+        try {
+          cols = typeof t.columns === 'string' ? JSON.parse(t.columns) : t.columns;
+        } catch(e) {}
+
+        const possible = grandTotalStudents * cols.length;
+        const dist = templateTotalDistributed[t.id];
+        const pct = possible > 0 ? Math.round((dist / possible) * 100) : 0;
+
+        let colorClass = 'text-slate-400';
+        if (pct === 100) colorClass = 'text-emerald-600 dark:text-emerald-400 font-black';
+        else if (pct > 0) colorClass = 'text-indigo-600 dark:text-indigo-400 font-black';
+
+        footerHtml += `<td class="p-3 ${colorClass}">${dist} / ${possible} <span class="text-[9px] font-medium opacity-80 block mt-0.5">(${pct}%)</span></td>`;
+      });
+
+      footerHtml += '</tr>';
+
+      table.querySelector('thead').innerHTML = theadHtml;
+      table.querySelector('tbody').innerHTML = tbodyHtml + footerHtml;
+    }
+
+    function printSummaryReport() {
+      const printWindow = window.open('', '_blank');
+      const schoolNameEn = localStorage.getItem('school_name_en') || "Government Higher Primary School, Marched";
+      const tableContent = document.getElementById('summaryMatrixTable').innerHTML;
+      const barcodeText = selectedTemplate ? `${selectedTemplate.id}` : '';
+      const barcodeUrl = barcodeText ? `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeText)}&scale=2&rotate=N&includeText=false` : '';
+
+      printWindow.document.write(`
+        <html>
+        <head>
+          <title>Classwise Incentives Distribution Summary - ${schoolNameEn}</title>
+          <style>
+            body { font-family: sans-serif; padding: 25px; color: #000000; }
+            .header-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
+            .header-info { text-align: left; flex-grow: 1; }
+            h1 { font-size: 16px; margin: 0; padding: 0; text-transform: uppercase; }
+            h2 { font-size: 12px; margin: 5px 0 0 0; color: #475569; }
+            .barcode-box { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 1.5px solid #000000; padding: 5px; background-color: #ffffff; margin-top: -5px; }
+            .barcode-lbl { font-size: 7px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; color: #000000; }
+            .meta-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; border-bottom: 1.5px solid #000000; padding-bottom: 5px; margin-top: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; border: 1.5px solid #000000; }
+            th, td { border: 1px solid #000000; padding: 8px 6px; text-align: center; }
+            th { background-color: #f1f5f9; font-weight: bold; border-bottom: 2px solid #000000; }
+            .text-left { text-align: left; }
+            tr:last-child td { font-weight: bold; background-color: #f8fafc; border-top: 1.5px solid #000000; }
+            span.block { display: block; font-size: 8px; color: #475569; }
+            .text-emerald-600 { color: #059669; font-weight: bold; }
+            .text-indigo-600 { color: #4f46e5; font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div class="header-container">
+            <div class="header-info">
+              <h1>Classwise Welfare Incentives Distribution Summary</h1>
+              <h2>${schoolNameEn}</h2>
+            </div>
+            ${barcodeUrl ? `
+            <div class="barcode-box">
+              <img src="${barcodeUrl}" style="height: 35px; width: 150px; object-fit: contain;" alt="Barcode">
+              <span class="barcode-lbl">SCAN IN PORTAL TO OPEN</span>
+            </div>
+            ` : ''}
+          </div>
+          <div class="meta-row">
+            <span>Report: Master Distribution Ledger</span>
+            <span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
+          </div>
+          <table>
+            ${tableContent}
+          </table>
+          <div style="margin-top: 60px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
+            <span>ಮುಖ್ಯಗುರುಗಳ ಸಹಿ / Head Master Sign</span>
+            <span>ಶಾಲಾಭಿವೃದ್ಧಿ ಸಮಿತಿ ಅಧ್ಯಕ್ಷರ ಸಹಿ / SDMC President Sign</span>
+          </div>
+          <script>window.print();<\/script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
     async function handleBulkAction(isCheck) {
       if (students.length === 0) return;
+      
+      // Stock warning for bulk action
+      if (isCheck && selectedTemplate) {
+        const footerParts = (selectedTemplate.print_footer || '').split('||');
+        const stockVal = footerParts[3] ? parseInt(footerParts[3]) : 0;
+        if (stockVal > 0) {
+          let currentGlobalDistributed = 0;
+          const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+          allIncentiveRecords.forEach(row => {
+            if (row.template_id === selectedTemplate.id && row.values) {
+              cols.forEach(col => {
+                const val = row.values[col.name];
+                const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+                if (hasVal) currentGlobalDistributed++;
+              });
+            }
+          });
+
+          let newChecks = 0;
+          students.forEach(student => {
+            const studVals = incentiveData[student.id] || {};
+            cols.forEach(col => {
+              if (col.linked === true || col.linked === 'true') return;
+              const val = studVals[col.name];
+              const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+              if (!hasVal) newChecks++;
+            });
+          });
+
+          if (currentGlobalDistributed + newChecks > stockVal) {
+            if (!confirm(`ಎಚ್ಚರಿಕೆ: ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮೀರುತ್ತಿದೆ! (ಒಟ್ಟು ವಿತರಣೆ: ${currentGlobalDistributed + newChecks}, ಒಟ್ಟು ದಾಸ್ತಾನು: ${stockVal})\nಮುಂದುವರೆಯಲು ಬಯಸುವಿರಾ?\nWarning: Total distribution will exceed available stock! Proceed?`)) {
+              return;
+            }
+          }
+        }
+      }
+
       const actionText = isCheck ? "Mark all fields as completed" : "Clear all fields";
       if (!confirm(`Are you sure you want to ${actionText} for this class?`)) {
         return;
@@ -2230,7 +2905,19 @@
         if (err) throw err.error;
 
         hideSavingToast("Bulk action finished");
+        
+        // Sync local memory records for global stats
+        students.forEach(student => {
+          let rec = allIncentiveRecords.find(r => r.student_id === student.id && r.template_id === selectedTemplate.id);
+          if (!rec) {
+            rec = { student_id: student.id, template_id: selectedTemplate.id, values: {} };
+            allIncentiveRecords.push(rec);
+          }
+          rec.values = incentiveData[student.id];
+        });
+
         renderDistributionTable();
+        renderGlobalStockDetails();
       } catch (err) {
         console.error("Bulk action failed:", err);
         hideSavingToast("Failed", true);
@@ -2422,7 +3109,7 @@
       XLSX.writeFile(wb, fileName);
     }
 
-    function printPage() {
+    function printPage(isPdf = false) {
       if (!selectedTemplate) return;
       const cls = document.getElementById('classSelector').value || 'All';
       const schoolNameEn = localStorage.getItem('school_name_en') || "Government Higher Primary School, Marched";
@@ -2437,11 +3124,20 @@
       } else if (selectedTemplate.print_footer) {
         footerText = selectedTemplate.print_footer;
       }
+      
+      const orientVal = footerParts[4] || 'landscape';
+      const fontSizeVal = footerParts[5] || 'medium';
 
       document.getElementById('print-school-name').innerText = schoolNameEn;
       document.getElementById('print-title').innerText = selectedTemplate.print_header || selectedTemplate.name;
       document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + cls;
       document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
+      
+      const barcodeText = `${selectedTemplate.id}|${cls}`;
+      const barcodeImg = document.getElementById('printHeaderBarcode');
+      if (barcodeImg) {
+        barcodeImg.src = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeText)}&scale=2&rotate=N&includeText=false`;
+      }
       
       const printArea = document.getElementById('printArea');
       printArea.querySelectorAll('table, .print-remarks-block, .print-signatures-row, .print-footer-text-row').forEach(el => el.remove());
@@ -2451,60 +3147,113 @@
       tableClone.removeAttribute('id');
       tableClone.classList.remove('hidden');
       
+      // Remove Actions column from print clone first
+      tableClone.querySelectorAll('tr').forEach(tr => {
+        const cells = Array.from(tr.cells);
+        if (cells.length > 0) {
+          const lastCell = cells[cells.length - 1];
+          if (lastCell && (lastCell.innerText.includes('Actions') || lastCell.innerText.includes('ಕ್ರಿಯೆಗಳು') || lastCell.querySelector('button[onclick^="sendParentAlert"]'))) {
+            lastCell.remove();
+          }
+        }
+      });
+      
       // Remove class no-print from elements in clone so they print (e.g. Sl.No)
       tableClone.querySelectorAll('.no-print').forEach(el => {
         el.classList.remove('no-print');
       });
       
+      const showStudentKn = footerParts[6] !== 'false';
+      const showFather = footerParts[7] !== 'false';
+      const showFatherKn = footerParts[8] !== 'false';
+
       // Convert inputs, checkboxes, selects, radios, textareas into static spans in clone
       const cloneRows = tableClone.querySelectorAll('tbody tr');
       const originalRows = originalTable.querySelectorAll('tbody tr');
       
-      cloneRows.forEach((cloneRow, rIdx) => {
-        const origRow = originalRows[rIdx];
-        if (!origRow) return;
+      cloneRows.forEach((cloneRow) => {
+        const studentId = cloneRow.dataset.studentId;
+        const origRow = originalTable.querySelector(`tbody tr[data-student-id="${studentId}"]`);
+        
+        // If original row was hidden, remove it from print clone
+        if (origRow && origRow.classList.contains('hidden')) {
+          cloneRow.remove();
+          return;
+        }
+        
+        const student = students.find(s => s.id === studentId);
+        if (student) {
+          const nameCell = cloneRow.cells[2];
+          if (nameCell) {
+            const nameEn = (student.name_english || '').trim().toUpperCase();
+            const nameKn = (student.student_name || '').trim();
+            
+            let nameHtml = '';
+            if (showStudentKn && nameEn && nameKn) {
+              nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 font-medium">${nameKn}</div>`;
+            } else {
+              nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+            }
+            
+            let fatherHtml = '';
+            if (showFather) {
+              const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+              const fatherKn = (student.father_name_kn || '').trim();
+              
+              if (showFatherKn && fatherEn && fatherKn) {
+                fatherHtml = `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherEn} / ${fatherKn})</span>`;
+              } else {
+                const fatherVal = showFatherKn ? (fatherEn || fatherKn) : fatherEn;
+                fatherHtml = fatherVal ? `<span class="text-[10px] text-slate-400 block font-normal">(ತಂದೆ: ${fatherVal})</span>` : '';
+              }
+            }
+            nameCell.innerHTML = `${nameHtml}${fatherHtml}`;
+          }
+        }
         
         const cloneCells = cloneRow.cells;
-        const origCells = origRow.cells;
+        const origCells = origRow ? origRow.cells : null;
         
-        for (let cIdx = 3; cIdx < origCells.length; cIdx++) {
-          const origCell = origCells[cIdx];
-          const cloneCell = cloneCells[cIdx];
-          if (!origCell || !cloneCell) continue;
-          
-          const checkbox = origCell.querySelector('input[type="checkbox"]');
-          const radios = origCell.querySelectorAll('input[type="radio"]');
-          const select = origCell.querySelector('select');
-          const textarea = origCell.querySelector('textarea');
-          const input = origCell.querySelector('input[type="text"], input[type="number"], input[type="date"]');
-          const span = origCell.querySelector('span');
-          
-          const replacement = document.createElement('span');
-          replacement.className = 'font-bold';
-          
-          if (checkbox) {
-            replacement.innerText = checkbox.checked ? '✔' : '✘';
-            replacement.className = checkbox.checked ? 'text-emerald-600 font-bold text-base' : 'text-rose-500 font-bold text-base';
-          } else if (radios.length > 0) {
-            let checkedVal = '-';
-            radios.forEach(r => {
-              if (r.checked) checkedVal = r.value;
-            });
-            replacement.innerText = checkedVal;
-          } else if (select) {
-            replacement.innerText = select.value !== '' ? select.value : '-';
-          } else if (textarea) {
-            replacement.innerText = textarea.value !== '' ? textarea.value : '-';
-          } else if (input) {
-            replacement.innerText = input.value !== '' ? input.value : '-';
-          } else if (span) {
-            replacement.innerText = span.innerText !== '' ? span.innerText : '-';
-          } else {
-            replacement.innerText = cloneCell.innerText !== '' ? cloneCell.innerText : '-';
+        if (origCells) {
+          for (let cIdx = 3; cIdx < origCells.length; cIdx++) {
+            const origCell = origCells[cIdx];
+            const cloneCell = cloneCells[cIdx];
+            if (!origCell || !cloneCell) continue;
+            
+            const checkbox = origCell.querySelector('input[type="checkbox"]');
+            const radios = origCell.querySelectorAll('input[type="radio"]');
+            const select = origCell.querySelector('select');
+            const textarea = origCell.querySelector('textarea');
+            const input = origCell.querySelector('input[type="text"], input[type="number"], input[type="date"]');
+            const span = origCell.querySelector('span');
+            
+            const replacement = document.createElement('span');
+            replacement.className = 'font-bold';
+            
+            if (checkbox) {
+              replacement.innerText = checkbox.checked ? '✔' : '✘';
+              replacement.className = checkbox.checked ? 'text-emerald-600 font-bold text-base' : 'text-rose-500 font-bold text-base';
+            } else if (radios.length > 0) {
+              let checkedVal = '-';
+              radios.forEach(r => {
+                if (r.checked) checkedVal = r.value;
+              });
+              replacement.innerText = checkedVal;
+            } else if (select) {
+              replacement.innerText = select.value !== '' ? select.value : '-';
+            } else if (textarea) {
+              replacement.innerText = textarea.value !== '' ? textarea.value : '-';
+            } else if (input) {
+              replacement.innerText = input.value !== '' ? input.value : '-';
+            } else if (span) {
+              replacement.innerText = span.innerText !== '' ? span.innerText : '-';
+            } else {
+              replacement.innerText = cloneCell.innerText !== '' ? cloneCell.innerText : '-';
+            }
+            
+            cloneCell.innerHTML = '';
+            cloneCell.appendChild(replacement);
           }
-          
-          cloneCell.innerHTML = '';
-          cloneCell.appendChild(replacement);
         }
       });
       
@@ -2563,7 +3312,72 @@
         printArea.appendChild(footerDiv);
       }
       
+      // Dynamically insert print settings CSS overrides
+      const printSettingsStyle = document.createElement('style');
+      printSettingsStyle.id = 'printSettingsStyle';
+      
+      let pageOrientationCss = 'landscape';
+      if (orientVal === 'portrait') {
+        pageOrientationCss = 'portrait';
+      }
+
+      let fontSizeCss = '10px';
+      if (fontSizeVal === 'small') {
+        fontSizeCss = '8.5px';
+      } else if (fontSizeVal === 'large') {
+        fontSizeCss = '12px';
+      }
+
+      const rotateVertical = document.getElementById('printOptVerticalHeaders') ? document.getElementById('printOptVerticalHeaders').checked : false;
+      let verticalHeadersCss = '';
+      if (rotateVertical) {
+        verticalHeadersCss = `
+          #printArea thead tr:nth-child(2) th {
+            writing-mode: vertical-rl !important;
+            transform: rotate(180deg) !important;
+            white-space: nowrap !important;
+            vertical-align: middle !important;
+            text-align: left !important;
+            height: 120px !important;
+            min-width: 30px !important;
+            max-width: 45px !important;
+            padding: 5px 2px !important;
+          }
+        `;
+      }
+
+      printSettingsStyle.innerHTML = `
+        @media print {
+          @page {
+            size: A4 ${pageOrientationCss} !important;
+            margin: 10mm 12mm !important;
+          }
+          #printArea table {
+            font-size: ${fontSizeCss} !important;
+          }
+          #printArea th, #printArea td {
+            padding: ${fontSizeVal === 'small' ? '4px 3px' : fontSizeVal === 'large' ? '10px 8px' : '6px 5px'} !important;
+          }
+          ${verticalHeadersCss}
+        }
+      `;
+      document.head.appendChild(printSettingsStyle);
+
+      const originalTitle = document.title;
+      const cleanTitle = ((selectedTemplate.print_header || selectedTemplate.name) + " - Class " + cls).trim().replace(/[^a-zA-Z0-9\u0C80-\u0CFF\s_-]/g, '').replace(/\s+/g, '_');
+      document.title = cleanTitle;
+      
+      if (isPdf) {
+        alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+      }
+      
       window.print();
+      
+      document.title = originalTitle;
+      
+      // Clean up dynamic styles
+      const dynStyle = document.getElementById('printSettingsStyle');
+      if (dynStyle) dynStyle.remove();
     }
 
     async function seedDefaultIncentives() {
@@ -2593,8 +3407,7 @@
             print_footer: "Signature of Head Master / Class Teacher||true",
             columns: [
               { name: 'Gender / ಲಿಂಗ', linked: true, linkSource: 'admissions', linkColumn: 'gender' },
-              { name: 'Set 1 Issued / ಸೆಟ್ 1 ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Uniform / ಸಮವಸ್ತ್ರಗಳು' },
-              { name: 'Set 2 Issued / ಸೆಟ್ 2 ನೀಡಲಾಗಿದೆ', type: 'boolean', parentHeader: 'Uniform / ಸಮವಸ್ತ್ರಗಳು' },
+              { name: 'Uniform Issued / ಸಮವಸ್ತ್ರ ನೀಡಲಾಗಿದೆ', type: 'boolean' },
               { name: 'Uniform Size / ಸಮವಸ್ತ್ರದ ಅಳತೆ', type: 'dropdown', options: ['Small', 'Medium', 'Large', 'XL'] }
             ]
           },
@@ -2698,6 +3511,42 @@
         return;
       }
 
+      // Stock warning for auto allocation
+      if (selectedTemplate) {
+        const footerParts = (selectedTemplate.print_footer || '').split('||');
+        const stockVal = footerParts[3] ? parseInt(footerParts[3]) : 0;
+        if (stockVal > 0) {
+          let currentGlobalDistributed = 0;
+          const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+          allIncentiveRecords.forEach(row => {
+            if (row.template_id === selectedTemplate.id && row.values) {
+              cols.forEach(col => {
+                const val = row.values[col.name];
+                const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+                if (hasVal) currentGlobalDistributed++;
+              });
+            }
+          });
+
+          let newChecks = 0;
+          matchedStudents.forEach(student => {
+            const studVals = incentiveData[student.id] || {};
+            cols.forEach(col => {
+              if (col.linked === true || col.linked === 'true') return;
+              const val = studVals[col.name];
+              const hasVal = val === true || val === 'true' || (val !== undefined && val !== null && val.toString().trim() !== '' && val !== false);
+              if (!hasVal) newChecks++;
+            });
+          });
+
+          if (currentGlobalDistributed + newChecks > stockVal) {
+            if (!confirm(`ಎಚ್ಚರಿಕೆ: ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮೀರುತ್ತಿದೆ! (ಒಟ್ಟು ವಿತರಣೆ: ${currentGlobalDistributed + newChecks}, ಒಟ್ಟು ದಾಸ್ತಾನು: ${stockVal})\nಮುಂದುವರೆಯಲು ಬಯಸುವಿರಾ?\nWarning: Total distribution will exceed available stock! Proceed?`)) {
+              return;
+            }
+          }
+        }
+      }
+
       const confirmMsg = `ಆಯ್ಕೆ ಮಾಡಿದ ನಿಯಮ: "${ruleText}"\nಹೊಂದಿಕೆಯಾಗುವ ವಿದ್ಯಾರ್ಥಿಗಳ ಸಂಖ್ಯೆ: ${matchedStudents.length}\n\nಈ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಣೆಯನ್ನು ನಮೂದಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?\nAre you sure you want to mark distribution for these ${matchedStudents.length} matching students?`;
       if (!confirm(confirmMsg)) {
         return;
@@ -2748,7 +3597,19 @@
         if (err) throw err.error;
 
         hideSavingToast("Auto-allocation completed");
+        
+        // Sync local memory records for global stats
+        matchedStudents.forEach(student => {
+          let rec = allIncentiveRecords.find(r => r.student_id === student.id && r.template_id === selectedTemplate.id);
+          if (!rec) {
+            rec = { student_id: student.id, template_id: selectedTemplate.id, values: {} };
+            allIncentiveRecords.push(rec);
+          }
+          rec.values = incentiveData[student.id];
+        });
+
         renderDistributionTable();
+        renderGlobalStockDetails();
         document.getElementById('autoAllocateRule').value = '';
       } catch (err) {
         console.error("Auto-allocation failed:", err);
@@ -2909,77 +3770,511 @@
     }
 
     function exportToPdf() {
-      if (!selectedTemplate) return;
-      const cls = document.getElementById('classSelector').value || 'All';
-      
-      const printContainer = document.createElement('div');
-      printContainer.style.padding = '15mm';
-      printContainer.style.background = '#ffffff';
-      printContainer.style.color = '#000000';
-      printContainer.style.fontFamily = 'Noto Sans Kannada, sans-serif';
-      
-      const schoolName = localStorage.getItem('school_name_en') || 'Government Higher Primary School, Marched';
-      const title = selectedTemplate.name;
-      const remarksVal = document.getElementById('reportRemarksInput')?.value || '';
-      
-      let tableHtml = document.getElementById('distributionTable').outerHTML;
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = tableHtml;
-      const table = tempDiv.querySelector('table');
-      table.style.width = '100%';
-      table.style.borderCollapse = 'collapse';
-      table.querySelectorAll('th, td').forEach(el => {
-        el.style.border = '1px solid #000000';
-        el.style.padding = '6px';
-        el.style.fontSize = '10px';
-        el.style.color = '#000000';
-        el.style.backgroundColor = '#ffffff';
-      });
-      
-      const origInputs = document.querySelectorAll('#distributionTable input, #distributionTable select, #distributionTable textarea');
-      const clonedInputs = tempDiv.querySelectorAll('input, select, textarea');
-      clonedInputs.forEach((cloned, idx) => {
-        const orig = origInputs[idx];
-        const span = document.createElement('span');
-        span.style.fontWeight = 'bold';
-        if (orig.type === 'checkbox') {
-          span.innerText = orig.checked ? 'Distributed' : 'Pending';
-        } else {
-          span.innerText = orig.value || '';
+      printPage(true);
+    }
+
+    async function fetchClassAttendanceAndSizes(studentIds, schoolId) {
+      studentAttendance = {};
+      studentPhysicalData = {};
+
+      try {
+        // 1. Fetch attendance records
+        const { data: attData, error: attErr } = await supabaseClient
+          .from('attendance')
+          .select('student_id, present_days, working_days')
+          .eq('school_id', schoolId)
+          .in('student_id', studentIds);
+
+        if (!attErr && attData) {
+          const sums = {};
+          attData.forEach(row => {
+            if (!sums[row.student_id]) {
+              sums[row.student_id] = { present: 0, working: 0 };
+            }
+            sums[row.student_id].present += (row.present_days || 0);
+            sums[row.student_id].working += (row.working_days || 0);
+          });
+
+          Object.keys(sums).forEach(sId => {
+            const s = sums[sId];
+            if (s.working > 0) {
+              studentAttendance[sId] = Math.round((s.present / s.working) * 100);
+            }
+          });
         }
-        cloned.parentNode.replaceChild(span, cloned);
+
+        // 2. Fetch Height & Weight records
+        const hwTemplate = templates.find(t => {
+          const nameLower = t.name.toLowerCase();
+          return nameLower.includes("height") || nameLower.includes("ಎತ್ತರ") || nameLower.includes("weight") || nameLower.includes("ತೂಕ");
+        });
+
+        if (hwTemplate) {
+          const { data: hwData, error: hwErr } = await supabaseClient
+            .from('student_incentives')
+            .select('student_id, values')
+            .eq('template_id', hwTemplate.id)
+            .in('student_id', studentIds);
+
+          if (!hwErr && hwData) {
+            hwData.forEach(row => {
+              if (row.values) {
+                let height = null, weight = null;
+                Object.keys(row.values).forEach(key => {
+                  if (key.includes("Height") || key.includes("ಎತ್ತರ")) {
+                    height = parseFloat(row.values[key]);
+                  }
+                  if (key.includes("Weight") || key.includes("ತೂಕ")) {
+                    weight = parseFloat(row.values[key]);
+                  }
+                });
+                if (height || weight) {
+                  studentPhysicalData[row.student_id] = { height, weight };
+                }
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.error("Error fetching class attendance/sizes:", e);
+      }
+    }
+
+    function predictStudentSize(height, fieldName) {
+      const nameLower = fieldName.toLowerCase();
+      if (nameLower.includes("shoe") || nameLower.includes("ಶೂ") || nameLower.includes("socks") || nameLower.includes("ಸಾಕ್ಸ್")) {
+        if (height < 100) return "1";
+        if (height <= 110) return "2";
+        if (height <= 120) return "3";
+        if (height <= 130) return "4";
+        if (height <= 140) return "5";
+        if (height <= 150) return "6";
+        return "7";
+      } else if (nameLower.includes("uniform") || nameLower.includes("ಸಮವಸ್ತ್ರ") || nameLower.includes("size") || nameLower.includes("ಅಳತೆ")) {
+        if (height < 95) return "22";
+        if (height <= 105) return "24";
+        if (height <= 115) return "26";
+        if (height <= 125) return "28";
+        if (height <= 135) return "30";
+        if (height <= 145) return "32";
+        if (height <= 155) return "34";
+        return "36";
+      }
+      return null;
+    }
+
+    async function applySuggestedSizes() {
+      if (students.length === 0 || !selectedTemplate) return;
+      
+      const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+      const sizeCols = cols.filter(c => {
+        if (c.linked === true || c.linked === 'true') return false;
+        const nameLower = c.name.toLowerCase();
+        return nameLower.includes("size") || nameLower.includes("ಅಳತೆ") || nameLower.includes("shoe") || nameLower.includes("ಶೂ") || nameLower.includes("uniform") || nameLower.includes("ಸಮವಸ್ತ್ರ");
       });
       
-      printContainer.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h2 style="font-size: 16px; font-weight: bold; margin: 0;">${schoolName}</h2>
-          <h3 style="font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">${title} - Class ${cls}</h3>
-          <p style="font-size: 10px; margin: 5px 0 0 0;">Date: ${new Date().toLocaleDateString()}</p>
-        </div>
-        ${tempDiv.innerHTML}
-        ${remarksVal ? `<div style="margin-top: 15px; font-size: 11px; font-weight: bold;">ವರದಿ ವಿವರಣೆ / Remarks: ${remarksVal}</div>` : ''}
-        <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 11px; font-weight: bold;">
-          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Sign</span>
-          <span>ಮುಖ್ಯಗುರುಗಳ ಸಹಿ / Head Master Sign</span>
-        </div>
-      `;
+      if (sizeCols.length === 0) {
+        alert("ಈ ಪುಟದಲ್ಲಿ ಯಾವುದೇ ಸೈಜ್ ಅಂಕಣಗಳಿಲ್ಲ! / No size columns found on this page!");
+        return;
+      }
+
+      let count = 0;
+      const upsertPayloads = [];
+      const schoolId = localStorage.getItem("school_id") || "00000000-0000-0000-0000-000000000000";
+
+      students.forEach(student => {
+        const phys = studentPhysicalData[student.id];
+        if (phys && phys.height) {
+          if (!incentiveData[student.id]) {
+            incentiveData[student.id] = {};
+          }
+          
+          let changed = false;
+          sizeCols.forEach(col => {
+            const suggestion = predictStudentSize(phys.height, col.name);
+            if (suggestion) {
+              const row = document.querySelector(`#distributionTableBody tr[data-student-id="${student.id}"]`);
+              if (row) {
+                const colIdx = cols.findIndex(c => c.name === col.name);
+                if (colIdx !== -1) {
+                  const cell = row.cells[3 + colIdx];
+                  if (cell) {
+                    const input = cell.querySelector('input[type="text"], input[type="number"], select');
+                    if (input && input.value !== suggestion.toString()) {
+                      input.value = suggestion;
+                      incentiveData[student.id][col.name] = col.type === 'number' ? Number(suggestion) : suggestion.toString();
+                      changed = true;
+                    }
+                  }
+                }
+              }
+            }
+          });
+
+          if (changed) {
+            count++;
+            upsertPayloads.push({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: incentiveData[student.id],
+              updated_at: new Date().toISOString()
+            });
+          }
+        }
+      });
+
+      if (upsertPayloads.length > 0) {
+        showSavingToast("Saving suggested sizes...");
+        try {
+          const { error } = await supabaseClient
+            .from('student_incentives')
+            .upsert(upsertPayloads, { onConflict: 'student_id,template_id' });
+
+          if (error) throw error;
+          hideSavingToast(`${count} sizes applied & saved!`);
+          
+          upsertPayloads.forEach(payload => {
+            let rec = allIncentiveRecords.find(r => r.student_id === payload.student_id && r.template_id === selectedTemplate.id);
+            if (!rec) {
+              rec = { student_id: payload.student_id, template_id: selectedTemplate.id, values: {} };
+              allIncentiveRecords.push(rec);
+            }
+            rec.values = payload.values;
+          });
+          
+          recalcTableStats();
+          renderGlobalStockDetails();
+        } catch (err) {
+          console.error("Bulk size suggestion save failed:", err);
+          hideSavingToast("Failed to save suggested sizes", true);
+        }
+      } else {
+        alert("ಯಾವುದೇ ಹೊಸ ಸೈಜ್ ಸಲಹೆಗಳು ಲಭ್ಯವಿಲ್ಲ ಅಥವಾ ಈಗಾಗಲೇ ಅಪ್ಲೈ ಮಾಡಲಾಗಿದೆ.\nNo new size suggestions available or already applied.");
+      }
+    }
+
+    let lastScannedStudent = null;
+    let lastScanTime = 0;
+
+    function playBeep() {
+      try {
+        const context = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = context.createOscillator();
+        const gainNode = context.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(context.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 800; // Hz
+        gainNode.gain.setValueAtTime(0.1, context.currentTime);
+        
+        oscillator.start();
+        oscillator.stop(context.currentTime + 0.15); // beep for 150ms
+      } catch (e) {
+        console.error("Audio beep error:", e);
+      }
+    }
+
+    async function openQrScanner() {
+      if (students.length === 0 || !selectedTemplate) {
+        alert("ದಯವಿಟ್ಟು ಮೊದಲು ತರಗತಿಯನ್ನು ಆರಿಸಿ ವಿದ್ಯಾರ್ಥಿ ಲಿಸ್ಟ್ ವೀಕ್ಷಿಸಿ. / Please select a class first.");
+        return;
+      }
+
+      const modal = document.getElementById('qrScannerModal');
+      const cameraSelector = document.getElementById('qrCameraSelector');
+      const statusEl = document.getElementById('qrScannerStatus');
       
-      document.body.appendChild(printContainer);
+      modal.classList.remove('hidden');
+      statusEl.innerText = "ಕ್ಯಾಮೆರಾ ಅನುಮತಿ ಪಡೆಯಲಾಗುತ್ತಿದೆ... / Requesting camera permissions...";
+      cameraSelector.innerHTML = '';
+
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (devices && devices.length > 0) {
+          devices.forEach((device, index) => {
+            const opt = document.createElement('option');
+            opt.value = device.id;
+            opt.innerText = device.label || `Camera ${index + 1}`;
+            cameraSelector.appendChild(opt);
+          });
+          
+          cameraSelector.onchange = async () => {
+            if (html5QrScanner) {
+              await html5QrScanner.stop();
+              startScanning(cameraSelector.value);
+            }
+          };
+
+          startScanning(devices[0].id);
+        } else {
+          statusEl.innerText = "ಯಾವುದೇ ಕ್ಯಾಮೆರಾ ಪತ್ತೆಯಾಗಿಲ್ಲ! / No cameras found!";
+        }
+      } catch (err) {
+        console.error("QR Initialization failed:", err);
+        statusEl.innerText = "ಕ್ಯಾಮೆರಾ ಓಪನ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ! / Camera permissions denied!";
+      }
+    }
+
+    function startScanning(cameraId) {
+      const statusEl = document.getElementById('qrScannerStatus');
+      statusEl.innerText = "ಕ್ಯೂಆರ್ ಕೋಡ್ ಅನ್ನು ಕ್ಯಾಮೆರಾ ಎದುರು ತೋರಿಸಿ / Scan student QR code...";
+
+      if (html5QrScanner) {
+        html5QrScanner.clear();
+      }
+
+      html5QrScanner = new Html5Qrcode("qrScannerReader");
       
-      const opt = {
-        margin:       10,
-        filename:     `${selectedTemplate.name.replace(/\s+/g, '_')}_Class_${cls}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 1.5, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      const config = {
+        fps: 10,
+        qrbox: { width: 180, height: 180 }
       };
-      
-      html2pdf().set(opt).from(printContainer).save().then(() => {
-        document.body.removeChild(printContainer);
-      }).catch(err => {
-        console.error(err);
-        document.body.removeChild(printContainer);
+
+      html5QrScanner.start(
+        cameraId,
+        config,
+        async (decodedText) => {
+          const cleanText = decodedText.trim();
+          const student = students.find(s => (s.app_no && s.app_no.trim() === cleanText) || (s.student_sts && s.student_sts.trim() === cleanText));
+          
+          if (!student) {
+            statusEl.className = "text-center text-[11px] font-bold text-rose-500 mt-2";
+            statusEl.innerText = `ವಿದ್ಯಾರ್ಥಿ ಪತ್ತೆಯಾಗಿಲ್ಲ! / Student not found: "${cleanText}"`;
+            return;
+          }
+
+          const now = Date.now();
+          if (lastScannedStudent === student.id && (now - lastScanTime < 3000)) {
+            return; // debounce 3s for same student
+          }
+
+          lastScannedStudent = student.id;
+          lastScanTime = now;
+          
+          playBeep();
+          statusEl.className = "text-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-2";
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> ಪತ್ತೆಯಾಗಿದ್ದಾರೆ! / Found: <b>${student.name_english || student.student_name}</b>`;
+
+          // Find row and highlight
+          const row = document.querySelector(`#distributionTableBody tr[data-student-id="${student.id}"]`);
+          if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.classList.add('bg-indigo-100', 'dark:bg-indigo-950/40');
+            setTimeout(() => {
+              row.classList.remove('bg-indigo-100', 'dark:bg-indigo-950/40');
+            }, 3000);
+
+            // Find first editable field and update it
+            const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+            const firstEditableCol = cols.find(c => c.linked !== true && c.linked !== 'true');
+            
+            if (firstEditableCol) {
+              const colIdx = cols.findIndex(c => c.name === firstEditableCol.name);
+              const cell = row.cells[3 + colIdx]; // Sl.No, STS, Name are 0,1,2
+              if (cell) {
+                const checkbox = cell.querySelector('input[type="checkbox"]');
+                const textInput = cell.querySelector('input[type="text"], input[type="number"], select, textarea');
+                
+                if (checkbox) {
+                  if (!checkbox.checked) {
+                    checkbox.checked = true;
+                    autoSaveValue(student.id, firstEditableCol.name, true);
+                  }
+                } else if (textInput) {
+                  if (textInput.value === '') {
+                    if (firstEditableCol.type === 'number') {
+                      textInput.value = '1';
+                      autoSaveValue(student.id, firstEditableCol.name, 1);
+                    } else if (firstEditableCol.type === 'dropdown') {
+                      textInput.value = firstEditableCol.options[0] || 'Distributed';
+                      autoSaveValue(student.id, firstEditableCol.name, textInput.value);
+                    } else {
+                      textInput.value = 'Distributed';
+                      autoSaveValue(student.id, firstEditableCol.name, 'Distributed');
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        (errorMessage) => {
+          // ignore scan errors (too verbose)
+        }
+      ).catch(err => {
+        console.error("Camera start failed:", err);
       });
+    }
+
+    async function closeQrScanner() {
+      const modal = document.getElementById('qrScannerModal');
+      modal.classList.add('hidden');
+      
+      if (html5QrScanner) {
+        try {
+          await html5QrScanner.stop();
+          html5QrScanner.clear();
+        } catch (e) {
+          console.error(e);
+        }
+        html5QrScanner = null;
+      }
+    }
+
+    function sendParentAlert(studentId) {
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+
+      const mobile = (student.mobile_number || '').toString().trim();
+      if (!mobile) {
+        alert("ಈ ವಿದ್ಯಾರ್ಥಿಯ ಪೋಷಕರ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಲಭ್ಯವಿಲ್ಲ! / Parent mobile number not found!");
+        return;
+      }
+
+      const parentName = student.father_name_kn || student.father_name_az || student.mother_name_kn || student.mother_name_az || 'ಪೋಷಕರೇ';
+      const studentName = student.student_name || student.name_english;
+      const incentiveName = selectedTemplate.name;
+
+      const msg = `ಪ್ರಿಯ ${parentName}, ನಿಮ್ಮ ಮಗು ${studentName} ಗೆ ಇಂದು ಶಾಲೆಯಲ್ಲಿ '${incentiveName}' ವಿತರಿಸಲಾಗಿದೆ. - ಮುಖ್ಯ ಶಿಕ್ಷಕರು, GHPS ಮರ್ಚೆಡ್.`;
+
+      let cleanMobile = mobile.replace(/[^0-9]/g, '');
+      if (cleanMobile.length === 10) {
+        cleanMobile = '91' + cleanMobile;
+      }
+
+      const url = `https://api.whatsapp.com/send?phone=${cleanMobile}&text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    function queueOfflineSave(studentId, colName, value) {
+      const schoolId = localStorage.getItem("school_id") || "00000000-0000-0000-0000-000000000000";
+      
+      const existingIdx = syncQueue.findIndex(item => item.student_id === studentId && item.template_id === selectedTemplate.id);
+      
+      if (existingIdx !== -1) {
+        syncQueue[existingIdx].values[colName] = value;
+        syncQueue[existingIdx].updated_at = new Date().toISOString();
+      } else {
+        syncQueue.push({
+          school_id: schoolId,
+          student_id: studentId,
+          template_id: selectedTemplate.id,
+          values: { ...incentiveData[studentId] },
+          updated_at: new Date().toISOString()
+        });
+      }
+      
+      localStorage.setItem('incentive_sync_queue', JSON.stringify(syncQueue));
+      updateSyncQueueUI();
+      hideSavingToast("ಆಫ್‌ಲೈನ್ ಸೇವ್ ಆಗಿದೆ / Saved Offline");
+    }
+
+    function updateSyncQueueUI() {
+      const badge = document.getElementById('offlineSyncStatus');
+      const text = document.getElementById('offlineSyncText');
+      if (!badge || !text) return;
+      
+      if (syncQueue.length > 0) {
+        text.innerText = `ಆಫ್‌ಲೈನ್: ${syncQueue.length} ಬಾಕಿ (Offline: ${syncQueue.length} Pending)`;
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+      }
+    }
+
+    async function processSyncQueue() {
+      if (syncQueue.length === 0) return;
+      if (!navigator.onLine) {
+        alert("ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲ! ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. / No internet connection. Cannot sync.");
+        return;
+      }
+
+      showSavingToast("Syncing offline changes...");
+      const failedItems = [];
+      
+      for (const item of syncQueue) {
+        try {
+          const { error } = await supabaseClient
+            .from('student_incentives')
+            .upsert(item, { onConflict: 'student_id,template_id' });
+          
+          if (error) throw error;
+          
+          let rec = allIncentiveRecords.find(r => r.student_id === item.student_id && r.template_id === item.template_id);
+          if (!rec) {
+            rec = { student_id: item.student_id, template_id: item.template_id, values: {} };
+            allIncentiveRecords.push(rec);
+          }
+          rec.values = item.values;
+        } catch (e) {
+          console.error("Sync failed for student ID", item.student_id, e);
+          failedItems.push(item);
+        }
+      }
+
+      syncQueue = failedItems;
+      localStorage.setItem('incentive_sync_queue', JSON.stringify(syncQueue));
+      updateSyncQueueUI();
+
+      if (syncQueue.length === 0) {
+        hideSavingToast("ಸಿಂಕ್ ಯಶಸ್ವಿಯಾಗಿದೆ! / Sync Successful!");
+        recalcTableStats();
+        renderGlobalStockDetails();
+      } else {
+        hideSavingToast("ಕೆಲವು ಸಿಂಕ್ ವಿಫಲವಾಗಿವೆ / Some syncs failed", true);
+      }
+    }
+
+    window.addEventListener('online', () => {
+      processSyncQueue();
+    });
+
+    // Run initial UI update on load
+    document.addEventListener("DOMContentLoaded", () => {
+      updateSyncQueueUI();
+    });
+
+    function toggleDrawerFatherKnCheckbox() {
+      const fatherChecked = document.getElementById('drawerPrintOptFather').checked;
+      const fatherKnCheckbox = document.getElementById('drawerPrintOptFatherKn');
+      const wrapper = document.getElementById('drawerPrintOptFatherKnWrapper');
+      
+      if (fatherChecked) {
+        wrapper.classList.remove('opacity-50', 'pointer-events-none');
+        fatherKnCheckbox.disabled = false;
+      } else {
+        wrapper.classList.add('opacity-50', 'pointer-events-none');
+        fatherKnCheckbox.disabled = true;
+        fatherKnCheckbox.checked = false;
+      }
+    }
+
+    function handleBarcodeScan(scannedText) {
+      if (!scannedText || !scannedText.includes('|')) return;
+      const parts = scannedText.split('|');
+      const templateId = parts[0];
+      const cls = parts[1];
+      
+      const t = templates.find(temp => temp.id === templateId);
+      if (t) {
+        enterDetailView(t.id);
+        if (cls) {
+          setTimeout(() => {
+            const selector = document.getElementById('classSelector');
+            if (selector) {
+              selector.value = cls;
+              loadClassData();
+            }
+          }, 300);
+        }
+      } else {
+        alert("ಇನ್ಸೆಂಟಿವ್ ಪುಟ ಕಂಡುಬಂದಿಲ್ಲ! / Incentive page not found!");
+      }
     }
 
   </script>

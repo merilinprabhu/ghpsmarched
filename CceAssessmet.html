@@ -395,6 +395,11 @@
                 <button id="btn-export-excel" onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/50 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden">
                   <i class="fa-solid fa-file-excel text-lg"></i>
                 </button>
+
+                <!-- Print -->
+                <button id="btn-print" onclick="printPage()" title="ಮುದ್ರಿಸು / Print" class="hover:bg-slate-100 dark:hover:bg-slate-800 hover:scale-110 active:scale-95 transition-all duration-300 text-slate-655 dark:text-slate-400 border border-slate-200 dark:border-slate-750 rounded-xl p-2.5 flex items-center justify-center cursor-pointer shadow-sm bg-white dark:bg-slate-850 hidden">
+                  <i class="fa-solid fa-print text-lg"></i>
+                </button>
               </div>
             </div>
  
@@ -817,7 +822,28 @@
       initSidebar();
       await loadSettingsFromBackend();
       fetchDashboardMetrics();
-      switchTab('dashboard'); 
+
+      // Check query parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramClass = urlParams.get('class');
+      const paramExam = urlParams.get('exam');
+      const paramSubject = urlParams.get('subject');
+      
+      if (paramClass && classFilter) classFilter.value = paramClass;
+      if (paramExam && examTypeFilter) examTypeFilter.value = paramExam;
+      if (paramSubject && subjectFilter) subjectFilter.value = paramSubject;
+      
+      if (paramClass || paramExam || paramSubject) {
+        switchTab('grid');
+        syncAllFilters();
+        if (classFilter.value && examTypeFilter.value) {
+          showDynamicRulesNote();
+          loadSettingsIntoInputs();
+          checkAndLoadGrid();
+        }
+      } else {
+        switchTab('dashboard');
+      }
     });
 
     async function fetchDashboardMetrics() {
@@ -1148,7 +1174,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, app_no, enroll_class').neq('is_admitted', false);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -1162,10 +1188,16 @@
           .map(s => ({
             id: s.id,
             student_name_kn: s.student_name || '',
+            student_name: s.student_name || '',
             name_english: s.name_english || '',
             father_name_kn: s.father_name_kn || '',
             father_name_az: s.father_name_az || '',
+            mother_name_kn: s.mother_name_kn || '',
+            mother_name_az: s.mother_name_az || '',
+            gender: s.gender || '',
+            caste: s.caste || '',
             adminNo: s.app_no,
+            app_no: s.app_no || '',
             enrollClass: s.enroll_class
           }))
           .sort((a, b) => {
@@ -1344,6 +1376,7 @@
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition";
         const sId = student.id;
+        tr.setAttribute('data-student-id', sId);
 
         if (!evaluations[sId]) {
           evaluations[sId] = {};
@@ -1726,25 +1759,18 @@
     }
 
     function printPage() {
-      buildPrintArea();
-      window.print();
+      window.openPrintDrawer({
+        tableId: 'competency-table',
+        title: 'CCE Assessment Report / ಸಿಸಿಇ ಮೌಲ್ಯಮಾಪನ ವರದಿ',
+        class: classFilter.value,
+        exam: examTypeFilter.value,
+        subject: subjectFilter.value,
+        students: students
+      });
     }
 
     function exportToPdf() {
-      const className = classFilter.value || 'ALL';
-      const examType = examTypeFilter.value || 'FA1';
-      const selectedSub = subjectFilter.value || 'ALL';
-      const pdfName = `CCE_Report_Class_${className}_${examType}_${selectedSub.replace(/\s+/g, '_')}`;
-
-      const oldTitle = document.title;
-      document.title = pdfName;
-
-      buildPrintArea();
-      window.print();
-
-      setTimeout(() => {
-        document.title = oldTitle;
-      }, 1000);
+      printPage();
     }
 
     function exportToExcel() {
