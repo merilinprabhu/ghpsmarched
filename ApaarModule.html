@@ -720,7 +720,7 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, dob, gender, enroll_class, student_aadhaar, address, father_name_kn, father_name_az, student_photo, app_no, enrolment_no').neq('is_admitted', false);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, dob, gender, enroll_class, student_aadhaar, address, father_name_kn, father_name_az, student_photo, app_no, enrolment_no, apaar, pen').neq('is_admitted', false);
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -732,8 +732,6 @@
         const filteredData = (data || []).filter(s => normalizeClass(s.enroll_class) === normalizeClass(className));
 
         allStudents = filteredData.map(s => {
-          const storedApaar = localStorage.getItem(`apaar_${s.id}`) || "";
-          
           return {
             id: s.id,
             stsNo: s.app_no || s.id,
@@ -746,7 +744,7 @@
             gender: s.gender,
             aadhaarNo: s.student_aadhaar,
             enrolmentNo: s.enrolment_no || "",
-            apaarNo: storedApaar,
+            apaarNo: s.apaar || "",
             address: s.address,
             student_photo: s.student_photo || ""
           };
@@ -1339,17 +1337,12 @@
             gender: gender === "MALE" ? "Boy" : "Girl",
             student_aadhaar: aadhaar,
             enrolment_no: enrolmentNo,
-            address: address
+            address: address,
+            apaar: apaar || null
           })
           .eq('id', studentId);
 
         if (error) throw error;
-
-        if (apaar) {
-          localStorage.setItem(`apaar_${studentId}`, apaar);
-        } else {
-          localStorage.removeItem(`apaar_${studentId}`);
-        }
 
         const idx = allStudents.findIndex(s => s.id === studentId);
         if (idx !== -1) {

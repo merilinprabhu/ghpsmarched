@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDISE+ Report Viewer - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Diagnostic Overlay for Runtime Errors -->
+  <script>
+    (function() {
+      const errors = [];
+      function showErrors() {
+        if (!document.body) return;
+        errors.forEach(err => {
+          const div = document.createElement('div');
+          div.style.position = 'fixed';
+          div.style.bottom = err.type === 'promise' ? '100px' : '10px';
+          div.style.right = '10px';
+          div.style.backgroundColor = err.type === 'promise' ? '#ea580c' : '#dc2626';
+          div.style.color = '#ffffff';
+          div.style.padding = '15px';
+          div.style.borderRadius = '12px';
+          div.style.zIndex = '999999';
+          div.style.fontFamily = 'monospace';
+          div.style.fontSize = '12px';
+          div.style.maxWidth = '90%';
+          div.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.3)';
+          div.style.border = '1px solid rgba(255,255,255,0.2)';
+          div.innerHTML = err.html;
+          document.body.appendChild(div);
+        });
+        errors.length = 0;
+      }
+      window.onerror = function(message, source, lineno, colno, error) {
+        const html = `<strong>JS Error:</strong> ${message}<br>at ${source.split('/').pop()}:${lineno}:${colno}`;
+        errors.push({ type: 'error', html: html });
+        showErrors();
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        const html = `<strong>Promise Rejected:</strong> ${event.reason?.message || event.reason}`;
+        errors.push({ type: 'promise', html: html });
+        showErrors();
+      };
+      window.addEventListener('DOMContentLoaded', showErrors);
+    })();
+  </script>
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Theme overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-800, body[data-theme="dark"] .text-slate-700, body[data-theme="dark"] .text-slate-600 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-slate-50, body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
+    body[data-theme="dark"] td, body[data-theme="dark"] th { color: #cbd5e1 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] input { background-color: #0f172a !important; color: #fff !important; border-color: #475569 !important; }
+
+    /* Gray Theme */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    
+    /* Blue Theme */
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    
+    /* Green Theme */
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text, aside i.fa-chevron-right, aside ul, aside span.uppercase, aside nav span, aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text, aside:hover i.fa-chevron-right, aside:hover span.uppercase, aside:hover nav span, aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) { display: block !important; }
+      aside:hover .nav-item button { justify-content: space-between !important; }
+      aside:hover nav a { justify-content: flex-start !important; padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+      aside .nav-item button { justify-content: center !important; }
+      aside nav a { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div class="no-print">
+    <!-- Navigation Sidebar Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-[98%] lg:max-w-[1400px] mx-auto w-full p-6">
+      
+      <!-- Back to Dashboard and Title -->
+      <div class="flex flex-col gap-2 mb-6">
+        <a href="UdiseDashboard.html" class="text-xs text-indigo-500 hover:text-indigo-750 font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Back to UDISE+ Dashboard</a>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-2">
+          <div>
+            <h2 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2" id="report-title-heading">
+              <i class="fa-solid fa-file-excel text-emerald-600"></i> UDISE+ Report: Loading...
+            </h2>
+            <p class="text-xs text-slate-500 mt-1" id="report-description">
+              ಇಲ್ಲಿ ನೀವು ಈ ನಿರ್ದಿಷ್ಟ ವರದಿಯ ಎಕ್ಸೆಲ್ ಫೈಲ್ ಅನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ ಮೌಲ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು.
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <input type="file" id="excel-file-input" class="hidden" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(event)">
+            <button onclick="triggerExcelUpload()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-md hover:shadow-emerald-500/20 active:scale-[0.98] border-0 cursor-pointer flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up"></i> ಎಕ್ಸೆಲ್ ಅಪ್‌ಲೋಡ್ / Upload Spreadsheet
+            </button>
+            <button id="btn-clear-data" onclick="clearUploadedData()" class="bg-transparent hover:bg-slate-100 text-rose-500 px-3 py-2.5 rounded-2xl text-xs font-bold transition border border-rose-500/20 cursor-pointer hidden flex items-center gap-1">
+              <i class="fa-solid fa-trash-can"></i> Clear Data
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- File Upload Zone (Visible if no data loaded) -->
+      <div id="upload-zone" class="bg-white p-12 rounded-3xl border border-dashed border-slate-300 shadow-sm flex flex-col items-center justify-center text-slate-400 gap-4 cursor-pointer hover:border-emerald-500 hover:bg-emerald-50/5 transition duration-300" onclick="triggerExcelUpload()">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-3xl">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-bold text-slate-700">ವರದಿ ಫೈಲ್ ಅನ್ನು ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ / Upload Report Spreadsheet</p>
+          <p class="text-xs text-slate-500 mt-1">Supports Excel (.xlsx, .xls) and CSV files</p>
+        </div>
+      </div>
+
+      <!-- Table View (Visible if data exists) -->
+      <div id="table-zone" class="hidden space-y-4">
+        <!-- Search and stats -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="relative w-full md:w-80">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+            </span>
+            <input type="text" id="sheet-search" oninput="filterSheetTable()" placeholder="Search in sheet data..." class="w-full pl-9 pr-4 py-2 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 text-slate-700 font-semibold shadow-inner">
+          </div>
+          <div class="text-xs font-bold text-slate-500">
+            ಒಟ್ಟು ಸಾಲುಗಳು / Total Rows Loaded: <span id="sheet-total-rows" class="text-slate-800 font-extrabold text-sm">0</span>
+          </div>
+        </div>
+
+        <!-- Spreadsheet Content Grid Container -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto max-h-[600px] custom-scrollbar">
+            <table class="w-full text-left text-xs whitespace-nowrap" id="sheet-table">
+              <thead class="bg-slate-50 border-b font-bold uppercase tracking-wider text-slate-650 sticky top-0 z-10">
+                <tr id="sheet-thead-row">
+                  <!-- Headers inserted dynamically -->
+                </tr>
+              </thead>
+              <tbody id="sheet-tbody" class="divide-y divide-slate-100 font-medium text-slate-750">
+                <!-- Rows inserted dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer block -->
+  <footer class="py-6 text-center text-[10px] text-slate-400 dark:text-slate-650 border-t border-slate-200 dark:border-slate-800 mt-12 bg-white/20">
+    <p>© 2026 Government Higher Primary School, Marched. All rights reserved.</p>
+    <p class="mt-1">Designed & Managed via Advanced School Portal Dashboard</p>
+  </footer>
+
+  <script>
+    // Initialize Supabase Client
+    let supabaseClient = window.supabaseClient;
+    if (!supabaseClient && window.supabase) {
+      supabaseClient = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const reportId = urlParams.get('reportId');
+    let currentConfig = null;
+    let sheetData = [];
+    let sheetCols = [];
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // Route Guard
+      if (supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+      }
+
+      if (!reportId) {
+        alert("ದೋಷ: ವರದಿ ಐಡಿ ಕಂಡುಬಂದಿಲ್ಲ! / Error: Report ID not found!");
+        window.location.href = "UdiseDashboard.html";
+        return;
+      }
+
+      // Load config title
+      const configList = JSON.parse(localStorage.getItem('udise_reports_config') || '[]');
+      currentConfig = configList.find(r => r.id === reportId);
+      if (!currentConfig) {
+        alert("ವರದಿ ವರ್ಗ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ / Report category does not exist");
+        window.location.href = "UdiseDashboard.html";
+        return;
+      }
+
+      document.getElementById('report-title-heading').innerHTML = `<i class="fa-solid fa-file-excel text-emerald-600"></i> UDISE+: ${currentConfig.name}`;
+      
+      // Load stored sheet if exists
+      await loadStoredSheetData();
+    });
+
+    function triggerExcelUpload() {
+      document.getElementById('excel-file-input').click();
+    }
+
+    async function handleExcelUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const uploadZone = document.getElementById('upload-zone');
+      const tableZone = document.getElementById('table-zone');
+      uploadZone.innerHTML = `
+        <div class="text-center py-6">
+          <i class="fa-solid fa-spinner fa-spin text-4xl text-emerald-500 mb-2"></i>
+          <p class="text-sm font-bold text-slate-700">Uploading and saving to Supabase...</p>
+        </div>
+      `;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          if (workbook.SheetNames.length === 0) {
+            alert("ಎಕ್ಸೆಲ್ ಫೈಲ್‌ನಲ್ಲಿ ಯಾವುದೇ ಶೀಟ್ ಕಂಡುಬಂದಿಲ್ಲ / No sheet found in the uploaded workbook.");
+            await loadStoredSheetData();
+            return;
+          }
+
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          // Inspect the first 20 rows to locate the header row dynamically
+          const range = XLSX.utils.decode_range(worksheet['!ref']);
+          let headerRowIndex = 0;
+          
+          const endRow = Math.min(range.s.r + 20, range.e.r);
+          for (let r = range.s.r; r <= endRow; r++) {
+            let nonEmptyCount = 0;
+            let hasKeywords = false;
+            
+            for (let c = range.s.c; c <= range.e.c; c++) {
+              const cellVal = worksheet[XLSX.utils.encode_cell({ r: r, c: c })];
+              if (cellVal && cellVal.v !== undefined && cellVal.v !== null && cellVal.v !== '') {
+                nonEmptyCount++;
+                const s = cellVal.v.toString().toLowerCase();
+                if (s.includes('sats') || s.includes('sts') || s.includes('student') || s.includes('gender') || s.includes('aadhaar') || s.includes('adhar') || s.includes('name') || s.includes('class')) {
+                  hasKeywords = true;
+                }
+              }
+            }
+            
+            if (nonEmptyCount >= 4 || (nonEmptyCount >= 2 && hasKeywords)) {
+              headerRowIndex = r;
+              break;
+            }
+          }
+          
+          // Parse JSON starting from the detected header row (defval to preserve empty columns)
+          const json = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex, defval: "" });
+          if (json.length === 0) {
+            alert("ಶೀಟ್‌ನಲ್ಲಿ ಯಾವುದೇ ಡೇಟಾ ಕಂಡುಬಂದಿಲ್ಲ / Sheet is empty.");
+            await loadStoredSheetData();
+            return;
+          }
+
+          // Get headers list from first parsed row
+          const columns = Object.keys(json[0]);
+
+          // Save to Supabase
+          if (supabaseClient) {
+            const { error } = await supabaseClient
+              .from('udise_sheet_data')
+              .upsert({
+                report_id: reportId,
+                sheet_data: json,
+                sheet_cols: columns,
+                updated_at: new Date().toISOString()
+              });
+            if (error) throw error;
+          }
+
+          // Load data
+          await loadStoredSheetData();
+        } catch (err) {
+          console.error("Spreadsheet parsing/upload failed:", err);
+          alert("ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Failed to upload spreadsheet: " + err.message);
+          await loadStoredSheetData();
+        }
+      };
+      reader.readAsArrayBuffer(file);
+      event.target.value = '';
+    }
+
+    async function loadStoredSheetData() {
+      const uploadZone = document.getElementById('upload-zone');
+      const tableZone = document.getElementById('table-zone');
+      const clearBtn = document.getElementById('btn-clear-data');
+
+      // Restore default upload zone UI
+      uploadZone.innerHTML = `
+        <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-3xl">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <div class="text-center">
+          <p class="text-sm font-bold text-slate-700">ವರದಿ ಫೈಲ್ ಅನ್ನು ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ / Upload Report Spreadsheet</p>
+          <p class="text-xs text-slate-500 mt-1">Supports Excel (.xlsx, .xls) and CSV files</p>
+        </div>
+      `;
+
+      if (!supabaseClient) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('udise_sheet_data')
+          .select('*')
+          .eq('report_id', reportId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          uploadZone.classList.remove('hidden');
+          tableZone.classList.add('hidden');
+          clearBtn.classList.add('hidden');
+          return;
+        }
+
+        sheetData = data.sheet_data || [];
+        sheetCols = data.sheet_cols || [];
+
+        uploadZone.classList.add('hidden');
+        tableZone.classList.remove('hidden');
+        clearBtn.classList.remove('hidden');
+
+        renderSheetTable(sheetData);
+      } catch (err) {
+        console.error("Failed to load sheet data:", err);
+        uploadZone.classList.remove('hidden');
+        tableZone.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+      }
+    }
+
+    function renderSheetTable(data) {
+      const theadRow = document.getElementById('sheet-thead-row');
+      const tbody = document.getElementById('sheet-tbody');
+      
+      // Update count
+      document.getElementById('sheet-total-rows').textContent = data.length;
+
+      // Render headers
+      let headersHtml = `<th class="p-3 text-center w-12 bg-slate-50 border-r">Sl.No</th>`;
+      sheetCols.forEach(col => {
+        headersHtml += `<th class="p-3 border-r">${col}</th>`;
+      });
+      theadRow.innerHTML = headersHtml;
+
+      // Render body rows
+      let rowsHtml = '';
+      data.forEach((row, index) => {
+        let cellsHtml = `<td class="p-3 text-center font-bold text-slate-400 border-r bg-slate-50/20">${index + 1}</td>`;
+        sheetCols.forEach(col => {
+          const val = row[col] !== undefined && row[col] !== null ? row[col] : '';
+          cellsHtml += `<td class="p-3 border-r font-semibold text-slate-700">${val}</td>`;
+        });
+        rowsHtml += `<tr class="hover:bg-slate-50/50">${cellsHtml}</tr>`;
+      });
+
+      tbody.innerHTML = rowsHtml || `<tr><td colspan="${sheetCols.length + 1}" class="p-8 text-center text-slate-400 font-bold">ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ / No matching rows</td></tr>`;
+    }
+
+    function filterSheetTable() {
+      const q = document.getElementById('sheet-search').value.trim().toUpperCase();
+      if (!q) {
+        renderSheetTable(sheetData);
+        return;
+      }
+
+      const filtered = sheetData.filter(row => {
+        return sheetCols.some(col => {
+          const val = row[col] ? row[col].toString().toUpperCase() : '';
+          return val.includes(q);
+        });
+      });
+      renderSheetTable(filtered);
+    }
+
+    async function clearUploadedData() {
+      if (confirm("ಈ ವರದಿಯ ಎಲ್ಲಾ ಅಪ್‌ಲೋಡ್ ಆದ ವಿವರಗಳನ್ನು ಡಿಲೀಟ್ ಮಾಡಲು ನೀವು ಬಯಸುತ್ತೀರಾ?\nAre you sure you want to clear all uploaded data for this report?")) {
+        if (!supabaseClient) return;
+        try {
+          const { error } = await supabaseClient
+            .from('udise_sheet_data')
+            .delete()
+            .eq('report_id', reportId);
+          if (error) throw error;
+
+          await loadStoredSheetData();
+        } catch (err) {
+          console.error("Failed to clear data:", err);
+          alert("ಡೇಟಾ ಡಿಲೀಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Failed to clear data: " + err.message);
+        }
+      }
+    }
+  </script>
+
+  <!-- Load Dynamic Navbar script -->
+  <script src="navbar.js"></script>
+</body>
+</html>

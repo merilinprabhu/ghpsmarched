@@ -138,6 +138,15 @@
       ]
     },
     {
+      name: "UDISE+",
+      icon: "fa-database",
+      color: "text-amber-500",
+      items: [
+        { name: "Dashboard", href: "UdiseDashboard.html" },
+        { name: "Compare Data", href: "UdiseCompare.html" }
+      ]
+    },
+    {
       name: "Academic",
       icon: "fa-book-open",
       color: "text-pink-400",
@@ -189,9 +198,10 @@
   const currentPath = window.location.pathname.split('/').pop() || 'dashboard.html';
 
   function isLinkActive(item) {
-    if (item.href && item.href === currentPath) return true;
+    const cleanHref = href => href ? href.split('?')[0] : '';
+    if (item.href && cleanHref(item.href) === currentPath) return true;
     if (item.items) {
-      return item.items.some(sub => sub.href === currentPath);
+      return item.items.some(sub => cleanHref(sub.href) === currentPath);
     }
     return false;
   }
@@ -565,6 +575,31 @@
           return true;
         });
         if (filteredItems.length === 0) return null;
+        
+        // Inject UDISE+ dynamic submenus
+        if (item.name === "UDISE+") {
+          let dynamicSubmenus = [];
+          try {
+            const stored = localStorage.getItem('udise_reports_config');
+            if (stored) {
+              const list = JSON.parse(stored);
+              if (Array.isArray(list)) {
+                dynamicSubmenus = list.map(r => ({
+                  name: r.name,
+                  href: `UdiseReportView.html?reportId=${r.id}`
+                }));
+              }
+            }
+          } catch (e) {
+            console.error("Failed to parse UDISE+ config:", e);
+          }
+          
+          const dashboardItem = filteredItems.find(sub => sub.href === "UdiseDashboard.html") || { name: "Dashboard", href: "UdiseDashboard.html" };
+          const compareItem = filteredItems.find(sub => sub.href === "UdiseCompare.html") || { name: "Compare Data", href: "UdiseCompare.html" };
+          
+          filteredItems = [dashboardItem, ...dynamicSubmenus, compareItem];
+        }
+        
         return { ...item, items: filteredItems };
       }
       return item;
@@ -608,7 +643,7 @@
               </button>
               <div id="${sidebarCollapseId}" class="${isCollapsed ? 'hidden' : ''} pl-6 pr-2 py-1 space-y-0.5 mt-1 border-l border-slate-800 ml-5">
                 ${item.items.map(sub => {
-                  const subActive = sub.href === currentPath;
+                  const subActive = sub.href === currentPath || sub.href.split('?')[0] === currentPath;
                   return `
                     <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="block py-2 px-2.5 text-xs font-bold rounded-lg transition-all duration-200 ${
                       subActive 
@@ -1214,16 +1249,40 @@
     const customTitleInput = document.getElementById('pdCustomTitle');
     if (customTitleInput) customTitleInput.value = config.title || '';
     
+    // Toggle student-specific UI sections
+    const isTeachers = config.type === 'teachers';
+    
+    const studentNameModeCont = document.getElementById('pdStudentNameModeContainer');
+    const parentsNameModeCont = document.getElementById('pdParentsNameModeContainer');
+    const genderCheckboxCont = document.getElementById('pdGenderCheckboxContainer');
+    const otherCheckboxesCont = document.getElementById('pdOtherCheckboxesContainer');
+    const columnsTitle = document.getElementById('pdColumnsTitle');
+    const sigTeacherLabel = document.getElementById('pdSigTeacherLabel');
+    
+    if (studentNameModeCont) studentNameModeCont.style.display = isTeachers ? 'none' : 'flex';
+    if (parentsNameModeCont) parentsNameModeCont.style.display = isTeachers ? 'none' : 'grid';
+    if (genderCheckboxCont) genderCheckboxCont.style.display = isTeachers ? 'none' : 'flex';
+    if (otherCheckboxesCont) otherCheckboxesCont.style.display = isTeachers ? 'none' : 'grid';
+    if (columnsTitle) {
+      columnsTitle.innerText = isTeachers ? '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3 / Report Theme' : '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3\u0020\u0CAE\u0CA4\u0CCD\u0CA4\u0CC1\u0020\u0C95\u0CBE\u0CB2\u0CAE\u0CCD\u0C97\u0CB3\u0CC1 / Theme & Student Columns';
+    }
+    if (sigTeacherLabel) {
+      sigTeacherLabel.innerText = isTeachers ? 'Teacher Signature' : 'Class Teacher';
+    }
+
     // Generate Report Checkboxes
     const table = document.getElementById(config.tableId);
     if (table) {
       const leaves = getTableLeafHeaders(table);
-      const skipKeywords = ['sl.no', 'sl no', 'sts', 'student name', 'father name', 'mother name', 'actions', 'ಕ್ರಿಯೆಗಳು', 'ಕ್ರಮ ಸಂಖ್ಯೆ', 'ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು', 'ತಂದೆಯ ಹೆಸರು', 'ತಾಯಿಯ ಹೆಸರು', 'ವಿವರ', 'ಹೆಸರು', 'name', 'sex', 'gender', 'caste', 'ಲಿಂಗ', 'ಜಾತಿ'];
+      const skipKeywords = isTeachers 
+        ? ['sl.no', 'sl no', 'teacher id', 'teacher name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 't. id', 'teacher']
+        : ['sl.no', 'sl no', 'sts', 'student name', 'father name', 'mother name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0C82\u0CA6\u0CC6\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0CBE\u0CAF\u0CBF\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 'name', 'sex', 'gender', 'caste', '\u0CB2\u0CBF\u0C82\u0C97', '\u0C9C\u0CBE\u0CA4\u0CBF'];
       
       const grid = getTableHeadersGrid(table);
       const reportColsHtml = [];
       
       leaves.forEach((th, cIdx) => {
+        if (isTeachers && cIdx === 0) return;
         // Find label path
         const path = [];
         for (let r = 0; r < grid.length; r++) {
@@ -1428,11 +1487,15 @@
       printColIndices.push({ type: 'sl' });
       printColIndices.push({ type: 'sts' });
       printColIndices.push({ type: 'name' });
-      if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
-      if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
-      if (printGender) printColIndices.push({ type: 'gender' });
-      if (printCaste) printColIndices.push({ type: 'caste' });
-      if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+      
+      const isTeachers = config.type === 'teachers';
+      if (!isTeachers) {
+        if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
+        if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
+        if (printGender) printColIndices.push({ type: 'gender' });
+        if (printCaste) printColIndices.push({ type: 'caste' });
+        if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+      }
       
       checkedReportColIndices.forEach(idx => {
         printColIndices.push({ type: 'report', idx: idx });
@@ -1463,12 +1526,12 @@
           if (col.type === 'sl') {
             th.innerText = 'Sl.No';
           } else if (col.type === 'sts') {
-            th.innerText = 'SATS / STS No';
+            th.innerText = isTeachers ? 'T. ID / Teacher ID' : 'SATS / STS No';
             th.style.width = '80px';
             th.style.minWidth = '80px';
             th.style.maxWidth = '80px';
           } else if (col.type === 'name') {
-            th.innerText = 'ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Student Name';
+            th.innerText = isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB9\u0CB5\u0CB8\u0CB0\u0CC1 / Teacher Name' : '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Student Name';
             th.style.width = '125px';
             th.style.minWidth = '125px';
             th.style.maxWidth = '125px';
@@ -1503,6 +1566,7 @@
             addedOriginalThs.add(originalTh);
             
             const thClone = originalTh.cloneNode(true);
+            thClone.classList.remove('hidden');
             thClone.style.cssText = getGridCellStyle(true);
             
             const originalColspan = parseInt(originalTh.getAttribute('colspan')) || 1;
@@ -1563,7 +1627,7 @@
         
         // STS No (Mandatory)
         const tdSts = document.createElement('td');
-        const stsVal = student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-');
+        const stsVal = isTeachers ? (origCells[2] ? origCells[2].innerText.trim() : '-') : (student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-'));
         tdSts.innerText = stsVal;
         tdSts.style.cssText = getGridCellStyle(false) + ' font-family: monospace; font-weight: bold; width: 80px; min-width: 80px; max-width: 80px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
         tr.appendChild(tdSts);
@@ -1571,23 +1635,27 @@
         // Student Name
         const tdName = document.createElement('td');
         tdName.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 125px; min-width: 125px; max-width: 125px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-        if (student) {
-          const nameEn = (student.name_english || '').trim().toUpperCase();
-          const nameKn = (student.student_name || student.student_name_kn || '').trim();
-          if (printNameMode === 'both' && nameEn && nameKn) {
-            tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
-          } else if (printNameMode === 'kn') {
-            tdName.innerText = nameKn || nameEn || '-';
-          } else {
-            tdName.innerText = nameEn || nameKn || '-';
-          }
+        if (isTeachers) {
+          tdName.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
         } else {
-          tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
+          if (student) {
+            const nameEn = (student.name_english || '').trim().toUpperCase();
+            const nameKn = (student.student_name || student.student_name_kn || '').trim();
+            if (printNameMode === 'both' && nameEn && nameKn) {
+              tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
+            } else if (printNameMode === 'kn') {
+              tdName.innerText = nameKn || nameEn || '-';
+            } else {
+              tdName.innerText = nameEn || nameKn || '-';
+            }
+          } else {
+            tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
+          }
         }
         tr.appendChild(tdName);
         
         // Father Name
-        if (printFatherMode !== 'none') {
+        if (!isTeachers && printFatherMode !== 'none') {
           const tdFather = document.createElement('td');
           tdFather.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
           if (student) {
@@ -1607,7 +1675,7 @@
         }
         
         // Mother Name
-        if (printMotherMode !== 'none') {
+        if (!isTeachers && printMotherMode !== 'none') {
           const tdMother = document.createElement('td');
           tdMother.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
           if (student) {
@@ -1627,7 +1695,7 @@
         }
         
         // Gender
-        if (printGender) {
+        if (!isTeachers && printGender) {
           const tdGen = document.createElement('td');
           tdGen.innerText = student ? (student.gender || '-') : '-';
           tdGen.style.cssText = getGridCellStyle(false);
@@ -1635,7 +1703,7 @@
         }
         
         // Caste
-        if (printCaste) {
+        if (!isTeachers && printCaste) {
           const tdCaste = document.createElement('td');
           tdCaste.innerText = student ? (student.caste || '-') : '-';
           tdCaste.style.cssText = getGridCellStyle(false);
@@ -1643,7 +1711,7 @@
         }
         
         // Aadhaar
-        if (printAadhaar) {
+        if (!isTeachers && printAadhaar) {
           const tdAadhaar = document.createElement('td');
           tdAadhaar.innerText = student ? (student.aadhaar || student.student_aadhaar || '-') : '-';
           tdAadhaar.style.cssText = getGridCellStyle(false) + ' font-family: monospace;';
@@ -1654,6 +1722,7 @@
         checkedReportColIndices.forEach(idx => {
           if (origCells[idx]) {
             const cellClone = origCells[idx].cloneNode(true);
+            cellClone.classList.remove('hidden');
             cellClone.style.cssText = getGridCellStyle(false);
             
             // Replace inputs/selects in cloned cells
@@ -1732,7 +1801,7 @@
           <!-- Left Side: Date, Class, Subject -->
           <div style="text-align: left; font-size: 10px; font-weight: bold; line-height: 1.4; color: #1e293b;">
             <div style="border-left: 3px solid #4f46e5; padding-left: 6px;">
-              <div><strong>ತರಗತಿ / Class:</strong> ${config.class || 'All'}</div>
+              ${!isTeachers && config.class ? `<div><strong>\u0CA4\u0CB0\u0C97\u0CA4\u0CBF / Class:</strong> ${config.class}</div>` : ''}
               ${config.subject ? `<div><strong>ವಿಷಯ / Subject:</strong> ${config.subject}</div>` : ''}
               ${config.exam ? `<div><strong>ಪರೀಕ್ಷೆ / Exam:</strong> ${config.exam}</div>` : ''}
               <div><strong>ದಿನಾಂಕ / Date:</strong> ${new Date().toLocaleDateString('kn-IN')}</div>
@@ -1793,7 +1862,7 @@
           font-family: 'Inter', sans-serif;
         `;
         footerDiv.innerHTML = `
-          <span>${schoolNameStr} - Student Report Sheet</span>
+          <span>${schoolNameStr} - ${isTeachers ? 'Teaching Staff Directory' : 'Student Report Sheet'}</span>
           <span>Generated on ${new Date().toLocaleDateString('kn-IN')} | Page Numbers via System Print</span>
         `;
         printArea.appendChild(footerDiv);
@@ -1808,7 +1877,7 @@
       if (document.getElementById('pdSigTeacherCheck').checked) {
         sigsHtml += `
           <div style="text-align: center; display: flex; flex-direction: column; align-items: center; min-width: 140px;">
-            <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
+            <span>${isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB8\u0CB9\u0CBF / Teacher Signature' : '\u0CA4\u0CB0\u0C97\u0CA4\u0CBF\u0020\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB8\u0CB9\u0CBF / Class Teacher Signature'}</span>
             ${teacherName ? `<span style="font-size: 9px; font-weight: normal; margin-top: 3px; color: #334155;">(${teacherName})</span>` : ''}
           </div>
         `;
@@ -1927,7 +1996,7 @@
                 </div>
 
                 <!-- Student Name Mode -->
-                <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
+                <div id="pdStudentNameModeContainer" class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Student Name Mode</label>
                   <div class="flex gap-4 font-semibold text-slate-700 text-xs mt-1">
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="both" checked class="text-indigo-600 focus:ring-indigo-500"> <span>Both</span></label>
@@ -1937,7 +2006,7 @@
                 </div>
 
                 <!-- Parents Name Mode -->
-                <div class="grid grid-cols-2 gap-3 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
+                <div id="pdParentsNameModeContainer" class="grid grid-cols-2 gap-3 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <div class="flex flex-col gap-1.5">
                     <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ತಂದೆಯ ಹೆಸರು / Father Name</label>
                     <select id="pdFatherMode" class="w-full bg-white border border-slate-350 rounded-xl px-2 py-1.5 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer text-xs">
@@ -1963,7 +2032,7 @@
               <div class="space-y-4">
                 <!-- Student Columns Toggle & Color Mode -->
                 <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
-                  <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವರದಿ ಬಣ್ಣ ಮತ್ತು ಕಾಲಮ್ಗಳು / Theme & Student Columns</label>
+                  <label id="pdColumnsTitle" class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3\u0020\u0CAE\u0CA4\u0CCD\u0CA4\u0CC1\u0020\u0C95\u0CBE\u0CB2\u0CAE\u0CCD\u0C97\u0CB3\u0CC1 / Theme & Student Columns</label>
                   <div class="grid grid-cols-2 gap-3 mt-1.5">
                     <div class="flex flex-col gap-1">
                       <span class="text-[9px] font-bold text-slate-450 uppercase">Print Theme</span>
@@ -1972,13 +2041,13 @@
                         <option value="bw">Black & White (ಕಪ್ಪು-ಬಿಳುಪು)</option>
                       </select>
                     </div>
-                    <div class="flex flex-col gap-1.5 font-semibold text-slate-700 text-xs justify-center">
-                      <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdGenderCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>ಲಿಂಗ / Gender</span></label>
+                    <div id="pdGenderCheckboxContainer" class="flex flex-col gap-1.5 font-semibold text-slate-700 text-xs justify-center">
+                      <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdGenderCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0CB2\u0CBF\u0C82\u0C97 / Gender</span></label>
                     </div>
                   </div>
-                  <div class="grid grid-cols-2 gap-1.5 font-semibold text-slate-700 text-xs mt-1">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdCasteCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>ಜಾತಿ / Caste</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdAadhaarCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>ಆಧಾರ್ / Aadhaar</span></label>
+                  <div id="pdOtherCheckboxesContainer" class="grid grid-cols-2 gap-1.5 font-semibold text-slate-700 text-xs mt-1">
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdCasteCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0C9C\u0CBE\u0CA4\u0CBF / Caste</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdAadhaarCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0C86\u0CA7\u0CBE\u0CB0\u0CCD / Aadhaar</span></label>
                   </div>
                 </div>
 
@@ -1986,7 +2055,7 @@
                 <div class="flex flex-col gap-2.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ಸಹಿ ಸಾಲುಗಳು / Signature Blocks</label>
                   <div class="grid grid-cols-2 gap-2.5 font-semibold text-slate-700 text-xs mt-0.5">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigTeacherCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Class Teacher</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigTeacherCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span id="pdSigTeacherLabel">Class Teacher</span></label>
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigHmCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Head Master</span></label>
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigCrpCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>CRP Signature</span></label>
                     <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdRotateCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Vertical Headers</span></label>

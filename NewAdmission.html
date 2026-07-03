@@ -576,15 +576,15 @@
 
 <!-- Custom Add Caste Modal Overlay -->
 <div id="casteManagerModal" class="d-none" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center;">
-  <div class="card p-4 shadow-lg" style="width: 100%; max-width: 450px; border-radius: 12px; background-color: #ffffff;">
-    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-0 mb-3">
+  <div class="card p-4 shadow-lg" style="width: 100%; max-width: 450px; max-height: 90vh; border-radius: 12px; background-color: #ffffff; display: flex; flex-direction: column;">
+    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center p-0 mb-3 flex-shrink-0">
       <h5 class="card-title fw-bold text-primary mb-0" style="font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">ಜಾತಿ ಸೇರಿಸಿ / Add New Caste</h5>
       <button type="button" class="btn-close" onclick="closeCasteModal()"></button>
     </div>
-    <div class="card-body p-0">
+    <div class="card-body p-0 flex-grow-1 overflow-y-auto custom-scrollbar pr-1">
       <div class="mb-3">
         <label class="form-label fw-semibold text-secondary">ಸಾಮಾಜಿಕ ವರ್ಗ / Social Class</label>
-        <select id="modalSocialClass" class="form-select">
+        <select id="modalSocialClass" onchange="loadModalCasteList(this.value)" class="form-select">
           <option value="SC">SC (ಪರಿಶಿಷ್ಟ ಜಾತಿ)</option>
           <option value="ST">ST (ಪರಿಶಿಷ್ಟ ಪಂಗಡ)</option>
           <option value="C1">C1</option>
@@ -603,7 +603,16 @@
         <label class="form-label fw-semibold text-secondary">ಜಾತಿ ಹೆಸರು (ಕನ್ನಡ) / Caste Name (KN)</label>
         <input type="text" id="modalCasteKn" class="form-control" placeholder="ಉದಾ: ಕುರುಬ">
       </div>
-      <div class="d-flex justify-content-end gap-2 mt-4">
+      
+      <!-- Caste List Manager Section -->
+      <div class="border-top border-slate-200 pt-3 mt-3">
+        <label class="form-label fw-bold text-secondary uppercase text-xs mb-2">ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಜಾತಿಗಳು / Existing Castes</label>
+        <div id="modalCasteListContainer" class="space-y-2 overflow-y-auto custom-scrollbar" style="max-height: 150px;">
+          <!-- Dynamically populated caste items with remove buttons -->
+        </div>
+      </div>
+      
+      <div class="d-flex justify-content-end gap-2 mt-4 flex-shrink-0">
         <button type="button" class="btn btn-secondary px-4 text-xs font-bold" onclick="closeCasteModal()" style="border-radius: 12px; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ರದ್ದುಮಾಡಿ / Cancel</button>
         <button type="button" class="btn btn-primary px-4 text-xs font-bold" onclick="saveNewCaste()" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 0; border-radius: 12px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);" onmouseover="this.style.transform='scale(1.05)';" onmouseout="this.style.transform='scale(1)';" onmousedown="this.style.transform='scale(0.95)';" onmouseup="this.style.transform='scale(1)';">ಉಳಿಸಿ / Save</button>
       </div>
@@ -691,14 +700,114 @@
   }
 
   function openCasteModal() {
-    let socialClassVal = document.getElementById("socialClass").value;
-    if (socialClassVal) {
-      document.getElementById("modalSocialClass").value = socialClassVal;
-    }
+    let socialClassVal = document.getElementById("socialClass").value || "SC";
+    document.getElementById("modalSocialClass").value = socialClassVal || "SC";
     document.getElementById("modalCasteKn").value = "";
     document.getElementById("modalCasteEn").value = "";
     document.getElementById("casteManagerModal").classList.remove("d-none");
+    loadModalCasteList(document.getElementById("modalSocialClass").value);
   }
+
+  async function loadModalCasteList(socialClass) {
+    const container = document.getElementById("modalCasteListContainer");
+    if (!container) return;
+    
+    container.innerHTML = '<div class="text-xs text-muted text-center p-2"><i class="fa-solid fa-spinner fa-spin me-1"></i> ಲೋಡ್ ಆಗುತ್ತಿದೆ... / Loading...</div>';
+    
+    try {
+      const { data, error } = await supabaseClient
+        .from('portal_castes')
+        .select('id, social_class, name_kn, name_en')
+        .eq('social_class', socialClass);
+        
+      if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="text-xs text-muted text-center p-3 border border-dashed rounded bg-light">ಯಾವುದೇ ಜಾತಿ ಲಭ್ಯವಿಲ್ಲ / No castes found</div>';
+        return;
+      }
+      
+      container.innerHTML = '';
+      data.forEach(item => {
+        const itemEl = document.createElement('div');
+        itemEl.className = "d-flex items-center justify-between p-2 mb-2 bg-light rounded border transition";
+        itemEl.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-radius: 8px; border: 1px solid #dee2e6; background-color: #f8f9fa;";
+        itemEl.innerHTML = `
+          <div class="d-flex flex-column" style="text-align: left;">
+            <span class="fw-bold text-dark" style="font-size: 11px; display: block;">${item.name_en}</span>
+            <span class="text-secondary" style="font-size: 10px; font-weight: 500;">${item.name_kn}</span>
+          </div>
+          <button type="button" class="btn-delete-caste btn btn-sm btn-outline-danger border-0 flex items-center justify-center p-1" style="border-radius: 6px;" title="ತೆಗೆದುಹಾಕಿ / Delete">
+            <i class="fa-solid fa-trash-can text-[10px]"></i>
+          </button>
+        `;
+        
+        const deleteBtn = itemEl.querySelector('.btn-delete-caste');
+        deleteBtn.addEventListener('click', () => {
+          deleteCaste(item.id, item.name_kn, item.name_en, item.social_class);
+        });
+        
+        container.appendChild(itemEl);
+      });
+    } catch (err) {
+      console.error("Error loading modal caste list:", err);
+      container.innerHTML = `<div class="text-xs text-danger text-center p-2">ದೋಷ / Error: ${err.message}</div>`;
+    }
+  }
+
+  async function deleteCaste(id, nameKn, nameEn, socialClass) {
+    if (!confirm(`ನಿಜವಾಗಿಯೂ "${nameEn} / ${nameKn}" ಜಾತಿಯನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?\nAre you sure you want to delete this caste?`)) {
+      return;
+    }
+    
+    try {
+      console.log("Attempting to delete caste:", { id, nameKn, nameEn, socialClass });
+      const { data, error } = await supabaseClient
+        .from('portal_castes')
+        .delete()
+        .eq('id', id)
+        .select();
+        
+      if (error) throw error;
+      
+      console.log("Delete response data:", data);
+      if (!data || data.length === 0) {
+        alert("ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಬಹುಶಃ ನಿಮಗೆ ಈ ಅನುಮತಿ ಇಲ್ಲದಿರಬಹುದು.\nFailed to delete. You might not have permission to delete this record.");
+        return;
+      }
+      
+      // Filter out from local arrays
+      if (globalDropdownData.castesKN[socialClass]) {
+        globalDropdownData.castesKN[socialClass] = globalDropdownData.castesKN[socialClass].filter(c => c !== nameKn);
+      }
+      if (globalDropdownData.castesEN[socialClass]) {
+        globalDropdownData.castesEN[socialClass] = globalDropdownData.castesEN[socialClass].filter(c => c !== nameEn);
+      }
+      
+      // Reload global list
+      await loadCastesFromSupabase();
+      
+      // Re-render modal list
+      loadModalCasteList(socialClass);
+      
+      // Re-setup dropdown on main page
+      updateCastes();
+      
+      if (document.getElementById("caste").value === nameKn || document.getElementById("caste").value === nameEn) {
+        document.getElementById("caste").value = "";
+        lastSelectedCaste = "";
+      }
+      
+      alert("ಜಾತಿಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ತೆಗೆದುಹಾಕಲಾಗಿದೆ! / Caste deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting caste:", err);
+      alert("ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Failed to delete: " + err.message);
+    }
+  }
+
+  // Explicitly bind to window for inline HTML handlers
+  window.loadModalCasteList = loadModalCasteList;
+  window.deleteCaste = deleteCaste;
 
   function closeCasteModal() {
     document.getElementById("casteManagerModal").classList.add("d-none");

@@ -1253,67 +1253,20 @@
       }
     }
 
-    function printMatrixReport(isPdf = false) {
+    function printMatrixReport() {
       const acadYear = document.getElementById('report-academic-year').value;
-      const printWindow = window.open('', '_blank');
-      
-      const matrixTableContent = document.getElementById('matrix-report-table').innerHTML;
-      const barcodeText = `Attendance.html|All||${acadYear}`;
-      const barcodeUrl = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(barcodeText)}&scale=2&rotate=N&includeText=false`;
-
-      printWindow.document.write(`
-        <html>
-        <head>
-          <title>Classwise Student Monthly Attendance Ledger - ${acadYear}</title>
-          <style>
-            body { font-family: sans-serif; padding: 20px; }
-            .header-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; }
-            .header-info { text-align: left; flex-grow: 1; }
-            h1 { font-size: 16px; margin: 0; padding: 0; text-transform: uppercase; }
-            h2 { font-size: 12px; margin: 5px 0 0 0; color: #475569; }
-            .barcode-box { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 1.5px solid #000000; padding: 5px; background-color: #ffffff; margin-top: -5px; }
-            .barcode-lbl { font-size: 7px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; color: #000000; }
-            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 9px; }
-            th, td { border: 1px solid #cbd5e1; padding: 6px 4px; text-align: center; }
-            th, tfoot td { background-color: #f1f5f9; font-weight: bold; }
-            .text-left { text-align: left; }
-            span.block { display: block; font-size: 8px; color: #64748b; }
-            .text-emerald-500 { color: #10b981; font-weight: bold; }
-            .text-amber-500 { color: #f59e0b; font-weight: bold; }
-            .text-rose-500 { color: #ef4444; font-weight: bold; }
-          </style>
-        </head>
-        <body>
-          <div class="header-container">
-            <div class="header-info">
-              <h1>Yearly Classwise Student Monthly Attendance Ledger</h1>
-              <h2>Academic Year ${acadYear}</h2>
-            </div>
-            <div class="barcode-box">
-              <img src="${barcodeUrl}" style="height: 35px; width: 150px; object-fit: contain;" alt="Barcode">
-              <span class="barcode-lbl">SCAN IN PORTAL TO OPEN</span>
-            </div>
-          </div>
-          <table>
-            ${matrixTableContent}
-          </table>
-          <script>
-            window.onload = function() {
-              if (${isPdf}) {
-                alert("To download as a high-quality PDF:\\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\\n2. Click 'Save'.\\n\\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
-              }
-              window.print();
-              window.close();
-            };
-          <\/script>
-        </body>
-        </html>
-      `);
-      printWindow.document.close();
+      window.openPrintDrawer({
+        tableId: 'matrix-report-table',
+        title: `ಹಾಜರಾತಿ ವರದಿ / Student Attendance Report - AY ${acadYear}`,
+        class: 'All',
+        exam: '',
+        subject: '',
+        students: []
+      });
     }
 
     function exportToPdf() {
-      printMatrixReport(true);
+      printMatrixReport();
     }
 
     function exportMatrixToExcel() {

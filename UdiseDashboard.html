@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDISE+ Dashboard - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Diagnostic Overlay for Runtime Errors -->
+  <script>
+    (function() {
+      const errors = [];
+      function showErrors() {
+        if (!document.body) return;
+        errors.forEach(err => {
+          const div = document.createElement('div');
+          div.style.position = 'fixed';
+          div.style.bottom = err.type === 'promise' ? '100px' : '10px';
+          div.style.right = '10px';
+          div.style.backgroundColor = err.type === 'promise' ? '#ea580c' : '#dc2626';
+          div.style.color = '#ffffff';
+          div.style.padding = '15px';
+          div.style.borderRadius = '12px';
+          div.style.zIndex = '999999';
+          div.style.fontFamily = 'monospace';
+          div.style.fontSize = '12px';
+          div.style.maxWidth = '90%';
+          div.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.3)';
+          div.style.border = '1px solid rgba(255,255,255,0.2)';
+          div.innerHTML = err.html;
+          document.body.appendChild(div);
+        });
+        errors.length = 0;
+      }
+      window.onerror = function(message, source, lineno, colno, error) {
+        const html = `<strong>JS Error:</strong> ${message}<br>at ${source.split('/').pop()}:${lineno}:${colno}`;
+        errors.push({ type: 'error', html: html });
+        showErrors();
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        const html = `<strong>Promise Rejected:</strong> ${event.reason?.message || event.reason}`;
+        errors.push({ type: 'promise', html: html });
+        showErrors();
+      };
+      window.addEventListener('DOMContentLoaded', showErrors);
+    })();
+  </script>
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Theme overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-800, body[data-theme="dark"] .text-slate-700, body[data-theme="dark"] .text-slate-650 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-slate-50 { background-color: #0f172a !important; }
+    body[data-theme="dark"] input { background-color: #0f172a !important; color: #fff !important; border-color: #475569 !important; }
+    
+    /* Gray Theme */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    
+    /* Blue Theme */
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    
+    /* Green Theme */
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text, aside i.fa-chevron-right, aside ul, aside span.uppercase, aside nav span, aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text, aside:hover i.fa-chevron-right, aside:hover span.uppercase, aside:hover nav span, aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) { display: block !important; }
+      aside:hover .nav-item button { justify-content: space-between !important; }
+      aside:hover nav a { justify-content: flex-start !important; padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+      aside .nav-item button { justify-content: center !important; }
+      aside nav a { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div class="no-print">
+    <!-- Navigation Sidebar Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-[98%] lg:max-w-[1200px] mx-auto w-full p-6">
+      
+      <!-- Welcome/Header Block -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+          <h2 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+            <i class="fa-solid fa-cubes text-amber-500"></i> UDISE+ ನಿರ್ವಹಣಾ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / UDISE+ Management Dashboard
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">
+            ಇಲ್ಲಿ ನೀವು ಹೊಸ UDISE+ ವರದಿ ವರ್ಗಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಡೈನಾಮಿಕ್ ಸಬ್‌ಮೆನುಗಳನ್ನು ಸೇರಿಸಬಹುದು.
+          </p>
+        </div>
+        <button onclick="openAddReportModal()" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-md hover:shadow-orange-500/20 active:scale-[0.98] border-0 cursor-pointer flex items-center gap-2">
+          <i class="fa-solid fa-plus"></i> ಹೊಸ ವರ್ಗ ಸೇರಿಸಿ / Add New Category
+        </button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ವರದಿಗಳು / Total Reports</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-total-reports">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-file-excel"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಲೋಡ್ ಆದ ಶೀಟ್‌ಗಳು / Uploaded Sheets</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-uploaded-sheets">0</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-code-compare"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಹೋಲಿಕೆ ವ್ಯವಸ್ಥೆ / Compare Status</div>
+              <div class="text-xs font-bold text-emerald-600 mt-1">Ready / ಸಿದ್ಧವಾಗಿದೆ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Report Categories Section -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wider border-b pb-3 flex items-center gap-2">
+          <i class="fa-solid fa-layer-group text-slate-400"></i> ನೋಂದಾಯಿತ UDISE+ ವರದಿಗಳು / Registered UDISE+ Reports
+        </h3>
+        
+        <div id="no-reports-view" class="hidden flex flex-col items-center justify-center py-12 text-slate-400">
+          <i class="fa-solid fa-folder-open text-4xl mb-3 opacity-40"></i>
+          <p class="text-sm font-bold">ಯಾವುದೇ ವರದಿ ವರ್ಗಗಳು ಕಂಡುಬಂದಿಲ್ಲ / No report categories found</p>
+          <p class="text-xs text-slate-500 mt-1">ಹೊಸ ಮೆನು ವಿಭಾಗವನ್ನು ರಚಿಸಲು ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.</p>
+        </div>
+
+        <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Dynamically populated report category cards -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer block matching standard pages -->
+  <footer class="py-6 text-center text-[10px] text-slate-400 dark:text-slate-650 border-t border-slate-200 dark:border-slate-800 mt-12 bg-white/20">
+    <p>© 2026 Government Higher Primary School, Marched. All rights reserved.</p>
+    <p class="mt-1">Designed & Managed via Advanced School Portal Dashboard</p>
+  </footer>
+
+  <!-- Add New Report Submenu Modal -->
+  <div id="addReportModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-md shadow-2xl p-6 relative flex flex-col gap-5">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-folder-plus text-amber-500"></i> ಹೊಸ ವರದಿ ವರ್ಗ ಸೇರಿಸಿ / Add Report Category
+        </h3>
+        <button onclick="closeAddReportModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-slate-600 text-xs font-bold mb-1.5">ವರದಿಯ ಹೆಸರು / Report Title (English/ಕನ್ನಡ) *</label>
+          <input type="text" id="reportTitleInput" placeholder="e.g. Aadhaar Pending List / ಆಧಾರ್ ಬಾಕಿ ಪಟ್ಟಿ" class="w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-xs font-medium bg-slate-50/50" required>
+        </div>
+        <p class="text-[10px] text-slate-400 leading-relaxed">
+          * ಗಮನಿಸಿ: ಹೊಸ ವರ್ಗವನ್ನು ಸೇರಿಸಿದ ತಕ್ಷಣ ಅದು ಸೈಡ್‌ಬಾರ್‌ನ <b>UDISE+</b> ಮೆನು ಅಡಿಯಲ್ಲಿ ಹೊಸ ಸಬ್‌ಮೆನು ಆಗಿ ತಕ್ಷಣವೇ ಪ್ರಕಟಗೊಳ್ಳುತ್ತದೆ.
+        </p>
+      </div>
+
+      <div class="flex justify-end gap-2 border-t pt-4">
+        <button onclick="closeAddReportModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer border-0">Cancel</button>
+        <button onclick="saveNewReportCategory()" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-md cursor-pointer border-0">Save & Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Supabase Client
+    let supabaseClient = window.supabaseClient;
+    if (!supabaseClient && window.supabase) {
+      supabaseClient = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+    }
+
+    let reportList = [];
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // Route Guard
+      if (supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+      }
+      
+      // Load initial lists
+      await renderReportCategories();
+    });
+
+    async function fetchReportCategories() {
+      if (!supabaseClient) return;
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('udise_reports').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw error;
+        reportList = data || [];
+      } catch (err) {
+        console.error("Failed to fetch report categories:", err);
+      }
+    }
+
+    async function renderReportCategories() {
+      await fetchReportCategories();
+      const grid = document.getElementById('reports-grid');
+      const noReports = document.getElementById('no-reports-view');
+      
+      // Update statistics
+      document.getElementById('stat-total-reports').textContent = reportList.length;
+      
+      let uploadCount = 0;
+      // Fetch sheet IDs that have uploaded data
+      try {
+        const { data: sheets, error } = await supabaseClient.from('udise_sheet_data').select('report_id');
+        const activeSheetIds = new Set((sheets || []).map(s => s.report_id));
+        
+        reportList.forEach(r => {
+          r.hasData = activeSheetIds.has(r.id);
+          if (r.hasData) uploadCount++;
+        });
+      } catch (e) {
+        console.error("Failed to fetch active sheets count:", e);
+      }
+      
+      document.getElementById('stat-uploaded-sheets').textContent = uploadCount;
+
+      if (reportList.length === 0) {
+        grid.classList.add('hidden');
+        noReports.classList.remove('hidden');
+        return;
+      }
+
+      noReports.classList.add('hidden');
+      grid.classList.remove('hidden');
+      grid.innerHTML = '';
+
+      reportList.forEach(r => {
+        const hasData = r.hasData;
+        const card = document.createElement('div');
+        card.className = "bg-[#fcfbf7] border border-[#eadecb] p-5 rounded-2xl flex flex-col justify-between gap-4 shadow-sm hover:shadow-md transition";
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${hasData ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}">
+                ${hasData ? '✓ Active Sheet' : '⚠ No Sheet'}
+              </span>
+              <button onclick="deleteCategory('${r.id}')" class="text-rose-500 hover:text-rose-700 transition text-[11px] font-bold border-0 bg-transparent cursor-pointer">
+                <i class="fa-solid fa-trash-can"></i> Delete
+              </button>
+            </div>
+            <h4 class="font-extrabold text-slate-800 text-xs mt-3 flex items-center gap-1.5">
+              <i class="fa-solid fa-folder text-amber-500"></i> ${r.name}
+            </h4>
+            <p class="text-[10px] text-slate-500 mt-1">ID Reference: <code class="font-mono font-bold">${r.id}</code></p>
+          </div>
+          <div class="flex gap-2 mt-2 pt-3 border-t border-[#eadecb]/60">
+            <a href="UdiseReportView.html?reportId=${r.id}" class="flex-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-350 py-2 rounded-xl text-[10px] font-bold transition text-center cursor-pointer flex items-center justify-center gap-1">
+              <i class="fa-solid fa-file-import"></i> Upload / View
+            </a>
+            <a href="UdiseCompare.html?reportId=${r.id}" class="flex-1 bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white py-2 rounded-xl text-[10px] font-bold transition text-center cursor-pointer flex items-center justify-center gap-1 shadow-sm">
+              <i class="fa-solid fa-code-compare"></i> Compare
+            </a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Modal Operations
+    function openAddReportModal() {
+      document.getElementById('reportTitleInput').value = '';
+      const modal = document.getElementById('addReportModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeAddReportModal() {
+      const modal = document.getElementById('addReportModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function saveNewReportCategory() {
+      const title = document.getElementById('reportTitleInput').value.trim();
+      if (!title) {
+        alert("ವರದಿ ಹೆಸರನ್ನು ದಯವಿಟ್ಟು ನಮೂದಿಸಿ / Please enter report title");
+        return;
+      }
+
+      const schoolId = localStorage.getItem('school_id');
+      const id = 'udise_report_' + Date.now();
+      
+      try {
+        const { error } = await supabaseClient
+          .from('udise_reports')
+          .insert({
+            id: id,
+            name: title,
+            school_id: schoolId || null
+          });
+        if (error) throw error;
+        
+        closeAddReportModal();
+        await renderReportCategories();
+      } catch (err) {
+        console.error("Failed to save report category:", err);
+        alert("ವರದಿ ವರ್ಗ ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to save report category: " + err.message);
+      }
+    }
+
+    // Dynamic delete category from Supabase
+    async function deleteCategory(id) {
+      if (confirm("ಈ ವರ್ಗ ಮತ್ತು ಅದಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಅಪ್‌ಲೋಡ್ ಆದ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ನೀವು ಬಯಸುತ್ತೀರಾ?\nAre you sure you want to permanently delete this report category and its uploaded sheet data?")) {
+        try {
+          const { error } = await supabaseClient
+            .from('udise_reports')
+            .delete()
+            .eq('id', id);
+          if (error) throw error;
+          
+          await renderReportCategories();
+        } catch (err) {
+          console.error("Failed to delete category:", err);
+          alert("ವರದಿ ವರ್ಗ ಅಳಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to delete category: " + err.message);
+        }
+      }
+    }
+  </script>
+
+  <!-- Load Dynamic Navbar script -->
+  <script src="navbar.js"></script>
+</body>
+</html>

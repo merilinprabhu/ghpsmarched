@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -37,18 +37,21 @@
     }
 
 
-    @media print {
-      body { background: white !important; color: black !important; }
-      #standalone-header, aside, footer, #toast-notif, #toast, .no-print, button { display: none !important; }
-      main { display: block !important; padding: 0 !important; margin: 0 !important; }
-      table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; color: black !important; border: 1px solid black !important; }
-      th, td { border: 1px solid black !important; padding: 6px 4px !important; color: black !important; }
-      th { background-color: #000000 !important; color: white !important; font-weight: bold !important; }
-      .header { text-align: center !important; margin-bottom: 25px !important; border-bottom: 2px solid black !important; padding-bottom: 10px !important; }
-      .header h1 { font-size: 16px !important; font-weight: bold !important; margin: 0 !important; }
-      .header h2 { font-size: 12px !important; margin: 5px 0 0 0 !important; }
-      .meta { display: flex !important; justify-content: space-between !important; font-size: 10px !important; font-weight: bold !important; margin-top: 10px !important; }
-      .footer-signature { display: flex !important; justify-content: space-between !important; margin-top: 50px !important; font-weight: bold !important; font-size: 10px !important; }
+        @media print {
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
+      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
     }
   
         
@@ -1151,7 +1154,7 @@
         });
 
         rowsHtml += `
-          <tr class="hover:bg-slate-50 transition-colors text-center">
+          <tr data-student-id="${s.realId}" class="hover:bg-slate-50 transition-colors text-center">
             ${cellsHtml}
           </tr>
         `;
@@ -2014,63 +2017,17 @@
 
     // Export Helpers (Excel, PDF, Print)
     function printStudentList() {
-      const filterCls = document.getElementById('class-filter').value || "All Classes";
-      const count = document.getElementById('total-count').textContent;
-
-      const printWin = window.open('', '_blank');
-      
-      let styleHtml = `
-        <style>
-          body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #ffffff; color: #000000; font-size: 10px; margin: 10mm; }
-          table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 8px; border: 1px solid #000000; background-color: #ffffff; }
-          th, td { border: 1px solid #000000; padding: 6px 4px; text-align: center; }
-          th { background-color: #000000; color: #ffffff; font-weight: bold; }
-          td { background-color: #ffffff; color: #000000; }
-          .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000000; padding-bottom: 10px; }
-          .header h1 { font-size: 16px; font-weight: bold; margin: 0; }
-          .header h2 { font-size: 12px; margin: 5px 0 0 0; }
-          .meta { display: flex; justify-content: space-between; font-size: 10px; font-weight: bold; margin-top: 10px; }
-          .footer { display: flex; justify-content: space-between; margin-top: 50px; font-size: 10px; font-weight: bold; }
-        </style>
-      `;
-
-      const originalTable = document.querySelector('table');
-      const clonedTable = originalTable.cloneNode(true);
-      clonedTable.querySelectorAll('input').forEach(input => {
-        const span = document.createElement('span');
-        span.innerText = input.value || '-';
-        input.parentNode.replaceChild(span, input);
+      window.openPrintDrawer({
+        tableId: 'admission-table',
+        title: '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0C97\u0CB3 \u0CA6\u0CBE\u0C96\u0CB2\u0CBE\u0CA4\u0CBF \u0CB5\u0CBF\u0CB5\u0CB0\u0C97\u0CB3\u0CC1 / Student Enrollment Records',
+        class: document.getElementById('class-filter').value || "All Classes",
+        exam: '',
+        subject: '',
+        students: allStudentsData || []
       });
-
-      clonedTable.querySelectorAll('.no-print').forEach(el => el.parentNode.removeChild(el));
-      clonedTable.querySelectorAll('.hidden.print\\:table-cell').forEach(el => el.classList.remove('hidden', 'print:table-cell'));
-
-      let bodyHtml = `
-        <div class="header">
-          <h1>GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED</h1>
-          <h2>ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳು / Student Enrollment Records</h2>
-          <div class="meta">
-            <span>Class: ${filterCls}</span>
-            <span>Total Students: ${count}</span>
-            <span>Date: ${new Date().toLocaleDateString('kn-IN')}</span>
-          </div>
-        </div>
-      `;
-      
-      printWin.document.write('<html><head><title>Student List</title>' + styleHtml + '</head><body>');
-      printWin.document.write(bodyHtml);
-      printWin.document.write(clonedTable.outerHTML);
-      printWin.document.write(`
-        <div class="footer">
-          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
-        </div>
-      `);
-      printWin.document.write('</body></html>');
-      printWin.document.close();
-      printWin.focus();
-      setTimeout(() => { printWin.print(); printWin.close(); }, 500);
     }
+
+    
 
     function exportToExcel() {
       const visibility = getColumnVisibility();
@@ -2509,7 +2466,7 @@
         window.location.href = `NewAdmission.html?id=${student.realId}`;
       };
       document.getElementById('modal-print-btn').onclick = () => {
-        window.open('Preview.html?id=' + encodeURIComponent(student.realId), '_blank');
+        window.open('Preview.html?id=' + encodeURIComponent(student.realId) + '&autoDownloadPdf=true', '_blank');
       };
 
       const renderSection = (title, items) => {
@@ -2608,6 +2565,8 @@
     }
   </script>
   <script src="navbar.js"></script>
+
+  <div id="printArea" class="hidden"></div>
 </body>
 </html>
 

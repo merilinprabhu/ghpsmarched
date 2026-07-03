@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDISE+ Data Compare - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Diagnostic Overlay for Runtime Errors -->
+  <script>
+    (function() {
+      const errors = [];
+      function showErrors() {
+        if (!document.body) return;
+        errors.forEach(err => {
+          const div = document.createElement('div');
+          div.style.position = 'fixed';
+          div.style.bottom = err.type === 'promise' ? '100px' : '10px';
+          div.style.right = '10px';
+          div.style.backgroundColor = err.type === 'promise' ? '#ea580c' : '#dc2626';
+          div.style.color = '#ffffff';
+          div.style.padding = '15px';
+          div.style.borderRadius = '12px';
+          div.style.zIndex = '999999';
+          div.style.fontFamily = 'monospace';
+          div.style.fontSize = '12px';
+          div.style.maxWidth = '90%';
+          div.style.boxShadow = '0 10px 15px -3px rgba(0,0,0,0.3)';
+          div.style.border = '1px solid rgba(255,255,255,0.2)';
+          div.innerHTML = err.html;
+          document.body.appendChild(div);
+        });
+        errors.length = 0;
+      }
+      window.onerror = function(message, source, lineno, colno, error) {
+        const html = `<strong>JS Error:</strong> ${message}<br>at ${source.split('/').pop()}:${lineno}:${colno}`;
+        errors.push({ type: 'error', html: html });
+        showErrors();
+        return false;
+      };
+      window.onunhandledrejection = function(event) {
+        const html = `<strong>Promise Rejected:</strong> ${event.reason?.message || event.reason}`;
+        errors.push({ type: 'promise', html: html });
+        showErrors();
+      };
+      window.addEventListener('DOMContentLoaded', showErrors);
+    })();
+  </script>
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    .tab-btn {
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      color: #b45309; /* amber-700 */
+      font-weight: 800;
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background-color: #d97706; /* amber-600 */
+      border-radius: 99px;
+    }
+    
+    /* Theme overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-800, body[data-theme="dark"] .text-slate-700, body[data-theme="dark"] .text-slate-650 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-slate-50, body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
+    body[data-theme="dark"] select, body[data-theme="dark"] input { background-color: #0f172a !important; color: #fff !important; border-color: #475569 !important; }
+
+    /* Gray Theme */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    
+    /* Blue Theme */
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    
+    /* Green Theme */
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    @media (min-width: 768px) {
+      aside {
+        width: 70px !important;
+        min-width: 70px !important;
+        transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+        overflow-x: hidden;
+      }
+      aside:hover {
+        width: 256px !important;
+        min-width: 256px !important;
+      }
+      aside .sidebar-text, aside i.fa-chevron-right, aside ul, aside span.uppercase, aside nav span, aside .developer-info {
+        display: none !important;
+      }
+      aside:hover .sidebar-text, aside:hover i.fa-chevron-right, aside:hover span.uppercase, aside:hover nav span, aside:hover .developer-info {
+        display: inline !important;
+      }
+      aside:hover ul:not(.hidden) { display: block !important; }
+      aside:hover .nav-item button { justify-content: space-between !important; }
+      aside:hover nav a { justify-content: flex-start !important; padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+      aside .nav-item button { justify-content: center !important; }
+      aside nav a { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div class="no-print">
+    <!-- Navigation Sidebar Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-[98%] lg:max-w-[1400px] mx-auto w-full p-6">
+      
+      <!-- Title Header Block -->
+      <div class="flex flex-col gap-2 mb-6">
+        <a href="UdiseDashboard.html" class="text-xs text-indigo-500 hover:text-indigo-750 font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Back to UDISE+ Dashboard</a>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-2">
+          <div>
+            <h2 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+              <i class="fa-solid fa-code-compare text-amber-600"></i> UDISE+ ಡೇಟಾ ಹೋಲಿಕೆ / UDISE+ Data Comparison
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">
+              ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ UDISE+ ವರದಿಯನ್ನು ಆರಿಸಿ ನಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾಬೇಸ್‌ನೊಂದಿಗೆ ಹೋಲಿಕೆ ಮಾಡಿ ಮತ್ತು ವ್ಯತ್ಯಾಸಗಳನ್ನು ಸರಿಪಡಿಸಿ.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Selector Block -->
+      <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-end mb-8">
+        <div class="flex-1 space-y-1.5">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">UDISE+ ವರದಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / Select UDISE+ Report *</label>
+          <select id="report-selector" onchange="handleReportSelection()" class="w-full p-2.5 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <option value="">-- Select Report Category --</option>
+            <!-- Dynamically populated options -->
+          </select>
+        </div>
+        <button id="btn-compare" onclick="startComparisonWizard()" class="w-full md:w-auto bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-6 py-3 rounded-2xl text-xs font-bold transition shadow-md hover:shadow-amber-500/20 active:scale-[0.98] border-0 cursor-pointer flex items-center justify-center gap-2">
+          <i class="fa-solid fa-play"></i> ಹೋಲಿಕೆ ಆರಂಭಿಸಿ / Begin to Compare
+        </button>
+      </div>
+
+      <!-- No comparison run / empty state view -->
+      <div id="empty-compare-view" class="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 flex flex-col items-center justify-center text-slate-400 gap-3">
+        <i class="fa-solid fa-circle-info text-4xl opacity-40 text-amber-500"></i>
+        <p class="text-sm font-bold text-slate-700">ಹೋಲಿಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಲು ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ / Choose report to compare</p>
+        <p class="text-xs text-slate-500">ವರದಿ ಮತ್ತು ಹೊಂದಾಣಿಕೆ ನಿಯಮಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿದ ತಕ್ಷಣ ವ್ಯತ್ಯಾಸಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡಲಾಗುವುದು.</p>
+      </div>
+
+      <!-- Main Comparison Results (Dashboard, Tabs & Discrepancies Grid) -->
+      <div id="results-zone" class="hidden space-y-6">
+        
+        <!-- Summary Stats cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-5">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Local</div>
+              <div class="text-base font-extrabold text-slate-800" id="stat-total-local">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div>
+              <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">UDISE+ ವಿದ್ಯಾರ್ಥಿಗಳು / UDISE+ Rows</div>
+              <div class="text-base font-extrabold text-slate-800" id="stat-total-udise">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </div>
+            <div>
+              <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ವ್ಯತ್ಯಾಸಗಳು / Mismatches</div>
+              <div class="text-base font-extrabold text-slate-800 text-rose-600" id="stat-mismatches">0</div>
+            </div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಹೊಂದಾಣಿಕೆ ಸ್ಥಿತಿ / Match Rate</div>
+              <div class="text-base font-extrabold text-emerald-600" id="stat-match-rate">100%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter tabs bar -->
+        <div class="w-full bg-white border-b border-slate-200/80 px-6 flex justify-start gap-8 text-xs font-bold no-print rounded-t-3xl pt-2">
+          <button onclick="switchTab('suggestions')" id="tab-suggestions" class="tab-btn active py-3 px-1 text-slate-500 hover:text-amber-700 transition">
+             ಪರಿಹಾರ ಸಲಹೆಗಳು / Fix Suggestions (<span id="count-tab-suggestions">0</span>)
+          </button>
+          <button onclick="switchTab('spelling')" id="tab-spelling" class="tab-btn py-3 px-1 text-slate-500 hover:text-amber-700 transition">
+             ಮಾಹಿತಿ ಹೊಂದಾಣಿಕೆಯಿಲ್ಲ / Spelling Discrepancy (<span id="count-tab-spelling">0</span>)
+          </button>
+          <button onclick="switchTab('roster')" id="tab-roster" class="tab-btn py-3 px-1 text-slate-500 hover:text-amber-700 transition">
+             ಪಟ್ಟಿಯಲ್ಲಿಲ್ಲದ ವಿದ್ಯಾರ್ಥಿಗಳು / Roster Sync (<span id="count-tab-roster">0</span>)
+          </button>
+        </div>
+
+        <!-- Suggestions tab panel -->
+        <div id="view-suggestions" class="space-y-4">
+          <div id="bulk-actions-bar" class="hidden bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="text-xs font-bold text-slate-500 dark:text-slate-400">
+              ಗುಂಪು ಕ್ರಿಯೆಗಳು / Bulk Actions: <span class="text-slate-850 dark:text-slate-200 font-extrabold text-sm" id="bulk-transfer-count">0</span> ಸಲಹೆಗಳು ವರ್ಗಾವಣೆಗೆ ಲಭ್ಯವಿದೆ.
+            </div>
+            <button onclick="bulkTransferPenAndApaar()" class="bg-gradient-to-tr from-indigo-650 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-md cursor-pointer border-0 flex items-center gap-1.5">
+              <i class="fa-solid fa-file-export"></i> ಒಟ್ಟಾರೆ ವರ್ಗಾವಣೆ / Bulk Transfer PEN & APAAR
+            </button>
+          </div>
+          <div id="suggestions-empty-state" class="hidden bg-white p-12 rounded-b-3xl border border-slate-200 shadow-sm text-center text-slate-400 font-bold">
+            <i class="fa-solid fa-circle-check text-emerald-500 text-3xl mb-2"></i>
+            <p>ಎಲ್ಲವೂ ಸರಿಯಾಗಿದೆ! ಯಾವುದೇ ಸಲಹೆಗಳಿಲ್ಲ / All values match. No pending suggestions.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="suggestions-grid">
+            <!-- Discrepancy Cards injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Spelling tab panel -->
+        <div id="view-spelling" class="hidden space-y-4">
+          <!-- Populated similarly to suggestions but focused strictly on name/dob discrepancies -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="spelling-grid"></div>
+        </div>
+
+        <!-- Roster Sync tab panel -->
+        <div id="view-roster" class="hidden space-y-4">
+          <div class="bg-white p-5 rounded-b-3xl border border-slate-200 shadow-sm space-y-6">
+            <div>
+              <h4 class="text-xs font-bold text-rose-500 mb-3 uppercase tracking-wider"><i class="fa-solid fa-folder-minus"></i> UDISE+ ಪಟ್ಟಿಯಲ್ಲಿದ್ದಾರೆ, ಆದರೆ ನಮ್ಮ ಲೋಕಲ್ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿಲ್ಲ / Only in UDISE+ Sheet</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs whitespace-nowrap border">
+                  <thead class="bg-slate-50 border-b">
+                    <tr id="roster-only-udise-thead"></tr>
+                  </thead>
+                  <tbody id="roster-only-udise-tbody" class="divide-y font-semibold text-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="border-t pt-5">
+              <h4 class="text-xs font-bold text-amber-600 mb-3 uppercase tracking-wider"><i class="fa-solid fa-circle-exclamation"></i> ನಮ್ಮ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿದ್ದಾರೆ, ಆದರೆ UDISE+ ಪಟ್ಟಿಯಲ್ಲಿಲ್ಲ / Only in Local DB</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs whitespace-nowrap border">
+                  <thead class="bg-slate-50 border-b">
+                    <tr>
+                      <th class="p-2.5 border-r">SATS ID</th>
+                      <th class="p-2.5 border-r">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Name</th>
+                      <th class="p-2.5 border-r">ತರಗತಿ / Class</th>
+                      <th class="p-2.5">ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar</th>
+                    </tr>
+                  </thead>
+                  <tbody id="roster-only-local-tbody" class="divide-y font-semibold text-slate-700"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer block -->
+  <footer class="py-6 text-center text-[10px] text-slate-400 dark:text-slate-650 border-t border-slate-200 dark:border-slate-800 mt-12 bg-white/20">
+    <p>© 2026 Government Higher Primary School, Marched. All rights reserved.</p>
+    <p class="mt-1">Designed & Managed via Advanced School Portal Dashboard</p>
+  </footer>
+
+  <!-- Column Mapping Wizard Modal -->
+  <div id="mappingWizardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-lg shadow-2xl p-6 relative flex flex-col gap-5">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-amber-500"></i> ಕಾಲಮ್ ಮ್ಯಾಪಿಂಗ್ ವಿಝಾರ್ಡ್ / Column Mapping Wizard
+        </h3>
+        <button onclick="closeMappingWizard()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          ಎಕ್ಸೆಲ್ ಫೈಲ್‌ನ ಯಾವ ಹೆಡರ್‌ಗಳನ್ನು ನಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾಬೇಸ್‌ನ ಯಾವ ಫೀಲ್ಡ್‌ನೊಂದಿಗೆ ಹೊಂದಿಸಬೇಕೆಂದು ಆಯ್ಕೆ ಮಾಡಿ.
+        </p>
+
+        <!-- SATS ID Selection -->
+        <div>
+          <label class="block text-slate-650 text-xs font-bold mb-1.5">1. SATS ID ಕಾಲಮ್ (ಎಕ್ಸೆಲ್‌ನಿಂದ) *</label>
+          <select id="map-sats-column" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <!-- Populated with sheet columns -->
+          </select>
+        </div>
+
+        <!-- Excel Field Value Selection -->
+        <div>
+          <label class="block text-slate-650 text-xs font-bold mb-1.5">2. ಹೋಲಿಸಬೇಕಾದ ಕಾಲಮ್ (ಎಕ್ಸೆಲ್‌ನಿಂದ) *</label>
+          <select id="map-excel-compare-column" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <!-- Populated with sheet columns -->
+          </select>
+        </div>
+
+        <!-- Database target Field Selection -->
+        <div>
+          <label class="block text-slate-650 text-xs font-bold mb-1.5">3. ಹೊಂದಿಸಬೇಕಾದ ಡೇಟಾಬೇಸ್ ಕಾಲಮ್ / Local Target *</label>
+          <select id="map-db-target-field" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <option value="student_aadhaar">ಆಧಾರ್ ಸಂಖ್ಯೆ / student_aadhaar</option>
+            <option value="apaar">APAAR ಸಂಖ್ಯೆ / apaar (Virtual LocalStorage)</option>
+            <option value="pen">PEN ಸಂಖ್ಯೆ / pen (Virtual LocalStorage)</option>
+            <option value="name_english">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (English) / name_english</option>
+            <option value="dob">ಹುಟ್ಟಿದ ದಿನಾಂಕ / dob</option>
+            <option value="gender">ಲಿಂಗ / gender</option>
+            <option value="father_name_az">ತಂದೆಯ ಹೆಸರು (English) / father_name_az</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 border-t pt-4">
+        <button onclick="closeMappingWizard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer border-0">Cancel</button>
+        <button onclick="runCompareEngine()" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-md cursor-pointer border-0">Run Comparison</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline Edit Modal -->
+  <div id="inlineEditModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-md shadow-2xl p-6 relative flex flex-col gap-5">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-sm font-black text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-user-pen text-indigo-500"></i> ಮಾಹಿತಿ ತಿದ್ದುಪಡಿ / Quick Profile Edit
+        </h3>
+        <button onclick="closeInlineEdit()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <input type="hidden" id="edit-student-id">
+      <input type="hidden" id="edit-db-field">
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-slate-600 text-xs font-bold mb-1">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Student Name</label>
+          <div id="edit-student-name" class="text-xs font-extrabold text-slate-800 bg-slate-50 p-2.5 rounded-xl border"></div>
+        </div>
+        <div>
+          <label class="block text-slate-600 text-xs font-bold mb-1.5" id="edit-field-label">ತಿದ್ದುಪಡಿ ಮೌಲ್ಯ / New Value *</label>
+          <input type="text" id="edit-field-value" class="w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-semibold bg-slate-50/50">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 border-t pt-4">
+        <button onclick="closeInlineEdit()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer border-0">Cancel</button>
+        <button onclick="saveInlineEdit()" class="bg-indigo-650 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-md cursor-pointer border-0">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Supabase Client
+    let supabaseClient = window.supabaseClient;
+    if (!supabaseClient && window.supabase) {
+      supabaseClient = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+    }
+
+    let localStudents = [];
+    let reportList = [];
+    let selectedReportId = '';
+    let sheetData = [];
+    let sheetCols = [];
+
+    // Loaded results
+    let discrepancyList = [];
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // Route Guard
+      if (supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+      }
+
+      // Load report config dropdown
+      reportList = JSON.parse(localStorage.getItem('udise_reports_config') || '[]');
+      const sel = document.getElementById('report-selector');
+      reportList.forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.name;
+        sel.appendChild(opt);
+      });
+
+      // Load local database student roster
+      await fetchLocalRoster();
+
+      // Read optional reportId query param
+      const urlParams = new URLSearchParams(window.location.search);
+      const qReportId = urlParams.get('reportId');
+      if (qReportId) {
+        sel.value = qReportId;
+        await handleReportSelection();
+      }
+    });
+
+    async function fetchLocalRoster() {
+      if (!supabaseClient) return;
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        localStudents = data || [];
+      } catch (err) {
+        console.error("Local roster load failed:", err);
+      }
+    }
+
+    async function handleReportSelection() {
+      selectedReportId = document.getElementById('report-selector').value;
+      if (!selectedReportId) {
+        sheetData = [];
+        sheetCols = [];
+        return;
+      }
+
+      if (!supabaseClient) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('udise_sheet_data')
+          .select('*')
+          .eq('report_id', selectedReportId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          alert("ಈ ವರ್ಗಕ್ಕೆ ಇನ್ನು ಎಕ್ಸೆಲ್ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿಲ್ಲ / No Excel file uploaded for this category yet");
+          document.getElementById('report-selector').value = '';
+          selectedReportId = '';
+          sheetData = [];
+          sheetCols = [];
+          return;
+        }
+
+        sheetData = data.sheet_data || [];
+        sheetCols = data.sheet_cols || [];
+      } catch (err) {
+        console.error("Failed to load sheet data for comparison:", err);
+        alert("ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Failed to load sheet data: " + err.message);
+        document.getElementById('report-selector').value = '';
+        selectedReportId = '';
+        sheetData = [];
+        sheetCols = [];
+      }
+    }
+
+    function startComparisonWizard() {
+      if (!selectedReportId) {
+        alert("ಹೋಲಿಸಲು ದಯವಿಟ್ಟು ವರದಿಯನ್ನು ಆರಿಸಿ / Please select report category");
+        return;
+      }
+
+      // Populate column options
+      const mapSats = document.getElementById('map-sats-column');
+      const mapExcel = document.getElementById('map-excel-compare-column');
+      
+      mapSats.innerHTML = '<option value="none">-- No STS Column / ಎಸ್‌ಟಿಎಸ್ ಇಲ್ಲ --</option>';
+      mapExcel.innerHTML = '';
+
+      sheetCols.forEach(col => {
+        const opt1 = document.createElement('option');
+        opt1.value = col;
+        opt1.textContent = col;
+        mapSats.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = col;
+        opt2.textContent = col;
+        mapExcel.appendChild(opt2);
+      });
+
+      // Try intelligent default mapping
+      const satsDefault = sheetCols.find(c => {
+        const name = c.toLowerCase();
+        return name.includes('sats') || name.includes('sts') || name.includes('student id') || name.includes('app');
+      });
+      if (satsDefault) mapSats.value = satsDefault;
+
+      const compareDefault = sheetCols.find(c => {
+        const name = c.toLowerCase();
+        return name.includes('aadhaar') || name.includes('adhar') || name.includes('apaar') || name.includes('gender') || name.includes('dob');
+      });
+      if (compareDefault) mapExcel.value = compareDefault;
+
+      // Open Modal
+      const wizard = document.getElementById('mappingWizardModal');
+      wizard.classList.remove('hidden');
+      wizard.classList.add('flex');
+    }
+
+    function closeMappingWizard() {
+      const wizard = document.getElementById('mappingWizardModal');
+      wizard.classList.add('hidden');
+      wizard.classList.remove('flex');
+    }
+
+    function runCompareEngine() {
+      closeMappingWizard();
+
+      const satsCol = document.getElementById('map-sats-column').value;
+      const excelCompareCol = document.getElementById('map-excel-compare-column').value;
+      const dbTargetField = document.getElementById('map-db-target-field').value;
+
+      document.getElementById('empty-compare-view').classList.add('hidden');
+      document.getElementById('results-zone').classList.remove('hidden');
+
+      discrepancyList = [];
+      const localOnly = [];
+      const udiseOnly = [];
+      
+      // Keep track of matched local student IDs to check for only-local
+      const matchedLocalIds = new Set();
+
+      // Find PEN and APAAR columns in Excel sheet
+      const excelPenCol = sheetCols.find(c => {
+        const n = c.toLowerCase();
+        return n.includes('pen') || n.includes('permanent') || n.includes('national id');
+      });
+      const excelApaarCol = sheetCols.find(c => {
+        const n = c.toLowerCase();
+        return n.includes('apaar') || n.includes('apar');
+      });
+
+      sheetData.forEach(row => {
+        const satsId = row[satsCol] ? row[satsCol].toString().trim() : '';
+        
+        let local = null;
+        let matchedByFallback = false;
+        
+        // 1. Try direct STS match first if mapped
+        if (satsId && satsCol && satsCol !== "none") {
+          local = localStudents.find(s => s.app_no && s.app_no.toString().trim() === satsId);
+        }
+
+        // 2. Perform normalized Class + Student Name + Father Name + Mother Name lookup
+        if (!local) {
+          const excelNameCol = sheetCols.find(c => {
+            const n = c.toLowerCase();
+            return n.includes('student name') || n.includes('name') || n.includes('student_name');
+          });
+          const excelFatherCol = sheetCols.find(c => {
+            const n = c.toLowerCase();
+            return n.includes('father') || n.includes('parent name');
+          });
+          const excelMotherCol = sheetCols.find(c => {
+            const n = c.toLowerCase();
+            return n.includes('mother');
+          });
+          const excelClassCol = sheetCols.find(c => {
+            const n = c.toLowerCase();
+            return n.includes('class') || n.includes('grade');
+          });
+
+          if (excelNameCol) {
+            const excelName = excelNameCol && row[excelNameCol] ? row[excelNameCol].toString().trim() : '';
+            const excelFather = excelFatherCol && row[excelFatherCol] ? row[excelFatherCol].toString().trim() : '';
+            const excelMother = excelMotherCol && row[excelMotherCol] ? row[excelMotherCol].toString().trim() : '';
+            const excelClass = excelClassCol && row[excelClassCol] ? row[excelClassCol].toString().trim() : '';
+
+            const cleanText = str => str ? str.toString().toUpperCase().replace(/[^A-Z]/g, '') : '';
+            const romanToArabic = str => {
+              if (!str) return '';
+              const s = str.toString().trim().toUpperCase();
+              const map = {
+                'I': '1', 'II': '2', 'III': '3', 'IV': '4', 'V': '5',
+                'VI': '6', 'VII': '7', 'VIII': '8', 'IX': '9', 'X': '10',
+                'XI': '11', 'XII': '12', 'LKG': 'LKG', 'UKG': 'UKG'
+              };
+              if (map[s]) return map[s];
+              
+              for (const r in map) {
+                if (s === r || s.includes('CLASS ' + r) || s.includes(' ' + r + ' ') || s.endsWith(' ' + r) || s.startsWith(r + ' ')) {
+                  return map[r];
+                }
+              }
+              const digits = s.replace(/\D/g, '');
+              if (digits) return digits;
+              return s;
+            };
+            const cleanClass = str => {
+              if (!str) return '';
+              const s = str.toString().trim().toUpperCase();
+              return romanToArabic(s);
+            };
+
+            local = localStudents.find(s => {
+              const localName = s.name_english || s.student_name || '';
+              const localFather = s.father_name_az || s.father_name_kn || '';
+              const localMother = s.mother_name_az || s.mother_name_kn || '';
+              const localClass = s.enroll_class || '';
+
+              // Check class match
+              if (cleanClass(localClass) !== cleanClass(excelClass)) return false;
+
+              // Check student name match
+              const cLocalName = cleanText(localName);
+              const cExcelName = cleanText(excelName);
+              if (cLocalName === '' || cExcelName === '') return false;
+              const nameMatch = cLocalName === cExcelName || cLocalName.includes(cExcelName) || cExcelName.includes(cLocalName);
+              if (!nameMatch) return false;
+
+              // Check father name match
+              const cLocalFather = cleanText(localFather);
+              const cExcelFather = cleanText(excelFather);
+              if (cExcelFather !== '' && cLocalFather !== '') {
+                const fatherMatch = cLocalFather === cExcelFather || cLocalFather.includes(cExcelFather) || cExcelFather.includes(cLocalFather);
+                if (!fatherMatch) return false;
+              }
+
+              // Check mother name match
+              const cLocalMother = cleanText(localMother);
+              const cExcelMother = cleanText(excelMother);
+              if (cExcelMother !== '' && cLocalMother !== '') {
+                const motherMatch = cLocalMother === cExcelMother || cLocalMother.includes(cExcelMother) || cExcelMother.includes(cLocalMother);
+                if (!motherMatch) return false;
+              }
+
+              return true;
+            });
+
+            if (local) {
+              matchedByFallback = true;
+            }
+          }
+        }
+
+        if (local) {
+          matchedLocalIds.add(local.id);
+          
+          const excelValRaw = row[excelCompareCol] !== undefined && row[excelCompareCol] !== null ? row[excelCompareCol] : '';
+          const excelVal = excelValRaw.toString().trim().replace(/\s+/g, '');
+
+          let localVal = '';
+          if (dbTargetField === 'apaar') {
+            localVal = local.apaar || '';
+          } else if (dbTargetField === 'pen') {
+            localVal = local.pen || '';
+          } else {
+            localVal = local[dbTargetField] ? local[dbTargetField].toString().trim() : '';
+          }
+          localVal = localVal.replace(/\s+/g, '');
+
+          // Normalize gender values
+          let normLocal = localVal.toUpperCase();
+          let normExcel = excelVal.toUpperCase();
+          if (dbTargetField === 'gender') {
+            if (normLocal === 'BOY') normLocal = 'MALE';
+            if (normLocal === 'GIRL') normLocal = 'FEMALE';
+            if (normExcel === 'BOY') normExcel = 'MALE';
+            if (normExcel === 'GIRL') normExcel = 'FEMALE';
+          }
+
+          if (normLocal !== normExcel) {
+            discrepancyList.push({
+              studentId: local.id,
+              satsId: local.app_no || satsId || '—',
+              name: local.name_english || local.student_name || 'Unnamed Student',
+              field: dbTargetField,
+              fieldLabel: dbTargetField.toUpperCase(),
+              localVal: localVal || '—',
+              udiseVal: excelValRaw,
+              type: 'mismatch',
+              matchedByFallback: matchedByFallback
+            });
+          }
+
+          // Check for PEN and APAAR transfer opportunity
+          const excelPenVal = excelPenCol && row[excelPenCol] ? row[excelPenCol].toString().trim() : '';
+          const excelApaarVal = excelApaarCol && row[excelApaarCol] ? row[excelApaarCol].toString().trim() : '';
+
+          const localPenVal = local.pen || '';
+          const localApaarVal = local.apaar || '';
+
+          const penDiff = excelPenVal && excelPenVal !== localPenVal;
+          const apaarDiff = excelApaarVal && excelApaarVal !== localApaarVal;
+
+          if (penDiff || apaarDiff) {
+            discrepancyList.push({
+              studentId: local.id,
+              satsId: local.app_no || satsId || '—',
+              name: local.name_english || local.student_name || 'Unnamed Student',
+              excelPen: excelPenVal,
+              excelApaar: excelApaarVal,
+              localPen: localPenVal || '—',
+              localApaar: localApaarVal || '—',
+              type: 'transfer_pen_apaar',
+              matchedByFallback: matchedByFallback
+            });
+          }
+        } else {
+          udiseOnly.push({
+            satsId: satsId || '—',
+            name: row['Student Name'] || row['Name'] || row['student_name'] || '—',
+            class: row['Class'] || row['class'] || '—',
+            val: row[excelCompareCol] || '—'
+          });
+        }
+      });
+
+      // Filter only-local students
+      localStudents.forEach(local => {
+        if (!matchedLocalIds.has(local.id)) {
+          let localVal = '';
+          if (dbTargetField === 'apaar') {
+            localVal = local.apaar || '';
+          } else if (dbTargetField === 'pen') {
+            localVal = local.pen || '';
+          } else {
+            localVal = local[dbTargetField] ? local[dbTargetField].toString() : '';
+          }
+          localOnly.push({
+            satsId: local.app_no || local.id,
+            name: local.name_english || local.student_name || '—',
+            class: local.enroll_class || '—',
+            val: localVal || '—'
+          });
+        }
+      });
+
+      // Render summary statistics
+      document.getElementById('stat-total-local').textContent = localStudents.length;
+      document.getElementById('stat-total-udise').textContent = sheetData.length;
+      document.getElementById('stat-mismatches').textContent = discrepancyList.length + udiseOnly.length;
+      
+      const rate = sheetData.length > 0 ? Math.round(((sheetData.length - (discrepancyList.length + udiseOnly.length)) / sheetData.length) * 100) : 100;
+      document.getElementById('stat-match-rate').textContent = Math.max(0, rate) + "%";
+
+      // Render Discrepancies tabs counts
+      document.getElementById('count-tab-suggestions').textContent = discrepancyList.length;
+      document.getElementById('count-tab-spelling').textContent = discrepancyList.filter(d => d.localVal !== '—').length;
+      document.getElementById('count-tab-roster').textContent = udiseOnly.length + localOnly.length;
+
+      renderSuggestionsTab(dbTargetField);
+      renderSpellingTab();
+      renderRosterSyncTab(udiseOnly, localOnly, excelCompareCol);
+      
+      // Default view suggestions
+      switchTab('suggestions');
+    }
+
+    function renderSuggestionsTab(dbField) {
+      const grid = document.getElementById('suggestions-grid');
+      const empty = document.getElementById('suggestions-empty-state');
+      const bulkBar = document.getElementById('bulk-actions-bar');
+      grid.innerHTML = '';
+
+      const transferItems = discrepancyList.filter(d => d.type === 'transfer_pen_apaar');
+      if (bulkBar) {
+        if (transferItems.length > 0) {
+          bulkBar.classList.remove('hidden');
+          document.getElementById('bulk-transfer-count').textContent = transferItems.length;
+        } else {
+          bulkBar.classList.add('hidden');
+        }
+      }
+
+      if (discrepancyList.length === 0) {
+        empty.classList.remove('hidden');
+        if (bulkBar) bulkBar.classList.add('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      discrepancyList.forEach((d, idx) => {
+        const card = document.createElement('div');
+        card.id = `suggestion-card-${idx}`;
+        card.className = "bg-white border border-slate-200 p-5 rounded-2xl shadow-sm hover:shadow-md transition flex flex-col justify-between gap-4";
+        
+        if (d.type === 'transfer_pen_apaar') {
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-indigo-500/10 text-indigo-700">📋 Transfer PEN & APAAR</span>
+                <code class="text-[10px] font-bold text-slate-400">SATS: ${d.satsId}</code>
+              </div>
+              <h4 class="font-extrabold text-slate-800 text-xs mt-3">
+                ${d.name} ${d.matchedByFallback ? '<span class="text-[9px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-bold ml-1">Class/Parent Match</span>' : ''}
+              </h4>
+              
+              <div class="space-y-2 mt-4 bg-slate-50/50 p-3 rounded-xl border border-slate-100 text-[10px]">
+                <div class="grid grid-cols-2 gap-3 pb-2 border-b border-slate-200/60">
+                  <div>
+                    <span class="text-slate-400 block mb-0.5">LOCAL PEN:</span>
+                    <span class="font-bold text-slate-800 block truncate">${d.localPen}</span>
+                  </div>
+                  <div class="border-l pl-3">
+                    <span class="text-slate-400 block mb-0.5">UDISE+ PEN:</span>
+                    <span class="font-bold text-emerald-600 block truncate">${d.excelPen || '—'}</span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <span class="text-slate-400 block mb-0.5">LOCAL APAAR:</span>
+                    <span class="font-bold text-slate-800 block truncate">${d.localApaar}</span>
+                  </div>
+                  <div class="border-l pl-3">
+                    <span class="text-slate-400 block mb-0.5">UDISE+ APAAR:</span>
+                    <span class="font-bold text-emerald-600 block truncate">${d.excelApaar || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2 border-t pt-3 mt-1">
+              <button onclick="transferPenAndApaar('${d.studentId}', '${d.excelPen}', '${d.excelApaar}', 'suggestion-card-${idx}')" class="w-full bg-gradient-to-tr from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-655 text-white py-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shadow-sm cursor-pointer border-0">
+                <i class="fa-solid fa-file-export"></i> ವರ್ಗಾಯಿಸಿ / Transfer Details
+              </button>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div>
+              <div class="flex justify-between items-center">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-700">⚠️ Discrepancy Found</span>
+                <code class="text-[10px] font-bold text-slate-400">SATS: ${d.satsId}</code>
+              </div>
+              <h4 class="font-extrabold text-slate-800 text-xs mt-3">
+                ${d.name} ${d.matchedByFallback ? '<span class="text-[9px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-bold ml-1">Class/Parent Match</span>' : ''}
+              </h4>
+              
+              <div class="grid grid-cols-2 gap-3 mt-4 bg-slate-50/50 p-3 rounded-xl border border-slate-100 text-[10px]">
+                <div>
+                  <span class="text-slate-400 block mb-0.5">LOCAL DATABASE:</span>
+                  <span class="font-bold text-rose-600 block truncate">${d.localVal}</span>
+                </div>
+                <div class="border-l pl-3">
+                  <span class="text-slate-400 block mb-0.5">UDISE+ SPREADSHEET:</span>
+                  <span class="font-bold text-emerald-600 block truncate">${d.udiseVal}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2 border-t pt-3 mt-1">
+              <button onclick="acceptUdiseValue('${d.studentId}', '${d.field}', '${d.udiseVal.replace(/'/g, "\\'")}', 'suggestion-card-${idx}')" class="flex-1 bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white py-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 shadow-sm cursor-pointer border-0">
+                <i class="fa-solid fa-circle-check"></i> ಸ್ವೀಕರಿಸಿ / Accept
+              </button>
+              <button onclick="openInlineEdit('${d.studentId}', '${d.name}', '${d.field}', '${d.localVal.replace(/'/g, "\\'")}', 'suggestion-card-${idx}')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl text-[10px] font-bold transition flex items-center justify-center gap-1 cursor-pointer border-0">
+                <i class="fa-solid fa-pen-to-square"></i> ಮಾರ್ಪಡಿಸಿ / Edit
+              </button>
+            </div>
+          `;
+        }
+        grid.appendChild(card);
+      });
+    }
+
+    function renderSpellingTab() {
+      const grid = document.getElementById('spelling-grid');
+      grid.innerHTML = '';
+      
+      const spellingDiscrepancies = discrepancyList.filter(d => d.localVal !== '—');
+      if (spellingDiscrepancies.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 font-bold">ಯಾವುದೇ ಸ್ಪೆಲ್ಲಿಂಗ್ ವ್ಯತ್ಯಾಸಗಳಿಲ್ಲ / No spelling discrepancies found.</div>`;
+        return;
+      }
+
+      spellingDiscrepancies.forEach((d, idx) => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 p-5 rounded-2xl shadow-sm flex flex-col justify-between gap-4";
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/10 text-amber-700">⚠️ Spelling Mismatch</span>
+              <code class="text-[10px] font-bold text-slate-400">SATS: ${d.satsId}</code>
+            </div>
+            <h4 class="font-extrabold text-slate-800 text-xs mt-3">${d.name}</h4>
+            
+            <div class="grid grid-cols-2 gap-3 mt-4 bg-slate-50/50 p-3 rounded-xl border border-slate-100 text-[10px]">
+              <div>
+                <span class="text-slate-400 block mb-0.5">LOCAL VALUE:</span>
+                <span class="font-bold text-slate-800 block truncate">${d.localVal}</span>
+              </div>
+              <div class="border-l pl-3">
+                <span class="text-slate-400 block mb-0.5">UDISE+ VALUE:</span>
+                <span class="font-bold text-amber-600 block truncate">${d.udiseVal}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function renderRosterSyncTab(udiseOnly, localOnly, excelCol) {
+      const headerRow = document.getElementById('roster-only-udise-thead');
+      const tbodyUdise = document.getElementById('roster-only-udise-tbody');
+      const tbodyLocal = document.getElementById('roster-only-local-tbody');
+
+      headerRow.innerHTML = `
+        <th class="p-2.5 border-r">SATS ID</th>
+        <th class="p-2.5 border-r">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Name</th>
+        <th class="p-2.5 border-r">ತರಗತಿ / Class</th>
+        <th class="p-2.5">${excelCol}</th>
+      `;
+
+      // Render UDISE+ only rows
+      let udiseHtml = '';
+      if (udiseOnly.length === 0) {
+        udiseHtml = `<tr><td colspan="4" class="p-6 text-center text-slate-400">ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳು ಮ್ಯಾಚ್ ಆಗಿದ್ದಾರೆ / No roster discrepancies.</td></tr>`;
+      } else {
+        udiseOnly.forEach(row => {
+          udiseHtml += `
+            <tr class="hover:bg-slate-50">
+              <td class="p-2.5 border-r font-bold">${row.satsId}</td>
+              <td class="p-2.5 border-r">${row.name}</td>
+              <td class="p-2.5 border-r">${row.class}</td>
+              <td class="p-2.5 text-rose-500 font-bold">${row.val}</td>
+            </tr>
+          `;
+        });
+      }
+      tbodyUdise.innerHTML = udiseHtml;
+
+      // Render Local only rows
+      let localHtml = '';
+      if (localOnly.length === 0) {
+        localHtml = `<tr><td colspan="4" class="p-6 text-center text-slate-400">ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳು ಮ್ಯಾಚ್ ಆಗಿದ್ದಾರೆ / No local-only records.</td></tr>`;
+      } else {
+        localOnly.forEach(row => {
+          localHtml += `
+            <tr class="hover:bg-slate-50">
+              <td class="p-2.5 border-r font-bold">${row.satsId}</td>
+              <td class="p-2.5 border-r">${row.name}</td>
+              <td class="p-2.5 border-r">${row.class}</td>
+              <td class="p-2.5 text-amber-600 font-bold">${row.val}</td>
+            </tr>
+          `;
+        });
+      }
+      tbodyLocal.innerHTML = localHtml;
+    }
+
+    async function acceptUdiseValue(studentId, field, value, cardId) {
+      if (!supabaseClient) return;
+      try {
+        const payload = {};
+        
+        // Map local target fields back to database columns if gender mapping
+        if (field === 'gender') {
+          payload[field] = value.toUpperCase() === 'FEMALE' || value.toUpperCase() === 'GIRL' ? 'Girl' : 'Boy';
+        } else {
+          payload[field] = value;
+        }
+
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update(payload)
+          .eq('id', studentId);
+        if (error) throw error;
+
+        // Update local memory
+        const local = localStudents.find(s => s.id === studentId);
+        if (local) {
+          local[field] = payload[field];
+        }
+
+        // Hide discrepancy card
+        const card = document.getElementById(cardId);
+        if (card) {
+          card.classList.add('scale-95', 'opacity-0');
+          setTimeout(() => {
+            card.remove();
+            
+            // Recalculate stats
+            discrepancyList = discrepancyList.filter(d => d.studentId !== studentId);
+            document.getElementById('stat-mismatches').textContent = discrepancyList.length;
+            document.getElementById('count-tab-suggestions').textContent = discrepancyList.length;
+            
+            if (discrepancyList.length === 0) {
+              document.getElementById('suggestions-empty-state').classList.remove('hidden');
+            }
+          }, 300);
+        }
+      } catch (err) {
+        console.error("Database update error:", err);
+        alert("ಡೇಟಾಬೇಸ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Update failed: " + err.message);
+      }
+    }
+
+    async function transferPenAndApaar(studentId, penVal, apaarVal, cardId) {
+      if (!supabaseClient) return;
+      try {
+        const payload = {};
+        if (penVal && penVal !== 'NA') payload.pen = penVal;
+        if (apaarVal && apaarVal !== 'NA') payload.apaar = apaarVal;
+
+        if (Object.keys(payload).length > 0) {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update(payload)
+            .eq('id', studentId);
+          if (error) throw error;
+
+          // Update local memory
+          const local = localStudents.find(s => s.id === studentId);
+          if (local) {
+            if (payload.pen) local.pen = payload.pen;
+            if (payload.apaar) local.apaar = payload.apaar;
+          }
+        }
+        
+        // Hide discrepancy card
+        const card = document.getElementById(cardId);
+        if (card) {
+          card.classList.add('scale-95', 'opacity-0');
+          setTimeout(() => {
+            card.remove();
+            
+            // Recalculate stats
+            discrepancyList = discrepancyList.filter(d => !(d.studentId === studentId && d.type === 'transfer_pen_apaar'));
+            document.getElementById('stat-mismatches').textContent = discrepancyList.length;
+            document.getElementById('count-tab-suggestions').textContent = discrepancyList.length;
+            
+            if (discrepancyList.length === 0) {
+              document.getElementById('suggestions-empty-state').classList.remove('hidden');
+            }
+          }, 300);
+        }
+      } catch (e) {
+        console.error("Failed to transfer PEN/APAAR:", e);
+        alert("ವರ್ಗಾವಣೆ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Transfer failed: " + e.message);
+      }
+    }
+
+    async function bulkTransferPenAndApaar() {
+      const transferItems = discrepancyList.filter(d => d.type === 'transfer_pen_apaar');
+      if (transferItems.length === 0) return;
+
+      if (confirm(`ಒಟ್ಟು ${transferItems.length} ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ PEN ಮತ್ತು APAAR ಸಂಖ್ಯೆಗಳನ್ನು ಒಟ್ಟಿಗೆ ವರ್ಗಾಯಿಸಲು ಬಯಸುತ್ತೀರಾ?\nAre you sure you want to bulk transfer PEN and APAAR details for ${transferItems.length} students?`)) {
+        let successCount = 0;
+        const promises = transferItems.map(async (d) => {
+          try {
+            const payload = {};
+            if (d.excelPen && d.excelPen !== 'NA') payload.pen = d.excelPen;
+            if (d.excelApaar && d.excelApaar !== 'NA') payload.apaar = d.excelApaar;
+
+            if (Object.keys(payload).length > 0) {
+              const { error } = await supabaseClient
+                .from('admissions')
+                .update(payload)
+                .eq('id', d.studentId);
+              if (error) throw error;
+              
+              const local = localStudents.find(s => s.id === d.studentId);
+              if (local) {
+                if (payload.pen) local.pen = payload.pen;
+                if (payload.apaar) local.apaar = payload.apaar;
+              }
+              successCount++;
+            }
+          } catch (e) {
+            console.error("Bulk transfer item failed:", e);
+          }
+        });
+
+        await Promise.all(promises);
+
+        alert(`ಯಶಸ್ವಿಯಾಗಿ ${successCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಒಟ್ಟಾರೆ ವರ್ಗಾಯಿಸಲಾಗಿದೆ!\nSuccessfully bulk transferred details for ${successCount} students!`);
+
+        // Refresh comparison results
+        runCompareEngine();
+      }
+    }
+
+    // Quick edit modal
+    let activeCardIdForEdit = '';
+    function openInlineEdit(studentId, name, field, currentVal, cardId) {
+      document.getElementById('edit-student-id').value = studentId;
+      document.getElementById('edit-db-field').value = field;
+      document.getElementById('edit-student-name').innerText = name;
+      document.getElementById('edit-field-label').innerText = `${field.toUpperCase()} ತಿದ್ದುಪಡಿ ಮೌಲ್ಯ / New Value *`;
+      document.getElementById('edit-field-value').value = currentVal === '—' ? '' : currentVal;
+      
+      activeCardIdForEdit = cardId;
+
+      const modal = document.getElementById('inlineEditModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeInlineEdit() {
+      const modal = document.getElementById('inlineEditModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    async function saveInlineEdit() {
+      const studentId = document.getElementById('edit-student-id').value;
+      const field = document.getElementById('edit-db-field').value;
+      const value = document.getElementById('edit-field-value').value.trim();
+
+      if (!value) {
+        alert("ದಯವಿಟ್ಟು ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ / Please enter value");
+        return;
+      }
+
+      await acceptUdiseValue(studentId, field, value, activeCardIdForEdit);
+      closeInlineEdit();
+    }
+
+    // Switch Tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+
+      document.getElementById('view-suggestions').classList.add('hidden');
+      document.getElementById('view-spelling').classList.add('hidden');
+      document.getElementById('view-roster').classList.add('hidden');
+
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+    }
+  </script>
+
+  <!-- Load Dynamic Navbar script -->
+  <script src="navbar.js"></script>
+</body>
+</html>
