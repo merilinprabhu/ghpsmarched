@@ -406,15 +406,30 @@
         }
       }
 
-      // Load report config dropdown
-      reportList = JSON.parse(localStorage.getItem('udise_reports_config') || '[]');
       const sel = document.getElementById('report-selector');
-      reportList.forEach(r => {
-        const opt = document.createElement('option');
-        opt.value = r.id;
-        opt.textContent = r.name;
-        sel.appendChild(opt);
-      });
+
+      // Load report config dropdown from Supabase
+      if (supabaseClient) {
+        try {
+          const schoolId = localStorage.getItem('school_id');
+          let query = supabaseClient.from('udise_reports').select('*');
+          if (schoolId) {
+            query = query.eq('school_id', schoolId);
+          }
+          const { data, error } = await query.order('created_at', { ascending: false });
+          if (error) throw error;
+          reportList = data || [];
+          
+          reportList.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.name;
+            sel.appendChild(opt);
+          });
+        } catch (err) {
+          console.error("Failed to load reports config dropdown:", err);
+        }
+      }
 
       // Load local database student roster
       await fetchLocalRoster();
@@ -567,9 +582,13 @@
         let local = null;
         let matchedByFallback = false;
         
-        // 1. Try direct STS match first if mapped
+        // 1. Try direct STS match first if mapped (normalize by stripping non-digits to bypass space differences)
         if (satsId && satsCol && satsCol !== "none") {
-          local = localStudents.find(s => s.app_no && s.app_no.toString().trim() === satsId);
+          const cleanExcelSats = satsId.replace(/\D/g, '');
+          local = localStudents.find(s => {
+            const cleanLocalSats = s.app_no ? s.app_no.toString().replace(/\D/g, '') : '';
+            return cleanLocalSats === cleanExcelSats;
+          });
         }
 
         // 2. Perform normalized Class + Student Name + Father Name + Mother Name lookup

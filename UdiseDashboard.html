@@ -260,6 +260,18 @@
 
     async function renderReportCategories() {
       await fetchReportCategories();
+      
+      // Update localStorage cache of configurations for navbar sync
+      try {
+        const cacheList = reportList.map(r => ({ id: r.id, name: r.name }));
+        localStorage.setItem('udise_reports_config', JSON.stringify(cacheList));
+        if (typeof window.renderNavbar === 'function') {
+          window.renderNavbar();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
       const grid = document.getElementById('reports-grid');
       const noReports = document.getElementById('no-reports-view');
       

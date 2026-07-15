@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Higher Primary School, Marched - Height & Weight Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;850&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .neon-glow-indigo { box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.15); }
+    .neon-glow-emerald { box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.15); }
+    .neon-glow-pink { box-shadow: 0 0 40px -10px rgba(236, 72, 153, 0.15); }
+
+    /* Theme Overrides */
+    body[data-theme="light"] { background-color: #f8fafc !important; color: #334155 !important; }
+    body[data-theme="light"] .bg-white,
+    body[data-theme="light"] main,
+    body[data-theme="light"] .section-block,
+    body[data-theme="light"] .form-container {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      border-color: #e2e8f0 !important;
+    }
+    body[data-theme="light"] td,
+    body[data-theme="light"] th { color: #475569 !important; border-color: #e2e8f0 !important; }
+    body[data-theme="light"] .text-slate-700,
+    body[data-theme="light"] .text-slate-800,
+    body[data-theme="light"] .text-slate-600,
+    body[data-theme="light"] .text-slate-500,
+    body[data-theme="light"] label { color: #475569 !important; }
+    body[data-theme="light"] input,
+    body[data-theme="light"] select,
+    body[data-theme="light"] textarea { background-color: #ffffff !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+    body[data-theme="light"] .bg-slate-50,
+    body[data-theme="light"] .bg-slate-100 { background-color: #f1f5f9 !important; }
+
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .section-block {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] td,
+    body[data-theme="dark"] th { color: #cbd5e1 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-700,
+    body[data-theme="dark"] .text-slate-800,
+    body[data-theme="dark"] .text-slate-600,
+    body[data-theme="dark"] .text-slate-500,
+    body[data-theme="dark"] label { color: #cbd5e1 !important; }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea { background-color: #0f172a !important; color: #ffffff !important; border-color: #475569 !important; }
+    body[data-theme="dark"] .bg-slate-50,
+    body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
+
+    /* Other Themes */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white, body[data-theme="gray"] main { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white, body[data-theme="blue"] main { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white, body[data-theme="green"] main { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    /* Glass card theme overrides */
+    body[data-theme="light"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(148, 163, 184, 0.2) !important;
+      color: #1e293b !important;
+    }
+    body[data-theme="blue"] .glass-card {
+      background: rgba(255, 255, 255, 0.75) !important;
+      border-color: rgba(14, 165, 233, 0.2) !important;
+      color: #0369a1 !important;
+    }
+    body[data-theme="green"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(34, 197, 94, 0.2) !important;
+      color: #15803d !important;
+    }
+    body[data-theme="gray"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(148, 163, 184, 0.25) !important;
+      color: #334155 !important;
+    }
+    body[data-theme="dark"] .glass-card {
+      background: rgba(30, 41, 59, 0.7) !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+      color: #f1f5f9 !important;
+    }
+
+    /* Light Theme Font Colors and Contrasts */
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-300,
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-350,
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-400 {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-500 {
+      color: #334155 !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-white {
+      color: #0f172a !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-450 {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-455 {
+      color: #0f172a !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-indigo-300 {
+      color: #4338ca !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-pink-300 {
+      color: #be185d !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) select,
+    body:not([data-theme="dark"]):not([data-theme="default"]) input {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) tr {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) td {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) th {
+      background-color: #f1f5f9 !important;
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .bg-black\/40 {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .bg-slate-900\/40 {
+      background-color: rgba(255, 255, 255, 0.75) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    @media print {
+      body, body[data-theme] { background: white !important; color: black !important; }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; }
+      table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid #000 !important; }
+      th, td { border: 1px solid #000 !important; padding: 6px 4px !important; text-align: center !important; color: black !important; }
+      th { background-color: #e2e8f0 !important; font-weight: bold !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#0b0f19] text-[#f1f5f9] min-h-screen flex flex-col justify-between" data-theme="dark">
+
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-4 md:p-6 flex-1 flex flex-col gap-6">
+    
+    <!-- Title / Tab Nav Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/40 p-4 rounded-3xl border border-white/5 shadow-lg">
+      <div>
+        <h2 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent uppercase tracking-wider">
+          ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕದ ಟ್ರ್ಯಾಕರ್ / Height & Weight Tracker
+        </h2>
+        <p class="text-[10px] text-slate-400 font-semibold tracking-wide mt-0.5">
+          ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ (cm), ತೂಕ (kg), BMI ಮತ್ತು ಆರೋಗ್ಯ ಸ್ಥಿತಿ ಟ್ರ್ಯಾಕರ್ / Monitor student growth metrics & BMI health status
+        </p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex gap-2 bg-black/40 p-1.5 border border-white/5 rounded-2xl w-full md:w-auto overflow-x-auto">
+        <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md">
+          <i class="fa-solid fa-chart-pie"></i> ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
+        </button>
+        <button onclick="switchTab('entry')" id="btn-tab-entry" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-file-pen"></i> ನಮೂದು / Entry Form
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY SECTIONS -->
+
+    <!-- Section 1: Dashboard Tab -->
+    <div id="section-dashboard" class="space-y-6">
+      <!-- 4 Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Total Students -->
+        <div class="glass-card neon-glow-indigo p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ದಾಖಲಾದ ಮಕ್ಕಳು / Total Students</p>
+            <h3 id="statTotalStudents" class="text-2xl font-black tracking-tight mt-0.5">0</h3>
+          </div>
+        </div>
+
+        <!-- Card 2: Normal Weight -->
+        <div class="glass-card neon-glow-emerald p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಸಾಮಾನ್ಯ ತೂಕ / Healthy (Normal BMI)</p>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <h3 id="statNormalWeight" class="text-2xl font-black tracking-tight text-emerald-400">0</h3>
+              <span id="statNormalPct" class="text-[10px] font-bold text-slate-400">(0%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Underweight -->
+        <div class="glass-card neon-glow-pink p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-pink-600/20 text-pink-400 border border-pink-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-weight-scale"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಕಡಿಮೆ ತೂಕ / Underweight</p>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <h3 id="statUnderweight" class="text-2xl font-black tracking-tight text-pink-400">0</h3>
+              <span id="statUnderweightPct" class="text-[10px] font-bold text-slate-400">(0%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Overweight / Obese -->
+        <div class="glass-card p-5 rounded-3xl flex items-center gap-4 border-amber-500/10">
+          <div class="w-12 h-12 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಹೆಚ್ಚು ತೂಕ / Overweight & Obese</p>
+            <h3 id="statOverweight" class="text-2xl font-black tracking-tight text-amber-400 mt-0.5">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Filter & Dynamic Charts/Tables -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2 Cols: Tables & Matrix -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- Class-wise summary matrix -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-3">
+              <div>
+                <h4 class="font-bold text-sm">ತರಗತಿವಾರು ಪ್ರಗತಿ ಮತ್ತು ಆರೋಗ್ಯ ವಿವರ / Classwise Summary Matrix</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5">ತರಗತಿವಾರು ಸರಾಸರಿ ಎತ್ತರ, ತೂಕ ಮತ್ತು ಬಿಎಂಐ ಪ್ರಗತಿ / Classwise summary metrics</p>
+              </div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="flex items-center gap-2 bg-black/40 border border-white/5 px-3 py-1.5 rounded-xl">
+                  <span class="text-[9px] font-bold text-slate-450 uppercase"><i class="fa-solid fa-filter text-indigo-400"></i> Class:</span>
+                  <select id="dashClassFilter" onchange="updateDashboardStats()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+                    <option value="ALL">ALL / ಎಲ್ಲಾ ತರಗತಿ</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1">Class 1</option>
+                    <option value="2">Class 2</option>
+                    <option value="3">Class 3</option>
+                    <option value="4">Class 4</option>
+                    <option value="5">Class 5</option>
+                    <option value="6">Class 6</option>
+                    <option value="7">Class 7</option>
+                    <option value="8">Class 8</option>
+                    <option value="9">Class 9</option>
+                    <option value="10">Class 10</option>
+                  </select>
+                </div>
+                <button onclick="window.print()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-[10px] font-bold transition flex items-center gap-1">
+                  <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸು / Print Summary
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+              <table id="summaryMatrixTable" class="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr class="bg-slate-900/60 text-slate-300 font-bold border-b border-white/5 text-center">
+                    <th class="p-2.5 text-left">ತರಗತಿ / Class</th>
+                    <th class="p-2.5">ಒಟ್ಟು ಮಕ್ಕಳು / Students</th>
+                    <th class="p-2.5">ಸರಾಸರಿ ಎತ್ತರ / Avg Height (cm)</th>
+                    <th class="p-2.5">ಸರಾಸರಿ ತೂಕ / Avg Weight (kg)</th>
+                    <th class="p-2.5 text-pink-300">Underweight</th>
+                    <th class="p-2.5 text-emerald-400">Normal BMI</th>
+                    <th class="p-2.5 text-amber-400">Overweight/Obese</th>
+                    <th class="p-2.5">Pending Entry</th>
+                  </tr>
+                </thead>
+                <tbody id="classSummaryTableBody" class="font-semibold text-slate-350 divide-y divide-white/5 text-center">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right 1 Col: Visual Chart -->
+        <div class="space-y-6">
+          <!-- Chart widget -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div>
+              <h4 class="font-bold text-sm">ಬಿಎಂಐ ಆರೋಗ್ಯ ಪ್ರೊಫೈಲ್ ಚಾರ್ಟ್ / BMI Health Profile Chart</h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">ಶಾಲೆಯ ಒಟ್ಟು ಮಕ್ಕಳ ಬಿಎಂಐ ಸ್ಥಿತಿಯ ರೇಖಾಚಿತ್ರ / Visual breakdown</p>
+            </div>
+            <div class="relative h-60 w-full flex items-center justify-center">
+              <canvas id="bmiChartCanvas"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 2: Entry Tab -->
+    <div id="section-entry" class="space-y-6 hidden">
+      <!-- Search & Filters Row -->
+      <div class="glass-card p-4 rounded-3xl border border-white/5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          <!-- Class selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-chalkboard text-indigo-400"></i> Class:</span>
+            <select id="entryClassFilter" onchange="loadStudentsData()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ ತರಗತಿ</option>
+              <option value="LKG">LKG</option>
+              <option value="UKG">UKG</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4" selected>Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7">Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+          </div>
+
+          <!-- Gender selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-venus-mars text-indigo-400"></i> Gender:</span>
+            <select id="entryGenderFilter" onchange="applyFilters()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ</option>
+              <option value="Boy">Boy / ಗಂಡು</option>
+              <option value="Girl">Girl / ಹೆಣ್ಣು</option>
+            </select>
+          </div>
+
+          <!-- Health Status selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-shield-heart text-indigo-400"></i> BMI Status:</span>
+            <select id="entryBmiFilter" onchange="applyFilters()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ</option>
+              <option value="Underweight">Underweight / ಕಡಿಮೆ ತೂಕ</option>
+              <option value="Normal">Normal / ಸಾಮಾನ್ಯ ತೂಕ</option>
+              <option value="Overweight">Overweight & Obese / ಹೆಚ್ಚು ತೂಕ</option>
+              <option value="Pending">Pending Entry / ಬಾಕಿ</option>
+            </select>
+          </div>
+
+          <!-- Search input -->
+          <div class="relative w-full sm:w-60">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="entrySearch" oninput="applyFilters()" placeholder="ಹೆಸರು / STS ಸಂಖ್ಯೆ ಬಳಸಿ ಹುಡುಕಿ..." class="w-full bg-black/40 border border-white/5 pl-9 pr-4 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <!-- Export Buttons -->
+        <div class="flex gap-2 items-center flex-wrap">
+          <!-- Export -->
+          <button onclick="exportToCSV()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-file-csv text-indigo-400"></i> CSV Export
+          </button>
+
+          <!-- Import -->
+          <input type="file" id="importFile" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleImport(event)">
+          <button onclick="document.getElementById('importFile').click()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm" title="Import height and weight excel or csv file directly to database">
+            <i class="fa-solid fa-file-import text-amber-500"></i> ಆಮದು / Import CSV/Excel
+          </button>
+
+          <!-- Print Class Report -->
+          <button onclick="printClassReport()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-print text-emerald-400"></i> ವರದಿ ಮುದ್ರಿಸು / Print Report
+          </button>
+        </div>
+      </div>
+
+      <!-- Main entry table -->
+      <div class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table id="height-weight-table" class="w-full border-collapse text-left text-xs">
+            <thead id="entryTableHeader">
+              <tr class="bg-slate-900/80 text-slate-300 font-bold border-b border-white/5 text-center select-none">
+                <th class="p-3 w-12">ಕ್ರಮ ಸಂ. / Sl.No.</th>
+                <th onclick="handleSort('app_no')" class="p-3 w-28 cursor-pointer hover:bg-slate-800/40 transition">SATS ಸಂಖ್ಯೆ / SATS No. <i class="fa-solid fa-sort opacity-40 ml-0.5 text-[9px]"></i></th>
+                <th onclick="handleSort('name_english')" class="p-3 text-left cursor-pointer hover:bg-slate-800/40 transition">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name <i class="fa-solid fa-sort opacity-40 ml-0.5 text-[9px]"></i></th>
+                <th onclick="handleSort('gender')" class="p-3 w-20 cursor-pointer hover:bg-slate-800/40 transition">ಲಿಂಗ / Gender <i class="fa-solid fa-sort opacity-40 ml-0.5 text-[9px]"></i></th>
+                <th class="p-3 w-32 bg-indigo-500/[0.02]">ಎತ್ತರ / Height (cm)</th>
+                <th class="p-3 w-32 bg-pink-500/[0.02]">ತೂಕ / Weight (kg)</th>
+                <th class="p-3 w-24">BMI</th>
+                <th class="p-3 w-36">ಬಿಎಂಐ ಪ್ರೊಫೈಲ್ / Health Status</th>
+                <th class="p-3 w-24 no-print">ಸ್ಥಿತಿ / Auto-Save</th>
+              </tr>
+            </thead>
+            <tbody id="distributionTableBody" class="font-semibold text-slate-350 divide-y divide-white/5 text-center">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-12 py-6 border-t border-white/5 text-center text-[10px] text-slate-500 z-10 no-print">
+    <p>© 2026 Government Higher Primary School, Marched. All rights reserved.</p>
+  </footer>
+
+  <!-- Print template placeholder -->
+  <div id="printArea" class="hidden">
+    <div class="text-center mb-6">
+      <h1 class="text-xl font-bold uppercase tracking-wider school-title-full">GHPS MARCHED</h1>
+      <h2 class="text-xs font-bold tracking-wider mt-1 uppercase">STUDENT HEIGHT & WEIGHT PHYSICAL HEALTH REPORT / ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕದ ಆರೋಗ್ಯ ವರದಿ</h2>
+      <p class="text-[10px] text-slate-600 mt-1 font-bold">Class: <span id="printClassVal">All</span> | Date: <span id="printDateVal"></span></p>
+    </div>
+    <table class="w-full border-collapse text-xs text-center border-black">
+      <thead>
+        <tr class="bg-slate-200">
+          <th class="p-2 border border-black">Sl.No</th>
+          <th class="p-2 border border-black">STS No.</th>
+          <th class="p-2 border border-black text-left">Student Name</th>
+          <th class="p-2 border border-black">Gender</th>
+          <th class="p-2 border border-black">Height (cm)</th>
+          <th class="p-2 border border-black">Weight (kg)</th>
+          <th class="p-2 border border-black">BMI</th>
+          <th class="p-2 border border-black">Health Status</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody" class="divide-y divide-black">
+        <!-- Loaded on demand -->
+      </tbody>
+    </table>
+    
+    <div class="flex justify-between mt-12 text-xs font-bold">
+      <div>Class Teacher Signature</div>
+      <div>Physical Education Teacher</div>
+      <div>Head Master Signature</div>
+    </div>
+  </div>
+
+  <!-- JS Code -->
+  <script>
+    let supabaseClient = null;
+    let selectedTemplate = null; 
+    let admissionsList = []; 
+    let incentiveRecords = []; 
+    let filteredStudents = []; 
+    let activeRenderedStudents = [];
+    
+    let entrySortCol = 'name_english';
+    let entrySortOrder = 'asc';
+    let bmiChartInstance = null;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      loadThemeAndSync();
+      initSupabase();
+      await fetchIncentiveTemplate();
+      await fetchAdmissionsAndIncentives();
+      loadStudentsData();
+      switchTab('dashboard');
+    });
+
+    function loadThemeAndSync() {
+      const savedTheme = localStorage.getItem('portal_theme') || 'dark';
+      document.body.setAttribute('data-theme', savedTheme);
+    }
+
+    function initSupabase() {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+      }
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['dashboard', 'entry'];
+      tabs.forEach(t => {
+        const sec = document.getElementById('section-' + t);
+        const btn = document.getElementById('btn-tab-' + t);
+        if (t === tabId) {
+          if (sec) sec.classList.remove('hidden');
+          if (btn) btn.className = "flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md";
+        } else {
+          if (sec) sec.classList.add('hidden');
+          if (btn) btn.className = "flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white";
+        }
+      });
+
+      if (tabId === 'dashboard') {
+        updateDashboardStats();
+      } else if (tabId === 'entry') {
+        loadStudentsData();
+      }
+    }
+
+    async function fetchIncentiveTemplate() {
+      if (!supabaseClient) return;
+      try {
+        const { data: list, error } = await supabaseClient
+          .from('incentive_templates')
+          .select('*')
+          .eq('name', 'Height & Weight / ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕ')
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        if (list) {
+          selectedTemplate = list;
+        } else {
+          const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+          const { data: created, error: createError } = await supabaseClient
+            .from('incentive_templates')
+            .insert({
+              school_id: schoolId,
+              name: 'Height & Weight / ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕ',
+              print_header: 'GHPS MARCHED HEALTH CARD PROFILE',
+              print_footer: 'Signature of Head Master / PE Teacher||true',
+              columns: [
+                { name: 'height', type: 'number' },
+                { name: 'weight', type: 'number' }
+              ]
+            })
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          selectedTemplate = created;
+        }
+      } catch (err) {
+        console.error("Failed to load height weight template:", err);
+      }
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      return classStr.toString().trim();
+    }
+
+    async function fetchAdmissionsAndIncentives() {
+      if (!supabaseClient || !selectedTemplate) return;
+      try {
+        let schoolId = localStorage.getItem("school_id");
+        if (supabaseClient.auth) {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session?.user?.user_metadata?.school_id) {
+            schoolId = session.user.user_metadata.school_id;
+          }
+        }
+        
+        let studQuery = supabaseClient.from('admissions').select('*');
+        if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
+        const { data: students, error: studErr } = await studQuery;
+        if (studErr) throw studErr;
+        
+        admissionsList = (students || [])
+          .filter(s => {
+            const isAdm = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
+            return isAdm === true || isAdm === 'true';
+          })
+          .map(s => {
+            s.enroll_class = normalizeClass(s.enroll_class);
+            return s;
+          });
+
+        let incQuery = supabaseClient.from('student_incentives').select('*').eq('template_id', selectedTemplate.id);
+        if (schoolId) incQuery = incQuery.eq('school_id', schoolId);
+        const { data: records, error: incErr } = await incQuery;
+        if (incErr) throw incErr;
+        incentiveRecords = records || [];
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    }
+
+    function loadStudentsData() {
+      const cls = document.getElementById('entryClassFilter').value;
+      filteredStudents = admissionsList.filter(s => {
+        if (cls === 'ALL') return true;
+        return normalizeClass(s.enroll_class) === cls;
+      });
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const gender = document.getElementById('entryGenderFilter').value;
+      const bmiF = document.getElementById('entryBmiFilter').value;
+      const search = document.getElementById('entrySearch').value.toLowerCase().trim();
+
+      const valMap = {};
+      incentiveRecords.forEach(r => valMap[r.student_id] = r.values || {});
+
+      let result = filteredStudents.filter(s => {
+        if (gender !== 'ALL') {
+          const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+          if (gender === 'Girl' && !isGirl) return false;
+          if (gender === 'Boy' && isGirl) return false;
+        }
+
+        const sts = s.app_no ? s.app_no.toLowerCase() : '';
+        const name = (s.name_english || '').toLowerCase() + ' ' + (s.student_name || '').toLowerCase();
+        if (search && !sts.includes(search) && !name.includes(search)) return false;
+
+        const vals = valMap[s.id] || {};
+        const h = Number(vals.height) || 0;
+        const w = Number(vals.weight) || 0;
+        
+        let status = 'Pending';
+        if (h > 0 && w > 0) {
+          const bmi = w / ((h / 100) * (h / 100));
+          if (bmi < 18.5) status = 'Underweight';
+          else if (bmi >= 18.5 && bmi < 25) status = 'Normal';
+          else status = 'Overweight';
+        }
+
+        if (bmiF === 'Pending' && status !== 'Pending') return false;
+        if (bmiF === 'Underweight' && status !== 'Underweight') return false;
+        if (bmiF === 'Normal' && status !== 'Normal') return false;
+        if (bmiF === 'Overweight' && status !== 'Overweight') return false;
+
+        return true;
+      });
+
+      if (entrySortCol) {
+        const mult = entrySortOrder === 'asc' ? 1 : -1;
+        result.sort((a, b) => {
+          let valA = a[entrySortCol] || '';
+          let valB = b[entrySortCol] || '';
+          return valA.toString().localeCompare(valB.toString(), undefined, { numeric: true, sensitivity: 'base' }) * mult;
+        });
+      }
+
+      activeRenderedStudents = result;
+      renderTable(result, valMap);
+    }
+
+    function handleSort(col) {
+      if (entrySortCol === col) {
+        entrySortOrder = entrySortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        entrySortCol = col;
+        entrySortOrder = 'asc';
+      }
+      applyFilters();
+    }
+
+    function renderTable(students, recordsMap) {
+      const tbody = document.getElementById('distributionTableBody');
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-500 font-semibold bg-slate-50/5"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> No records match these filters.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      students.forEach((s, idx) => {
+        const vals = recordsMap[s.id] || {};
+        const h = vals.height || '';
+        const w = vals.weight || '';
+
+        let bmiVal = '-';
+        let badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400">Not Entered</span>';
+        
+        if (h && w) {
+          const hn = Number(h);
+          const wn = Number(w);
+          if (hn > 0 && wn > 0) {
+            const bmi = wn / ((hn / 100) * (hn / 100));
+            bmiVal = bmi.toFixed(1);
+            if (bmi < 18.5) {
+              badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/15 text-pink-400">Underweight / ಕಡಿಮೆ ತೂಕ</span>';
+            } else if (bmi >= 18.5 && bmi < 25) {
+              badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400">Normal / ಸಾಮಾನ್ಯ ತೂಕ</span>';
+            } else {
+              badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400">Overweight / ಹೆಚ್ಚು ತೂಕ</span>';
+            }
+          }
+        }
+
+        const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+        const displayGender = isGirl ? 'Girl / ಹೆಣ್ಣು' : 'Boy / ಗಂಡು';
+
+        html += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5 text-slate-300 font-medium">
+            <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 font-mono text-center">${s.app_no || '-'}</td>
+            <td class="p-2.5 text-left text-white">
+              <div class="font-bold text-xs">${s.name_english || '-'}</div>
+              <div class="text-[9px] text-slate-400">${s.student_name || '-'}</div>
+            </td>
+            <td class="p-2.5 text-center text-[10px]">${displayGender}</td>
+            
+            <td class="p-2.5 bg-indigo-500/[0.01]">
+              <input type="number" id="height-${s.id}" value="${h}" onchange="autoSaveRecord('${s.id}')" placeholder="cm" class="w-20 bg-black/40 border border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-center text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            </td>
+            
+            <td class="p-2.5 bg-pink-500/[0.01]">
+              <input type="number" id="weight-${s.id}" value="${w}" onchange="autoSaveRecord('${s.id}')" placeholder="kg" class="w-20 bg-black/40 border border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-center text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            </td>
+
+            <td class="p-2.5 font-mono font-bold text-indigo-400 text-center" id="bmi-display-${s.id}">${bmiVal}</td>
+            <td class="p-2.5 text-center" id="status-badge-${s.id}">${badge}</td>
+
+            <td class="p-2.5 no-print" id="status-container-${s.id}">
+              <div id="save-indicator-${s.id}" class="text-[10px] text-emerald-400 font-bold flex items-center justify-center gap-1">
+                <i class="fa-solid fa-circle-check"></i> Saved
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    async function autoSaveRecord(studentId) {
+      if (!supabaseClient || !selectedTemplate) return;
+      
+      const indicator = document.getElementById(`save-indicator-${studentId}`);
+      if (indicator) {
+        indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-indigo-400"></i> Saving...`;
+        indicator.className = "text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1";
+      }
+
+      const h = document.getElementById(`height-${studentId}`).value.trim();
+      const w = document.getElementById(`weight-${studentId}`).value.trim();
+
+      const recordValues = {
+        height: h ? Number(h) : null,
+        weight: w ? Number(w) : null
+      };
+
+      try {
+        const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+        const { error } = await supabaseClient
+          .from('student_incentives')
+          .upsert({
+            school_id: schoolId,
+            student_id: studentId,
+            template_id: selectedTemplate.id,
+            values: recordValues,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'student_id,template_id'
+          });
+
+        if (error) throw error;
+        
+        let localRec = incentiveRecords.find(r => r.student_id === studentId && r.template_id === selectedTemplate.id);
+        if (!localRec) {
+          localRec = { student_id: studentId, template_id: selectedTemplate.id, values: {} };
+          incentiveRecords.push(localRec);
+        }
+        localRec.values = recordValues;
+
+        // Recalculate BMI in DOM
+        const bmiDisplay = document.getElementById(`bmi-display-${studentId}`);
+        const statusBadge = document.getElementById(`status-badge-${studentId}`);
+        
+        if (h && w) {
+          const hn = Number(h);
+          const wn = Number(w);
+          if (hn > 0 && wn > 0) {
+            const bmi = wn / ((hn / 100) * (hn / 100));
+            bmiDisplay.textContent = bmi.toFixed(1);
+            if (bmi < 18.5) {
+              statusBadge.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/15 text-pink-400">Underweight / ಕಡಿಮೆ ತೂಕ</span>';
+            } else if (bmi >= 18.5 && bmi < 25) {
+              statusBadge.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400">Normal / ಸಾಮಾನ್ಯ ತೂಕ</span>';
+            } else {
+              statusBadge.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-400">Overweight / ಹೆಚ್ಚು ತೂಕ</span>';
+            }
+          } else {
+            bmiDisplay.textContent = '-';
+            statusBadge.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400">Not Entered</span>';
+          }
+        } else {
+          bmiDisplay.textContent = '-';
+          statusBadge.innerHTML = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-500/10 text-slate-400">Not Entered</span>';
+        }
+
+        if (indicator) {
+          indicator.innerHTML = `<i class="fa-solid fa-circle-check"></i> Saved`;
+          indicator.className = "text-[10px] text-emerald-400 font-bold flex items-center justify-center gap-1";
+        }
+      } catch (err) {
+        console.error("Save failed:", err);
+        if (indicator) {
+          indicator.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i> Failed`;
+          indicator.className = "text-[10px] text-red-500 font-bold flex items-center justify-center gap-1";
+        }
+      }
+    }
+
+    function updateDashboardStats() {
+      if (admissionsList.length === 0) return;
+
+      const cls = document.getElementById('dashClassFilter').value;
+      const valMap = {};
+      incentiveRecords.forEach(r => valMap[r.student_id] = r.values || {});
+
+      const targetStudents = admissionsList.filter(s => {
+        if (cls === 'ALL') return true;
+        return s.enroll_class === cls;
+      });
+
+      const total = targetStudents.length;
+      document.getElementById('statTotalStudents').textContent = total;
+
+      let normal = 0;
+      let underweight = 0;
+      let overweight = 0;
+      let pending = 0;
+
+      targetStudents.forEach(s => {
+        const vals = valMap[s.id] || {};
+        const h = Number(vals.height) || 0;
+        const w = Number(vals.weight) || 0;
+
+        if (h > 0 && w > 0) {
+          const bmi = w / ((h / 100) * (h / 100));
+          if (bmi < 18.5) underweight++;
+          else if (bmi >= 18.5 && bmi < 25) normal++;
+          else overweight++;
+        } else {
+          pending++;
+        }
+      });
+
+      document.getElementById('statNormalWeight').textContent = normal;
+      document.getElementById('statNormalPct').textContent = `(${total ? Math.round(normal * 100 / total) : 0}%)`;
+      document.getElementById('statUnderweight').textContent = underweight;
+      document.getElementById('statUnderweightPct').textContent = `(${total ? Math.round(underweight * 100 / total) : 0}%)`;
+      document.getElementById('statOverweight').textContent = overweight;
+
+      renderClassSummary(valMap);
+      renderDashboardChart(underweight, normal, overweight);
+    }
+
+    function renderClassSummary(valuesMap) {
+      const tbody = document.getElementById('classSummaryTableBody');
+      if (!tbody) return;
+
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      let html = '';
+
+      classes.forEach(c => {
+        const classStudents = admissionsList.filter(s => s.enroll_class === c);
+        if (classStudents.length === 0) return;
+
+        let totalH = 0, totalW = 0, entryCount = 0;
+        let underweight = 0, normal = 0, overweight = 0, pending = 0;
+
+        classStudents.forEach(s => {
+          const vals = valuesMap[s.id] || {};
+          const h = Number(vals.height) || 0;
+          const w = Number(vals.weight) || 0;
+
+          if (h > 0 && w > 0) {
+            totalH += h;
+            totalW += w;
+            entryCount++;
+
+            const bmi = w / ((h / 100) * (h / 100));
+            if (bmi < 18.5) underweight++;
+            else if (bmi >= 18.5 && bmi < 25) normal++;
+            else overweight++;
+          } else {
+            pending++;
+          }
+        });
+
+        const total = classStudents.length;
+        const avgH = entryCount ? (totalH / entryCount).toFixed(1) : '-';
+        const avgW = entryCount ? (totalW / entryCount).toFixed(1) : '-';
+
+        html += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5">
+            <td class="p-2.5 font-bold text-left text-white bg-slate-900/20">Class ${c}</td>
+            <td class="p-2.5">${total}</td>
+            <td class="p-2.5 text-indigo-400 font-bold">${avgH}</td>
+            <td class="p-2.5 text-pink-400 font-bold">${avgW}</td>
+            <td class="p-2.5 text-pink-500">${underweight}</td>
+            <td class="p-2.5 text-emerald-400">${normal}</td>
+            <td class="p-2.5 text-amber-400">${overweight}</td>
+            <td class="p-2.5 text-slate-450">${pending}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function renderDashboardChart(uw, nw, ow) {
+      const ctx = document.getElementById('bmiChartCanvas');
+      if (!ctx) return;
+
+      if (bmiChartInstance) {
+        bmiChartInstance.destroy();
+      }
+
+      const isDark = document.body.getAttribute('data-theme') !== 'light' && document.body.getAttribute('data-theme') !== 'blue' && document.body.getAttribute('data-theme') !== 'green' && document.body.getAttribute('data-theme') !== 'gray';
+
+      bmiChartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Underweight', 'Normal BMI', 'Overweight & Obese'],
+          datasets: [{
+            data: [uw, nw, ow],
+            backgroundColor: [
+              'rgba(236, 72, 153, 0.75)',
+              'rgba(16, 185, 129, 0.75)',
+              'rgba(245, 158, 11, 0.6)'
+            ],
+            borderColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.1)',
+            borderWidth: 1.5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: isDark ? '#cbd5e1' : '#1e293b',
+                font: { size: 10, weight: 'bold' }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function printClassReport() {
+      const cls = document.getElementById('entryClassFilter').value;
+      const classText = cls === 'ALL' ? 'All Classes / ಎಲ್ಲಾ ತರಗತಿ' : `Class ${cls}`;
+      
+      if (!activeRenderedStudents || activeRenderedStudents.length === 0) {
+        alert("ಮುದ್ರಿಸಲು ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ. / No records to print.");
+        return;
+      }
+
+      window.openPrintDrawer({
+        tableId: 'height-weight-table',
+        title: 'ವಿದ್ಯಾರ್ಥಿಗಳ ಎತ್ತರ ಮತ್ತು ತೂಕದ ಆರೋಗ್ಯ ವರದಿ / Height & Weight Physical Health Report',
+        class: classText,
+        exam: '',
+        subject: '',
+        students: activeRenderedStudents || []
+      });
+    }
+
+    function exportToCSV() {
+      if (activeRenderedStudents.length === 0) {
+        alert("ರಫ್ತು ಮಾಡಲು ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ. / No records to export.");
+        return;
+      }
+
+      const headers = [
+        "Sl.No / ಕ್ರಮ ಸಂಖ್ಯೆ",
+        "SATS No / SATS ಸಂಖ್ಯೆ",
+        "Student Name / ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು",
+        "Gender / ಲಿಂಗ",
+        "Height (cm) / ಎತ್ತರ",
+        "Weight (kg) / ತೂಕ",
+        "BMI",
+        "Health Status / ಆರೋಗ್ಯ ವಿವರ"
+      ];
+
+      const valMap = {};
+      incentiveRecords.forEach(r => valMap[r.student_id] = r.values || {});
+
+      const rows = activeRenderedStudents.map((s, idx) => {
+        const vals = valMap[s.id] || {};
+        const h = vals.height || '';
+        const w = vals.weight || '';
+
+        let bmiVal = '';
+        let status = 'Not Entered';
+        if (h && w) {
+          const hn = Number(h);
+          const wn = Number(w);
+          if (hn > 0 && wn > 0) {
+            const bmi = wn / ((hn / 100) * (hn / 100));
+            bmiVal = bmi.toFixed(1);
+            if (bmi < 18.5) status = 'Underweight';
+            else if (bmi >= 18.5 && bmi < 25) status = 'Normal';
+            else status = 'Overweight';
+          }
+        }
+
+        return [
+          idx + 1,
+          s.app_no || '',
+          s.name_english || s.student_name || '',
+          s.gender || '',
+          h,
+          w,
+          bmiVal,
+          status
+        ];
+      });
+
+      let csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
+        + [headers.join(","), ...rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))].join("\n");
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      
+      const cls = document.getElementById('entryClassFilter').value;
+      link.setAttribute("download", `Height_Weight_Class_${cls}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function handleImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const firstSheet = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheet];
+          const json = XLSX.utils.sheet_to_json(sheet);
+
+          if (json.length === 0) {
+            alert('File is empty.');
+            return;
+          }
+
+          const headers = Object.keys(json[0] || {});
+          const stsKey = headers.find(h => {
+            const norm = h.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            return norm === 'stsno' || norm === 'sts' || norm === 'appno' || norm === 'studentno';
+          }) || 'SATS No';
+
+          const hKey = headers.find(h => h.trim().toLowerCase().includes('height') || h.trim().toLowerCase().includes('ಎತ್ತರ')) || 'height';
+          const wKey = headers.find(h => h.trim().toLowerCase().includes('weight') || h.trim().toLowerCase().includes('ತೂಕ')) || 'weight';
+
+          let schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+          if (supabaseClient.auth) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session?.user?.user_metadata?.school_id) {
+              schoolId = session.user.user_metadata.school_id;
+            }
+          }
+
+          let updatedCount = 0;
+          const upsertPayloads = [];
+
+          json.forEach(row => {
+            const stsVal = (row[stsKey] || '').toString().trim();
+            if (!stsVal) return;
+
+            const student = admissionsList.find(s => s.app_no === stsVal);
+            if (!student) return;
+
+            const hv = Number(row[hKey]) || null;
+            const wv = Number(row[wKey]) || null;
+
+            upsertPayloads.push({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: { height: hv, weight: wv },
+              updated_at: new Date().toISOString()
+            });
+            updatedCount++;
+          });
+
+          if (upsertPayloads.length === 0) {
+            alert("SATS ಸಂಖ್ಯೆಗೆ ಹೊಂದುವ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ. / No matching students found.");
+            return;
+          }
+
+          const { error } = await supabaseClient
+            .from('student_incentives')
+            .upsert(upsertPayloads, { onConflict: 'student_id,template_id' });
+
+          if (error) throw error;
+
+          await fetchAdmissionsAndIncentives();
+          loadStudentsData();
+          updateDashboardStats();
+
+          alert(`ಯಶಸ್ವಿಯಾಗಿ ${updatedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ಆರೋಗ್ಯ ವಿವರಗಳನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ!`);
+        } catch (err) {
+          console.error("Import failed:", err);
+          alert("Import failed: " + err.message);
+        }
+      };
+      reader.readAsBinaryString(file);
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

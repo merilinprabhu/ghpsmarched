@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Government Higher Primary School, Marched - Shoe & Socks Distribution</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;850&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-h-screen: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .neon-glow-indigo { box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.15); }
+    .neon-glow-emerald { box-shadow: 0 0 40px -10px rgba(16, 185, 129, 0.15); }
+    .neon-glow-pink { box-shadow: 0 0 40px -10px rgba(236, 72, 153, 0.15); }
+
+    /* Theme Overrides */
+    body[data-theme="light"] { background-color: #f8fafc !important; color: #334155 !important; }
+    body[data-theme="light"] .bg-white,
+    body[data-theme="light"] main,
+    body[data-theme="light"] .section-block,
+    body[data-theme="light"] .form-container {
+      background-color: #ffffff !important;
+      color: #334155 !important;
+      border-color: #e2e8f0 !important;
+    }
+    body[data-theme="light"] td,
+    body[data-theme="light"] th { color: #475569 !important; border-color: #e2e8f0 !important; }
+    body[data-theme="light"] .text-slate-700,
+    body[data-theme="light"] .text-slate-800,
+    body[data-theme="light"] .text-slate-600,
+    body[data-theme="light"] .text-slate-500,
+    body[data-theme="light"] label { color: #475569 !important; }
+    body[data-theme="light"] input,
+    body[data-theme="light"] select,
+    body[data-theme="light"] textarea { background-color: #ffffff !important; color: #1e293b !important; border-color: #cbd5e1 !important; }
+    body[data-theme="light"] .bg-slate-50,
+    body[data-theme="light"] .bg-slate-100 { background-color: #f1f5f9 !important; }
+
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white,
+    body[data-theme="dark"] main,
+    body[data-theme="dark"] .form-container,
+    body[data-theme="dark"] .section-block {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] td,
+    body[data-theme="dark"] th { color: #cbd5e1 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-700,
+    body[data-theme="dark"] .text-slate-800,
+    body[data-theme="dark"] .text-slate-600,
+    body[data-theme="dark"] .text-slate-500,
+    body[data-theme="dark"] label { color: #cbd5e1 !important; }
+    body[data-theme="dark"] input,
+    body[data-theme="dark"] select,
+    body[data-theme="dark"] textarea { background-color: #0f172a !important; color: #ffffff !important; border-color: #475569 !important; }
+    body[data-theme="dark"] .bg-slate-50,
+    body[data-theme="dark"] .bg-slate-100 { background-color: #0f172a !important; }
+
+    /* Other Themes */
+    body[data-theme="gray"] { background-color: #cbd5e1 !important; color: #1e293b !important; }
+    body[data-theme="gray"] .bg-white, body[data-theme="gray"] main { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+    body[data-theme="blue"] { background-color: #bae6fd !important; color: #0c4a6e !important; }
+    body[data-theme="blue"] .bg-white, body[data-theme="blue"] main { background-color: #f0f9ff !important; border-color: #93c5fd !important; }
+    body[data-theme="green"] { background-color: #bbf7d0 !important; color: #14532d !important; }
+    body[data-theme="green"] .bg-white, body[data-theme="green"] main { background-color: #f0fdf4 !important; border-color: #86efac !important; }
+
+    /* Glass card theme overrides */
+    body[data-theme="light"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(148, 163, 184, 0.2) !important;
+      color: #1e293b !important;
+    }
+    body[data-theme="blue"] .glass-card {
+      background: rgba(255, 255, 255, 0.75) !important;
+      border-color: rgba(14, 165, 233, 0.2) !important;
+      color: #0369a1 !important;
+    }
+    body[data-theme="green"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(34, 197, 94, 0.2) !important;
+      color: #15803d !important;
+    }
+    body[data-theme="gray"] .glass-card {
+      background: rgba(255, 255, 255, 0.8) !important;
+      border-color: rgba(148, 163, 184, 0.25) !important;
+      color: #334155 !important;
+    }
+    body[data-theme="dark"] .glass-card {
+      background: rgba(30, 41, 59, 0.7) !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+      color: #f1f5f9 !important;
+    }
+
+    /* Settings card theme overrides */
+    body[data-theme="light"] .settings-card {
+      background: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #1e293b !important;
+    }
+    body[data-theme="blue"] .settings-card {
+      background: #e0f2fe !important;
+      border-color: #bae6fd !important;
+      color: #0369a1 !important;
+    }
+    body[data-theme="green"] .settings-card {
+      background: #dcfce7 !important;
+      border-color: #bbf7d0 !important;
+      color: #15803d !important;
+    }
+    body[data-theme="gray"] .settings-card {
+      background: #e2e8f0 !important;
+      border-color: #cbd5e1 !important;
+      color: #334155 !important;
+    }
+    body[data-theme="dark"] .settings-card {
+      background: rgba(15, 23, 42, 0.45) !important;
+      border-color: rgba(255, 255, 255, 0.05) !important;
+      color: #f1f5f9 !important;
+    }
+
+    /* Light Theme Font Colors and Contrasts */
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-300,
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-350,
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-400 {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-500 {
+      color: #334155 !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-white {
+      color: #0f172a !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-slate-450 {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-indigo-300 {
+      color: #4338ca !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .text-pink-300 {
+      color: #be185d !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) select,
+    body:not([data-theme="dark"]):not([data-theme="default"]) input {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      color: #1e293b !important;
+      border-color: #cbd5e1 !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) tr {
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) td {
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) th {
+      background-color: #f1f5f9 !important;
+      color: #1e293b !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .bg-black\/40 {
+      background-color: rgba(255, 255, 255, 0.6) !important;
+      border-color: rgba(0, 0, 0, 0.1) !important;
+    }
+    body:not([data-theme="dark"]):not([data-theme="default"]) .bg-slate-900\/40 {
+      background-color: rgba(255, 255, 255, 0.75) !important;
+      border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Print styles */
+    @media print {
+      body, body[data-theme] { background: white !important; color: black !important; }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; }
+      table { width: 100% !important; border-collapse: collapse !important; border: 1.5px solid #000 !important; }
+      th, td { border: 1px solid #000 !important; padding: 6px 4px !important; text-align: center !important; color: black !important; }
+      th { background-color: #e2e8f0 !important; font-weight: bold !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#0b0f19] text-[#f1f5f9] min-h-screen flex flex-col justify-between" data-theme="dark">
+
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-4 md:p-6 flex-1 flex flex-col gap-6">
+    
+    <!-- Title / Tab Nav Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900/40 p-4 rounded-3xl border border-white/5 shadow-lg">
+      <div>
+        <h2 class="text-xl md:text-2xl font-black bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 bg-clip-text text-transparent uppercase tracking-wider">
+          ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣೆ / Shoe & Socks Distribution
+        </h2>
+        <p class="text-[10px] text-slate-400 font-semibold tracking-wide mt-0.5">
+          ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ-ಸಾಕ್ಸ್ ಗಾತ್ರದ ನಮೂದು ಹಾಗೂ ದಾಸ್ತಾನು ವರದಿಗಳು / Entry of shoe & socks sizes and inventory reports
+        </p>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex gap-2 bg-black/40 p-1.5 border border-white/5 rounded-2xl w-full md:w-auto overflow-x-auto">
+        <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md">
+          <i class="fa-solid fa-chart-pie"></i> ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
+        </button>
+        <button onclick="switchTab('entry')" id="btn-tab-entry" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-file-pen"></i> ನಮೂದು / Entry Form
+        </button>
+        <button onclick="switchTab('settings')" id="btn-tab-settings" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-sliders"></i> ನಿಯಮಾವಳಿ / Settings
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN BODY SECTIONS -->
+
+    <!-- Section 1: Dashboard Tab -->
+    <div id="section-dashboard" class="space-y-6">
+      <!-- 4 Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Total Students -->
+        <div class="glass-card neon-glow-indigo p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-graduation-cap"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ಮಕ್ಕಳು / Total Students</p>
+            <h3 id="statTotalStudents" class="text-2xl font-black tracking-tight mt-0.5">0</h3>
+          </div>
+        </div>
+
+        <!-- Card 2: Distributed Shoes -->
+        <div class="glass-card neon-glow-emerald p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-shoe-prints"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಶೂ ವಿತರಿಸಲಾಗಿದೆ / Shoes Distributed</p>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <h3 id="statDistributedShoes" class="text-2xl font-black tracking-tight text-emerald-400">0</h3>
+              <span id="statShoePct" class="text-[10px] font-bold text-slate-400">(0%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Distributed Socks -->
+        <div class="glass-card neon-glow-pink p-5 rounded-3xl flex items-center gap-4">
+          <div class="w-12 h-12 bg-pink-600/20 text-pink-400 border border-pink-500/30 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-socks"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಸಾಕ್ಸ್ ವಿತರಿಸಲಾಗಿದೆ / Socks Distributed</p>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <h3 id="statDistributedSocks" class="text-2xl font-black tracking-tight text-pink-400">0</h3>
+              <span id="statSocksPct" class="text-[10px] font-bold text-slate-400">(0%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Pending / Balance -->
+        <div class="glass-card p-5 rounded-3xl flex items-center gap-4 border-amber-500/10">
+          <div class="w-12 h-12 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl flex items-center justify-center text-xl">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">ಬಾಕಿ ಇದೆ / Distribution Pending</p>
+            <h3 id="statPendingCount" class="text-2xl font-black tracking-tight text-amber-400 mt-0.5">0</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Filter & Dynamic Charts/Tables -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2 Cols: Tables & Matrix -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <!-- Gender-wise Size-wise count Matrix -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div class="flex justify-between items-center flex-wrap gap-3">
+              <div>
+                <h4 class="font-bold text-sm">ಗಾತ್ರ ಮತ್ತು ಲಿಂಗವಾರು ವಿತರಣೆ / Size & Gender-wise Breakdown</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5">ವಿತರಿಸಲಾದ ಶೂಗಳು ಮತ್ತು ಸಾಕ್ಸ್‌ಗಳ ಒಟ್ಟು ಲೆಕ್ಕ / Count of distributed shoes & socks by size and gender</p>
+              </div>
+              <!-- Class Filter for Dashboard stats -->
+              <div class="flex items-center gap-2 bg-black/40 border border-white/5 px-3 py-1.5 rounded-xl">
+                <span class="text-[9px] font-bold text-slate-450 uppercase"><i class="fa-solid fa-filter text-indigo-400"></i> Class:</span>
+                <select id="dashClassFilter" onchange="updateDashboardStats()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+                  <option value="ALL">ALL / ಎಲ್ಲಾ ತರಗತಿ</option>
+                  <option value="1">Class 1</option>
+                  <option value="2">Class 2</option>
+                  <option value="3">Class 3</option>
+                  <option value="4">Class 4</option>
+                  <option value="5">Class 5</option>
+                  <option value="6">Class 6</option>
+                  <option value="7">Class 7</option>
+                  <option value="8">Class 8</option>
+                  <option value="9">Class 9</option>
+                  <option value="10">Class 10</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Static count table -->
+            <div class="overflow-x-auto custom-scrollbar">
+              <table class="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr class="bg-slate-900/60 text-slate-300 font-bold border-b border-white/5">
+                    <th class="p-2.5">ಗಾತ್ರ / Size</th>
+                    <th class="p-2.5 text-center bg-indigo-500/5">ಶೂ (ಹುಡುಗರು) / Shoe (Boys)</th>
+                    <th class="p-2.5 text-center bg-indigo-500/5">ಶೂ (ಹುಡುಗಿಯರು) / Shoe (Girls)</th>
+                    <th class="p-2.5 text-center bg-indigo-500/10 font-bold text-indigo-300">ಶೂ ಒಟ್ಟು / Shoe Total</th>
+                    <th class="p-2.5 text-center bg-pink-500/5">ಸಾಕ್ಸ್ (ಹುಡುಗರು) / Socks (Boys)</th>
+                    <th class="p-2.5 text-center bg-pink-500/5">ಸಾಕ್ಸ್ (ಹುಡುಗಿಯರು) / Socks (Girls)</th>
+                    <th class="p-2.5 text-center bg-pink-500/10 font-bold text-pink-300">ಸಾಕ್ಸ್ ಒಟ್ಟು / Socks Total</th>
+                  </tr>
+                </thead>
+                <tbody id="sizeBreakdownTableBody" class="font-semibold text-slate-350 divide-y divide-white/5">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Class-wise summary matrix -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h4 class="font-bold text-sm">ತರಗತಿವಾರು ಪ್ರಗತಿ ಸಾರಾಂಶ / Classwise Summary</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5">ಪ್ರತಿ ತರಗತಿಯ ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು ಮತ್ತು ವಿತರಣಾ ಪ್ರಗತಿ / Classwise summary matrix</p>
+              </div>
+              <button onclick="window.print()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-[10px] font-bold transition flex items-center gap-1">
+                <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸು / Print Summary
+              </button>
+            </div>
+
+            <div class="overflow-x-auto custom-scrollbar">
+              <table id="summaryMatrixTable" class="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr class="bg-slate-900/60 text-slate-300 font-bold border-b border-white/5 text-center">
+                    <th class="p-2.5 text-left">ತರಗತಿ / Class</th>
+                    <th class="p-2.5">ಒಟ್ಟು ಮಕ್ಕಳು / Students</th>
+                    <th class="p-2.5">ಶೂ ವಿತರಣೆ / Shoe Distributed</th>
+                    <th class="p-2.5">ಶೂ ಬಾಕಿ / Shoe Pending</th>
+                    <th class="p-2.5">ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks Distributed</th>
+                    <th class="p-2.5">ಸಾಕ್ಸ್ ಬಾಕಿ / Socks Pending</th>
+                    <th class="p-2.5">ಪ್ರಗತಿ ದರ / Progress Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="classSummaryTableBody" class="font-semibold text-slate-350 divide-y divide-white/5 text-center">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right 1 Col: Visual Chart / Stock Alert -->
+        <div class="space-y-6">
+          <!-- Chart widget -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div>
+              <h4 class="font-bold text-sm">ಗಾತ್ರವಾರು ವಿತರಣಾ ಚಾರ್ಟ್ / Size-wise Chart</h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">ಶೂ ಗಾತ್ರವಾರು ವಿತರಣೆಯ ರೇಖಾಚಿತ್ರ / Visual breakdown by size</p>
+            </div>
+            <div class="relative h-60 w-full flex items-center justify-center">
+              <canvas id="shoesSizeChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Stock alert widget -->
+          <div class="glass-card p-5 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div>
+              <h4 class="font-bold text-sm">ದಾಸ್ತಾನು ಎಚ್ಚರಿಕೆ ಫಲಕ / Stock Alerts & Config</h4>
+              <p class="text-[9px] text-slate-400 mt-0.5">ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮತ್ತು ಕೊರತೆಯ ವಿವರ / Available stock vs distributed balance</p>
+            </div>
+            <div class="space-y-3 max-h-64 overflow-y-auto custom-scrollbar pr-1" id="dashStockList">
+              <!-- Loaded dynamically -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 2: Entry Tab -->
+    <div id="section-entry" class="space-y-6 hidden">
+      <!-- Search & Filters Row -->
+      <div class="glass-card p-4 rounded-3xl border border-white/5 shadow-lg flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          <!-- Class selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-chalkboard text-indigo-400"></i> Class:</span>
+            <select id="entryClassFilter" onchange="loadStudentsData()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ ತರಗತಿ</option>
+              <option value="LKG">LKG</option>
+              <option value="UKG">UKG</option>
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4" selected>Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7">Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+          </div>
+
+          <!-- Gender selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-venus-mars text-indigo-400"></i> Gender:</span>
+            <select id="entryGenderFilter" onchange="applyEntryFilters()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ</option>
+              <option value="Boy">Boy / ಗಂಡು</option>
+              <option value="Girl">Girl / ಹೆಣ್ಣು</option>
+            </select>
+          </div>
+
+          <!-- Status selector -->
+          <div class="flex items-center gap-1.5 bg-black/40 border border-white/5 rounded-xl px-2.5 py-1.5">
+            <span class="text-slate-400 font-bold text-[9px] uppercase"><i class="fa-solid fa-circle-check text-indigo-400"></i> Status:</span>
+            <select id="entryStatusFilter" onchange="applyEntryFilters()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
+              <option value="ALL">ALL / ಎಲ್ಲಾ</option>
+              <option value="shoe_pending">Shoe Pending / ಶೂ ಬಾಕಿ</option>
+              <option value="socks_pending">Socks Pending / ಸಾಕ್ಸ್ ಬಾಕಿ</option>
+              <option value="both_pending">Both Pending / ಎರಡೂ ಬಾಕಿ</option>
+              <option value="both_distributed">Both Distributed / ಎರಡೂ ವಿತರಿಸಲಾಗಿದೆ</option>
+            </select>
+          </div>
+
+          <!-- Search input -->
+          <div class="relative w-full sm:w-60">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="entrySearch" oninput="applyEntryFilters()" placeholder="ಹೆಸರು / STS ಸಂಖ್ಯೆ ಬಳಸಿ ಹುಡುಕಿ..." class="w-full bg-black/40 border border-white/5 pl-9 pr-4 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <!-- Export Buttons / Bulk Action -->
+        <div class="flex gap-2 items-center flex-wrap">
+          <!-- Bulk actions -->
+          <select id="bulkActionSelect" onchange="handleBulkAction(this.value)" class="bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500/30 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer shadow-md">
+            <option value="" disabled selected>ಬೃಹತ್ ಕ್ರಿಯೆ / Bulk Action</option>
+            <option value="distribute_both">Mark both as Distributed</option>
+            <option value="clear_both">Clear both selections</option>
+          </select>
+
+          <!-- Export -->
+          <button onclick="exportToCSV()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-file-csv text-indigo-400"></i> CSV Export
+          </button>
+
+          <!-- Import -->
+          <input type="file" id="shoeSocksImportFile" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleShoeSocksImport(event)">
+          <button onclick="document.getElementById('shoeSocksImportFile').click()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm" title="Import Shoe and Socks distribution Excel or CSV data directly to Supabase">
+            <i class="fa-solid fa-file-import text-amber-500"></i> ಆಮದು / Import CSV/Excel
+          </button>
+
+          <!-- Print Class Report -->
+          <button onclick="printClassReport()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-print text-emerald-400"></i> ವರದಿ ಮುದ್ರಿಸು / Print Report
+          </button>
+        </div>
+      </div>
+
+      <!-- Main entry table -->
+      <div class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table id="shoes-socks-distribution-table" class="w-full border-collapse text-left text-xs">
+            <thead id="entryTableHeader">
+              <tr class="bg-slate-900/80 text-slate-300 font-bold border-b border-white/5 text-center">
+                <th class="p-3 w-12">ಕ್ರಮ ಸಂ. / Sl.No.</th>
+                <th class="p-3 w-28">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No.</th>
+                <th class="p-3 text-left">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
+                <th class="p-3 w-20">ಲಿಂಗ / Gender</th>
+                <th class="p-3 w-40 bg-indigo-500/[0.02]">ಶೂ ಗಾತ್ರ / Shoe Size</th>
+                <th class="p-3 w-32 bg-indigo-500/[0.02]">ಶೂ ವಿತರಣೆ / Shoe Status</th>
+                <th class="p-3 w-40 bg-pink-500/[0.02]">ಸಾಕ್ಸ್ ಗಾತ್ರ / Socks Size</th>
+                <th class="p-3 w-32 bg-pink-500/[0.02]">ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks Status</th>
+                <th class="p-3 w-24 no-print">ಸ್ಥಿತಿ / Auto-Save</th>
+              </tr>
+            </thead>
+            <tbody id="distributionTableBody" class="font-semibold text-slate-350 divide-y divide-white/5 text-center">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Settings Tab -->
+    <div id="section-settings" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Rules Config -->
+        <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
+          <div>
+            <h4 class="font-bold text-base">ಗಾತ್ರದ ನಿಯಮಾವಳಿ / Size Mapping Rules</h4>
+            <p class="text-[10px] text-slate-400 mt-0.5">ತರಗತಿವಾರು ಮತ್ತು ಲಿಂಗವಾರು ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳನ್ನು ನಿಗದಿಪಡಿಸಿ / Define default shoe & socks sizes based on class groups</p>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Sizes Lists Config -->
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3 animate-fade-in">
+              <h5 class="font-bold text-xs text-indigo-400">ಲಭ್ಯವಿರುವ ಗಾತ್ರಗಳ ಪಟ್ಟಿ / Available Size Lists</h5>
+              <div class="space-y-3">
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Shoe Sizes List (Comma separated) / ಶೂ ಗಾತ್ರಗಳ ಪಟ್ಟಿ</label>
+                  <input type="text" id="setting-shoe-sizes" value="B1,B2,B3,B4,B5,G1,G2,G3,G4,G5" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Socks Sizes List (Comma separated) / ಸಾಕ್ಸ್ ಗಾತ್ರಗಳ ಪಟ್ಟಿ</label>
+                  <input type="text" id="setting-socks-sizes" value="S,M,L,XL" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 1: Class 1-5 -->
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-indigo-400">Class 1-5 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
+                  <input type="text" id="rule-15-boys-shoe" value="B1" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
+                  <input type="text" id="rule-15-girls-shoe" value="G1" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
+                  <input type="text" id="rule-15-boys-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
+                  <input type="text" id="rule-15-girls-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 2: Class 6-7 -->
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-indigo-400">Class 6-7 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
+                  <input type="text" id="rule-67-boys-shoe" value="B2" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
+                  <input type="text" id="rule-67-girls-shoe" value="G2" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
+                  <input type="text" id="rule-67-boys-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
+                  <input type="text" id="rule-67-girls-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+              </div>
+            </div>
+
+            <!-- Group 3: Class 8-10 -->
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-indigo-400">Class 8-10 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
+                  <input type="text" id="rule-810-boys-shoe" value="B3" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
+                  <input type="text" id="rule-810-girls-shoe" value="G3" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
+                  <input type="text" id="rule-810-boys-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
+                  <input type="text" id="rule-810-girls-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+              </div>
+            </div>
+
+            <button onclick="saveRulesConfig()" class="w-full bg-indigo-650 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> ಉಳಿಸು / Save Rules
+            </button>
+          </div>
+        </div>
+
+        <!-- Stock / Inventory Limits Config -->
+        <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
+          <div>
+            <h4 class="font-bold text-base">ದಾಸ್ತಾನು ನಿಯಂತ್ರಣ / Stock Inventory Configuration</h4>
+            <p class="text-[10px] text-slate-400 mt-0.5">ಪ್ರತಿ ಗಾತ್ರದ ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮೌಲ್ಯಗಳನ್ನು ಹೊಂದಿಸಿ / Update total available stocks for warning thresholds</p>
+          </div>
+
+          <div class="space-y-4">
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-pink-400">Shoe Size Total Stock Limits</h5>
+              <div class="grid grid-cols-4 gap-2.5" id="shoeStockInputsGrid">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-pink-400">Socks Size Total Stock Limits</h5>
+              <div class="grid grid-cols-4 gap-2.5" id="socksStockInputsGrid">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+
+            <button onclick="saveStockConfig()" class="w-full bg-emerald-650 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> ಉಳಿಸು / Save Stock Settings
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-12 py-6 border-t border-white/5 text-center text-[10px] text-slate-500 z-10 no-print">
+    <p>© 2026 Government Higher Primary School, Marched. All rights reserved.</p>
+  </footer>
+
+  <!-- Print template placeholder -->
+  <div id="printArea" class="hidden">
+    <div class="text-center mb-6">
+      <h1 class="text-xl font-bold uppercase tracking-wider school-title-full">GHPS MARCHED</h1>
+      <h2 class="text-xs font-bold tracking-wider mt-1 uppercase">SHOE & SOCKS DISTRIBUTION REPORT / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣಾ ವರದಿ</h2>
+      <p class="text-[10px] text-slate-600 mt-1 font-bold">Class: <span id="printClassVal">All</span> | Date: <span id="printDateVal"></span></p>
+    </div>
+    <table class="w-full border-collapse text-xs text-center border-black">
+      <thead>
+        <tr class="bg-slate-200">
+          <th class="p-2 border border-black">Sl.No</th>
+          <th class="p-2 border border-black">STS No.</th>
+          <th class="p-2 border border-black text-left">Student Name</th>
+          <th class="p-2 border border-black">Gender</th>
+          <th class="p-2 border border-black">Shoe Size</th>
+          <th class="p-2 border border-black">Shoe Status</th>
+          <th class="p-2 border border-black">Socks Size</th>
+          <th class="p-2 border border-black">Socks Status</th>
+        </tr>
+      </thead>
+      <tbody id="printTableBody" class="divide-y divide-black">
+        <!-- Loaded on demand -->
+      </tbody>
+    </table>
+    
+    <div class="flex justify-between mt-12 text-xs font-bold">
+      <div>Class Teacher Signature</div>
+      <div>Head Master Signature</div>
+    </div>
+  </div>
+
+  <!-- JS Code -->
+  <script>
+    // Global Config
+    let supabaseClient = null;
+    let selectedTemplate = null; // References the Shoes & Socks incentive template
+    let admissionsList = []; // Total admitted students
+    let incentiveRecords = []; // Upserted values from student_incentives
+    let filteredStudents = []; // Active list inside Entry tab
+    
+    // Default size arrays
+    let shoeSizesList = ['B1', 'B2', 'B3', 'B4', 'B5', 'G1', 'G2', 'G3', 'G4', 'G5'];
+    let socksSizesList = ['S', 'M', 'L', 'XL'];
+
+    // Default configuration rules
+    let defaultMappingRules = {
+      '1-5': { boys_shoe: 'B1', girls_shoe: 'G1', boys_socks: 'S', girls_socks: 'S' },
+      '6-7': { boys_shoe: 'B2', girls_shoe: 'G2', boys_socks: 'M', girls_socks: 'M' },
+      '8-10': { boys_shoe: 'B3', girls_shoe: 'G3', boys_socks: 'L', girls_socks: 'L' }
+    };
+
+    // Default stock caps
+    let defaultStockLimits = {
+      'B1': 50, 'B2': 50, 'B3': 50, 'B4': 30, 'B5': 20,
+      'G1': 50, 'G2': 50, 'G3': 50, 'G4': 30, 'G5': 20,
+      'S': 100, 'M': 100, 'L': 100, 'XL': 50
+    };
+
+    // Sorting globals
+    let entrySortCol = 'name_english';
+    let entrySortOrder = 'asc';
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", async () => {
+      loadThemeAndSync();
+      initSupabase();
+      await fetchIncentiveTemplate();
+      await fetchAdmissionsAndIncentives();
+      renderEntryTableHeaders();
+      loadSettingsUI();
+      switchTab('dashboard');
+    });
+
+    function loadThemeAndSync() {
+      const savedTheme = localStorage.getItem('portal_theme') || 'dark';
+      document.body.setAttribute('data-theme', savedTheme);
+      
+      // Load saved active size lists
+      const savedShoeSizes = localStorage.getItem('shoes_sizes_list');
+      if (savedShoeSizes) {
+        shoeSizesList = savedShoeSizes.split(',').map(s => s.trim()).filter(s => s);
+      }
+      const savedSocksSizes = localStorage.getItem('socks_sizes_list');
+      if (savedSocksSizes) {
+        socksSizesList = savedSocksSizes.split(',').map(s => s.trim()).filter(s => s);
+      }
+
+      // Load saved configurations
+      const savedRules = localStorage.getItem('shoes_socks_rules');
+      if (savedRules) {
+        try { defaultMappingRules = JSON.parse(savedRules); } catch(e) {}
+      }
+      const savedStock = localStorage.getItem('shoes_socks_stock_caps');
+      if (savedStock) {
+        try { defaultStockLimits = JSON.parse(savedStock); } catch(e) {}
+      }
+    }
+
+    function initSupabase() {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+      }
+    }
+
+    // Tab switcher
+    function switchTab(tabId) {
+      const tabs = ['dashboard', 'entry', 'settings'];
+      tabs.forEach(t => {
+        const sec = document.getElementById('section-' + t);
+        const btn = document.getElementById('btn-tab-' + t);
+        if (t === tabId) {
+          if (sec) sec.classList.remove('hidden');
+          if (btn) {
+            btn.className = "flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md";
+          }
+        } else {
+          if (sec) sec.classList.add('hidden');
+          if (btn) {
+            btn.className = "flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white";
+          }
+        }
+      });
+
+      if (tabId === 'dashboard') {
+        updateDashboardStats();
+      } else if (tabId === 'entry') {
+        loadStudentsData();
+      }
+    }
+
+    // Fetch template or create one
+    async function fetchIncentiveTemplate() {
+      if (!supabaseClient) return;
+      try {
+        const { data: list, error } = await supabaseClient
+          .from('incentive_templates')
+          .select('*')
+          .eq('name', 'Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣೆ')
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        if (list) {
+          selectedTemplate = list;
+        } else {
+          // Auto create shoes and socks template
+          const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+          const { data: created, error: createError } = await supabaseClient
+            .from('incentive_templates')
+            .insert({
+              school_id: schoolId,
+              name: 'Shoes & Socks / ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣೆ',
+              print_header: 'SHOE & SOCKS DISTRIBUTION REPORT',
+              print_footer: 'Signature of Head Master / Class Teacher||true',
+              columns: [
+                { name: 'shoe_size', type: 'dropdown', options: shoeSizesList },
+                { name: 'shoe_status', type: 'boolean' },
+                { name: 'socks_size', type: 'dropdown', options: socksSizesList },
+                { name: 'socks_status', type: 'boolean' }
+              ]
+            })
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          selectedTemplate = created;
+        }
+      } catch (err) {
+        console.error("Failed to load shoes/socks template:", err);
+      }
+    }
+
+    // Fetch admissions and distribution records
+    async function fetchAdmissionsAndIncentives() {
+      if (!supabaseClient || !selectedTemplate) return;
+      try {
+        let schoolId = localStorage.getItem("school_id");
+        if (supabaseClient.auth) {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session?.user?.user_metadata?.school_id) {
+            schoolId = session.user.user_metadata.school_id;
+          }
+        }
+        
+        // 1. Fetch admitted students
+        let studQuery = supabaseClient
+          .from('admissions')
+          .select('*');
+        if (schoolId) {
+          studQuery = studQuery.eq('school_id', schoolId);
+        }
+        const { data: students, error: studErr } = await studQuery;
+        if (studErr) throw studErr;
+        
+        admissionsList = (students || [])
+          .filter(s => {
+            const isAdm = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
+            return isAdm === true || isAdm === 'true';
+          })
+          .map(s => {
+            s.enroll_class = normalizeClass(s.enroll_class);
+            return s;
+          });
+
+        // 2. Fetch existing incentives data
+        let incQuery = supabaseClient
+          .from('student_incentives')
+          .select('*')
+          .eq('template_id', selectedTemplate.id);
+        if (schoolId) {
+          incQuery = incQuery.eq('school_id', schoolId);
+        }
+        const { data: records, error: incErr } = await incQuery;
+        if (incErr) throw incErr;
+        incentiveRecords = records || [];
+      } catch (err) {
+        console.error("Failed to fetch page data:", err);
+      }
+    }
+
+    // Settings UI Loading
+    function loadSettingsUI() {
+      // Load available lists inputs
+      if (document.getElementById('setting-shoe-sizes')) {
+        document.getElementById('setting-shoe-sizes').value = shoeSizesList.join(',');
+      }
+      if (document.getElementById('setting-socks-sizes')) {
+        document.getElementById('setting-socks-sizes').value = socksSizesList.join(',');
+      }
+
+      // Load rules inputs
+      document.getElementById('rule-15-boys-shoe').value = defaultMappingRules['1-5'].boys_shoe;
+      document.getElementById('rule-15-girls-shoe').value = defaultMappingRules['1-5'].girls_shoe;
+      document.getElementById('rule-15-boys-socks').value = defaultMappingRules['1-5'].boys_socks;
+      document.getElementById('rule-15-girls-socks').value = defaultMappingRules['1-5'].girls_socks;
+
+      document.getElementById('rule-67-boys-shoe').value = defaultMappingRules['6-7'].boys_shoe;
+      document.getElementById('rule-67-girls-shoe').value = defaultMappingRules['6-7'].girls_shoe;
+      document.getElementById('rule-67-boys-socks').value = defaultMappingRules['6-7'].boys_socks;
+      document.getElementById('rule-67-girls-socks').value = defaultMappingRules['6-7'].girls_socks;
+
+      document.getElementById('rule-810-boys-shoe').value = defaultMappingRules['8-10'].boys_shoe;
+      document.getElementById('rule-810-girls-shoe').value = defaultMappingRules['8-10'].girls_shoe;
+      document.getElementById('rule-810-boys-socks').value = defaultMappingRules['8-10'].boys_socks;
+      document.getElementById('rule-810-girls-socks').value = defaultMappingRules['8-10'].girls_socks;
+
+      // Load stock config grid inputs
+      let shoeStockHtml = '';
+      shoeSizesList.forEach(size => {
+        shoeStockHtml += `
+          <div class="space-y-1">
+            <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">${size}</label>
+            <input type="number" id="stock-shoe-${size}" value="${defaultStockLimits[size] || 0}" class="w-full bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none">
+          </div>
+        `;
+      });
+      document.getElementById('shoeStockInputsGrid').innerHTML = shoeStockHtml;
+
+      let socksStockHtml = '';
+      socksSizesList.forEach(size => {
+        socksStockHtml += `
+          <div class="space-y-1">
+            <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">${size}</label>
+            <input type="number" id="stock-socks-${size}" value="${defaultStockLimits[size] || 0}" class="w-full bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none">
+          </div>
+        `;
+      });
+      document.getElementById('socksStockInputsGrid').innerHTML = socksStockHtml;
+    }
+
+    // Save rules settings local + DB fallback if needed
+    function saveRulesConfig() {
+      // First save available sizes lists
+      const shoeInput = document.getElementById('setting-shoe-sizes').value.trim();
+      const socksInput = document.getElementById('setting-socks-sizes').value.trim();
+
+      if (shoeInput) {
+        shoeSizesList = shoeInput.split(',').map(s => s.trim()).filter(s => s);
+        localStorage.setItem('shoes_sizes_list', shoeSizesList.join(','));
+      }
+      if (socksInput) {
+        socksSizesList = socksInput.split(',').map(s => s.trim()).filter(s => s);
+        localStorage.setItem('socks_sizes_list', socksSizesList.join(','));
+      }
+
+      defaultMappingRules['1-5'].boys_shoe = document.getElementById('rule-15-boys-shoe').value.trim();
+      defaultMappingRules['1-5'].girls_shoe = document.getElementById('rule-15-girls-shoe').value.trim();
+      defaultMappingRules['1-5'].boys_socks = document.getElementById('rule-15-boys-socks').value.trim();
+      defaultMappingRules['1-5'].girls_socks = document.getElementById('rule-15-girls-socks').value.trim();
+
+      defaultMappingRules['6-7'].boys_shoe = document.getElementById('rule-67-boys-shoe').value.trim();
+      defaultMappingRules['6-7'].girls_shoe = document.getElementById('rule-67-girls-shoe').value.trim();
+      defaultMappingRules['6-7'].boys_socks = document.getElementById('rule-67-boys-socks').value.trim();
+      defaultMappingRules['6-7'].girls_socks = document.getElementById('rule-67-girls-socks').value.trim();
+
+      defaultMappingRules['8-10'].boys_shoe = document.getElementById('rule-810-boys-shoe').value.trim();
+      defaultMappingRules['8-10'].girls_shoe = document.getElementById('rule-810-girls-shoe').value.trim();
+      defaultMappingRules['8-10'].boys_socks = document.getElementById('rule-810-boys-socks').value.trim();
+      defaultMappingRules['8-10'].girls_socks = document.getElementById('rule-810-girls-socks').value.trim();
+
+      localStorage.setItem('shoes_socks_rules', JSON.stringify(defaultMappingRules));
+      
+      // Re-initialize stock limits input blocks for the new list
+      loadSettingsUI();
+      
+      alert("ಗಾತ್ರದ ನಿಯಮಾವಳಿಗಳು ಮತ್ತು ಲಭ್ಯವಿರುವ ಸೈಜ್ ಪಟ್ಟಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ. / Rules and available sizes saved successfully!");
+    }
+
+    // Save stock settings limits
+    function saveStockConfig() {
+      shoeSizesList.forEach(size => {
+        const el = document.getElementById('stock-shoe-' + size);
+        if (el) defaultStockLimits[size] = parseInt(el.value) || 0;
+      });
+      socksSizesList.forEach(size => {
+        const el = document.getElementById('stock-socks-' + size);
+        if (el) defaultStockLimits[size] = parseInt(el.value) || 0;
+      });
+
+      localStorage.setItem('shoes_socks_stock_caps', JSON.stringify(defaultStockLimits));
+      alert("ದಾಸ್ತಾನು ಅಂಕಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ. / Stock limits saved successfully!");
+      updateDashboardStats();
+    }
+
+    // Normalize class string to standard values (LKG, UKG, 1, 2, ... 10)
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      
+      return classStr.toString().trim();
+    }
+
+    // Resolve default values based on mapping rules
+    function getDefaultSize(enrollClass, gender, type) {
+      let group = '1-5';
+      const cleanClass = normalizeClass(enrollClass) || '4';
+      
+      if (['6', '7'].includes(cleanClass)) {
+        group = '6-7';
+      } else if (['8', '9', '10'].includes(cleanClass)) {
+        group = '8-10';
+      }
+      
+      const genNorm = gender && (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female') || gender.includes('ಹೆಣ್ಣು')) ? 'girls' : 'boys';
+      
+      if (type === 'shoe') {
+        return defaultMappingRules[group][genNorm + '_shoe'] || 'B1';
+      } else {
+        return defaultMappingRules[group][genNorm + '_socks'] || 'S';
+      }
+    }
+
+    // Normalize Student name
+    function getStudentName(s) {
+      const en = s.name_english ? s.name_english.trim().toUpperCase() : '';
+      const kn = s.student_name ? s.student_name.trim() : '';
+      if (en && kn) return `${en} / ${kn}`;
+      return en || kn || '-';
+    }
+
+    // Render student entries inside entry form
+    function loadStudentsData() {
+      const cls = document.getElementById('entryClassFilter').value;
+      
+      // Filter list of students in local memory
+      filteredStudents = admissionsList.filter(s => {
+        if (cls === 'ALL') return true;
+        let sc = s.enroll_class ? s.enroll_class.toString().trim() : '';
+        return sc === cls;
+      });
+
+      applyEntryFilters();
+    }
+
+    function applyEntryFilters() {
+      const gender = document.getElementById('entryGenderFilter').value;
+      const status = document.getElementById('entryStatusFilter').value;
+      const search = document.getElementById('entrySearch').value.toLowerCase().trim();
+
+      const incentiveValuesMap = {};
+      incentiveRecords.forEach(rec => {
+        incentiveValuesMap[rec.student_id] = rec.values || {};
+      });
+
+      // Filter local admissions list
+      let result = filteredStudents.filter(s => {
+        // Gender filter
+        if (gender !== 'ALL') {
+          const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+          if (gender === 'Girl' && !isGirl) return false;
+          if (gender === 'Boy' && isGirl) return false;
+        }
+
+        // Search match
+        const sts = s.app_no ? s.app_no.toLowerCase() : '';
+        const name = (s.name_english || '').toLowerCase() + ' ' + (s.student_name || '').toLowerCase();
+        if (search && !sts.includes(search) && !name.includes(search)) return false;
+
+        // Status filter
+        const vals = incentiveValuesMap[s.id] || {};
+        const shoeDist = vals.shoe_status === true || vals.shoe_status === 'true';
+        const socksDist = vals.socks_status === true || vals.socks_status === 'true';
+
+        if (status === 'shoe_pending' && shoeDist) return false;
+        if (status === 'socks_pending' && socksDist) return false;
+        if (status === 'both_pending' && (shoeDist || socksDist)) return false;
+        if (status === 'both_distributed' && (!shoeDist || !socksDist)) return false;
+
+        return true;
+      });
+
+      // Sort the result array
+      if (entrySortCol) {
+        const mult = entrySortOrder === 'asc' ? 1 : -1;
+        result.sort((a, b) => {
+          let valA = '';
+          let valB = '';
+
+          if (entrySortCol === 'name_english') {
+            valA = a.name_english || '';
+            valB = b.name_english || '';
+          } else if (entrySortCol === 'app_no') {
+            valA = a.app_no || '';
+            valB = b.app_no || '';
+          } else if (entrySortCol === 'gender') {
+            valA = a.gender || '';
+            valB = b.gender || '';
+          } else if (entrySortCol === 'shoe_size') {
+            valA = incentiveValuesMap[a.id]?.shoe_size || getDefaultSize(a.enroll_class, a.gender, 'shoe');
+            valB = incentiveValuesMap[b.id]?.shoe_size || getDefaultSize(b.enroll_class, b.gender, 'shoe');
+          } else if (entrySortCol === 'socks_size') {
+            valA = incentiveValuesMap[a.id]?.socks_size || getDefaultSize(a.enroll_class, a.gender, 'socks');
+            valB = incentiveValuesMap[b.id]?.socks_size || getDefaultSize(b.enroll_class, b.gender, 'socks');
+          } else if (entrySortCol === 'shoe_status') {
+            const actA = incentiveValuesMap[a.id]?.shoe_status;
+            const actB = incentiveValuesMap[b.id]?.shoe_status;
+            valA = (actA === true || actA === 'true') ? 1 : 0;
+            valB = (actB === true || actB === 'true') ? 1 : 0;
+          } else if (entrySortCol === 'socks_status') {
+            const actA = incentiveValuesMap[a.id]?.socks_status;
+            const actB = incentiveValuesMap[b.id]?.socks_status;
+            valA = (actA === true || actA === 'true') ? 1 : 0;
+            valB = (actB === true || actB === 'true') ? 1 : 0;
+          }
+
+          return valA.toString().localeCompare(valB.toString(), undefined, { numeric: true, sensitivity: 'base' }) * mult;
+        });
+      }
+
+      activeRenderedStudents = result;
+      renderEntryTable(result, incentiveValuesMap);
+    }
+
+    function handleEntrySort(col) {
+      if (entrySortCol === col) {
+        entrySortOrder = entrySortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        entrySortCol = col;
+        entrySortOrder = 'asc';
+      }
+      renderEntryTableHeaders();
+      applyEntryFilters();
+    }
+
+    function renderEntryTableHeaders() {
+      const getIcon = (col) => {
+        if (entrySortCol !== col) return ' <i class="fa-solid fa-sort opacity-40 ml-1 text-[10px]"></i>';
+        return entrySortOrder === 'asc' ? ' <i class="fa-solid fa-sort-up text-indigo-400 ml-1"></i>' : ' <i class="fa-solid fa-sort-down text-indigo-400 ml-1"></i>';
+      };
+      
+      const thead = document.getElementById('entryTableHeader');
+      if (!thead) return;
+
+      thead.innerHTML = `
+        <tr class="bg-slate-900/80 text-slate-300 font-bold border-b border-white/5 text-center select-none">
+          <th class="p-3 w-12">ಕ್ರಮ ಸಂ. / Sl.No.</th>
+          <th onclick="handleEntrySort('app_no')" class="p-3 w-28 cursor-pointer hover:bg-slate-800/40 transition">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No.${getIcon('app_no')}</th>
+          <th onclick="handleEntrySort('name_english')" class="p-3 text-left cursor-pointer hover:bg-slate-800/40 transition">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name${getIcon('name_english')}</th>
+          <th onclick="handleEntrySort('gender')" class="p-3 w-20 cursor-pointer hover:bg-slate-800/40 transition">ಲಿಂಗ / Gender${getIcon('gender')}</th>
+          <th onclick="handleEntrySort('shoe_size')" class="p-3 w-40 bg-indigo-500/[0.02] cursor-pointer hover:bg-indigo-500/10 transition">ಶೂ ಗಾತ್ರ / Shoe Size${getIcon('shoe_size')}</th>
+          <th onclick="handleEntrySort('shoe_status')" class="p-3 w-32 bg-indigo-500/[0.02] cursor-pointer hover:bg-indigo-500/10 transition">ಶೂ ವಿತರಣೆ / Shoe Status${getIcon('shoe_status')}</th>
+          <th onclick="handleEntrySort('socks_size')" class="p-3 w-40 bg-pink-500/[0.02] cursor-pointer hover:bg-pink-500/10 transition">ಸಾಕ್ಸ್ ಗಾತ್ರ / Socks Size${getIcon('socks_size')}</th>
+          <th onclick="handleEntrySort('socks_status')" class="p-3 w-32 bg-pink-500/[0.02] cursor-pointer hover:bg-pink-500/10 transition">ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks Status${getIcon('socks_status')}</th>
+          <th class="p-3 w-24 no-print">ಸ್ಥಿತಿ / Auto-Save</th>
+        </tr>
+      `;
+    }
+
+    let activeRenderedStudents = [];
+
+    function printClassReport() {
+      const cls = document.getElementById('entryClassFilter').value;
+      const classText = cls === 'ALL' ? 'All Classes / ಎಲ್ಲಾ ತರಗತಿ' : `Class ${cls}`;
+      
+      if (!activeRenderedStudents || activeRenderedStudents.length === 0) {
+        alert("ಮುದ್ರಿಸಲು ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ. / No records to print.");
+        return;
+      }
+
+      window.openPrintDrawer({
+        tableId: 'shoes-socks-distribution-table',
+        title: 'ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣಾ ವರದಿ / Shoe & Socks Distribution Report',
+        class: classText,
+        exam: '',
+        subject: '',
+        students: activeRenderedStudents || []
+      });
+    }
+
+    async function handleShoeSocksImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          const data = e.target.result;
+          const workbook = XLSX.read(data, { type: 'binary' });
+          const firstSheet = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[firstSheet];
+          const json = XLSX.utils.sheet_to_json(sheet);
+
+          if (json.length === 0) {
+            alert('File is empty.');
+            return;
+          }
+
+          const headers = Object.keys(json[0] || {});
+          const stsKey = headers.find(h => {
+            const norm = h.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            return norm === 'stsno' || norm === 'sts' || norm === 'appno' || norm === 'studentno';
+          }) || 'STS No';
+
+          const shoeSizeKey = headers.find(h => h.trim().toLowerCase().includes('shoe size') || h.trim().toLowerCase().includes('ಶೂ ಗಾತ್ರ') || h.trim().toLowerCase() === 'shoe_size') || 'shoe_size';
+          const shoeStatusKey = headers.find(h => h.trim().toLowerCase().includes('shoe status') || h.trim().toLowerCase().includes('shoe_status') || h.trim().toLowerCase().includes('ಶೂ ವಿತರಣೆ')) || 'shoe_status';
+          const socksSizeKey = headers.find(h => h.trim().toLowerCase().includes('socks size') || h.trim().toLowerCase().includes('socks_size') || h.trim().toLowerCase().includes('ಸಾಕ್ಸ್ ಗಾತ್ರ')) || 'socks_size';
+          const socksStatusKey = headers.find(h => h.trim().toLowerCase().includes('socks status') || h.trim().toLowerCase().includes('socks_status') || h.trim().toLowerCase().includes('ಸಾಕ್ಸ್ ವಿತರಣೆ')) || 'socks_status';
+
+          let schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+          if (supabaseClient.auth) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session?.user?.user_metadata?.school_id) {
+              schoolId = session.user.user_metadata.school_id;
+            }
+          }
+
+          let updatedCount = 0;
+          const upsertPayloads = [];
+
+          json.forEach(row => {
+            const stsVal = (row[stsKey] || '').toString().trim();
+            if (!stsVal) return;
+
+            const student = admissionsList.find(s => s.app_no === stsVal);
+            if (!student) return;
+
+            const shoeSize = row[shoeSizeKey] !== undefined ? String(row[shoeSizeKey]).trim() : '';
+            const shoeStatusRaw = String(row[shoeStatusKey] || '').trim().toLowerCase();
+            const shoeStatus = (shoeStatusRaw === 'true' || shoeStatusRaw === 'yes' || shoeStatusRaw === 'distributed' || shoeStatusRaw === '1' || shoeStatusRaw === 'ವಿತರಿಸಲಾಗಿದೆ');
+
+            const socksSize = row[socksSizeKey] !== undefined ? String(row[socksSizeKey]).trim() : '';
+            const socksStatusRaw = String(row[socksStatusKey] || '').trim().toLowerCase();
+            const socksStatus = (socksStatusRaw === 'true' || socksStatusRaw === 'yes' || socksStatusRaw === 'distributed' || socksStatusRaw === '1' || socksStatusRaw === 'ವಿತರಿಸಲಾಗಿದೆ');
+
+            const recordValues = {
+              shoe_size: shoeSize || getDefaultSize(student.enroll_class, student.gender, 'shoe'),
+              shoe_status: shoeStatus,
+              socks_size: socksSize || getDefaultSize(student.enroll_class, student.gender, 'socks'),
+              socks_status: socksStatus
+            };
+
+            upsertPayloads.push({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: recordValues,
+              updated_at: new Date().toISOString()
+            });
+            updatedCount++;
+          });
+
+          if (upsertPayloads.length === 0) {
+            alert("ಹೊಂದಿಕೆಯಾಗುವ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ.\nNo matching students found in this file.");
+            return;
+          }
+
+          // Upload to Supabase
+          const { error: upsertErr } = await supabaseClient
+            .from('student_incentives')
+            .upsert(upsertPayloads, { onConflict: 'student_id,template_id' });
+
+          if (upsertErr) throw upsertErr;
+
+          // Re-fetch all data to sync local arrays and dashboard stats
+          await fetchAdmissionsAndIncentives();
+          loadStudentsData();
+          updateDashboardStats();
+
+          alert(`ಯಶಸ್ವಿಯಾಗಿ ${updatedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ಮಾಹಿತಿಯನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ!\nSuccessfully uploaded Shoe & Socks details for ${updatedCount} students.`);
+        } catch (err) {
+          console.error("Import failed:", err);
+          alert("ಮಾಹಿತಿ ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ: " + err.message);
+        }
+      };
+      reader.readAsBinaryString(file);
+    }
+
+    function renderEntryTable(students, recordsMap) {
+      const tbody = document.getElementById('distributionTableBody');
+      if (students.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-500 font-semibold bg-slate-50/5"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> No records match these filters.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      students.forEach((s, idx) => {
+        const vals = recordsMap[s.id] || {};
+        
+        // Resolve Shoe
+        const activeShoeSize = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+        const isShoeDistributed = vals.shoe_status === true || vals.shoe_status === 'true';
+        const shoeSizeIsDefault = !vals.shoe_size;
+
+        // Resolve Socks
+        const activeSocksSize = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+        const isSocksDistributed = vals.socks_status === true || vals.socks_status === 'true';
+        const socksSizeIsDefault = !vals.socks_size;
+
+        const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+        const displayGender = isGirl ? 'Girl / ಹೆಣ್ಣು' : 'Boy / ಗಂಡು';
+
+        html += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5 text-slate-300 font-medium">
+            <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="p-2.5 font-mono text-center">${s.app_no || '-'}</td>
+            <td class="p-2.5 text-left text-white">
+              <div class="font-bold text-xs">${s.name_english || '-'}</div>
+              <div class="text-[9px] text-slate-400">${s.student_name || '-'}</div>
+            </td>
+            <td class="p-2.5 text-center text-[10px]">${displayGender}</td>
+            
+            <!-- Shoe Size -->
+            <td class="p-2.5 bg-indigo-500/[0.01]">
+              <div class="flex items-center gap-1.5 justify-center">
+                <select id="shoe-size-${s.id}" onchange="autoSaveRecord('${s.id}')" class="bg-black/60 border border-white/10 rounded-lg px-1.5 py-1 text-[11px] focus:outline-none font-bold cursor-pointer">
+                  ${shoeSizesList.map(sz => `<option value="${sz}" ${sz === activeShoeSize ? 'selected' : ''}>${sz}</option>`).join('')}
+                </select>
+                ${shoeSizeIsDefault ? `<span class="text-[8px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Rule</span>` : ''}
+              </div>
+            </td>
+            
+            <!-- Shoe Status -->
+            <td class="p-2.5 bg-indigo-500/[0.01]">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="shoe-status-${s.id}" onchange="toggleCheckboxLabel(this); autoSaveRecord('${s.id}')" ${isShoeDistributed ? 'checked' : ''} class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-white/10 bg-black cursor-pointer">
+                <span class="text-[10px] font-bold ${isShoeDistributed ? 'text-emerald-400' : 'text-slate-500'}">${isShoeDistributed ? 'Distributed' : 'Pending'}</span>
+              </label>
+            </td>
+
+            <!-- Socks Size -->
+            <td class="p-2.5 bg-pink-500/[0.01]">
+              <div class="flex items-center gap-1.5 justify-center">
+                <select id="socks-size-${s.id}" onchange="autoSaveRecord('${s.id}')" class="bg-black/60 border border-white/10 rounded-lg px-1.5 py-1 text-[11px] focus:outline-none font-bold cursor-pointer">
+                  ${socksSizesList.map(sz => `<option value="${sz}" ${sz === activeSocksSize ? 'selected' : ''}>${sz}</option>`).join('')}
+                </select>
+                ${socksSizeIsDefault ? `<span class="text-[8px] bg-pink-500/10 text-pink-400 border border-pink-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Rule</span>` : ''}
+              </div>
+            </td>
+
+            <!-- Socks Status -->
+            <td class="p-2.5 bg-pink-500/[0.01]">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="socks-status-${s.id}" onchange="toggleCheckboxLabel(this); autoSaveRecord('${s.id}')" ${isSocksDistributed ? 'checked' : ''} class="w-4 h-4 rounded text-pink-600 focus:ring-pink-500 border-white/10 bg-black cursor-pointer">
+                <span class="text-[10px] font-bold ${isSocksDistributed ? 'text-pink-400' : 'text-slate-500'}">${isSocksDistributed ? 'Distributed' : 'Pending'}</span>
+              </label>
+            </td>
+
+            <!-- Auto-Save status indicator -->
+            <td class="p-2.5 no-print" id="status-container-${s.id}">
+              <div id="save-indicator-${s.id}" class="text-[10px] text-emerald-400 font-bold flex items-center justify-center gap-1 transition-opacity duration-300">
+                <i class="fa-solid fa-circle-check"></i> Saved
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function toggleCheckboxLabel(checkbox) {
+      const label = checkbox.nextElementSibling;
+      if (checkbox.checked) {
+        label.textContent = "Distributed";
+        label.className = "text-[10px] font-bold text-emerald-400";
+      } else {
+        label.textContent = "Pending";
+        label.className = "text-[10px] font-bold text-slate-500";
+      }
+    }
+
+    async function autoSaveRecord(studentId) {
+      if (!supabaseClient || !selectedTemplate) return;
+      
+      const indicator = document.getElementById(`save-indicator-${studentId}`);
+      if (indicator) {
+        indicator.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-indigo-400"></i> Saving...`;
+        indicator.className = "text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1 transition-opacity duration-300";
+      }
+
+      const shoeSize = document.getElementById(`shoe-size-${studentId}`).value;
+      const shoeStatus = document.getElementById(`shoe-status-${studentId}`).checked;
+      const socksSize = document.getElementById(`socks-size-${studentId}`).value;
+      const socksStatus = document.getElementById(`socks-status-${studentId}`).checked;
+
+      const recordValues = {
+        shoe_size: shoeSize,
+        shoe_status: shoeStatus,
+        socks_size: socksSize,
+        socks_status: socksStatus
+      };
+
+      try {
+        const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+        const { error } = await supabaseClient
+          .from('student_incentives')
+          .upsert({
+            school_id: schoolId,
+            student_id: studentId,
+            template_id: selectedTemplate.id,
+            values: recordValues,
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: 'student_id,template_id'
+          });
+
+        if (error) throw error;
+        
+        // Sync local record list in memory
+        let localRec = incentiveRecords.find(r => r.student_id === studentId && r.template_id === selectedTemplate.id);
+        if (!localRec) {
+          localRec = { student_id: studentId, template_id: selectedTemplate.id, values: {} };
+          incentiveRecords.push(localRec);
+        }
+        localRec.values = recordValues;
+
+        if (indicator) {
+          indicator.innerHTML = `<i class="fa-solid fa-circle-check"></i> Saved`;
+          indicator.className = "text-[10px] text-emerald-400 font-bold flex items-center justify-center gap-1 transition-opacity duration-300";
+        }
+      } catch (err) {
+        console.error("Auto-save failed:", err);
+        if (indicator) {
+          indicator.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i> Failed`;
+          indicator.className = "text-[10px] text-red-500 font-bold flex items-center justify-center gap-1 transition-opacity duration-300";
+        }
+      }
+    }
+
+    // Save a single student incentive entry (Wrapper for fallback compatibility)
+    async function saveSingleRecord(studentId) {
+      await autoSaveRecord(studentId);
+    }
+
+
+    // Bulk actions
+    async function handleBulkAction(action) {
+      if (!action || admissionsList.length === 0 || !selectedTemplate) return;
+      
+      const cls = document.getElementById('entryClassFilter').value;
+      const isBothDistributed = (action === 'distribute_both');
+
+      const confirmMsg = isBothDistributed 
+        ? `ಈ ತರಗತಿಯ (${cls}) ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ವಿತರಿಸಲಾಗಿದೆ ಎಂದು ಗುರುತಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?\nAre you sure you want to mark distribution for all students in Class ${cls}?`
+        : `ಈ ತರಗತಿಯ (${cls}) ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಮಾಹಿತಿಯನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?\nAre you sure you want to clear distribution selections for Class ${cls}?`;
+      
+      if (!confirm(confirmMsg)) {
+        document.getElementById('bulkActionSelect').value = '';
+        return;
+      }
+
+      try {
+        const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+        const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls);
+
+        const promises = classStudents.map(student => {
+          const oldVals = incentiveRecords.find(r => r.student_id === student.id && r.template_id === selectedTemplate.id)?.values || {};
+          const recordValues = {
+            shoe_size: oldVals.shoe_size || getDefaultSize(student.enroll_class, student.gender, 'shoe'),
+            shoe_status: isBothDistributed,
+            socks_size: oldVals.socks_size || getDefaultSize(student.enroll_class, student.gender, 'socks'),
+            socks_status: isBothDistributed
+          };
+
+          return supabaseClient
+            .from('student_incentives')
+            .upsert({
+              school_id: schoolId,
+              student_id: student.id,
+              template_id: selectedTemplate.id,
+              values: recordValues,
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'student_id,template_id'
+            });
+        });
+
+        const results = await Promise.all(promises);
+        const err = results.find(r => r.error);
+        if (err) throw err.error;
+
+        // Sync local memory
+        await fetchAdmissionsAndIncentives();
+        loadStudentsData();
+        alert("ಬೃಹತ್ ಕ್ರಿಯೆ ಯಶಸ್ವಿಯಾಗಿದೆ. / Bulk action finished successfully!");
+      } catch (err) {
+        console.error("Bulk action failed:", err);
+        alert("ಬೃಹತ್ ಕ್ರಿಯೆ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      } finally {
+        document.getElementById('bulkActionSelect').value = '';
+      }
+    }
+
+    // Dashboard Statistics update
+    let myChart = null;
+
+    function updateDashboardStats() {
+      if (admissionsList.length === 0) return;
+
+      const selectedClass = document.getElementById('dashClassFilter').value;
+      
+      // Filter list of active students in dashboard scope
+      const targetStudents = admissionsList.filter(s => {
+        if (selectedClass !== 'ALL') {
+          return (s.enroll_class ? s.enroll_class.toString().trim() : '') === selectedClass;
+        }
+        return true;
+      });
+
+      const incentiveValuesMap = {};
+      incentiveRecords.forEach(rec => {
+        incentiveValuesMap[rec.student_id] = rec.values || {};
+      });
+
+      let distributedShoes = 0;
+      let distributedSocks = 0;
+      
+      // Count sizes distributed
+      const shoeSizeCounts = { Boys: {}, Girls: {} };
+      const socksSizeCounts = { Boys: {}, Girls: {} };
+
+      // Initialize sizes
+      shoeSizesList.forEach(sz => { shoeSizeCounts.Boys[sz] = 0; shoeSizeCounts.Girls[sz] = 0; });
+      socksSizesList.forEach(sz => { socksSizeCounts.Boys[sz] = 0; socksSizeCounts.Girls[sz] = 0; });
+
+      targetStudents.forEach(s => {
+        const vals = incentiveValuesMap[s.id] || {};
+        const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+        const genKey = isGirl ? 'Girls' : 'Boys';
+
+        // Shoe Count
+        if (vals.shoe_status === true || vals.shoe_status === 'true') {
+          distributedShoes++;
+          const sz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+          if (shoeSizeCounts[genKey][sz] !== undefined) {
+            shoeSizeCounts[genKey][sz]++;
+          }
+        }
+
+        // Socks Count
+        if (vals.socks_status === true || vals.socks_status === 'true') {
+          distributedSocks++;
+          const sz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+          if (socksSizeCounts[genKey][sz] !== undefined) {
+            socksSizeCounts[genKey][sz]++;
+          }
+        }
+      });
+
+      // Update Summary Cards
+      const totalCount = targetStudents.length;
+      document.getElementById('statTotalStudents').textContent = totalCount;
+      document.getElementById('statDistributedShoes').textContent = distributedShoes;
+      document.getElementById('statDistributedSocks').textContent = distributedSocks;
+      
+      const shoePct = totalCount > 0 ? Math.round((distributedShoes / totalCount) * 100) : 0;
+      const socksPct = totalCount > 0 ? Math.round((distributedSocks / totalCount) * 100) : 0;
+      document.getElementById('statShoePct').textContent = `(${shoePct}%)`;
+      document.getElementById('statSocksPct').textContent = `(${socksPct}%)`;
+      
+      const pendingCount = (totalCount - distributedShoes) + (totalCount - distributedSocks);
+      document.getElementById('statPendingCount').textContent = pendingCount;
+
+      // Render breakdown static table
+      let breakdownRows = '';
+      const maxLength = Math.max(shoeSizesList.length, socksSizesList.length);
+      for (let i = 0; i < maxLength; i++) {
+        const shoeSz = shoeSizesList[i] || '';
+        const socksSz = socksSizesList[i] || '';
+
+        const shoeBoysCount = shoeSz ? shoeSizeCounts.Boys[shoeSz] : 0;
+        const shoeGirlsCount = shoeSz ? shoeSizeCounts.Girls[shoeSz] : 0;
+        const shoeTot = shoeBoysCount + shoeGirlsCount;
+
+        const socksBoysCount = socksSz ? socksSizeCounts.Boys[socksSz] : 0;
+        const socksGirlsCount = socksSz ? socksSizeCounts.Girls[socksSz] : 0;
+        const socksTot = socksBoysCount + socksGirlsCount;
+
+        breakdownRows += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5 text-center">
+            <td class="p-2 font-bold text-left text-white">${shoeSz || socksSz}</td>
+            <td class="p-2 bg-indigo-500/[0.01]">${shoeSz ? shoeBoysCount : '-'}</td>
+            <td class="p-2 bg-indigo-500/[0.01]">${shoeSz ? shoeGirlsCount : '-'}</td>
+            <td class="p-2 bg-indigo-500/[0.03] text-indigo-300 font-bold">${shoeSz ? shoeTot : '-'}</td>
+            <td class="p-2 bg-pink-500/[0.01]">${socksSz ? socksBoysCount : '-'}</td>
+            <td class="p-2 bg-pink-500/[0.01]">${socksSz ? socksGirlsCount : '-'}</td>
+            <td class="p-2 bg-pink-500/[0.03] text-pink-300 font-bold">${socksSz ? socksTot : '-'}</td>
+          </tr>
+        `;
+      }
+      document.getElementById('sizeBreakdownTableBody').innerHTML = breakdownRows;
+
+      // Render class summary table
+      const classesList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      let classSummaryHtml = '';
+      classesList.forEach(c => {
+        const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === c);
+        if (classStudents.length === 0) return;
+
+        let shoeDist = 0, socksDist = 0;
+        classStudents.forEach(s => {
+          const vals = incentiveValuesMap[s.id] || {};
+          if (vals.shoe_status === true || vals.shoe_status === 'true') shoeDist++;
+          if (vals.socks_status === true || vals.socks_status === 'true') socksDist++;
+        });
+
+        const totalItemsPoss = classStudents.length * 2;
+        const totalItemsDist = shoeDist + socksDist;
+        const rate = totalItemsPoss > 0 ? Math.round((totalItemsDist / totalItemsPoss) * 100) : 0;
+        
+        let colorText = 'text-slate-400';
+        if (rate === 100) colorText = 'text-emerald-400 font-extrabold';
+        else if (rate > 0) colorText = 'text-indigo-400 font-bold';
+
+        classSummaryHtml += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5 text-center">
+            <td class="p-2 text-left font-black text-white">Class ${c}</td>
+            <td class="p-2">${classStudents.length}</td>
+            <td class="p-2 text-emerald-400">${shoeDist}</td>
+            <td class="p-2 text-slate-500">${classStudents.length - shoeDist}</td>
+            <td class="p-2 text-pink-400">${socksDist}</td>
+            <td class="p-2 text-slate-500">${classStudents.length - socksDist}</td>
+            <td class="p-2 ${colorText}">${rate}%</td>
+          </tr>
+        `;
+      });
+      document.getElementById('classSummaryTableBody').innerHTML = classSummaryHtml || `<tr><td colspan="7" class="p-4 text-center text-slate-500">No students available in any class.</td></tr>`;
+
+      // Render Stock List Widget
+      let stockListHtml = '';
+      // Combined shoe stock counts
+      const globalShoeSizeCounts = {};
+      const globalSocksSizeCounts = {};
+      shoeSizesList.forEach(sz => { globalShoeSizeCounts[sz] = 0; });
+      socksSizesList.forEach(sz => { globalSocksSizeCounts[sz] = 0; });
+
+      admissionsList.forEach(s => {
+        const vals = incentiveValuesMap[s.id] || {};
+        if (vals.shoe_status === true || vals.shoe_status === 'true') {
+          const sz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+          if (globalShoeSizeCounts[sz] !== undefined) globalShoeSizeCounts[sz]++;
+        }
+        if (vals.socks_status === true || vals.socks_status === 'true') {
+          const sz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+          if (globalSocksSizeCounts[sz] !== undefined) globalSocksSizeCounts[sz]++;
+        }
+      });
+
+      // Display stock lists
+      const warningLimit = 5;
+      shoeSizesList.forEach(size => {
+        const distributed = globalShoeSizeCounts[size] || 0;
+        const totalStock = defaultStockLimits[size] || 0;
+        const balance = totalStock - distributed;
+        const pct = totalStock > 0 ? Math.round((distributed / totalStock) * 100) : 0;
+        
+        let barColor = 'bg-indigo-500';
+        let alertText = '';
+        if (balance <= warningLimit && balance > 0) {
+          barColor = 'bg-amber-500';
+          alertText = `<span class="text-[8px] font-extrabold text-amber-400 uppercase tracking-wider animate-pulse mr-1">Low Stock</span>`;
+        } else if (balance <= 0) {
+          barColor = 'bg-red-500';
+          alertText = `<span class="text-[8px] font-extrabold text-red-400 uppercase tracking-wider mr-1">Out of stock</span>`;
+        }
+
+        stockListHtml += `
+          <div class="space-y-1 bg-slate-900/20 p-2.5 rounded-xl border border-white/5">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>Shoe Size: <span class="text-white">${size}</span></span>
+              <span>${alertText} ${distributed} / ${totalStock} <span class="text-slate-500 font-medium">(${balance} left)</span></span>
+            </div>
+            <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden">
+              <div class="${barColor} h-full" style="width: ${Math.min(pct, 100)}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('dashStockList').innerHTML = stockListHtml;
+
+      // Update Chart
+      renderChart(globalShoeSizeCounts);
+    }
+
+    // Chart.js render function
+    function renderChart(countsData) {
+      const ctx = document.getElementById('shoesSizeChart');
+      if (!ctx) return;
+
+      const labels = Object.keys(countsData);
+      const data = Object.values(countsData);
+
+      if (myChart) {
+        myChart.destroy();
+      }
+
+      // Detect dark theme
+      const isDark = document.body.getAttribute('data-theme') !== 'light';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+      const textColor = isDark ? '#94a3b8' : '#475569';
+
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Shoes Distributed',
+            data: data,
+            backgroundColor: 'rgba(99, 102, 241, 0.65)',
+            borderColor: 'rgba(99, 102, 241, 1)',
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` Distributed: ${context.raw} pairs`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { weight: 'bold', size: 10 } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { weight: 'bold', size: 10 } },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Export to Excel / CSV
+    function exportToCSV() {
+      const cls = document.getElementById('entryClassFilter').value;
+      if (admissionsList.length === 0) return;
+
+      const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls);
+      
+      const incentiveValuesMap = {};
+      incentiveRecords.forEach(rec => {
+        incentiveValuesMap[rec.student_id] = rec.values || {};
+      });
+
+      const dataRows = classStudents.map((s, index) => {
+        const vals = incentiveValuesMap[s.id] || {};
+        
+        const shoeSz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+        const shoeStatus = (vals.shoe_status === true || vals.shoe_status === 'true') ? 'Distributed' : 'Pending';
+
+        const socksSz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+        const socksStatus = (vals.socks_status === true || vals.socks_status === 'true') ? 'Distributed' : 'Pending';
+
+        return {
+          'Sl.No': index + 1,
+          'STS Number': s.app_no || '',
+          'Student Name (English)': s.name_english || '',
+          'Student Name (Kannada)': s.student_name || '',
+          'Gender': s.gender || '',
+          'Shoe Size': shoeSz,
+          'Shoe Status': shoeStatus,
+          'Socks Size': socksSz,
+          'Socks Status': socksStatus
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(dataRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, `ShoeSocks Class ${cls}`);
+      
+      const fileName = `Shoe_Socks_Class_${cls}_Distribution.csv`;
+      XLSX.writeFile(wb, fileName, { bookType: 'csv' });
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

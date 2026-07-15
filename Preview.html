@@ -6,8 +6,9 @@
   <title>Admission Form Preview - GHPS MARCHED</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Serif+Kannada:wght@400;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
   <style>
     /* Embedded Preview Styles */
 /* Modern Design System & Variables */
@@ -490,8 +491,9 @@
             }
 
             body {
-                background-color: white;
-                color: black;
+                background: white !important;
+                background-color: white !important;
+                color: black !important;
                 overflow: visible;
                 height: auto;
                 min-height: auto;
@@ -746,6 +748,34 @@
             .editable-preview-field:hover::after {
                 opacity: 0.75;
             }
+
+            
+            .d-none {
+                display: none !important;
+            }
+        }
+
+        @media print {
+            body.print-receipt-only {
+                background: white !important;
+                background-color: white !important;
+                color: black !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
+            body.print-receipt-only > *:not(#printableReceiptCard) {
+                display: none !important;
+            }
+            body.print-receipt-only #printableReceiptCard {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none !important;
+                background: white !important;
+                color: #0f172a !important;
+            }
         }
   </style>
 </head>
@@ -797,6 +827,7 @@
             
             <!-- ================= PAGE 1 ================= -->
             <div class="page" id="page1">
+
                 <div class="content-wrapper">
 
                                         <!-- Official Header Section -->
@@ -829,7 +860,7 @@
                                 <span id="preview_app_no" style="color: red; font-weight: bold; font-size: 13.5px; padding-left: 2px;"></span>
                             </div>
                             <div class="info-center">
-                                <span data-key="academic_year">Academic Year</span> : 2026-27
+                                <span data-key="academic_year">Academic Year</span> : <span id="preview_academic_year">2026-27</span>
                             </div>
                         </div>
                     </div>
@@ -1063,7 +1094,7 @@
                 <div class="content-wrapper">
                     
                     <div class="right" style="font-size: 11px; margin-bottom: 8px; font-weight: bold;">
-                        <span data-key="academic_year">Academic Year</span> : 2026-27
+                        <span data-key="academic_year">Academic Year</span> : <span id="preview_academic_year2">2026-27</span>
                     </div>
 
                     <table>
@@ -1585,18 +1616,19 @@
             if (!container) return;
             container.innerHTML = '';
             
-            const cleaned = (valStr || '').replace(/\D/g, '');
-            for (let i = 0; i < digitsCount; i++) {
-                if (digitsCount === 12 && i > 0 && i % 4 === 0) {
-                    const space = document.createElement('span');
-                    space.className = 'digit-space';
-                    container.appendChild(space);
-                }
-                const box = document.createElement('span');
-                box.className = 'digit-box';
-                box.textContent = cleaned[i] || ' ';
-                container.appendChild(box);
+            const cleaned = (valStr || '').replace(/\s+/g, '').trim();
+            // Format 12-digit Aadhaar number as "XXXX XXXX XXXX" with spaces
+            if (cleaned.length === 12) {
+                container.textContent = cleaned.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3');
+            } else {
+                container.textContent = cleaned || valStr || '';
             }
+            container.style.fontFamily = 'monospace';
+            container.style.fontSize = '12.5px';
+            container.style.fontWeight = 'bold';
+            container.style.letterSpacing = '1px';
+            container.style.border = 'none';
+            container.style.display = 'inline-block';
         }
 
         function adjustZoom(factor) {
@@ -1735,7 +1767,12 @@
 
             // App No
             document.getElementById('preview_app_no').textContent = data.appNo || '';
-            document.getElementById('preview_footer_app_no').textContent = `${data.appNo || '______'}/${ACADEMIC_YEAR}`;
+            document.getElementById('preview_footer_app_no').textContent = `${data.appNo || '______'}/${data.academicYear || data.academic_year || ACADEMIC_YEAR}`;
+            const currentYearVal = data.academicYear || data.academic_year || ACADEMIC_YEAR;
+            const ayEl1 = document.getElementById('preview_academic_year');
+            if (ayEl1) ayEl1.textContent = currentYearVal;
+            const ayEl2 = document.getElementById('preview_academic_year2');
+            if (ayEl2) ayEl2.textContent = currentYearVal;
 
             // Generate and show QR Code
             try {
@@ -1835,9 +1872,9 @@
             const nameEl = document.getElementById('preview_name');
             if (nameEl) {
                 if (studentKn || studentEn) {
-                    nameEl.innerHTML = `<span>${studentKn}</span><span style="display:inline-block; width: 40px;"></span><span style="font-size: 11px; font-family:'Outfit', sans-serif; text-transform: uppercase;">${studentEn}</span>`;
+                    nameEl.innerHTML = `<span id="preview_name_kn">${studentKn}</span><span style="display:inline-block; width: 40px;"></span><span id="preview_name_en" style="font-size: 11px; font-family:'Outfit', sans-serif; text-transform: uppercase;">${studentEn}</span>`;
                 } else {
-                    nameEl.innerHTML = '<span class="empty-field"></span>';
+                    nameEl.innerHTML = '<span id="preview_name_kn" class="empty-field"></span><span style="display:inline-block; width: 40px;"></span><span id="preview_name_en" class="empty-field" style="font-size: 11px; font-family:\'Outfit\', sans-serif; text-transform: uppercase;"></span>';
                 }
             }
 
@@ -1937,12 +1974,19 @@
             } else {
                 // Parse Roman numerals (Class I to Class X)
                 const romanMap = {
-                    'CLASS I': 1, 'CLASS II': 2, 'CLASS III': 3, 'CLASS IV': 4, 'CLASS V': 5,
-                    'CLASS VI': 6, 'CLASS VII': 7, 'CLASS VIII': 8, 'CLASS IX': 9, 'CLASS X': 10,
-                    'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10,
-                    '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10
+                    'CLASS VIII': 8, 'CLASS VII': 7, 'CLASS VI': 6, 'CLASS III': 3, 'CLASS II': 2, 'CLASS I': 1, 'CLASS IV': 4, 'CLASS V': 5,
+                    'CLASS IX': 9, 'CLASS X': 10,
+                    'VIII': 8, 'VII': 7, 'VI': 6, 'III': 3, 'II': 2, 'I': 1, 'IV': 4, 'V': 5, 'IX': 9, 'X': 10,
+                    '10': 10, '9': 9, '8': 8, '7': 7, '6': 6, '5': 5, '4': 4, '3': 3, '2': 2, '1': 1
                 };
-                parsedCls = romanMap[rawCls] || null;
+                let matchedValue = null;
+                for (let key in romanMap) {
+                    if (rawCls.includes(key)) {
+                        matchedValue = romanMap[key];
+                        break;
+                    }
+                }
+                parsedCls = matchedValue;
             }
 
             const lkgEl = document.getElementById('p_class_lkg');
@@ -1961,8 +2005,8 @@
 
             // 3. Gender
             const gen = (data.gender || '').toUpperCase();
-            document.getElementById('p_gen_male').classList.toggle('checked', gen === 'MALE' || gen === 'M');
-            document.getElementById('p_gen_female').classList.toggle('checked', gen === 'FEMALE' || gen === 'F');
+            document.getElementById('p_gen_male').classList.toggle('checked', gen === 'MALE' || gen === 'M' || gen === 'BOY');
+            document.getElementById('p_gen_female').classList.toggle('checked', gen === 'FEMALE' || gen === 'F' || gen === 'GIRL');
             document.getElementById('p_gen_trans').classList.toggle('checked', gen === 'TRANSGENDER' || gen === 'TRANS');
 
             // 4. Special Need (CWSN)
@@ -2050,6 +2094,8 @@
             document.getElementById('p_type_aided').classList.toggle('checked', typeVal === 'AIDED' || typeVal === 'ಅನುದಾನಿತ');
             document.getElementById('p_type_private').classList.toggle('checked', typeVal === 'UNAIDED' || typeVal === 'PRIVATE' || typeVal === 'ಖಾಸಗಿ' || typeVal === 'ಅನುದಾನರಹಿತ');
 
+
+
             // Bind Click-to-Edit fields
             bindEditableFields();
         }
@@ -2115,7 +2161,8 @@
 
         /* Quick-Edit Messaging Bridge */
         const fieldMappings = {
-            'preview_name': 'nameEnglish',
+            'preview_name_kn': 'studentName',
+            'preview_name_en': 'nameEnglish',
             'preview_caste': 'caste',
             'preview_subcaste': 'subCaste',
             'preview_mother_tongue': 'motherTongue',
@@ -2168,9 +2215,162 @@
             'preview_mother_aadhaar': 'motherAadhaar'
         };
 
-        function editParentField(fieldName) {
+        function getCheckboxFieldValue(cb) {
+            const id = cb.id || '';
+            if (id.startsWith('p_med_')) {
+                return { fieldName: 'medium', value: id.endsWith('kn') ? 'ಕನ್ನಡ' : 'ENGLISH' };
+            }
+            if (id.startsWith('p_gen_')) {
+                if (id.endsWith('male')) return { fieldName: 'gender', value: 'MALE' };
+                if (id.endsWith('female')) return { fieldName: 'gender', value: 'FEMALE' };
+                return { fieldName: 'gender', value: 'TRANSGENDER' };
+            }
+            if (id.startsWith('p_class_')) {
+                const cls = id.substring('p_class_'.length);
+                if (cls === 'lkg') return { fieldName: 'enrollClass', value: 'LKG' };
+                if (cls === 'ukg') return { fieldName: 'enrollClass', value: 'UKG' };
+                const roman = { '1': 'Class I', '2': 'Class II', '3': 'Class III', '4': 'Class IV', '5': 'Class V', '6': 'Class VI', '7': 'Class VII', '8': 'Class VIII' };
+                return { fieldName: 'enrollClass', value: roman[cls] || '' };
+            }
+            if (id.startsWith('p_rel_')) {
+                return { fieldName: 'religion', value: id.substring('p_rel_'.length).toUpperCase() };
+            }
+            if (id.startsWith('p_sc_')) {
+                return { fieldName: 'socialClass', value: id.substring('p_sc_'.length).toUpperCase() };
+            }
+            if (id.startsWith('p_board_')) {
+                const b = id.substring('p_board_'.length);
+                return { fieldName: 'preschoolBoard', value: b === 'state' ? 'STATE BOARD' : b.toUpperCase() };
+            }
+            if (id.startsWith('p_type_')) {
+                const t = id.substring('p_type_'.length);
+                if (t === 'govt') return { fieldName: 'preschoolType', value: 'GOVERNMENT' };
+                if (t === 'aided') return { fieldName: 'preschoolType', value: 'AIDED' };
+                return { fieldName: 'preschoolType', value: 'UNAIDED' };
+            }
+            if (id.startsWith('p_cat_')) {
+                const c = id.substring('p_cat_'.length);
+                return { fieldName: 'specialCategory', value: c.toUpperCase() };
+            }
+            if (id.startsWith('p_sn_')) {
+                const pageContainer = cb.closest('.page') || document;
+                const checkedSn = [];
+                const snKeys = ['hearing', 'learning', 'muscle', 'mental', 'multiple', 'speech', 'blind', 'lowvision', 'cp', 'autism', 'physical', 'others'];
+                snKeys.forEach(key => {
+                    const el = pageContainer.querySelector(`#p_sn_${key}`);
+                    if (el && el.classList.contains('checked')) {
+                        checkedSn.push(key.toUpperCase());
+                    }
+                });
+                return { fieldName: 'specialNeed', value: checkedSn.join(',') || 'NONE' };
+            }
+            return null;
+        }
+
+        // Click listener to toggle checkboxes directly in-place and sync back
+        document.addEventListener('click', function(e) {
+            const cb = e.target.closest('.print-checkbox');
+            if (cb) {
+                e.stopPropagation();
+                const id = cb.id || '';
+                const prefixes = ['p_med_', 'p_gen_', 'p_class_', 'p_rel_', 'p_sc_', 'p_board_', 'p_type_', 'p_cat_'];
+                const matchedPrefix = prefixes.find(p => id.startsWith(p));
+                
+                if (matchedPrefix) {
+                    // Uncheck other checkboxes with same prefix in the same container or document
+                    const container = cb.closest('td') || document;
+                    container.querySelectorAll('.print-checkbox').forEach(el => {
+                        if (el.id && el.id.startsWith(matchedPrefix) && el !== cb) {
+                            el.classList.remove('checked');
+                        }
+                    });
+                    cb.classList.add('checked');
+                } else {
+                    // Standalone toggle (e.g. special needs)
+                    cb.classList.toggle('checked');
+                }
+
+                // Sync checkbox state back to parent form in real-time
+                const fieldData = getCheckboxFieldValue(cb);
+                if (fieldData) {
+                    const { fieldName, value } = fieldData;
+                    if (!window.admissionData) window.admissionData = {};
+                    window.admissionData[fieldName] = value;
+                    
+                    try {
+                        localStorage.setItem("admissionData", JSON.stringify(window.admissionData));
+                    } catch(err) {}
+
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            action: 'syncFieldBack',
+                            fieldName: fieldName,
+                            value: value
+                        }, '*');
+                    }
+                }
+            }
+        });
+
+        // Contenteditable in-place text edits sync back to parent form
+        document.addEventListener('input', function(e) {
+            const el = e.target.closest('.editable-preview-field');
+            if (el) {
+                const id = el.id || '';
+                const fieldName = fieldMappings[id];
+                if (fieldName) {
+                    const value = el.innerText || el.textContent || '';
+                    if (!window.admissionData) window.admissionData = {};
+                    window.admissionData[fieldName] = value;
+                    
+                    try {
+                        localStorage.setItem("admissionData", JSON.stringify(window.admissionData));
+                    } catch(err) {}
+                    
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({
+                            action: 'syncFieldBack',
+                            fieldName: fieldName,
+                            value: value
+                        }, '*');
+                    }
+                }
+            }
+        });
+
+        // Real-time listener for incoming field changes from parent form
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.action === 'syncField') {
+                const fieldName = event.data.fieldName;
+                const value = event.data.value;
+                
+                if (!window.admissionData) window.admissionData = {};
+                window.admissionData[fieldName] = value;
+                
+                syncAllData();
+            } else if (event.data && event.data.action === 'syncAll') {
+                window.admissionData = event.data.data || {};
+                syncAllData();
+            }
+        });
+
+        function editParentField(fieldName, studentId, isAdmitted) {
             if (window.parent && window.parent !== window) {
                 window.parent.postMessage({ action: 'editField', fieldName: fieldName }, '*');
+                return;
+            }
+            
+            // Otherwise, redirect the user to the edit page in the same window
+            const targetId = studentId || window.admissionData?.id;
+            const targetAdmitted = isAdmitted !== undefined ? isAdmitted : (window.admissionData?.isAdmitted === true || window.admissionData?.isAdmitted === 'true');
+            if (targetId) {
+                if (targetAdmitted) {
+                    window.location.href = `StudentUpdate.html?id=${targetId}`;
+                } else {
+                    window.location.href = `NewAdmission.html?id=${targetId}`;
+                }
+            } else {
+                window.location.href = "NewAdmission.html";
             }
         }
 
@@ -2238,9 +2438,14 @@
                     el.classList.add('editable-preview-field');
                     el.title = currentLang === 'kn' ? 'ತಿದ್ದುಪಡಿ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ' : 'Click to edit field';
                     const fieldName = fieldMappings[id];
+                    
+                    const pageEl = el.closest('.page');
+                    const studentId = pageEl ? pageEl.dataset.studentId : (window.admissionData?.id || '');
+                    const isAdmitted = pageEl ? (pageEl.dataset.isAdmitted === 'true') : (window.admissionData?.isAdmitted === true);
+                    
                     el.onclick = function(e) {
                         e.stopPropagation();
-                        editParentField(fieldName);
+                        editParentField(fieldName, studentId, isAdmitted);
                     };
                 }
             }
@@ -2276,19 +2481,10 @@
                     google.script.run
                         .withSuccessHandler(function(response) {
                             if (response === "SUCCESS") {
-                                alert(currentLang === 'kn' 
-                                    ? "ಅರ್ಜಿ ಯಶಸ್ವಿಯಾಗಿ ಸಲ್ಲಿಕೆಯಾಗಿದೆ!" 
-                                    : "Application submitted successfully!");
-                                // Clear localStorage
                                 safeRemoveItem('admissionData');
                                 safeRemoveItem('editMode');
                                 safeRemoveItem('admissionFormDraft');
-                                
-                                if (window.parent && window.parent !== window) {
-                                    window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
-                                } else {
-                                    goBackToForm();
-                                }
+                                document.getElementById("successOverlay").classList.remove("d-none");
                             } else {
                                 alert((currentLang === 'kn' ? "ದೋಷ: " : "Error: ") + response);
                                 submitBtn.disabled = false;
@@ -2306,15 +2502,10 @@
                 } else {
                     // For local environment simulation
                     setTimeout(function() {
-                        alert("Local simulation: Data submitted successfully!\n" + JSON.stringify(window.admissionData, null, 2));
                         safeRemoveItem('admissionData');
                         safeRemoveItem('editMode');
                         safeRemoveItem('admissionFormDraft');
-                        if (window.parent && window.parent !== window) {
-                            window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
-                        } else {
-                            goBackToForm();
-                        }
+                        document.getElementById("successOverlay").classList.remove("d-none");
                     }, 1000);
                 }
             }
@@ -2353,13 +2544,13 @@
                         name_english: data.nameEnglish || '',
                         dob: formattedDob,
                         gender: data.gender || '',
-                        student_aadhaar: data.studentAadhaar || '',
+                        student_aadhaar: (data.studentAadhaar || '').replace(/[\s-]/g, ''),
                         religion: data.religion || '',
                         caste: data.caste || '',
                         social_class: data.socialClass || '',
                         student_caste: data.subCaste || '',
                         mother_tongue: data.motherTongue || '',
-                        mobile_number: data.mobileNumber || '',
+                        mobile_number: (data.mobileNumber || '').replace(/[\s-]/g, ''),
                         special_need: data.specialNeed || '',
                         special_category: data.specialCategory || '',
                         bhagyalakshmi_bond: data.bhagyalakshmiBond || '',
@@ -2375,10 +2566,10 @@
                         student_income_cert: data.studentIncomeCert || '',
                         bpl_card_no: data.bplCardNo || '',
                         father_name_kn: data.fatherNameKn || '',
-                        father_aadhaar: data.fatherAadhaar || '',
+                        father_aadhaar: (data.fatherAadhaar || '').replace(/[\s-]/g, ''),
                         father_occupation: data.fatherOccupation || '',
                         mother_name_kn: data.motherNameKn || '',
-                        mother_aadhaar: data.motherAadhaar || '',
+                        mother_aadhaar: (data.motherAadhaar || '').replace(/[\s-]/g, ''),
                         mother_occupation: data.motherOccupation || '',
                         preschool_board: data.preschoolBoard || '',
                         preschool_type: data.preschoolType || '',
@@ -2396,7 +2587,7 @@
                         prev_taluk: data.prevTaluk || '',
                         prev_district: data.prevDistrict || '',
                         prev_pin_code: data.prevPinCode || '',
-                        mobile_no_1: data.mobileNo1 || '',
+                        mobile_no_1: (data.mobileNo1 || '').replace(/[\s-]/g, ''),
                         father_caste_cert: data.fatherCasteCert || '',
                         father_income_cert: data.fatherIncomeCert || '',
                         father_email: data.fatherEmail || '',
@@ -2410,70 +2601,193 @@
                         email: data.email || '',
                         preschool_address: data.preschoolAddress || '',
                         form_date: formattedFormDate,
-                        is_admitted: false,
                         student_photo: data.student_photo || data.studentPhoto || ''
                     };
+
+                    // Only set is_admitted to false for new admissions.
+                    // For updating existing students, do not overwrite their current status.
+                    if (!data.id) {
+                        payload.is_admitted = false;
+                    }
 
                     if (session && session.user) {
                         payload.school_id = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
                         payload.created_by = session.user.id || null;
                     }
 
-                    if (data.id) {
-                        // UPDATE existing record
-                        supabaseClient
-                            .from('admissions')
-                            .update(payload)
-                            .eq('id', data.id)
-                            .then(result => {
-                                if (result.error) {
-                                    console.error("Supabase update error:", result.error);
-                                    alert(currentLang === 'kn' 
-                                        ? "Supabase ಗೆ ಡೇಟಾ ನವೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
-                                        : "Failed to update in Supabase: " + result.error.message);
+                    function saveToSupabase() {
+                        if (data.id) {
+                            // UPDATE existing record
+                            supabaseClient
+                                .from('admissions')
+                                .update(payload)
+                                .eq('id', data.id)
+                                .then(result => {
+                                    if (result.error) {
+                                        console.error("Supabase update error:", result.error);
+                                        alert(currentLang === 'kn' 
+                                            ? "Supabase ಗೆ ಡೇಟಾ ನವೀಕರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
+                                            : "Failed to update in Supabase: " + result.error.message);
+                                        submitBtn.disabled = false;
+                                        submitBtn.style.opacity = "1";
+                                        lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ನವೀಕರಿಸಿ" : "Update Form";
+                                    } else {
+                                        console.log("Supabase update success:", result);
+                                        proceedToAppsScriptSubmit();
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error("Supabase update exception:", err);
+                                    alert("Supabase Error: " + err.message);
                                     submitBtn.disabled = false;
                                     submitBtn.style.opacity = "1";
                                     lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ನವೀಕರಿಸಿ" : "Update Form";
-                                } else {
-                                    console.log("Supabase update success:", result);
-                                    proceedToAppsScriptSubmit();
+                                });
+                        } else {
+                            // INSERT new record
+                            supabaseClient
+                                .from('admissions')
+                                .insert([payload])
+                                .then(result => {
+                                    if (result.error) {
+                                        console.error("Supabase insert error:", result.error);
+                                        alert(currentLang === 'kn' 
+                                            ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
+                                            : "Failed to save to Supabase: " + result.error.message);
+                                        submitBtn.disabled = false;
+                                        submitBtn.style.opacity = "1";
+                                        lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
+                                    } else {
+                                        console.log("Supabase insert success:", result);
+                                        proceedToAppsScriptSubmit();
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error("Supabase save exception:", err);
+                                    alert("Supabase Error: " + err.message);
+                                    submitBtn.disabled = false;
+                                    submitBtn.style.opacity = "1";
+                                    lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
+                                });
+                        }
+                    }
+
+                    function checkDuplicateByNamesFinal() {
+                        const sName = (data.studentName || '').trim();
+                        const sEnName = (data.nameEnglish || '').trim();
+                        const fName = (data.fatherNameKn || '').trim();
+                        const fEnName = (data.fatherNameAz || '').trim();
+                        const mName = (data.motherNameKn || '').trim();
+                        const mEnName = (data.motherNameAz || '').trim();
+
+                        if ((sName || sEnName) && (fName || fEnName) && (mName || mEnName)) {
+                            const currentId = data.id || null;
+                            let dupNameQuery = supabaseClient
+                                .from('admissions')
+                                .select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, enroll_class, is_admitted');
+
+                            const searchFName = fName.toLowerCase();
+                            const searchFEnName = fEnName.toLowerCase();
+                            const searchMName = mName.toLowerCase();
+                            const searchMEnName = mEnName.toLowerCase();
+                            const searchSName = sName.toLowerCase();
+                            const searchSEnName = sEnName.toLowerCase();
+
+                            if (searchFName && searchFEnName) {
+                                dupNameQuery = dupNameQuery.or(`father_name_kn.eq."${searchFName}",father_name_az.eq."${searchFEnName}"`);
+                            } else if (searchFName) {
+                                dupNameQuery = dupNameQuery.eq('father_name_kn', searchFName);
+                            } else {
+                                dupNameQuery = dupNameQuery.eq('father_name_az', searchFEnName);
+                            }
+
+                            dupNameQuery.then(({ data: dupRecords, error: dupErr }) => {
+                                if (dupErr) throw dupErr;
+                                
+                                let matchedRecord = null;
+                                if (dupRecords && dupRecords.length > 0) {
+                                    for (let row of dupRecords) {
+                                        if (currentId && String(row.id) === String(currentId)) continue;
+                                        
+                                        const rowMotherKn = (row.mother_name_kn || "").trim().toLowerCase();
+                                        const rowMotherEn = (row.mother_name_az || "").trim().toLowerCase();
+                                        const motherMatches = (searchMName && rowMotherKn === searchMName) || (searchMEnName && rowMotherEn === searchMEnName);
+                                        
+                                        if (!motherMatches) continue;
+                                        
+                                        const rowStudentKn = (row.student_name || "").trim().toLowerCase();
+                                        const rowStudentEn = (row.name_english || "").trim().toLowerCase();
+                                        const studentMatches = (searchSName && rowStudentKn === searchSName) || (searchSEnName && rowStudentEn === searchSEnName);
+                                        
+                                        if (studentMatches) {
+                                            matchedRecord = row;
+                                            break;
+                                        }
+                                    }
                                 }
-                            })
-                            .catch(err => {
-                                console.error("Supabase update exception:", err);
-                                alert("Supabase Error: " + err.message);
-                                submitBtn.disabled = false;
-                                submitBtn.style.opacity = "1";
-                                lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ನವೀಕರಿಸಿ" : "Update Form";
-                            });
-                    } else {
-                        // INSERT new record
-                        supabaseClient
-                            .from('admissions')
-                            .insert([payload])
-                            .then(result => {
-                                if (result.error) {
-                                    console.error("Supabase insert error:", result.error);
-                                    alert(currentLang === 'kn' 
-                                        ? "Supabase ಗೆ ಡೇಟಾ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + result.error.message 
-                                        : "Failed to save to Supabase: " + result.error.message);
+
+                                if (matchedRecord) {
+                                    const dup = matchedRecord;
+                                    const isAdmitted = (dup.is_admitted === true || dup.is_admitted === 'true');
+                                    const statusKn = isAdmitted ? "ದಾಖಲಾತಿ ಪೂರ್ಣಗೊಂಡಿದೆ" : "ಪ್ರವೇಶಾತಿ ಬಾಕಿ ಇದೆ";
+                                    const statusEn = isAdmitted ? "Already Admitted" : "Pending Admission";
+                                    const alertKn = `⚠️ ದೋಷ: ಇದೇ ಹೆಸರಿನ ಮಗು, ತಂದೆ ಮತ್ತು ತಾಯಿ ಹೆಸರುಳ್ಳ ದಾಖಲೆ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ (${statusKn})!\nಹೆಸರು: ${dup.student_name || dup.name_english}, ತರಗತಿ: ${dup.enroll_class}`;
+                                    const alertEn = `⚠️ Error: A record with the same Student, Father, and Mother name already exists (${statusEn})!\nName: ${dup.student_name || dup.name_english}, Class: ${dup.enroll_class}`;
+                                    alert(currentLang === 'kn' ? alertKn : alertEn);
+
                                     submitBtn.disabled = false;
                                     submitBtn.style.opacity = "1";
                                     lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
                                 } else {
-                                    console.log("Supabase insert success:", result);
-                                    proceedToAppsScriptSubmit();
+                                    saveToSupabase();
                                 }
-                            })
-                            .catch(err => {
-                                console.error("Supabase save exception:", err);
-                                alert("Supabase Error: " + err.message);
+                            }).catch(err => {
+                                console.error("Name duplicate checking exception:", err);
+                                saveToSupabase();
+                            });
+                        } else {
+                            saveToSupabase();
+                        }
+                    }
+
+                    // Perform final duplicate check on student Aadhaar
+                    const checkAadhaar = (data.studentAadhaar || '').replace(/\s+/g, '');
+                    if (checkAadhaar && checkAadhaar.length === 12) {
+                        const currentId = data.id || null;
+                        let dupQuery = supabaseClient
+                            .from('admissions')
+                            .select('id, student_name, enroll_class, is_admitted')
+                            .eq('student_aadhaar', checkAadhaar);
+                        if (currentId) {
+                            dupQuery = dupQuery.neq('id', currentId);
+                        }
+                        
+                        dupQuery.then(({ data: dupRecords, error: dupErr }) => {
+                            if (dupErr) {
+                                console.error("Duplicate checking error:", dupErr);
+                            }
+                            if (dupRecords && dupRecords.length > 0) {
+                                const dup = dupRecords[0];
+                                const isAdmitted = (dup.is_admitted === true || dup.is_admitted === 'true');
+                                const statusKn = isAdmitted ? "ದಾಖಲಾತಿ ಪೂರ್ಣಗೊಂಡಿದೆ" : "ಪ್ರವೇಶಾತಿ ಬಾಕಿ ಇದೆ";
+                                const statusEn = isAdmitted ? "Already Admitted" : "Pending Admission";
+                                const alertKn = `⚠️ ದೋಷ: ಈ ಆಧಾರ್ ಸಂಖ್ಯೆಯುಳ್ಳ ಮಗು ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಲ್ಪಟ್ಟಿದೆ (${statusKn})!\nಹೆಸರು: ${dup.student_name}, ತರಗತಿ: ${dup.enroll_class}`;
+                                const alertEn = `⚠️ Error: This student is already registered (${statusEn})!\nName: ${dup.student_name}, Class: ${dup.enroll_class}`;
+                                alert(currentLang === 'kn' ? alertKn : alertEn);
+                                
                                 submitBtn.disabled = false;
                                 submitBtn.style.opacity = "1";
                                 lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
-                            });
+                            } else {
+                                checkDuplicateByNamesFinal();
+                            }
+                        }).catch(err => {
+                            console.error("Duplicate checking exception:", err);
+                            checkDuplicateByNamesFinal();
+                        });
+                    } else {
+                        checkDuplicateByNamesFinal();
                     }
-
                 }).catch(err => {
                     console.error("Auth session fetch error:", err);
                     alert("Auth error: " + err.message);
@@ -2503,6 +2817,13 @@
                             const nameEn = school.school_name_en || "GHPS Marched";
                             const nameKn = school.school_name_kn || "ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್";
                             const udise = school.udise_code || "";
+
+                            // Update localStorage to keep in sync for multi-school compatibility
+                            localStorage.setItem('school_name_kn', nameKn);
+                            localStorage.setItem('school_name_en', nameEn);
+                            if (udise) {
+                                localStorage.setItem('udise_code', udise);
+                            }
 
                             // Update translations dictionary
                             translations.en.school_name = nameEn.toUpperCase();
@@ -2611,6 +2932,7 @@
                 motherNameAz: clean(row.mother_name_az),
                 enrolmentNo: clean(row.enrolment_no),
                 enrolmentDate: clean(row.enrolment_date),
+                isAdmitted: row.is_admitted === undefined || row.is_admitted === null ? true : row.is_admitted,
                 subCaste: clean(studentCaste || row.sub_caste),
                 hobli: clean(row.hobli),
                 pinCode: clean(row.pin_code),
@@ -2652,6 +2974,9 @@
             const urlParams = new URLSearchParams(window.location.search);
             const studentId = urlParams.get('id');
 
+            // Set document to be copyable and print friendly
+            document.body.style.userSelect = 'text';
+
             // First check URL query parameter 'id' for live Supabase fetch
             if (studentId) {
                 // Hide Submit button since the student is already in the database
@@ -2659,20 +2984,139 @@
                 if (submitBtn) submitBtn.style.display = 'none';
 
                 try {
-                    const { data: row, error } = await supabaseClient
-                        .from('admissions')
-                        .select('*')
-                        .eq('id', studentId)
-                        .single();
-                    
-                    if (error) throw error;
-                    if (row) {
-                        window.admissionData = mapDatabaseRowToAdmissionData(row);
-                        if (window.admissionData.medium === 'ENGLISH' || window.admissionData.medium === 'en') {
-                            currentLang = 'en';
+                    // Check if multiple IDs are supplied (comma-separated list for Bulk Print)
+                    if (studentId.includes(',')) {
+                        const ids = studentId.split(',').map(x => x.trim()).filter(Boolean);
+                        
+                        // Load school details first to update translations dictionary
+                        await loadSchoolDetailsAndApply();
+
+                        const { data: rows, error } = await supabaseClient
+                            .from('admissions')
+                            .select('*')
+                            .in('id', ids);
+
+                        if (error) throw error;
+                        if (rows && rows.length > 0) {
+                            // Sort rows to match the query ids order
+                            rows.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+
+                            const wrapper = document.getElementById('pages-wrapper');
+                            
+                            // Save original templates
+                            const page1Template = document.getElementById('page1');
+                            const page2Template = document.getElementById('page2');
+                            
+                            // Clear the wrapper
+                            wrapper.innerHTML = '';
+                            
+                            // Temporarily override document methods for rendering
+                            const originalGetElementById = document.getElementById;
+                            const originalQuerySelector = document.querySelector;
+                            const originalQuerySelectorAll = document.querySelectorAll;
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const row = rows[i];
+                                const studentData = mapDatabaseRowToAdmissionData(row);
+                                
+                                // Gender check/normalization
+                                let gender = studentData.gender;
+                                if (gender) {
+                                    const g = gender.toString().toLowerCase().trim();
+                                    const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
+                                    const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+                                    studentData.gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : gender);
+                                }
+                                
+                                // Clone pages
+                                const p1 = page1Template.cloneNode(true);
+                                const p2 = page2Template.cloneNode(true);
+                                
+                                // Set A4 pages to be directly editable on click
+                                p1.setAttribute('contenteditable', 'true');
+                                p2.setAttribute('contenteditable', 'true');
+                                
+                                // Keep them clean from double borders/outline when focused
+                                p1.style.outline = 'none';
+                                p1.dataset.studentId = row.id;
+                                p1.dataset.isAdmitted = row.is_admitted;
+                                p2.dataset.studentId = row.id;
+                                p2.dataset.isAdmitted = row.is_admitted;
+                                
+                                // Override document search calls to scope them inside clones
+                                document.getElementById = (id) => {
+                                    return p1.querySelector(`#${id}`) || p2.querySelector(`#${id}`) || originalGetElementById.call(document, id);
+                                };
+                                document.querySelector = (sel) => {
+                                    return p1.querySelector(sel) || p2.querySelector(sel) || originalQuerySelector.call(document, sel);
+                                };
+                                document.querySelectorAll = (sel) => {
+                                    return (sel === '[data-key]') ? [...p1.querySelectorAll(sel), ...p2.querySelectorAll(sel)] : originalQuerySelectorAll.call(document, sel);
+                                };
+
+                                // Set language
+                                let studentLang = 'kn';
+                                if (String(studentData.medium || '').toUpperCase() === 'ENGLISH' || String(studentData.medium || '').toLowerCase() === 'en') {
+                                    studentLang = 'en';
+                                }
+                                currentLang = studentLang;
+                                
+                                // Populate clones
+                                updateTranslations();
+                                window.admissionData = studentData;
+                                syncAllData();
+                                
+                                // Restore querySelectorAll for normal page actions
+                                document.querySelectorAll = originalQuerySelectorAll;
+                                
+                                // Append clones
+                                wrapper.appendChild(p1);
+                                wrapper.appendChild(p2);
+                            }
+
+                            // Restore original document methods
+                            document.getElementById = originalGetElementById;
+                            document.querySelector = originalQuerySelector;
+                            
+                            document.title = "Bulk_Admission_Forms";
+                            adjustZoom(0.8);
+                        } else {
+                            alert("Student records not found in database.");
                         }
                     } else {
-                        alert("Student record not found in database.");
+                        // Single Mode (Original Flow)
+                        const { data: row, error } = await supabaseClient
+                            .from('admissions')
+                            .select('*')
+                            .eq('id', studentId)
+                            .single();
+                        
+                        if (error) throw error;
+                        if (row) {
+                            window.admissionData = mapDatabaseRowToAdmissionData(row);
+                            
+                            // Make page elements editable
+                            const page1 = document.getElementById('page1');
+                            const page2 = document.getElementById('page2');
+                            if (page1) {
+                                page1.setAttribute('contenteditable', 'true');
+                                page1.style.outline = 'none';
+                            }
+                            if (page2) {
+                                page2.setAttribute('contenteditable', 'true');
+                                page2.style.outline = 'none';
+                            }
+
+                            if (String(window.admissionData.medium || '').toUpperCase() === 'ENGLISH' || String(window.admissionData.medium || '').toLowerCase() === 'en') {
+                                currentLang = 'en';
+                            }
+                        } else {
+                            alert("Student record not found in database.");
+                        }
+
+                        togglePreviewLanguage(currentLang);
+                        adjustZoom(0);
+                        await loadSchoolDetailsAndApply();
                     }
                 } catch (err) {
                     console.error("Failed to load student from Supabase:", err);
@@ -2684,7 +3128,7 @@
                         .withSuccessHandler(function(data) {
                             if (data) {
                                 window.admissionData = data;
-                                if (data.medium === 'ENGLISH' || data.medium === 'en') {
+                                if (String(data.medium || '').toUpperCase() === 'ENGLISH' || String(data.medium || '').toLowerCase() === 'en') {
                                     currentLang = 'en';
                                 }
                                 togglePreviewLanguage(currentLang);
@@ -2739,17 +3183,15 @@
                 // Sync layout medium matching language
                 if (window.admissionData && window.admissionData.medium) {
                     const med = window.admissionData.medium;
-                    if (med === 'ENGLISH' || med === 'en') {
+                    if (String(med || '').toUpperCase() === 'ENGLISH' || String(med || '').toLowerCase() === 'en') {
                         currentLang = 'en';
                     }
                 }
+
+                togglePreviewLanguage(currentLang);
+                adjustZoom(0);
+                await loadSchoolDetailsAndApply();
             }
-            
-            togglePreviewLanguage(currentLang);
-            adjustZoom(0);
-            
-            // Load and apply active school details
-            await loadSchoolDetailsAndApply();
 
             // Auto-PDF download handler
             if (urlParams.get('autoDownloadPdf') === 'true') {
@@ -2767,11 +3209,383 @@
                     setTimeout(() => { window.close(); }, 1500);
                 }, 1500);
             }
+
+            // Auto-Receipt print handler
+            if (urlParams.get('triggerReceiptPrint') === 'true') {
+                setTimeout(() => {
+                    triggerPrintReceipt();
+                    setTimeout(() => { window.close(); }, 1550);
+                }, 1500);
+            }
+
+            // Auto-Receipt WhatsApp handler
+            if (urlParams.get('triggerReceiptPdfDownload') === 'true') {
+                setTimeout(() => {
+                    shareViaWhatsApp();
+                }, 1500);
+            }
         }
 
-            // Run immediately for SPA injection, but also bind to load/DOMContentLoaded for standalone testing
         initPreview();
         window.addEventListener('load', initPreview);
+  </script>
+
+  <!-- Success Overlay Dialog -->
+  <div id="successOverlay" class="d-none" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(5px); z-index: 5000; display: flex; align-items: center; justify-content: center;">
+    <div class="card shadow-lg p-4 text-center border-slate-200" style="width: 90%; max-width: 480px; border-radius: 20px; background: white; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">
+      <div class="mb-3 text-success">
+        <i class="fa-solid fa-circle-check" style="font-size: 60px; color: #22c55e;"></i>
+      </div>
+      <h4 class="fw-bold text-slate-800 mb-1" style="font-size: 18px; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">ದಾಖಲಾತಿ ಯಶಸ್ವಿಯಾಗಿದೆ! / Submission Successful!</h4>
+      <p class="text-secondary mb-4" style="font-size: 12px;">ಅರ್ಜಿ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸರ್ವರ್‌ನಲ್ಲಿ ದಾಖಲಿಸಲಾಗಿದೆ. / The admission details have been saved successfully.</p>
+      
+      <div class="d-flex flex-column gap-2 mb-3">
+        <!-- WhatsApp share button -->
+        <button type="button" class="btn btn-success p-3 w-100 fw-bold" style="border-radius: 12px; font-size: 13px; background-color: #22c55e; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; color: white;" onclick="shareViaWhatsApp()">
+          <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> ಪೋಷಕರಿಗೆ ರಸೀದಿ ಕಳುಹಿಸಿ / Share on WhatsApp
+        </button>
+        
+        <!-- Print button -->
+        <button type="button" class="btn btn-primary p-3 w-100 fw-bold" style="border-radius: 12px; font-size: 13px; background-color: #0284c7; border: none; display: flex; align-items: center; justify-content: center; gap: 8px; color: white;" onclick="triggerPrintReceipt()">
+          <i class="fa-solid fa-print" style="font-size: 18px;"></i> ರಸೀದಿ ಮುದ್ರಿಸಿ (A4 + QR Code) / Print Receipt
+        </button>
+      </div>
+      
+      <div class="border-top pt-3">
+        <button type="button" class="btn btn-outline-secondary w-100 py-2" style="border-radius: 8px; font-size: 12px; font-weight: 600; border: 1px solid #cbd5e1; background: transparent; color: #64748b;" onclick="closeSuccessOverlayAndExit()">
+          ಮುಗಿಸಿ / Exit & Done
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Receipt Layout (Hidden by default, visible only during print) -->
+  <div id="printableReceiptCard" style="display: none; font-family: 'Noto Serif Kannada', 'Noto Sans Kannada', 'Plus Jakarta Sans', sans-serif; padding: 30px; border: 1px solid #cbd5e1; border-radius: 12px; max-width: 750px; margin: 0 auto; background: white; color: #0f172a;">
+    <!-- School Header -->
+    <div style="text-align: center; border-bottom: 2px double #0284c7; padding-bottom: 12px; margin-bottom: 20px;">
+      <h3 id="printReceiptSchoolNameKn" style="margin: 0; font-weight: 800; color: #0369a1; font-size: 19px; letter-spacing: 0.5px; font-family: 'Noto Serif Kannada', 'Noto Sans Kannada', sans-serif;">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್</h3>
+      <h5 id="printReceiptSchoolNameEn" style="margin: 4px 0 0 0; font-weight: 700; color: #475569; font-size: 12px; letter-spacing: 0.5px;">GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHYED</h5>
+      <p style="margin: 6px 0 0 0; font-size: 11px; color: #0284c7; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">ದಾಖಲಾತಿ ಅರ್ಜಿ ಸ್ವೀಕೃತಿ ರಸೀದಿ / Admission Acknowledgement Slip</p>
+    </div>
+    
+    <!-- Metadata Grid + QR Code Row -->
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+      <div style="width: 70%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; font-size: 11.5px; line-height: 1.6; text-align: left;">
+        <div><strong>ಅರ್ಜಿ ಸಂಖ್ಯೆ / App No:</strong> <span id="printAppNo" style="font-weight: 700; color: #0284c7;"></span></div>
+        <div><strong>ತರಗತಿ / Class:</strong> <span id="printClass" style="font-weight: 700; color: #0f172a;"></span></div>
+        <div><strong>ದಾಖಲಾತಿ ದಿನಾಂಕ / Date:</strong> <span id="printDate" style="color: #475569;"></span></div>
+        <div><strong>ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium:</strong> <span id="printMedium" style="color: #475569;"></span></div>
+        <div><strong>ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Year:</strong> <span id="printYear" style="color: #475569;"></span></div>
+      </div>
+      <!-- Dynamic QR Code -->
+      <div style="text-align: center; width: 25%; display: flex; flex-direction: column; align-items: center;">
+        <img id="printQrCode" src="" alt="QR Code" style="width: 85px; height: 85px; border: 1px solid #cbd5e1; padding: 3px; border-radius: 6px; background: white;">
+        <span style="font-size: 8px; color: #64748b; margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Scan to Verify</span>
+      </div>
+    </div>
+
+    <!-- Student Details Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 11.5px; text-align: left; border: 1px solid #cbd5e1;">
+      <thead>
+        <tr style="background-color: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+          <th style="border: 1px solid #cbd5e1; padding: 10px; text-align: left; font-weight: 800; color: #334155; width: 45%;">ವಿವರಗಳು / Description</th>
+          <th style="border: 1px solid #cbd5e1; padding: 10px; text-align: left; font-weight: 800; color: #334155; width: 55%;">ಮಾಹಿತಿ / Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು (English)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: 600; color: #0f172a;" id="printNameEn"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು (ಕನ್ನಡ)</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: 600; color: #0f172a;" id="printNameKn"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಹುಟ್ಟಿದ ದಿನಾಂಕ / DOB</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printDob"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಲಿಂಗ / Gender</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printGender"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ತಂದೆಯ ಹೆಸರು / Father Name</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printFatherName"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ತಾಯಿಯ ಹೆಸರು / Mother Name</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printMotherName"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: 600; color: #0f172a;" id="printMobile"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಎಸ್.ಟಿ.ಎಸ್ ಸಂಖ್ಯೆ / STS No</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printSts"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಧರ್ಮ / Religion</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printReligion"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printSocialCategory"></td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; font-weight: bold; background-color: #f8fafc; color: #475569;">ಜಾತಿ / Caste</td>
+          <td style="border: 1px solid #cbd5e1; padding: 9px 12px; color: #0f172a;" id="printCaste"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Signature Lines -->
+    <div style="display: flex; justify-content: space-between; margin-top: 60px; font-size: 11px;">
+      <div style="text-align: center; width: 40%; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: bold; color: #475569;">
+        ಪೋಷಕರ ಸಹಿ / Parent's Signature
+      </div>
+      <div style="text-align: center; width: 40%; border-top: 1px dashed #64748b; padding-top: 8px; font-weight: bold; color: #0369a1;">
+        ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Headmaster Signature
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function populateReceiptFields(data) {
+      document.getElementById("printAppNo").textContent = data.appNo || 'N/A';
+      document.getElementById("printDate").textContent = new Date().toLocaleDateString();
+      document.getElementById("printYear").textContent = data.academicYear || 'N/A';
+      document.getElementById("printClass").textContent = data.enrollClass || 'N/A';
+      document.getElementById("printMedium").textContent = data.medium || 'N/A';
+      
+      document.getElementById("printNameEn").textContent = data.nameEnglish || 'N/A';
+      document.getElementById("printNameKn").textContent = data.studentName || 'N/A';
+      document.getElementById("printDob").textContent = data.dob || 'N/A';
+      document.getElementById("printGender").textContent = data.gender || 'N/A';
+      document.getElementById("printFatherName").textContent = `${data.fatherNameKn || ''} (${data.fatherNameAz || ''})`;
+      document.getElementById("printMotherName").textContent = `${data.motherNameKn || ''} (${data.motherNameAz || ''})`;
+      document.getElementById("printMobile").textContent = data.mobileNo1 || data.mobileNumber || 'N/A';
+      document.getElementById("printSts").textContent = data.studentSts || data.stsNo || data.stsNumber || 'N/A';
+      document.getElementById("printReligion").textContent = data.religion || 'N/A';
+      document.getElementById("printSocialCategory").textContent = data.socialClass || data.socialCategory || 'N/A';
+      document.getElementById("printCaste").textContent = data.caste || data.studentCaste || 'N/A';
+
+      // Dynamically load school headers from localStorage (multi-school user compatibility)
+      const dynamicSchoolKn = localStorage.getItem("school_name_kn") || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್";
+      const dynamicSchoolEn = localStorage.getItem("school_name_en") || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHYED";
+      
+      const knHeader = document.getElementById("printReceiptSchoolNameKn");
+      const enHeader = document.getElementById("printReceiptSchoolNameEn");
+      if (knHeader) knHeader.textContent = dynamicSchoolKn;
+      if (enHeader) enHeader.textContent = dynamicSchoolEn.toUpperCase();
+    }
+
+    function shareViaWhatsApp() {
+      const data = window.admissionData || {};
+      const studentName = data.studentName || '';
+      const nameEnglish = data.nameEnglish || '';
+      const appNo = data.appNo || 'N/A';
+      const classNo = data.enrollClass || 'N/A';
+      const phone = data.mobileNo1 || data.mobileNumber || '';
+      
+      populateReceiptFields(data);
+      
+      const card = document.getElementById("printableReceiptCard");
+      
+      // Clone the card to bypass viewport displacement/cropping bugs in dom-to-image
+      const clone = card.cloneNode(true);
+      clone.id = "temp_print_receipt_clone";
+      clone.style.display = "block";
+      clone.style.position = "fixed";
+      clone.style.top = "0";
+      clone.style.left = "0";
+      clone.style.margin = "0";
+      clone.style.width = "750px";
+      clone.style.zIndex = "-9999";
+      
+      document.body.appendChild(clone);
+      
+      const qrImg = clone.querySelector("#printQrCode");
+      const qrData = `https://ghps-marched.admission-verification?appNo=${data.appNo || ''}&name=${encodeURIComponent(data.nameEnglish || '')}`;
+      
+      const dynamicSchoolKn = localStorage.getItem("school_name_kn") || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್";
+      const dynamicSchoolEn = localStorage.getItem("school_name_en") || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHYED";
+      
+      const captionText = `ಆತ್ಮೀಯ ಪೋಷಕರಿಗೆ, ನಿಮ್ಮ ಮಗುವಾದ ${studentName} ಅವರ ${classNo} ನೇ ತರಗತಿಯ ದಾಖಲಾತಿ ಸ್ವೀಕೃತಿ ರಸೀದಿ ಇಲ್ಲಿದೆ. ಧನ್ಯವಾದಗಳು, ${dynamicSchoolKn}. / Dear Parent, here is the Class ${classNo} admission acknowledgement receipt for your child ${studentName || nameEnglish}. Thanks, ${dynamicSchoolEn}.`;
+      const cleanPhone = phone.toString().replace(/\D/g, '');
+      const url = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(captionText)}`;
+      const isAutoFlow = new URLSearchParams(window.location.search).get('triggerReceiptPdfDownload') === 'true';
+
+      // Temporary image load to make sure QR code is visible
+      qrImg.onload = () => {
+        setTimeout(() => {
+          const scale = 2; // Double resolution (high-DPI capture)
+          const options = {
+            bgcolor: 'white',
+            width: 750 * scale,
+            height: clone.offsetHeight * scale,
+            style: {
+              transform: 'scale(' + scale + ')',
+              transformOrigin: 'top left',
+              width: '750px',
+              height: clone.offsetHeight + 'px'
+            }
+          };
+          
+          domtoimage.toBlob(clone, options).then(blob => {
+            if (document.getElementById("temp_print_receipt_clone")) {
+              document.body.removeChild(clone);
+            }
+            
+            if (!blob) {
+              console.error("Blob conversion failed");
+              alert("Failed to render receipt image.");
+              return;
+            }
+            
+            // Try writing to Clipboard
+            if (navigator.clipboard && window.ClipboardItem) {
+              navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob })
+              ]).then(() => {
+                if (isAutoFlow) {
+                  window.location.href = url;
+                } else {
+                  alert("✅ ರಸೀದಿ ಚಿತ್ರವನ್ನು ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!\nವಾಟ್ಸಾಪ್ ಚಾಟ್ ತೆರೆದ ನಂತರ 'Ctrl + V' ಒತ್ತಿ ಕಳುಹಿಸಿ.\n\nReceipt image copied to clipboard!\nPress 'Ctrl+V' inside WhatsApp to paste and send.");
+                  window.open(url, '_blank');
+                }
+              }).catch(err => {
+                console.warn("Clipboard copy blocked by browser", err);
+                fallbackToImageDownload(blob, appNo, url, isAutoFlow);
+              });
+            } else {
+              fallbackToImageDownload(blob, appNo, url, isAutoFlow);
+            }
+          }).catch(err => {
+            console.error("domtoimage conversion failed", err);
+            if (document.getElementById("temp_print_receipt_clone")) {
+              document.body.removeChild(clone);
+            }
+            alert("Render error: " + err.message);
+          });
+        }, 300);
+      };
+      
+      const fallbackTimeout = setTimeout(() => {
+        qrImg.onload = null;
+        const scale = 2;
+        const options = {
+          bgcolor: 'white',
+          width: 750 * scale,
+          height: clone.offsetHeight * scale,
+          style: {
+            transform: 'scale(' + scale + ')',
+            transformOrigin: 'top left',
+            width: '750px',
+            height: clone.offsetHeight + 'px'
+          }
+        };
+        domtoimage.toBlob(clone, options).then(blob => {
+          if (document.getElementById("temp_print_receipt_clone")) {
+            document.body.removeChild(clone);
+          }
+          fallbackToImageDownload(blob, appNo, url, isAutoFlow);
+        }).catch(err => {
+          if (document.getElementById("temp_print_receipt_clone")) {
+            document.body.removeChild(clone);
+          }
+          console.error("Fallback render failed", err);
+        });
+      }, 1800);
+      
+      const originalOnload = qrImg.onload;
+      qrImg.onload = () => {
+        clearTimeout(fallbackTimeout);
+        originalOnload();
+      };
+      
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+    }
+
+    function fallbackToImageDownload(blob, appNo, waUrl, isAutoFlow) {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Receipt_${appNo}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      if (isAutoFlow) {
+        window.location.href = waUrl;
+      } else {
+        alert("⚠️ ಭದ್ರತಾ ಕಾರಣಗಳಿಂದ ಬ್ರೌಸರ್ ಆಟೋ-ಕಾಪಿ ನಿರ್ಬಂಧಿಸಿದೆ. ರಸೀದಿ ಚಿತ್ರವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ!\nದಯವಿಟ್ಟು ವಾಟ್ಸಾಪ್ ತೆರೆದಾಗ ಡೌನ್‌ಲೋಡ್ ಫೈಲ್ ಅನ್ನು ಚಾಟ್‌ಗೆ ಎಳೆದು ಹಾಕಿ.\n\nReceipt image downloaded. Drag and drop the file into the WhatsApp chat.");
+        window.open(waUrl, '_blank');
+      }
+    }
+
+    function triggerPrintReceipt() {
+      const data = window.admissionData || {};
+      
+      populateReceiptFields(data);
+      
+      const successOverlay = document.getElementById("successOverlay");
+      const overlayWasVisible = successOverlay && !successOverlay.classList.contains("d-none");
+      if (overlayWasVisible) {
+        successOverlay.classList.add("d-none");
+      }
+      
+      const body = document.body;
+      body.classList.add("print-receipt-only");
+      
+      const card = document.getElementById("printableReceiptCard");
+      card.style.display = "block";
+      
+      const qrImg = document.getElementById("printQrCode");
+      const qrData = `https://ghps-marched.admission-verification?appNo=${data.appNo || ''}&name=${encodeURIComponent(data.nameEnglish || '')}`;
+      
+      qrImg.onload = () => {
+        setTimeout(() => {
+          window.print();
+          card.style.display = "none";
+          body.classList.remove("print-receipt-only");
+          if (overlayWasVisible) {
+            successOverlay.classList.remove("d-none");
+          }
+        }, 300);
+      };
+      
+      const fallbackTimeout = setTimeout(() => {
+        qrImg.onload = null;
+        window.print();
+        card.style.display = "none";
+        body.classList.remove("print-receipt-only");
+        if (overlayWasVisible) {
+          successOverlay.classList.remove("d-none");
+        }
+      }, 1800);
+      
+      const originalOnload = qrImg.onload;
+      qrImg.onload = () => {
+        clearTimeout(fallbackTimeout);
+        originalOnload();
+      };
+      
+      qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrData)}`;
+    }
+
+    function closeSuccessOverlayAndExit() {
+      document.getElementById("successOverlay").classList.add("d-none");
+      const isEdit = !!(window.admissionData && window.admissionData.id);
+      if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: 'submitSuccess', isEdit: isEdit }, '*');
+      } else {
+          goBackToForm();
+      }
+    }
   </script>
 </body>
 </html>

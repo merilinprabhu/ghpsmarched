@@ -3,15 +3,119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.error("Global JS Error Caught:", message, "at", source, ":", lineno);
+      const displayError = () => {
+        const tbody = document.getElementById('classTableBody');
+        if (tbody) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="19" class="text-center py-8 text-rose-500 font-bold bg-rose-50 dark:bg-rose-950/20">
+                <i class="fa-solid fa-triangle-exclamation text-rose-500 mr-2"></i>
+                ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ / Page loading failed: ${message} (Line ${lineno})
+              </td>
+            </tr>
+          `;
+        }
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', displayError);
+      } else {
+        displayError();
+      }
+    };
+  </script>
   <title>GHPS Marched - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script src="chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #summary-table-card, #summary-table-card * {
+        visibility: visible !important;
+      }
+      #summary-table-card {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: inline-block !important;
+        visibility: visible !important;
+      }
+      table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        border: 1px solid #000000 !important;
+      }
+      th, td {
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        padding: 4px 2px !important;
+        font-size: 10px !important;
+      }
+      th {
+        background-color: #e2e8f0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Grayscale shading for subtotals and grand totals in B&W printing */
+      tr.bg-amber-100\/50, tr.bg-amber-100\/50 * {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      tr.bg-orange-100, tr.bg-orange-100 * {
+        background-color: #e2e8f0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+
     .rotate-90 {
       transform: rotate(90deg);
+    }
+
+    /* Active Row Table-to-Chart Sync Styles */
+    .active-row td {
+      background-color: #dbeafe !important; /* bg-blue-100 */
+      color: #1e3a8a !important; /* text-blue-900 */
+      font-weight: 800 !important;
+    }
+    .active-row td button {
+      color: #1e3a8a !important;
+    }
+    
+    body[data-theme="dark"] .active-row td {
+      background-color: #1e1b4b !important; /* bg-indigo-950 */
+      color: #e0e7ff !important;
+      font-weight: 800 !important;
+    }
+    body[data-theme="dark"] .active-row td button {
+      color: #e0e7ff !important;
+    }
+
+    .active-row td:first-child {
+      border-left: 5px solid #3b82f6 !important; /* strong blue border-l-5 */
     }
   
         /* Sidebar Hover Collapsed Styles */
@@ -172,26 +276,30 @@
               👋
             </div>
             <div>
-              <h2 class="text-xl md:text-2xl font-bold tracking-tight">
-                ನಮಸ್ಕಾರ, <span id="liveUser" class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 font-extrabold">Loading...</span>
-              </h2>
+              <div class="flex items-center flex-wrap gap-2">
+                <h2 class="text-xl md:text-2xl font-bold tracking-tight">
+                  ನಮಸ್ಕಾರ, <span id="liveUser" class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300 font-extrabold">Loading...</span>
+                </h2>
+                <span id="dbSyncStatus" class="inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-450 border border-emerald-500/30 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ml-1 select-none">🟢 Connected</span>
+              </div>
               <p class="text-xs text-slate-300 mt-1 font-medium tracking-wide">ದಾಖಲಾತಿ, ಶಿಕ್ಷಕರು ಮತ್ತು ಶೈಕ್ಷಣಿಕ ಮೌಲ್ಯಮಾಪನ ಪೋರ್ಟಲ್‌ಗೆ ಸುಸ್ವಾಗತ. / Welcome to School Management & Information Portal.</p>
             </div>
           </div>
-          <div class="relative z-10 flex gap-2.5 text-xs font-bold no-print w-full md:w-auto justify-center">
-            <a href="NewAdmission.html" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white px-5 py-3 rounded-2xl shadow-lg shadow-indigo-650/30 transition-all duration-300 hover:scale-[1.02] no-underline">
-              <i class="fa-solid fa-plus text-sm"></i> ಹೊಸ ದಾಖಲಾತಿ
-            </a>
-            <a href="CceAssessmet.html" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-50 hover:to-emerald-400 text-white px-5 py-3 rounded-2xl shadow-lg shadow-emerald-650/30 transition-all duration-300 hover:scale-[1.02] no-underline">
-              <i class="fa-solid fa-graduation-cap text-sm"></i> ಅಂಕಗಳ ದಾಖಲಾತಿ
-            </a>
+          <!-- Global Search Bar -->
+          <div class="relative z-10 w-full max-w-md no-print md:ml-auto">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 text-xs"></i>
+              <input type="text" id="globalStudentSearch" oninput="handleGlobalSearch(this.value)" onfocus="showSearchDropdown()" onblur="hideSearchDropdownDelayed()" placeholder="ಹುಡುಕಲು ಟೈಪ್ ಮಾಡಿ... / Search (Ctrl+K)..." class="w-full pl-8 pr-3 py-2 bg-white/10 dark:bg-slate-900/60 border border-white/20 dark:border-slate-800 rounded-xl focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-950 focus:text-slate-850 dark:focus:text-white outline-none text-white placeholder-slate-350 dark:placeholder-slate-500 text-[10px] font-bold backdrop-blur-md transition-all shadow-inner">
+              <div id="searchDropdown" class="hidden absolute left-0 right-0 mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-[200px] overflow-y-auto z-50 divide-y divide-slate-100 dark:divide-slate-800/80 custom-scrollbar text-[10px] text-slate-800 dark:text-slate-200">
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- 4 Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- Card 1 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <div onclick="resetAllFilters()" title="ಶೋಧಕಗಳನ್ನು ರದ್ದುಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to reset all filters" class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 cursor-pointer">
             <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-users"></i>
             </div>
@@ -235,195 +343,356 @@
             </div>
           </div>
           
-          <!-- Card 4 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-purple-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-purple-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <!-- Card 4: Dynamic Action Insights -->
+          <div id="insightCardContainer" onclick="focusOnActionInsight()" class="group relative overflow-hidden bg-gradient-to-br from-purple-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-purple-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-300 cursor-pointer">
             <div class="absolute -right-4 -bottom-4 text-purple-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
-              <i class="fa-solid fa-award"></i>
+              <i id="insightCardIconBack" class="fa-solid fa-circle-info"></i>
             </div>
             <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-purple-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-purple-200 dark:shadow-none z-10">
-              <i class="fa-solid fa-award"></i>
+              <i id="insightCardIcon" class="fa-solid fa-circle-info"></i>
             </div>
-            <div class="z-10">
-              <p class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">ಶಾಲೆಯ ಶ್ರೇಣಿ / School Rank</p>
-              <div class="flex items-center gap-1.5 mt-1">
-                <span class="inline-flex items-center bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded text-[11px] font-extrabold uppercase tracking-wide border border-purple-200 dark:border-purple-900">A+ Grade</span>
-                <span class="text-[9px] text-purple-500 font-semibold">(ಉನ್ನತ / Excellent)</span>
+            <div class="z-10 w-full">
+              <p class="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">ತ್ವರಿತ ಒಳನೋಟಗಳು / Dynamic Insights</p>
+              <h4 id="insightCardText" class="text-xs font-black text-slate-700 dark:text-slate-200 mt-1 leading-snug">Checking status...</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Collapsible Analytics Charts Panel (no-print) -->
+        <div id="analyticsChartsPanel" class="no-print hidden bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 shadow-sm space-y-4 mb-4">
+          <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 tracking-wider">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-chart-line text-sky-500"></i> ವಿಶ್ಲೇಷಣಾತ್ಮಕ ಚಾರ್ಟ್‌ಗಳು / Analytics Graphs
+            </span>
+            <span id="chartFilterBadge" class="hidden inline-flex items-center bg-indigo-50 dark:bg-indigo-950/40 text-indigo-750 dark:text-indigo-400 px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase border border-indigo-150 dark:border-slate-800/80 shadow-sm"></span>
+          </h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Gender Distribution Chart Card -->
+            <div class="bg-slate-50/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-150 dark:border-slate-800/60 space-y-2 flex flex-col justify-between" style="min-height: 250px;">
+              <h4 class="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-center">ಲಿಂಗಾವಾರು ಅನುಪಾತ / Gender Strength</h4>
+              <div class="flex-grow flex items-center justify-center relative">
+                <canvas id="genderChart" style="max-height: 180px; max-width: 180px;"></canvas>
+              </div>
+            </div>
+            
+            <!-- Caste Distribution Chart Card -->
+            <div class="bg-slate-50/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-150 dark:border-slate-800/60 space-y-2 flex flex-col justify-between" style="min-height: 250px;">
+              <h4 class="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-center">ಸಾಮಾಜಿಕ ಪ್ರವರ್ಗವಾರು ಹಂಚಿಕೆ / Category Strength</h4>
+              <div class="flex-grow flex items-center justify-center relative flex-col">
+                <canvas id="casteChart" style="max-height: 180px; max-width: 240px;"></canvas>
+              </div>
+            </div>
+            
+            <!-- Classwise Distribution Chart Card -->
+            <div class="bg-slate-50/50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-150 dark:border-slate-800/60 space-y-2 flex flex-col justify-between" style="min-height: 250px;">
+              <h4 class="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-center">ತರಗತಿವಾರು ದಾಖಲಾತಿ ಬಲ / Class Enrollment Curve</h4>
+              <div class="flex-grow flex items-center justify-center relative flex-col">
+                <canvas id="classChart" style="max-height: 180px; max-width: 240px;"></canvas>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Two Columns Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          <!-- Class Wise Enrollment (Left 7 Columns) -->
-          <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <!-- Main full-width summary table card -->
+        <div class="w-full bg-white dark:bg-slate-900 p-6 border border-slate-200/60 dark:border-slate-800/80 space-y-5 shadow-sm" id="summary-table-card">
+          <!-- Print Only Elegant Header (visible only on print) -->
+          <div class="print-only hidden w-full text-center mb-6">
+            <div class="flex items-center justify-center gap-4 mb-3">
+              <img src="logo.png" alt="School Logo" class="w-14 h-14 object-contain" onerror="this.style.display='none'">
               <div>
-                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center gap-2 tracking-wider">
-                  <i class="fa-solid fa-table text-indigo-500"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment
-                </h3>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic mt-0.5">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</p>
-              </div>
-              
-              <!-- Segmented Control View Switcher (Column mode) -->
-              <div class="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 text-[10px] font-bold self-start sm:self-auto no-print">
-                <button type="button" onclick="switchEnrollmentView('gender')" id="btn-view-gender" class="px-3 py-1.5 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 shadow-sm">ಲಿಂಗಾವಾರು / Gender</button>
-                <button type="button" onclick="switchEnrollmentView('caste')" id="btn-view-caste" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200">ವರ್ಗಾವಾರು / Caste</button>
-                <button type="button" onclick="switchEnrollmentView('all')" id="btn-view-all" class="px-3 py-1.5 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-455 hover:text-slate-800 dark:hover:text-slate-200">ಎಲ್ಲಾ / All</button>
+                <h1 id="printHeaderSchoolName" class="text-xl font-black uppercase text-black"></h1>
+                <p class="text-[10px] font-bold text-slate-800">ತರಗತಿವಾರು, ಲಿಂಗಾವಾರು ಮತ್ತು ವರ್ಗಾವಾರು ದಾಖಲಾತಿ ಘೋಷ್ವಾರೆ / Classwise, Genderwise and Castewise Summary Report</p>
               </div>
             </div>
+            <div class="flex justify-center gap-6 text-[9px] font-bold text-slate-800">
+              <div>Academic Year / ಶೈಕ್ಷಣಿಕ ವರ್ಷ: <span id="printAcademicYear" class="font-black"></span></div>
+              <div>Cluster: <span id="printCluster" class="font-black"></span></div>
+              <div>Taluk: <span id="printTaluk" class="font-black"></span></div>
+              <div>District: <span id="printDistrict" class="font-black"></span></div>
+              <div>Created By: <span id="printCreator" class="font-black"></span></div>
+            </div>
+          </div>
 
-            <!-- Combined Multi-select filters in same line row -->
-            <div class="flex flex-wrap items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/60 no-print text-[10px] font-bold">
-              <!-- Class Group Filter Controls -->
-              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 flex-wrap gap-y-1">
-                <span class="px-2.5 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ತರಗತಿ ಗುಂಪು / Class Groups:</span>
-                <button type="button" onclick="toggleClassGroupFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-slate-700 shadow-sm">All</button>
-                <button type="button" onclick="toggleClassGroupFilter('lkg-ukg')" id="btn-filter-lkg-ukg" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">LKG-UKG</button>
-                <button type="button" onclick="toggleClassGroupFilter('1-5')" id="btn-filter-1-5" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">1-5</button>
-                <button type="button" onclick="toggleClassGroupFilter('6-7')" id="btn-filter-6-7" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-7</button>
-                <button type="button" onclick="toggleClassGroupFilter('6-8')" id="btn-filter-6-8" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-8</button>
-                <button type="button" onclick="toggleClassGroupFilter('6-10')" id="btn-filter-6-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-10</button>
-                <button type="button" onclick="toggleClassGroupFilter('9-10')" id="btn-filter-9-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">9-10</button>
-              </div>
-
-              <!-- Gender Multi-select -->
-              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40">
-                <span class="px-2 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ಲಿಂಗ / Gender:</span>
-                <button type="button" onclick="toggleGenderFilter('Boy')" id="btn-filter-gender-Boy" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Boys</button>
-                <button type="button" onclick="toggleGenderFilter('Girl')" id="btn-filter-gender-Girl" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Girls</button>
-              </div>
-
-              <!-- Caste Multi-select -->
-              <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 flex-wrap gap-y-1">
-                <span class="px-2 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ವರ್ಗ / Caste:</span>
-                <button type="button" onclick="toggleCasteFilter('SC')" id="btn-filter-caste-SC" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">SC</button>
-                <button type="button" onclick="toggleCasteFilter('ST')" id="btn-filter-caste-ST" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">ST</button>
-                <button type="button" onclick="toggleCasteFilter('OBC')" id="btn-filter-caste-OBC" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">OBC</button>
-                <button type="button" onclick="toggleCasteFilter('Others')" id="btn-filter-caste-Others" class="px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-100 dark:border-slate-700 shadow-sm">Others</button>
-              </div>
+          <!-- Card Header (no-print) -->
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-2 border-b border-slate-100 dark:border-slate-800 no-print">
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase flex items-center gap-2 tracking-wider">
+                <i class="fa-solid fa-table text-indigo-500"></i> ತರಗತಿವಾರು ದಾಖಲಾತಿ ವಿವರ / Classwise Enrollment Summary
+              </h3>
+              <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold italic mt-0.5">ಅಂಕಗಳ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ನೋಡಿ.</p>
             </div>
             
-            <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-700/40 rounded-2xl shadow-sm">
-              <table class="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
-                    <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
-                    <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
-                    <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
-                    <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
-                  </tr>
-                </thead>
-                <tbody id="classTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 bg-white dark:bg-slate-900">
-                  <tr>
-                    <td colspan="4" class="text-center py-8 text-slate-400 dark:text-slate-500 font-medium">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಂಕಿ-ಅಂಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="flex items-center gap-2">
+              <!-- Toggle Charts Button -->
+              <button onclick="toggleAnalyticsChartsPanel()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-450 border border-indigo-150 dark:border-slate-800 px-3 py-1.5 rounded-xl text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-chart-line"></i> <span id="chartsToggleText">ವಿಷುಯಲ್ ಚಾರ್ಟ್ಸ್ / Show Charts</span>
+              </button>
+
+              <!-- Toggle Data Health Button -->
+              <button onclick="toggleDataHealthInspectorPanel()" class="bg-violet-50 hover:bg-violet-100 text-violet-600 dark:bg-violet-950/50 dark:text-violet-450 border border-violet-150 dark:border-slate-800 px-3 py-1.5 rounded-xl text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-heart-pulse"></i> 
+                <span id="healthToggleText">ಡೇಟಾ ಆರೋಗ್ಯ ಇನ್ಸ್ಪೆಕ್ಟರ್ / Data Health Inspector</span>
+                <span id="healthScoreToolbarBadge" class="px-1.5 py-0.5 rounded-lg text-[8px] font-extrabold border border-violet-300 dark:border-violet-750">--%</span>
+              </button>
+              
+              <!-- Toggle Distributions & Attendance Button -->
+              <button onclick="openAnalyticsPopupModal()" class="bg-sky-50 hover:bg-sky-100 text-sky-600 dark:bg-sky-950/50 dark:text-sky-450 border border-sky-150 dark:border-slate-800 px-3 py-1.5 rounded-xl text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-square-poll-vertical"></i> <span>ಸಾರಾಂಶ ಮತ್ತು ಸವಲತ್ತುಗಳು / Analytics & Distributions Info</span>
+              </button>
+              
+              <!-- Export Excel Button -->
+              <button onclick="exportSummaryToExcel()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-450 border border-emerald-150 dark:border-slate-800 px-3 py-1.5 rounded-xl text-[10px] font-extrabold cursor-pointer transition flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-file-excel"></i> ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel
+              </button>
+
+              <button onclick="printSummaryTable()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition shadow-sm border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-print"></i> ಪ್ರಿಂಟ್ ಘೋಷ್ವಾರೆ / Print Summary
+              </button>
             </div>
           </div>
-          
-          <!-- Quick Tools & Recent Activities (Right 5 Columns) -->
-          <div class="lg:col-span-5 space-y-6">
-            <!-- Quick Tools -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
-              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
-                <i class="fa-solid fa-screwdriver-wrench text-indigo-500"></i> ಕ್ವಿಕ್ ಲಿಂಕ್‌ಗಳು / Quick Tools
-              </h3>
-              <div class="grid grid-cols-2 gap-3 text-xs font-bold">
-                <a href="StudentList.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-sky-50/50 hover:to-white dark:hover:from-sky-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-sky-350 dark:hover:border-sky-900/50 text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-sky-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
-                  <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-address-book"></i>
-                  </div>
-                  <div>
-                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-sky-700 dark:group-hover:text-sky-400 font-bold">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
-                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Student Directory</span>
-                  </div>
-                </a>
-                
-                <a href="teachers.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-emerald-350 dark:hover:border-emerald-900/50 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
-                  <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                  </div>
-                  <div>
-                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 font-bold">ಶಿಕ್ಷಕರ ವಿವರ</span>
-                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Teacher Directory</span>
-                  </div>
-                </a>
 
-                <a href="BridgeCourse.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-pink-50/50 hover:to-white dark:hover:from-pink-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-pink-350 dark:hover:border-pink-900/50 text-slate-700 dark:text-slate-300 hover:text-pink-700 dark:hover:text-pink-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
-                  <div class="w-8 h-8 rounded-lg bg-pink-50 dark:bg-pink-950/50 text-pink-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-book-open"></i>
-                  </div>
-                  <div>
-                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-pink-700 dark:group-hover:text-pink-400 font-bold">ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
-                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Bridge Course</span>
-                  </div>
-                </a>
-
-                <a href="StudentUpdate.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-amber-50/50 hover:to-white dark:hover:from-amber-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-amber-350 dark:hover:border-amber-900/50 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
-                  <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-user-pen"></i>
-                  </div>
-                  <div>
-                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-amber-400 font-bold">ವಿವರ ತಿದ್ದುಪಡಿ</span>
-                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Update Info</span>
-                  </div>
-                </a>
-
-                <a href="FlnAssessment.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-indigo-50/50 hover:to-white dark:hover:from-indigo-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-indigo-350 dark:hover:border-indigo-900/50 text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 no-print no-underline hover:shadow-md hover:-translate-y-0.5">
-                  <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
-                    <i class="fa-solid fa-chart-line"></i>
-                  </div>
-                  <div>
-                    <span class="block text-slate-800 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 font-bold">FLN ಮೌಲ್ಯಮಾಪನ</span>
-                    <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">FLN Assessment</span>
-                  </div>
-                </a>
-              </div>
+          <!-- Combined Multi-select filters in same line row (no-print) -->
+          <div class="flex flex-wrap items-center gap-4 p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/50 dark:border-slate-800/60 no-print text-[10px] font-bold">
+            <!-- Class Group Filter Controls -->
+            <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200/60 dark:border-slate-700/40 flex-wrap gap-y-1">
+              <span class="px-2.5 py-1 text-slate-450 dark:text-slate-500 uppercase tracking-wider text-[9px] self-center">ತರಗತಿ ಗುಂಪು / Class Groups:</span>
+              <button type="button" onclick="toggleClassGroupFilter('all')" id="btn-filter-all" class="px-2.5 py-1 rounded-lg transition-all duration-200 bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-indigo-100 dark:border-slate-700 shadow-sm">All</button>
+              <button type="button" onclick="toggleClassGroupFilter('lkg-ukg')" id="btn-filter-lkg-ukg" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">LKG-UKG</button>
+              <button type="button" onclick="toggleClassGroupFilter('1-5')" id="btn-filter-1-5" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">1-5</button>
+              <button type="button" onclick="toggleClassGroupFilter('6-7')" id="btn-filter-6-7" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-7</button>
+              <button type="button" onclick="toggleClassGroupFilter('6-8')" id="btn-filter-6-8" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-8</button>
+              <button type="button" onclick="toggleClassGroupFilter('6-10')" id="btn-filter-6-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">6-10</button>
+              <button type="button" onclick="toggleClassGroupFilter('9-10')" id="btn-filter-9-10" class="px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200">9-10</button>
             </div>
 
-            <!-- Recent Activities -->
-            <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
-              <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
-                <i class="fa-solid fa-clock-rotate-left text-purple-500"></i> ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ಸ್ / Portal Updates
-              </h3>
-              <div class="relative pl-4 border-l border-slate-150 dark:border-slate-800 space-y-5 text-xs font-semibold text-slate-600 dark:text-slate-400">
-                
-                <div class="relative">
-                  <!-- Bullet -->
-                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50 dark:ring-emerald-950/55 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CSV ಆಮದು ಪೋರ್ಟಲ್ ಸಕ್ರಿಯವಾಗಿದೆ</p>
-                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">CSV Import Tool is active for student list uploading.</p>
-                    <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">Just Now</span>
-                  </div>
-                </div>
+            <!-- Reset Hidden Classes View Button -->
+            <div id="hiddenClassesResetContainer" class="hidden">
+              <button onclick="resetHiddenClasses()" class="bg-rose-500 hover:bg-rose-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold transition shadow-sm border-0 cursor-pointer flex items-center gap-1">
+                <i class="fa-solid fa-eye"></i> ಎಲ್ಲಾ ತರಗತಿಗಳನ್ನು ತೋರಿಸಿ / Reset View
+              </button>
+            </div>
+          </div>
 
-                <div class="relative">
-                  <!-- Bullet -->
-                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-950/55 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CCE ಅಂಕಗಳ ಗ್ರಿಡ್ ಸ್ಥಳಾವಕಾಶ ಸುಧಾರಿಸಲಾಗಿದೆ</p>
-                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Optimized table rendering & layout density for marks entry grid.</p>
-                    <span class="text-[9px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 block">10 mins ago</span>
-                  </div>
-                </div>
+          <!-- Unmatched warning banner (no-print) -->
+          <div id="dbUnmatchedBanner" class="hidden no-print bg-amber-50 dark:bg-amber-950/20 border border-amber-250 dark:border-amber-900/55 p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs font-semibold text-amber-850 dark:text-amber-300">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500 text-sm animate-pulse"></i>
+              <span>ಕೆಲವು ವಿದ್ಯಾರ್ಥಿಗಳ ಲಿಂಗ ಅಥವಾ ತರಗತಿ ಮಾಹಿತಿ ಅಪೂರ್ಣವಾಗಿದೆ (<span id="unmatchedCountText">0</span> ವಿದ್ಯಾರ್ಥಿಗಳು). ಅವರನ್ನು ಘೋಷ್ವಾರೆಯಲ್ಲಿ ಸೇರಿಸಲಾಗಿಲ್ಲ. / Some students have missing or invalid Class/Gender details (<span id="unmatchedCountTextEn">0</span> students). They are excluded from the summary table.</span>
+            </div>
+            <button onclick="window.location.href='StudentList.html?invalid_info=true'" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold transition border-0 cursor-pointer shadow-sm whitespace-nowrap">
+              ವಿವರ ತಿದ್ದುಪಡಿ ಮಾಡಿ / Fix Now
+            </button>
+          </div>
 
-                <div class="relative">
-                  <!-- Bullet -->
-                  <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-sky-500 ring-4 ring-sky-50 dark:ring-sky-950/55 flex-shrink-0"></span>
-                  <div>
-                    <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">ಹೊಸ ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2026-27 ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</p>
-                    <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Academic session has been updated to the current year 2026-27.</p>
-                    <span class="text-[9px] text-sky-600 dark:text-sky-400 font-semibold mt-1 block">1 hour ago</span>
-                  </div>
-                </div>
+          <!-- School Information Header Block (no-print) -->
+          <div class="no-print border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
+            <div class="text-center font-bold text-base text-slate-800 dark:text-white pb-2 border-b border-dashed border-slate-200 dark:border-slate-700">
+              ತರಗತಿವಾರು ಮತ್ತು ಲಿಂಗಾವಾರು ಜಾತಿ ಘೋಷ್ವಾರೆ ವಿವರಗಳು / Classwise, Genderwise and Castewise Summary Report
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <div class="flex items-center gap-2">
+                <span>ಶಾಲೆಯ ಹೆಸರು:</span>
+                <input type="text" id="dbSchoolNameKn" oninput="saveDbHeaderField('school_name_kn', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="GHPS Marched">
+                <span id="printSchoolNameKn" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>ಶೈಕ್ಷಣಿಕ ವರ್ಷ:</span>
+                <input type="text" id="dbAcademicYear" oninput="saveDbHeaderField('school_academic_year', this.value); updatePrintSpans();" class="w-28 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white text-center no-print" placeholder="2026-27">
+                <span id="printAcademicYear" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>ಕ್ಲಸ್ಟರ್:</span>
+                <input type="text" id="dbCluster" oninput="saveDbHeaderField('school_cluster', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
+                <span id="printCluster" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>ತಾಲೂಕು:</span>
+                <input type="text" id="dbTaluk" oninput="saveDbHeaderField('school_taluk', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
+                <span id="printTaluk" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>ಜಿಲ್ಲೆ:</span>
+                <input type="text" id="dbDistrict" oninput="saveDbHeaderField('school_district', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
+                <span id="printDistrict" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>ರಚನೆ:</span>
+                <input type="text" id="dbCreator" oninput="saveDbHeaderField('school_creator', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white font-bold no-print" placeholder="ರಚನೆಕಾರರು">
+                <span id="printCreator" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
               </div>
             </div>
           </div>
-          
+
+          <!-- Smart Data Health Inspector Panel (no-print) -->
+          <div id="dataHealthInspectorPanel" class="no-print hidden bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 shadow-sm space-y-4 mb-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div class="flex items-center gap-2">
+                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-shield-halved text-emerald-500"></i> ಸ್ಮಾರ್ಟ್ ಡೇಟಾ ಹೆಲ್ತ್ ಇನ್ಸ್‌ಪೆಕ್ಟರ್ / Smart Data Health Inspector
+                </h3>
+                <span id="dataHealthScoreBadge" class="inline-flex items-center bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-450 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border border-emerald-200 dark:border-emerald-900">
+                  Score: 100%
+                </span>
+              </div>
+              <button onclick="runDataHealthAudit()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-650 dark:bg-indigo-950/50 dark:text-indigo-400 border border-indigo-100 dark:border-slate-800 px-3 py-1.5 rounded-xl text-[10px] font-bold cursor-pointer transition flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-arrows-rotate"></i> ಆಡಿಟ್ ರನ್ ಮಾಡಿ / Run Audit
+              </button>
+            </div>
+            
+            <p class="text-[10px] text-slate-450 dark:text-slate-500 font-medium">
+              ಈ ಪ್ಯಾನಲ್ ವಿದ್ಯಾರ್ಥಿಗಳ ಆಧಾರ್ ನಂಬರ್ ನಕಲು, ತಪ್ಪು ಫೋನ್ ನಂಬರ್ ಅಥವಾ ಅಪೂರ್ಣ ವಿವರಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚುತ್ತದೆ.
+            </p>
+            
+            <div id="healthAuditResults" class="space-y-2 max-h-[220px] overflow-y-auto custom-scrollbar text-[10px] font-semibold">
+              <div class="text-center py-6 text-slate-400 dark:text-slate-500">
+                <i class="fa-solid fa-circle-notch animate-spin text-lg mb-2 block"></i>
+                ಲೋಡ್ ಆಗುತ್ತಿದೆ... / Analyzing database health...
+              </div>
+            </div>
+          </div>
+
+          <!-- Comprehensive 15-Column Table -->
+          <div class="overflow-x-auto border border-black shadow-sm">
+            <table class="w-full text-[11px] border-collapse" style="min-width: 950px;">
+              <thead>
+                <tr class="bg-slate-200 text-black font-bold text-center border-b border-black">
+                  <th rowspan="2" class="py-2.5 px-1 border border-black text-xs text-center">ಕ್ರ.ಸಂ</th>
+                  <th rowspan="2" class="py-2.5 px-2 border border-black text-xs text-center">ತರಗತಿ</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-100">ಪರಿಶಿಷ್ಟ ಜಾತಿ / SC</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-100">ಪರಿಶಿಷ್ಟ ಪಂಗಡ / ST</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-100">ಪ್ರವರ್ಗ-1 / C1</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-100">ಅಲ್ಪಸಂಖ್ಯಾತರು / Minority</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-100">OBC General</th>
+                  <th colspan="2" class="py-1 px-1 border border-black text-[10px] text-center bg-slate-200">ಒಟ್ಟು ಲಿಂಗಾವಾರು</th>
+                  <th rowspan="2" class="py-2.5 px-1.5 border border-black text-xs text-center bg-slate-200">ಒಟ್ಟು</th>
+                  <th rowspan="2" class="py-2.5 px-1 border border-black text-xs text-center no-print bg-slate-200">Action</th>
+                </tr>
+                <tr class="bg-slate-50 text-black font-bold text-center border-b border-black text-[9px]">
+                  <!-- SC -->
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಹೆಣ್ಣು</th>
+                  <!-- ST -->
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಹೆಣ್ಣು</th>
+                  <!-- C1 -->
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಹೆಣ್ಣು</th>
+                  <!-- Minority -->
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಹೆಣ್ಣು</th>
+                  <!-- OBC General -->
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center">ಹೆಣ್ಣು</th>
+                  <!-- Totals -->
+                  <th class="py-1.5 px-0.5 border border-black text-center bg-slate-100">ಗಂಡು</th>
+                  <th class="py-1.5 px-0.5 border border-black text-center bg-slate-100">ಹೆಣ್ಣು</th>
+                </tr>
+              </thead>
+              <tbody id="classTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-800 dark:text-slate-200 font-bold bg-white dark:bg-slate-900">
+                <tr>
+                  <td colspan="16" class="text-center py-8 text-slate-400 dark:text-slate-500 font-medium">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಂಕಿ-ಅಂಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> <!-- Close summary-table-card -->
+
+        <!-- Quick Links and Portal Updates (Side by side below table, no-print) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
+          <!-- Quick Tools (6 columns) -->
+          <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
+              <i class="fa-solid fa-screwdriver-wrench text-indigo-500"></i> ಕ್ವಿಕ್ ಲಿಂಕ್‌ಗಳು / Quick Tools
+            </h3>
+            <div class="grid grid-cols-2 gap-3 text-xs font-bold text-slate-700 dark:text-slate-350">
+              <a href="StudentList.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-sky-50/50 hover:to-white dark:hover:from-sky-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-sky-350 dark:hover:border-sky-900/50 text-slate-700 dark:text-slate-300 hover:text-sky-700 dark:hover:text-sky-400 no-underline hover:shadow-md hover:-translate-y-0.5">
+                <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid fa-address-book"></i>
+                </div>
+                <div>
+                  <span class="block text-slate-800 dark:text-slate-200 group-hover:text-sky-700 dark:group-hover:text-sky-400 font-bold">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ</span>
+                  <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Student Directory</span>
+                </div>
+              </a>
+              
+              <a href="teachers.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-emerald-50/50 hover:to-white dark:hover:from-emerald-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-emerald-350 dark:hover:border-emerald-900/50 text-slate-700 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-450 no-underline hover:shadow-md hover:-translate-y-0.5">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid fa-chalkboard-user"></i>
+                </div>
+                <div>
+                  <span class="block text-slate-800 dark:text-slate-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-455 font-bold">ಶಿಕ್ಷಕರ ವಿವರ</span>
+                  <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Teacher Directory</span>
+                </div>
+              </a>
+
+              <a href="BridgeCourse.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-pink-50/50 hover:to-white dark:hover:from-pink-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-850 hover:border-pink-350 text-slate-700 dark:text-slate-300 hover:text-pink-700 dark:hover:text-pink-400 no-underline hover:shadow-md hover:-translate-y-0.5">
+                <div class="w-8 h-8 rounded-lg bg-pink-50 dark:bg-pink-950/50 text-pink-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                  <span class="block text-slate-800 dark:text-slate-200 group-hover:text-pink-700 dark:group-hover:text-pink-400 font-bold">ಬ್ರಿಡ್ಜ್ ಕೋರ್ಸ್</span>
+                  <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Bridge Course</span>
+                </div>
+              </a>
+
+              <a href="StudentUpdate.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-amber-50/50 hover:to-white dark:hover:from-amber-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-amber-350 dark:hover:border-amber-900/50 text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 no-underline hover:shadow-md hover:-translate-y-0.5">
+                <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid fa-user-pen"></i>
+                </div>
+                <div>
+                  <span class="block text-slate-800 dark:text-slate-200 group-hover:text-amber-700 dark:group-hover:text-amber-400 font-bold">ವಿವರ ತಿದ್ದುಪಡಿ</span>
+                  <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">Update Info</span>
+                </div>
+              </a>
+
+              <a href="FlnAssessment.html" class="group flex flex-col gap-2 p-3 bg-gradient-to-br from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900/50 hover:from-indigo-50/50 hover:to-white dark:hover:from-indigo-950/20 dark:hover:to-slate-900/50 rounded-xl transition-all duration-300 border border-slate-200/60 dark:border-slate-800/80 hover:border-indigo-350 dark:hover:border-indigo-900/50 text-slate-700 dark:text-slate-300 hover:text-indigo-700 dark:hover:text-indigo-400 no-underline hover:shadow-md hover:-translate-y-0.5">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform duration-300">
+                  <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div>
+                  <span class="block text-slate-800 dark:text-slate-200 group-hover:text-indigo-700 dark:group-hover:text-indigo-400 font-bold">FLN ಮೌಲ್ಯಮಾಪನ</span>
+                  <span class="text-[9px] text-slate-400 dark:text-slate-500 font-medium">FLN Assessment</span>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recent Activities (6 columns) -->
+          <div class="lg:col-span-6 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-800/80 space-y-4 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-800 dark:text-slate-200 uppercase pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 tracking-wider">
+              <i class="fa-solid fa-clock-rotate-left text-purple-500"></i> ಇತ್ತೀಚಿನ ಅಪ್‌ಡೇಟ್ಸ್ / Portal Updates
+            </h3>
+            <div class="relative pl-4 border-l border-slate-150 dark:border-slate-800 space-y-5 text-xs font-semibold text-slate-600 dark:text-slate-400">
+              <div class="relative">
+                <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-50 dark:ring-emerald-950/55 flex-shrink-0"></span>
+                <div>
+                  <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CSV ಆಮದು ಪೋರ್ಟಲ್ ಸಕ್ರಿಯವಾಗಿದೆ</p>
+                  <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">CSV Import Tool is active for student list uploading.</p>
+                  <span class="text-[9px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">Just Now</span>
+                </div>
+              </div>
+
+              <div class="relative">
+                <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-indigo-500 ring-4 ring-indigo-50 dark:ring-indigo-950/55 flex-shrink-0"></span>
+                <div>
+                  <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">CCE ಅಂಕಗಳ ಗ್ರಿಡ್ ಸ್ಥಳಾವಕಾಶ ಸುಧಾರಿಸಲಾಗಿದೆ</p>
+                  <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Optimized table rendering & layout density for marks entry grid.</p>
+                  <span class="text-[9px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 block">10 mins ago</span>
+                </div>
+              </div>
+
+              <div class="relative">
+                <span class="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-sky-500 ring-4 ring-sky-50 dark:ring-sky-950/55 flex-shrink-0"></span>
+                <div>
+                  <p class="text-slate-800 dark:text-slate-200 font-bold text-xs">ಹೊಸ ಶೈಕ್ಷಣಿಕ ವರ್ಷ 2026-27 ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</p>
+                  <p class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">Academic session has been updated to the current year 2026-27.</p>
+                  <span class="text-[9px] text-sky-600 dark:text-sky-400 font-semibold mt-1 block">1 hour ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -443,10 +712,29 @@
     let currentEnrollmentView = 'gender';
     let selectedClassGroups = ['all'];
     let cachedClassData = null;
+    let cachedDetailedClassData = null;
+    let hiddenClasses = [];
     let allStudents = [];
+    let casteChartInstance = null;
+    let genderChartInstance = null;
+    let classChartInstance = null;
+    let chartSelectedClass = null;
+    let chartSelectedGroup = null;
+    let lastAuditErrors = [];
+    let currentInsightAction = 'attendance';
     let selectedGenders = ['Boy', 'Girl'];
     let selectedCastes = ['SC', 'ST', 'OBC', 'Others'];
     const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+
+    function promiseWithTimeout(promise, ms = 15000) {
+      let timeoutId;
+      const timeoutPromise = new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error("Database connection timeout. Please check your internet connection."));
+        }, ms);
+      });
+      return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId));
+    }
     const classGroups = {
       'all': ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
       'lkg-ukg': ['LKG', 'UKG'],
@@ -549,9 +837,104 @@
       }
     }
 
+    function initDbHeaderFields(loggedInName) {
+      const schoolKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+      const year = localStorage.getItem('school_academic_year') || '2026-27';
+      const cluster = localStorage.getItem('school_cluster') || 'ಮಾರ್ಚೇಡ್';
+      const taluk = localStorage.getItem('school_taluk') || 'ರಾಯಚೂರು';
+      const district = localStorage.getItem('school_district') || 'ರಾಯಚೂರು';
+      let finalCreator = loggedInName || 'ಮೆರಿಲಿನ್ ಪ್ರಭು';
+      const isKannada = /[\u0C80-\u0CFF]/.test(finalCreator);
+      if (!isKannada) {
+        const cleanName = finalCreator.toLowerCase().trim();
+        if (cleanName.includes('manohar')) {
+          finalCreator = 'ಮನೋಹರ್ ಆರ್ KGF';
+        } else if (cleanName.includes('merilin') || cleanName.includes('prabhu')) {
+          finalCreator = 'ಮೆರಿಲಿನ್ ಪ್ರಭು';
+        } else {
+          finalCreator = 'ಮೆರಿಲಿನ್ ಪ್ರಭು';
+        }
+      }
+      const creator = localStorage.getItem('school_creator') || finalCreator;
+      
+      const sName = document.getElementById('dbSchoolNameKn');
+      const sYear = document.getElementById('dbAcademicYear');
+      const sClust = document.getElementById('dbCluster');
+      const sTaluk = document.getElementById('dbTaluk');
+      const sDist = document.getElementById('dbDistrict');
+      const sCreat = document.getElementById('dbCreator');
+
+      if (sName) sName.value = schoolKn;
+      if (sYear) sYear.value = year;
+      if (sClust) sClust.value = cluster;
+      if (sTaluk) sTaluk.value = taluk;
+      if (sDist) sDist.value = district;
+      if (sCreat) sCreat.value = creator;
+      
+      window.updatePrintSpans();
+    }
+
+    window.updatePrintSpans = function() {
+      const fields = ['dbSchoolNameKn', 'dbAcademicYear', 'dbCluster', 'dbTaluk', 'dbDistrict', 'dbCreator'];
+      fields.forEach(id => {
+        const inp = document.getElementById(id);
+        const span = document.getElementById('print' + id.replace('db', ''));
+        if (inp && span) {
+          if (id === 'dbAcademicYear') {
+            const today = new Date();
+            const monthsKn = ["ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್", "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್"];
+            const monthKn = monthsKn[today.getMonth()];
+            const day = today.getDate();
+            const knDigits = {'1':'೧', '2':'೨', '3':'೩', '4':'೪', '5':'೫', '6':'೬', '7':'೭', '8':'೮', '9':'೯', '0':'೦'};
+            let dayKn = day.toString().split('').map(d => knDigits[d] || d).join('');
+            
+            span.innerText = `${inp.value || ''} (${monthKn} ${dayKn})`;
+          } else {
+            span.innerText = inp.value || '';
+          }
+        }
+      });
+      const sName = document.getElementById('dbSchoolNameKn');
+      const hSchool = document.getElementById('printHeaderSchoolName');
+      if (sName && hSchool) {
+        hSchool.innerText = sName.value || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+      }
+    };
+
+    window.saveDbHeaderField = function(key, val) {
+      localStorage.setItem(key, val);
+      window.updatePrintSpans();
+      if (key === 'school_academic_year') {
+        loadDashboardData();
+      }
+    };
+
     window.onload = async function() {
       await initUserAndTheme();
-      const { data: { session } } = await supabaseClient.auth.getSession();
+      
+      // Setup floating hover lookup popover
+      if (!document.getElementById('hoverLookupPopover')) {
+        const popover = document.createElement('div');
+        popover.id = 'hoverLookupPopover';
+        popover.className = 'fixed hidden bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-[10px] p-3 rounded-xl shadow-2xl z-[9999] max-w-[290px] max-h-[280px] overflow-y-auto transition-opacity duration-200 custom-scrollbar';
+        
+        popover.addEventListener('mouseenter', () => {
+          if (window.hoverLookupHideTimeout) {
+            clearTimeout(window.hoverLookupHideTimeout);
+          }
+        });
+        popover.addEventListener('mouseleave', () => {
+          window.hideHoverLookupImmediately();
+        });
+        
+        document.body.appendChild(popover);
+      }
+
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+        throw new Error("Supabase library not loaded. Please verify your internet connection.");
+      }
+
+      const { data: { session } } = await promiseWithTimeout(supabaseClient.auth.getSession(), 15000);
       if (!session) {
         window.location.href = "index.html";
         return;
@@ -559,17 +942,23 @@
 
       // Display username
       const user = session.user;
-      const name = user.user_metadata.name || user.email;
+      const name = user.user_metadata?.name || user.email;
       const liveUserEl = document.getElementById('liveUser'); if (liveUserEl) liveUserEl.innerText = name;
+
+      // Populate input fields with default / localStorage values
+      initDbHeaderFields(name);
 
       // Ensure school_id is resolved and stored in localStorage to prevent race conditions
       let sId = user.user_metadata?.school_id || localStorage.getItem('school_id');
       if (!sId) {
-        const { data: profile } = await supabaseClient
-          .from('profiles')
-          .select('school_id')
-          .eq('id', user.id)
-          .maybeSingle();
+        const { data: profile } = await promiseWithTimeout(
+          supabaseClient
+            .from('profiles')
+            .select('school_id')
+            .eq('id', user.id)
+            .maybeSingle(),
+          15000
+        );
         if (profile?.school_id) {
           sId = profile.school_id;
           localStorage.setItem('school_id', sId);
@@ -591,7 +980,28 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('enroll_class, gender, caste, social_class, is_admitted');
+        if (schoolId) {
+          try {
+            const { data: mappingData } = await supabaseClient
+              .from('school_settings')
+              .select('settings_value')
+              .eq('school_id', schoolId)
+              .eq('settings_key', 'category_mappings')
+              .maybeSingle();
+
+            if (mappingData && mappingData.settings_value) {
+              let dbMappings = mappingData.settings_value;
+              if (typeof dbMappings === 'string') {
+                try { dbMappings = JSON.parse(dbMappings); } catch (e) {}
+              }
+              localStorage.setItem('school_category_mappings', JSON.stringify(dbMappings));
+            }
+          } catch (err) {
+            console.error("Error loading category mappings from DB:", err);
+          }
+        }
+
+        let query = supabaseClient.from('admissions').select('*');
         if (schoolId) {
           query = query.eq('school_id', schoolId);
         }
@@ -622,25 +1032,87 @@
           
           let social_class = student.social_class;
           let caste = student.caste;
+          let student_caste = student.student_caste;
           
           if (isCasteCategory && !isSocialClassCategory) {
             social_class = student.caste;
-            caste = student.social_class;
+            caste = student.student_caste;
+            student_caste = student.social_class;
           }
           
           // Determine gender robustly
           const g = (student.gender || '').toString().toLowerCase().trim();
-          const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
-          const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
+          const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು') || g === 'm' || g === 'b';
+          const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು') || g === 'f' || g === 'g';
           const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
 
-          return { ...student, social_class, caste, gender };
+          // Shift 9-digit STS numbers from wrong columns:
+          let app_no = student.app_no || '';
+          let student_sts = student.student_sts || '';
+          let enrolment_no = student.enrolment_no || '';
+
+          const isNineDigit = (val) => /^\d{9}$/.test(String(val).replace(/\s+/g, '').trim());
+
+          if (isNineDigit(app_no)) {
+            if (!student_sts) {
+              student_sts = app_no;
+            }
+            app_no = '';
+          }
+          if (isNineDigit(enrolment_no)) {
+            if (!student_sts) {
+              student_sts = enrolment_no;
+            }
+            enrolment_no = '';
+          }
+
+          return { ...student, social_class, caste, student_caste, gender, app_no, student_sts, enrolment_no };
         }
 
-        const admittedList = admissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').map(normalizeStudentRow);
-        const pendingList = admissions.filter(s => s.is_admitted === false || s.is_admitted === 'false').map(normalizeStudentRow);
+        const year = localStorage.getItem('school_academic_year') || '2026-27';
+        const filteredAdmissions = admissions.filter(s => s.academic_year === year || !s.academic_year);
+
+        const admittedList = filteredAdmissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').map(normalizeStudentRow);
+        const pendingList = filteredAdmissions.filter(s => s.is_admitted === false || s.is_admitted === 'false').map(normalizeStudentRow);
 
         allStudents = admittedList;
+        
+        // Diagnostic log: check for students that don't match standard classes or genders
+        console.group("Dashboard Count Diagnostics");
+        const unmatched = admittedList.filter(s => {
+          const cls = normalizeClass(s.enroll_class);
+          const hasValidClass = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(cls);
+          const isBoy = s.gender === 'Boy';
+          const isGirl = s.gender === 'Girl';
+          const hasValidGender = isBoy || isGirl;
+          return !hasValidClass || !hasValidGender;
+        });
+        console.log(`Total admitted students: ${admittedList.length}`);
+        console.log(`Unmatched students (not counted in classwise table): ${unmatched.length}`);
+        if (unmatched.length > 0) {
+          console.table(unmatched.map(s => ({
+            ID: s.id,
+            Name: s.name_english || s.student_name,
+            RawClass: s.enroll_class,
+            NormalizedClass: normalizeClass(s.enroll_class),
+            RawGender: s.gender,
+            AcademicYear: s.academic_year
+          })));
+        }
+        console.groupEnd();
+
+        const dbUnmatchedBanner = document.getElementById('dbUnmatchedBanner');
+        if (dbUnmatchedBanner) {
+          if (unmatched.length > 0) {
+            const elTxt = document.getElementById('unmatchedCountText');
+            const elTxtEn = document.getElementById('unmatchedCountTextEn');
+            if (elTxt) elTxt.innerText = unmatched.length;
+            if (elTxtEn) elTxtEn.innerText = unmatched.length;
+            dbUnmatchedBanner.classList.remove('hidden');
+          } else {
+            dbUnmatchedBanner.classList.add('hidden');
+          }
+        }
         
         const pendingCount = pendingList.length;
         const pendingBadge = document.getElementById('pendingBadge');
@@ -653,10 +1125,172 @@
           }
         }
 
+        renderAnalyticsCharts(filteredAdmissions);
         updateDashboardStats();
+        runDataHealthAudit();
 
       } catch (err) {
         console.error("Dashboard calculation error:", err);
+      }
+    }
+
+    function renderAnalyticsCharts(admissions) {
+      if (typeof Chart === 'undefined') return;
+
+      let filteredAdmissions = allStudents;
+      let filterStatusText = "";
+      
+      if (chartSelectedClass) {
+        filteredAdmissions = allStudents.filter(s => normalizeClass(s.enroll_class) === chartSelectedClass);
+        filterStatusText = `ಫಿಲ್ಟರ್: ತರಗತಿ ${chartSelectedClass} / Filtered: Class ${chartSelectedClass}`;
+      } else if (chartSelectedGroup) {
+        const allowedClasses = classGroups[chartSelectedGroup] || [];
+        filteredAdmissions = allStudents.filter(s => allowedClasses.includes(normalizeClass(s.enroll_class)));
+        
+        const groupLabels = {
+          'lkg-ukg': 'LKG-UKG',
+          '1-5': '1-5',
+          '6-7': '6-7',
+          '8-10': '8-10',
+          '6-10': '6-10'
+        };
+        const grpLabel = groupLabels[chartSelectedGroup] || chartSelectedGroup;
+        filterStatusText = `ಫಿಲ್ಟರ್: ತರಗತಿ ಗುಂಪು ${grpLabel} / Filtered: Group ${grpLabel}`;
+      } else {
+        const totalAdmitted = allStudents.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').length;
+        filterStatusText = `ಒಟ್ಟು ಶಾಲಾ ಬಲ / Total Strength: ${totalAdmitted} Students`;
+      }
+
+      const badge = document.getElementById('chartFilterBadge');
+      if (badge) {
+        if (filterStatusText) {
+          badge.innerText = filterStatusText;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+
+      let boyCount = 0;
+      let girlCount = 0;
+      let scCount = 0, stCount = 0, c1Count = 0, minorityCount = 0, obcCount = 0, unasCount = 0;
+      
+      const classDistribution = {
+        'LKG': 0, 'UKG': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0
+      };
+
+      filteredAdmissions.forEach(student => {
+        if (student.is_admitted === false || student.is_admitted === 'false') return;
+
+        // Gender counts
+        const g = (student.gender || '').toString().toLowerCase().trim();
+        const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು') || g === 'm' || g === 'b';
+        const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು') || g === 'f' || g === 'g';
+        if (isBoy) boyCount++;
+        else if (isGirl) girlCount++;
+
+        // Caste counts
+        const casteGrp = getStudentCasteGroup(student);
+        if (casteGrp === 'SC') scCount++;
+        else if (casteGrp === 'ST') stCount++;
+        else if (casteGrp === 'C1') c1Count++;
+        else if (casteGrp === 'Minority') minorityCount++;
+        else if (casteGrp === 'Unassigned') unasCount++;
+        else obcCount++;
+
+        // Class counts
+        const normalized = normalizeClass(student.enroll_class);
+        if (classDistribution[normalized] !== undefined) {
+          classDistribution[normalized]++;
+        }
+      });
+
+      // Gender Doughnut Chart
+      const genderCtx = document.getElementById('genderChart')?.getContext('2d');
+      if (genderCtx) {
+        if (genderChartInstance) genderChartInstance.destroy();
+        genderChartInstance = new Chart(genderCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Boys / ಗಂಡು', 'Girls / ಹೆಣ್ಣು'],
+            datasets: [{
+              data: [boyCount, girlCount],
+              backgroundColor: ['#0ea5e9', '#ec4899'],
+              borderWidth: 1,
+              borderColor: 'transparent'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 9, weight: 'bold' } } }
+            }
+          }
+        });
+      }
+
+      // Caste Category Horizontal Bar Chart
+      const casteCtx = document.getElementById('casteChart')?.getContext('2d');
+      if (casteCtx) {
+        if (casteChartInstance) casteChartInstance.destroy();
+        casteChartInstance = new Chart(casteCtx, {
+          type: 'bar',
+          data: {
+            labels: ['SC', 'ST', 'C1', 'Minority', 'OBC General', 'Unassigned'],
+            datasets: [{
+              label: 'ವಿದ್ಯಾರ್ಥಿಗಳು / Students',
+              data: [scCount, stCount, c1Count, minorityCount, obcCount, unasCount],
+              backgroundColor: ['#f43f5e', '#ef4444', '#f97316', '#3b82f6', '#10b981', '#6b7280'],
+              borderRadius: 4
+            }]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { beginAtZero: true, grid: { display: false } },
+              y: { grid: { display: false } }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
+      }
+
+      // Class Enrollment Line/Area Chart
+      const classCtx = document.getElementById('classChart')?.getContext('2d');
+      if (classCtx) {
+        if (classChartInstance) classChartInstance.destroy();
+        classChartInstance = new Chart(classCtx, {
+          type: 'line',
+          data: {
+            labels: Object.keys(classDistribution),
+            datasets: [{
+              label: 'ವಿದ್ಯಾರ್ಥಿಗಳು / Students',
+              data: Object.values(classDistribution),
+              fill: true,
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              borderColor: '#6366f1',
+              borderWidth: 2,
+              tension: 0.3,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: { beginAtZero: true, grid: { display: false } },
+              x: { grid: { display: false } }
+            },
+            plugins: {
+              legend: { display: false }
+            }
+          }
+        });
       }
     }
 
@@ -664,25 +1298,91 @@
       if (!classStr) return "";
       let clean = classStr.toString().trim().toLowerCase();
       
-      if (!clean.includes("lkg")) {
-        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      // Remove any Kannada suffixes like "ನೇ" or "ನೆ"
+      clean = clean.replace(/ನೇ/g, '').replace(/ನೆ/g, '').replace(/ನೇ ತರಗತಿ/g, '').replace(/ತರಗತಿ/g, '');
+      
+      // Convert Kannada digits to English digits
+      const kanDigits = {'೧':'1', '೨':'2', '೩':'3', '೪':'4', '೫':'5', '೬':'6', '೭':'7', '೮':'8', '೯':'9', '೧೦':'10', '೦':'0'};
+      for (const key in kanDigits) {
+        clean = clean.replace(new RegExp(key, 'g'), kanDigits[key]);
       }
       
-      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
-      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      clean = clean.trim();
+
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("ಎಲ್.ಕೆ.ಜಿ") || clean.includes("ಎಲ್ಕೆಜಿ") || clean.includes("l.k.g")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2") || clean.includes("ಯು.ಕೆ.ಜಿ") || clean.includes("ಯುಕೆಜಿ") || clean.includes("u.k.g")) return "UKG";
       
-      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
-      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
-      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
-      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
-      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
-      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
-      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
-      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
-      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
-      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
-      
+      if (/\b10\b/.test(clean) || /\bx\b/.test(clean) || clean.includes("10th") || clean.includes("tenth")) return "10";
+      if (/\b9\b/.test(clean) || /\bix\b/.test(clean) || clean.includes("9th") || clean.includes("ninth")) return "9";
+      if (/\b8\b/.test(clean) || /\bviii\b/.test(clean) || clean.includes("8th") || clean.includes("eighth")) return "8";
+      if (/\b7\b/.test(clean) || /\bvii\b/.test(clean) || clean.includes("7th") || clean.includes("seventh")) return "7";
+      if (/\b6\b/.test(clean) || /\bvi\b/.test(clean) || clean.includes("6th") || clean.includes("sixth")) return "6";
+      if (/\b5\b/.test(clean) || /\bv\b/.test(clean) || clean.includes("5th") || clean.includes("fifth")) return "5";
+      if (/\b4\b/.test(clean) || /\biv\b/.test(clean) || clean.includes("4th") || clean.includes("fourth")) return "4";
+      if (/\b3\b/.test(clean) || /\biii\b/.test(clean) || clean.includes("3rd") || clean.includes("third")) return "3";
+      if (/\b2\b/.test(clean) || /\bii\b/.test(clean) || clean.includes("2nd") || clean.includes("second")) return "2";
+      if (/\b1\b/.test(clean) || /\bi\b/.test(clean) || clean.includes("1st") || clean.includes("first")) return "1";
+
+      const numMatch = clean.match(/\d+/);
+      if (numMatch) {
+        const num = parseInt(numMatch[0]);
+        if (num >= 1 && num <= 10) return num.toString();
+      }
+
       return classStr.toString().trim();
+    }
+
+    function getStudentCasteGroup(student) {
+      const mappings = JSON.parse(localStorage.getItem('school_category_mappings') || '{}');
+      const scVal = (student.social_class || '').trim();
+      const rel = (student.religion || '').trim();
+      
+      const scUpper = scVal.toUpperCase();
+      const relUpper = rel.toUpperCase();
+      
+      // 1. SC/ST have highest priority
+      const scClean = scUpper.replace(/\s+/g, '');
+      if (scUpper === 'SC' || scUpper.includes('SCHEDULED CASTE') || scClean.includes('ಪರಿಶಿಷ್ಟಜಾತಿ') || scClean.includes('ಪರಿಷ್ಟಜಾತಿ') || scUpper === 'ಪ.ಜಾತಿ' || scUpper === 'ಪ.ಜಾ') {
+        return 'SC';
+      }
+      if (scUpper === 'ST' || scUpper.includes('SCHEDULED TRIBE') || scClean.includes('ಪರಿಶಿಷ್ಟಪಂಗಡ') || scUpper === 'ಪ.ಪಂಗಡ' || scUpper === 'ಪ.ಪಂ') {
+        return 'ST';
+      }
+
+      // 2. Minority religions priority (Islam, Muslim, Christian, Jain, Sikh)
+      const isMinorityRel = ['ISLAM', 'MUSLIM', 'CHRISTIAN', 'JAIN', 'SIKH', 'ಮುಸ್ಲಿಂ', 'ಇಸ್ಲಾಂ', 'ಕ್ರಿಶ್ಚಿಯನ್', 'ಜೈನ', 'ಸಿಖ್'].includes(relUpper) ||
+                            relUpper.includes('MUSLIM') || relUpper.includes('ISLAM') || relUpper.includes('CHRISTIAN') ||
+                            relUpper.includes('JAIN') || relUpper.includes('SIKH') ||
+                            relUpper.includes('ಮುಸ್ಲಿಂ') || relUpper.includes('ಇಸ್ಲಾಂ') || relUpper.includes('ಕ್ರಿಶ್ಚಿಯನ್') ||
+                            relUpper.includes('ಜೈನ') || relUpper.includes('ಸಿಖ್');
+      if (isMinorityRel) {
+        return 'Minority';
+      }
+      
+      // 3. Custom mappings (for other categories/castes)
+      if (scVal && mappings['social_class_' + scVal]) {
+        const mappedVal = mappings['social_class_' + scVal];
+        if (mappedVal === 'Minority') return 'OBC'; // Avoid non-minority religions under Minority
+        return mappedVal;
+      }
+      if (rel && mappings['religion_' + rel]) {
+        const mappedVal = mappings['religion_' + rel];
+        if (mappedVal === 'Minority') return 'OBC'; // Avoid non-minority religions under Minority
+        return mappedVal;
+      }
+      
+      // 4. Category-1
+      if (['C1', 'CATEGORY-1', 'CAT-1', 'C-1', 'CATEGORY 1', 'ಪ್ರವರ್ಗ-1', 'ಪ್ರವರ್ಗ 1', 'ಪ್ರ.1'].includes(scUpper) || scUpper.includes('CAT-1') || scUpper.includes('C-1') || scUpper.includes('C1') || scUpper.includes('ಪ್ರವರ್ಗ-1')) {
+        return 'C1';
+      }
+      
+      // 5. Unassigned check
+      if (!scVal && !rel) {
+        return 'Unassigned';
+      }
+      
+      // 6. Default OBC
+      return 'OBC';
     }
 
     function updateDashboardStats() {
@@ -694,12 +1394,21 @@
       selectedClassGroups.forEach(g => {
         const clsList = classGroups[g] || [];
         clsList.forEach(c => {
-          if (!activeClasses.includes(c)) {
+          if (!activeClasses.includes(c) && !hiddenClasses.includes(c)) {
             activeClasses.push(c);
           }
         });
       });
       activeClasses.sort((a, b) => classes.indexOf(a) - classes.indexOf(b));
+
+      const resetBtn = document.getElementById('hiddenClassesResetContainer');
+      if (resetBtn) {
+        if (hiddenClasses.length > 0) {
+          resetBtn.classList.remove('hidden');
+        } else {
+          resetBtn.classList.add('hidden');
+        }
+      }
 
       const filteredList = allStudents.filter(student => {
         const cls = normalizeClass(student.enroll_class);
@@ -707,18 +1416,7 @@
 
         if (!selectedGenders.includes(student.gender)) return false;
 
-        const scVal = (student.social_class || '').toUpperCase().trim();
-        let casteGroup = 'Others';
-        if (scVal === 'SC' || scVal.includes('SCHEDULED CASTE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಜಾತಿ') || scVal === 'ಪ.ಜಾತಿ' || scVal === 'ಪ.ಜಾ') {
-          casteGroup = 'SC';
-        } else if (scVal === 'ST' || scVal.includes('SCHEDULED TRIBE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಪಂಗಡ') || scVal === 'ಪ.ಪಂಗಡ' || scVal === 'ಪ.ಪಂ') {
-          casteGroup = 'ST';
-        } else if (['OBC', 'C1', '2A', '2B', '3A', '3B', 'CATEGORY-1', 'CAT-1', 'C-1'].includes(scVal) || 
-                   scVal.includes('OBC') || scVal.includes('C-1') || scVal.includes('2-A') || scVal.includes('2-B') || 
-                   scVal.includes('3-A') || scVal.includes('3-B') || scVal.includes('ಹಿಂದುಳಿದ ವರ್ಗ') || scVal.includes('ಹಿ.ವರ್ಗ')) {
-          casteGroup = 'OBC';
-        }
-        
+        const casteGroup = getStudentCasteGroup(student);
         if (!selectedCastes.includes(casteGroup)) return false;
 
         return true;
@@ -729,9 +1427,20 @@
       let girls = 0;
       let castes = { 'SC': 0, 'ST': 0, 'OBC': 0, 'Others': 0 };
 
+      // Initialize classwise structures
       const classData = {};
+      const classDetailedData = {};
       classes.forEach(c => {
         classData[c] = { b: 0, g: 0, sc: 0, st: 0, obc: 0, oth: 0 };
+        classDetailedData[c] = {
+          sc_b: 0, sc_g: 0,
+          st_b: 0, st_g: 0,
+          c1_b: 0, c1_g: 0,
+          min_b: 0, min_g: 0,
+          obc_b: 0, obc_g: 0,
+          unas_b: 0, unas_g: 0,
+          b: 0, g: 0, tot: 0
+        };
       });
 
       filteredList.forEach(student => {
@@ -744,53 +1453,73 @@
           girls++;
         }
 
-        const scVal = (student.social_class || '').toUpperCase().trim();
-        let isSC = scVal === 'SC' || scVal.includes('SCHEDULED CASTE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಜಾತಿ') || scVal === 'ಪ.ಜಾತಿ' || scVal === 'ಪ.ಜಾ';
-        let isST = scVal === 'ST' || scVal.includes('SCHEDULED TRIBE') || scVal.includes('ಪರಿಶಿಷ್ಟ ಪಂಗಡ') || scVal === 'ಪ.ಪಂಗಡ' || scVal === 'ಪ.ಪಂ';
-        let isOBC = ['OBC', 'C1', '2A', '2B', '3A', '3B', 'CATEGORY-1', 'CAT-1', 'C-1'].includes(scVal) || 
-                    scVal.includes('OBC') || scVal.includes('C-1') || scVal.includes('2-A') || scVal.includes('2-B') || 
-                    scVal.includes('3-A') || scVal.includes('3-B') || scVal.includes('ಹಿಂದುಳಿದ ವರ್ಗ') || scVal.includes('ಹಿ.ವರ್ಗ');
+        const casteGroup = getStudentCasteGroup(student);
 
-        if (isSC) {
+        if (casteGroup === 'SC') {
           castes['SC']++;
-        } else if (isST) {
+        } else if (casteGroup === 'ST') {
           castes['ST']++;
-        } else if (isOBC) {
+        } else if (casteGroup === 'OBC' || casteGroup === 'C1') {
           castes['OBC']++;
-        } else {
+        } else if (casteGroup === 'Minority') {
           castes['Others']++;
         }
 
         let cls = normalizeClass(student.enroll_class);
         if (cls && classData[cls]) {
-          if (isBoy) classData[cls].b++;
-          else if (isGirl) classData[cls].g++;
-
-          if (isSC) classData[cls].sc++;
-          else if (isST) classData[cls].st++;
-          else if (isOBC) classData[cls].obc++;
-          else classData[cls].oth++;
+          if (isBoy) {
+            classData[cls].b++;
+            classDetailedData[cls].b++;
+            if (casteGroup === 'SC') { classData[cls].sc++; classDetailedData[cls].sc_b++; }
+            else if (casteGroup === 'ST') { classData[cls].st++; classDetailedData[cls].st_b++; }
+            else if (casteGroup === 'C1') { classData[cls].obc++; classDetailedData[cls].c1_b++; }
+            else if (casteGroup === 'Minority') { classData[cls].oth++; classDetailedData[cls].min_b++; }
+            else if (casteGroup === 'Unassigned') { classDetailedData[cls].unas_b++; }
+            else { classData[cls].obc++; classDetailedData[cls].obc_b++; }
+          } else if (isGirl) {
+            classData[cls].g++;
+            classDetailedData[cls].g++;
+            if (casteGroup === 'SC') { classData[cls].sc++; classDetailedData[cls].sc_g++; }
+            else if (casteGroup === 'ST') { classData[cls].st++; classDetailedData[cls].st_g++; }
+            else if (casteGroup === 'C1') { classData[cls].obc++; classDetailedData[cls].c1_g++; }
+            else if (casteGroup === 'Minority') { classData[cls].oth++; classDetailedData[cls].min_g++; }
+            else if (casteGroup === 'Unassigned') { classDetailedData[cls].unas_g++; }
+            else { classData[cls].obc++; classDetailedData[cls].obc_g++; }
+          }
+          classDetailedData[cls].tot = classDetailedData[cls].b + classDetailedData[cls].g;
         }
       });
 
       document.getElementById('totalStudents').innerText = totalStudents;
+      
+      const activeGenderClass = " border-indigo-500 ring-2 ring-indigo-500/30 shadow-md transform scale-105 font-black";
+      const inactiveGenderClass = " opacity-80 hover:scale-[1.02] hover:opacity-100";
+      
+      const boyActive = selectedGenders.includes('Boy') && !selectedGenders.includes('Girl');
+      const girlActive = selectedGenders.includes('Girl') && !selectedGenders.includes('Boy');
+      
       document.getElementById('genderStats').innerHTML = `
-        <span class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-md text-[11px] font-bold border border-sky-100/50 dark:border-sky-900/30">
+        <span onclick="toggleGenderFilter('Boy')" title="ಹುಡುಗರು ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter Boys" class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/30 text-sky-600 dark:text-sky-400 px-2 py-0.5 rounded-md text-[11px] font-bold border border-sky-100/50 dark:border-sky-900/30 cursor-pointer transition duration-150 select-none ${boyActive ? activeGenderClass : inactiveGenderClass}">
           <i class="fa-solid fa-mars text-[10px] opacity-75"></i> Boys: ${boys}
         </span>
-        <span class="text-slate-300 dark:text-slate-700">/</span>
-        <span class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-455 px-2 py-0.5 rounded-md text-[11px] font-bold border border-rose-100/50 dark:border-rose-900/30">
+        <span class="text-slate-300 dark:text-slate-700 select-none">/</span>
+        <span onclick="toggleGenderFilter('Girl')" title="ಹುಡುಗಿಯರು ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter Girls" class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-455 px-2 py-0.5 rounded-md text-[11px] font-bold border border-rose-100/50 dark:border-rose-900/30 cursor-pointer transition duration-150 select-none ${girlActive ? activeGenderClass : inactiveGenderClass}">
           <i class="fa-solid fa-venus text-[10px] opacity-75"></i> Girls: ${girls}
         </span>
       `;
+
+      const activeCasteClass = " border-indigo-500 ring-2 ring-indigo-500/20 shadow-md transform scale-105 font-black";
+      const inactiveCasteClass = " opacity-80 hover:scale-[1.02] hover:opacity-100";
+
       document.getElementById('casteStats').innerHTML = `
-        <span class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${castes['SC']}</span>
-        <span class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${castes['ST']}</span>
-        <span class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${castes['OBC']}</span>
-        <span class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${castes['Others']}</span>
+        <span onclick="toggleCasteFilter('SC')" title="SC ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter SC" class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30 cursor-pointer transition duration-150 select-none ${selectedCastes.includes('SC') && selectedCastes.length === 1 ? activeCasteClass : inactiveCasteClass}">SC: ${castes['SC']}</span>
+        <span onclick="toggleCasteFilter('ST')" title="ST ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter ST" class="bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30 cursor-pointer transition duration-150 select-none ${selectedCastes.includes('ST') && selectedCastes.length === 1 ? activeCasteClass : inactiveCasteClass}">ST: ${castes['ST']}</span>
+        <span onclick="toggleCasteFilter('OBC')" title="OBC ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter OBC" class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30 cursor-pointer transition duration-150 select-none ${selectedCastes.includes('OBC') && selectedCastes.length === 1 ? activeCasteClass : inactiveCasteClass}">OBC: ${castes['OBC']}</span>
+        <span onclick="toggleCasteFilter('Others')" title="Others ಫಿಲ್ಟರ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ / Click to filter Others" class="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-350 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30 cursor-pointer transition duration-150 select-none ${selectedCastes.includes('Others') && selectedCastes.length === 1 ? activeCasteClass : inactiveCasteClass}">Oth: ${castes['Others']}</span>
       `;
 
       cachedClassData = classData;
+      cachedDetailedClassData = classDetailedData;
       renderClasswiseTable();
     }
 
@@ -873,293 +1602,775 @@
           btn.className = "px-2.5 py-1 rounded-lg transition-all duration-200 text-slate-550 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
         }
       });
-
-      ['Boy', 'Girl'].forEach(g => {
-        const btn = document.getElementById(`btn-filter-gender-${g}`);
-        if (!btn) return;
-        const isActive = selectedGenders.includes(g);
-        if (isActive) {
-          btn.className = "px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-150 dark:border-slate-700 shadow-sm";
-        } else {
-          btn.className = "px-2.5 py-1 rounded-lg transition-all text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
-        }
-      });
-
-      ['SC', 'ST', 'OBC', 'Others'].forEach(c => {
-        const btn = document.getElementById(`btn-filter-caste-${c}`);
-        if (!btn) return;
-        const isActive = selectedCastes.includes(c);
-        if (isActive) {
-          btn.className = "px-2.5 py-1 rounded-lg transition-all bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-455 border border-indigo-150 dark:border-slate-700 shadow-sm";
-        } else {
-          btn.className = "px-2.5 py-1 rounded-lg transition-all text-slate-500 dark:text-slate-450 hover:text-slate-800 dark:hover:text-slate-200";
-        }
-      });
     }
 
-    function renderClasswiseTable() {
-      if (!cachedClassData) return;
+    function getClassDisplayLabel(c) {
+      if (c === 'LKG' || c === 'UKG') return c;
+      return c + 'ನೇ';
+    }
 
-      const tableEl = document.querySelector('.overflow-x-auto table');
+    window.resetHiddenClasses = function() {
+      hiddenClasses = [];
+      updateDashboardStats();
+    };
+
+    window.hideClassFromTable = function(clsCode) {
+      if (!hiddenClasses.includes(clsCode)) {
+        hiddenClasses.push(clsCode);
+        updateDashboardStats();
+      }
+    };
+
+    window.printSummaryTable = function() {
+      window.print();
+    };
+
+    window.handleDetailedFilterClick = function(classCode, gender, casteGroup) {
+      const groupClasses = {
+        'lkg-ukg': ['LKG', 'UKG'],
+        '1-5': ['1', '2', '3', '4', '5'],
+        '6-7': ['6', '7'],
+        '8-10': ['8', '9', '10'],
+        '6-10': ['6', '7', '8', '9', '10'],
+        'grand': ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+      };
+
+      let clsLabel = classCode;
+      if (groupClasses[classCode]) {
+        clsLabel = groupClasses[classCode].join(',');
+      } else {
+        clsLabel = classLabels[classCode] || classCode;
+      }
+      
+      let genderParam = gender;
+      if (gender === 'ALL') {
+        genderParam = selectedGenders.join(',');
+      }
+      
+      let categoryParam = casteGroup;
+      if (casteGroup === 'ALL') {
+        categoryParam = selectedCastes.join(',');
+      } else if (casteGroup === 'OBC') {
+        categoryParam = 'OBC_GENERAL';
+      }
+      
+      window.location.href = `StudentList.html?class=${encodeURIComponent(clsLabel)}&gender=${encodeURIComponent(genderParam)}&category=${encodeURIComponent(categoryParam)}`;
+    };
+
+    window.redirectToUnassignedEdit = function(clsCode, gender) {
+      const groupClasses = {
+        'lkg-ukg': ['LKG', 'UKG'],
+        '1-5': ['1', '2', '3', '4', '5'],
+        '6-7': ['6', '7'],
+        '8-10': ['8', '9', '10'],
+        '6-10': ['6', '7', '8', '9', '10'],
+        'grand': ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+      };
+
+      let clsLabel = clsCode;
+      if (groupClasses[clsCode]) {
+        clsLabel = groupClasses[clsCode].join(',');
+      } else {
+        clsLabel = classLabels[clsCode] || clsCode;
+      }
+      window.location.href = `StudentList.html?class=${encodeURIComponent(clsLabel)}&gender=${encodeURIComponent(gender)}&unassigned=true`;
+    };
+
+    window.toggleAnalyticsChartsPanel = function() {
+      const panel = document.getElementById('analyticsChartsPanel');
+      const icon = document.getElementById('chartsToggleIcon');
+      const text = document.getElementById('chartsToggleText');
+      if (!panel) return;
+      
+      if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        if (icon) {
+          icon.classList.remove('fa-chart-line');
+          icon.classList.add('fa-eye-slash');
+        }
+        if (text) text.innerText = "ವಿಷುಯಲ್ ಚಾರ್ಟ್ಸ್ ಮರೆಮಾಡಿ / Hide Charts";
+        // Force charts redraw when container becomes visible
+        renderAnalyticsCharts(allStudents);
+      } else {
+        panel.classList.add('hidden');
+        if (icon) {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-chart-line');
+        }
+        if (text) text.innerText = "ವಿಷುಯಲ್ ಚಾರ್ಟ್ಸ್ / Show Charts";
+      }
+    };
+
+    window.toggleDataHealthInspectorPanel = function() {
+      const panel = document.getElementById('dataHealthInspectorPanel');
+      const btn = document.querySelector('button[onclick="toggleDataHealthInspectorPanel()"]');
+      const icon = btn ? btn.querySelector('i') : null;
+      const text = document.getElementById('healthToggleText');
+      if (!panel) return;
+      
+      if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+        if (icon) {
+          icon.className = "fa-solid fa-eye-slash";
+        }
+        if (text) text.innerText = "ಡೇಟಾ ಆರೋಗ್ಯ ಮುಚ್ಚಿ / Hide Health Inspector";
+        runDataHealthAudit();
+      } else {
+        panel.classList.add('hidden');
+        if (icon) {
+          icon.className = "fa-solid fa-heart-pulse";
+        }
+        if (text) text.innerText = "ಡೇಟಾ ಆರೋಗ್ಯ ಇನ್ಸ್ಪೆಕ್ಟರ್ / Data Health Inspector";
+      }
+    };
+
+    window.runDataHealthAudit = function() {
+      const resultsEl = document.getElementById('healthAuditResults');
+      const scoreBadge = document.getElementById('dataHealthScoreBadge');
+      if (!resultsEl) return;
+      
+      resultsEl.innerHTML = '';
+      
+      const duplicates = {};
+      const errors = [];
+      let totalChecks = 0;
+      let passedChecks = 0;
+      
+      // Step 1: Pre-scan duplicate Aadhaars
+      allStudents.forEach(s => {
+        const aadhaar = (s.student_aadhaar || '').toString().replace(/\s+/g, '').trim();
+        const isMaskedAadhaar = /^0+$/.test(aadhaar);
+        if (aadhaar && !isMaskedAadhaar && aadhaar.length === 12 && /^\d+$/.test(aadhaar)) {
+          duplicates[aadhaar] = (duplicates[aadhaar] || 0) + 1;
+        }
+      });
+      
+      // Step 2: Audit each student
+      allStudents.forEach(s => {
+        const name = s.name_english || s.student_name || 'Unnamed';
+        const rawClass = s.enroll_class || '';
+        const rawGender = s.gender || '';
+        const phone = (s.phone_no || '').toString().replace(/\s+/g, '').trim();
+        const aadhaar = (s.student_aadhaar || '').toString().replace(/\s+/g, '').trim();
+        
+        // Check 1: Missing name, class, gender
+        totalChecks += 3;
+        let missing = [];
+        if (!name || name === 'Unnamed') { missing.push('Name'); } else { passedChecks++; }
+        if (!rawClass) { missing.push('Class'); } else { passedChecks++; }
+        if (!rawGender) { missing.push('Gender'); } else { passedChecks++; }
+        
+        if (missing.length > 0) {
+          errors.push({
+            student: s,
+            type: 'Missing Fields',
+            desc: `ಅಪೂರ್ಣ ವಿವರಗಳು / Missing: ${missing.join(', ')}`,
+            severity: 'high'
+          });
+        }
+        
+        // Check 2: Invalid Mobile (not 10 digits)
+        if (phone) {
+          totalChecks++;
+          if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+            errors.push({
+              student: s,
+              type: 'Invalid Mobile',
+              desc: `ಅಮಾನ್ಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Invalid Mobile: ${phone}`,
+              severity: 'medium'
+            });
+          } else {
+            passedChecks++;
+          }
+        }
+        
+        // Check 3: Duplicate/Invalid Aadhaar
+        const isMaskedAadhaar = /^0+$/.test(aadhaar);
+        if (aadhaar && !isMaskedAadhaar) {
+          totalChecks += 2; // format check + duplicate check
+          const isValidFormat = (aadhaar.length === 12 && /^\d+$/.test(aadhaar));
+          if (!isValidFormat) {
+            errors.push({
+              student: s,
+              type: 'Invalid Aadhaar',
+              desc: `ಅಮಾನ್ಯ ಆಧಾರ್ ಸಂಖ್ಯೆ / Invalid Aadhaar: ${aadhaar}`,
+              severity: 'high'
+            });
+          } else {
+            passedChecks++;
+            if (duplicates[aadhaar] > 1) {
+              errors.push({
+                student: s,
+                type: 'Duplicate Aadhaar',
+                desc: `ನಕಲಿ ಆಧಾರ್ ಸಂಖ್ಯೆ / Duplicate Aadhaar: ${aadhaar}`,
+                severity: 'high'
+              });
+            } else {
+              passedChecks++;
+            }
+          }
+        }
+        
+        // Check 4: Student Age vs. Class Mismatch
+        if (s.dob && rawClass) {
+          const birthDate = new Date(s.dob);
+          if (!isNaN(birthDate.getTime())) {
+            totalChecks++;
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+              age--;
+            }
+            
+            const cleanCls = normalizeClass(rawClass);
+            const expectedAgeRanges = {
+              'LKG': [3, 5],
+              'UKG': [4, 6],
+              '1': [5, 7],
+              '2': [6, 8],
+              '3': [7, 9],
+              '4': [8, 10],
+              '5': [9, 11],
+              '6': [10, 12],
+              '7': [11, 13],
+              '8': [12, 14],
+              '9': [13, 15],
+              '10': [14, 17]
+            };
+            
+            const range = expectedAgeRanges[cleanCls];
+            if (range) {
+              const [minAge, maxAge] = range;
+              if (age < minAge || age > maxAge) {
+                errors.push({
+                  student: s,
+                  type: 'Age Mismatch',
+                  desc: `ವಯಸ್ಸಿನ ವ್ಯತ್ಯಾಸ / Age Mismatch (Class ${cleanCls}: Expected ${minAge}-${maxAge}, actual: ${age})`,
+                  severity: 'medium'
+                });
+              } else {
+                passedChecks++;
+              }
+            } else {
+              passedChecks++;
+            }
+          }
+        }
+      });
+      
+      // Calculate Score
+      const score = totalChecks > 0 ? Math.round((passedChecks / totalChecks) * 100) : 100;
+      if (scoreBadge) {
+        scoreBadge.innerText = `Data Health Score: ${score}%`;
+        scoreBadge.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border ${
+          score >= 90 ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-450 border-emerald-200 dark:border-emerald-900' :
+          score >= 75 ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-450 border-amber-200 dark:border-amber-900' :
+          'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-450 border-rose-200 dark:border-rose-900'
+        }`;
+      }
+
+      const toolbarBadge = document.getElementById('healthScoreToolbarBadge');
+      if (toolbarBadge) {
+        toolbarBadge.innerText = `${score}%`;
+        toolbarBadge.className = `px-1.5 py-0.5 rounded-lg text-[8px] font-extrabold border ${
+          score >= 90 ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-450 border-emerald-200 dark:border-emerald-900' :
+          score >= 75 ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-450 border-amber-200 dark:border-amber-900' :
+          'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-450 border-rose-200 dark:border-rose-900'
+        }`;
+      }
+      
+      if (errors.length === 0) {
+        resultsEl.innerHTML = `
+          <div class="text-center py-6 text-emerald-500 bg-emerald-50 dark:bg-emerald-950/10 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
+            <i class="fa-solid fa-circle-check text-xl mb-1.5 block text-emerald-500"></i>
+            ಯಾವುದೇ ದೋಷಗಳಿಲ್ಲ! ಶಾಲೆಯ ಡೇಟಾ ಆರೋಗ್ಯಕರವಾಗಿದೆ. / All records are healthy! No issues detected.
+          </div>
+        `;
+      } else {
+        errors.sort((a, b) => (b.severity === 'high' ? 1 : -1));
+        let html = '';
+        errors.forEach(err => {
+          const s = err.student;
+          const label = s.name_english || s.student_name || 'Unnamed';
+          const badgeClass = err.severity === 'high' ? 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-350 border-rose-200 dark:border-rose-900' : 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-350 border-amber-200 dark:border-amber-900';
+          
+          html += `
+            <div class="flex items-center justify-between p-2.5 bg-slate-50/50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800/80 gap-4 hover:bg-slate-100/55 dark:hover:bg-slate-800/80 transition-colors">
+              <div class="space-y-0.5 min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-extrabold text-slate-800 dark:text-slate-200 truncate max-w-[160px]">${label}</span>
+                  <span class="inline-block px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider border ${badgeClass}">${err.type}</span>
+                </div>
+                <div class="text-[9px] text-slate-450 dark:text-slate-500 truncate leading-relaxed">${err.desc}</div>
+              </div>
+              <button onclick="window.location.href='StudentUpdate.html?id=${s.id}'" class="bg-indigo-500 hover:bg-indigo-650 text-white font-extrabold px-2.5 py-1 rounded-lg text-[9px] cursor-pointer transition shadow-sm border-0 whitespace-nowrap">
+                ತಿದ್ದುಪಡಿ / Edit
+              </button>
+            </div>
+          `;
+        });
+        resultsEl.innerHTML = html;
+      }
+      lastAuditErrors = errors;
+      if (typeof computeDynamicInsight === 'function') {
+        computeDynamicInsight();
+      }
+    };
+
+    window.exportSummaryToExcel = function() {
+      if (typeof XLSX === 'undefined') {
+        showToast("ವ್ಯವಸ್ಥೆ ಲೋಡ್ ಆಗುತ್ತಿಲ್ಲ!", "SheetJS ಲೈಬ್ರರಿ ಲಭ್ಯವಿಲ್ಲ.", "error");
+        return;
+      }
+      
+      const table = document.querySelector('#summary-table-card table');
+      if (!table) return;
+      
+      // Temporary style clone to exclude 'no-print' columns during sheet extraction
+      const clonedTable = table.cloneNode(true);
+      clonedTable.querySelectorAll('.no-print').forEach(el => el.remove());
+      
+      const wb = XLSX.utils.table_to_book(clonedTable, { sheet: "Summary" });
+      XLSX.writeFile(wb, "Classwise_Enrollment_Summary.xlsx");
+      showToast("ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ!", "ಘೋಷ್ವಾರೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಎಕ್ಸೆಲ್ ಫೈಲ್‌ಗೆ ರಫ್ತು ಮಾಡಲಾಗಿದೆ.", "success");
+    };
+
+    // Hover Tooltip functions
+    window.showHoverLookup = function(e, clsCode, gender, casteGrp) {
+      if (window.hoverLookupHideTimeout) {
+        clearTimeout(window.hoverLookupHideTimeout);
+      }
+
+      const popover = document.getElementById('hoverLookupPopover');
+      if (!popover || !allStudents) return;
+
+      const groupClasses = {
+        'lkg-ukg': ['LKG', 'UKG'],
+        '1-5': ['1', '2', '3', '4', '5'],
+        '6-7': ['6', '7'],
+        '8-10': ['8', '9', '10'],
+        '6-10': ['6', '7', '8', '9', '10'],
+        'grand': ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+      };
+
+      const students = allStudents.filter(s => {
+        const sClass = normalizeClass(s.enroll_class);
+        if (groupClasses[clsCode]) {
+          if (!groupClasses[clsCode].includes(sClass)) return false;
+        } else {
+          if (sClass !== clsCode) return false;
+        }
+        
+        if (gender !== 'ALL' && s.gender !== gender) return false;
+        if (casteGrp !== 'ALL') {
+          if (getStudentCasteGroup(s) !== casteGrp) return false;
+        }
+        return true;
+      });
+
+      if (students.length === 0) return;
+
+      let html = `<div class="font-bold border-b border-slate-200 dark:border-slate-700 pb-1 flex justify-between items-center gap-4 text-indigo-600 dark:text-indigo-400">
+        <span>ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ (${students.length})</span>
+        <span class="text-[8px] text-slate-450 dark:text-slate-500 uppercase tracking-wider">${casteGrp === 'ALL' ? 'ಒಟ್ಟು' : casteGrp}</span>
+      </div>
+      <table class="w-full text-[9px] border-collapse mt-1">
+        <thead>
+          <tr class="text-slate-400 dark:text-slate-500 text-left border-b border-slate-100 dark:border-slate-800">
+            <th class="pr-2 pb-0.5">ಹೆಸರು / Name</th>
+            <th class="pr-2 pb-0.5">STS No.</th>
+            <th class="pb-0.5">ತಂದೆ / Father</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">`;
+
+      students.forEach(s => {
+        const nameKn = s.student_name || '';
+        const nameEn = s.name_english || '';
+        const displayName = nameKn && nameKn !== nameEn ? `${nameKn} (${nameEn})` : (nameEn || nameKn);
+        const fatherName = s.father_name_kn || s.father_name_az || '';
+        const sts = s.student_sts || s.app_no || 'N/A';
+        
+        html += `
+          <tr>
+            <td class="pr-2 py-0.5 font-bold truncate max-w-[110px]" title="${displayName}">${displayName}</td>
+            <td class="pr-2 py-0.5 font-mono">${sts}</td>
+            <td class="py-0.5 truncate max-w-[80px]" title="${fatherName}">${fatherName}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      popover.innerHTML = html;
+
+      const rect = e.target.getBoundingClientRect();
+      const popoverWidth = 270;
+      
+      let left = rect.left + rect.width / 2 - popoverWidth / 2;
+      
+      if (left < 10) left = 10;
+      if (left + popoverWidth > window.innerWidth - 10) {
+        left = window.innerWidth - popoverWidth - 10;
+      }
+
+      popover.style.width = popoverWidth + 'px';
+      popover.style.left = left + 'px';
+      popover.style.top = '-1000px'; // temporary far away top to prevent flash
+      popover.classList.remove('hidden');
+
+      // Calculate dynamic top based on actual rendered height of popover
+      const popoverHeight = popover.offsetHeight;
+      let top = rect.top - popoverHeight - 8; // place 8px above the button
+      if (top < 10) {
+        top = rect.bottom + 8; // if it cuts off at the top, place it below the button
+      }
+
+      popover.style.top = top + 'px';
+    };
+
+    window.hideHoverLookup = function() {
+      if (window.hoverLookupHideTimeout) {
+        clearTimeout(window.hoverLookupHideTimeout);
+      }
+      window.hoverLookupHideTimeout = setTimeout(() => {
+        const popover = document.getElementById('hoverLookupPopover');
+        if (popover) {
+          popover.classList.add('hidden');
+        }
+      }, 300); // 300ms delay to allow moving mouse into popover
+    };
+
+    window.hideHoverLookupImmediately = function() {
+      if (window.hoverLookupHideTimeout) {
+        clearTimeout(window.hoverLookupHideTimeout);
+      }
+      const popover = document.getElementById('hoverLookupPopover');
+      if (popover) {
+        popover.classList.add('hidden');
+      }
+    };
+
+    function renderClasswiseTable() {
+      const tableEl = document.querySelector('#summary-table-card table');
       if (!tableEl) return;
 
-      // 1. Render Table Headers dynamically
-      let theadHtml = "";
-      if (currentEnrollmentView === 'gender') {
-        theadHtml = `
-          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
-            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
-          </tr>
-        `;
-      } else if (currentEnrollmentView === 'caste') {
-        theadHtml = `
-          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
-            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">SC</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">ST</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">OBC</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Others / ಇತರೆ</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
-          </tr>
-        `;
-      } else { // 'all'
-        theadHtml = `
-          <tr class="bg-slate-900 dark:bg-slate-800/80 text-slate-200 font-bold uppercase tracking-wider border-b border-slate-850 dark:border-slate-700">
-            <th class="py-3 px-4 text-xs font-bold">Class / ತರಗತಿ</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Boys / ಗಂಡು</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Girls / ಹೆಣ್ಣು</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Caste Profile / ವರ್ಗಾವಾರು</th>
-            <th class="py-3 px-4 text-center text-xs font-bold">Total / ಒಟ್ಟು</th>
-          </tr>
-        `;
-      }
-      const thead = tableEl.querySelector('thead');
-      if (thead) thead.innerHTML = theadHtml;
-
-      // 2. Render Table Body dynamically
       const tbody = document.getElementById('classTableBody');
       if (!tbody) return;
       tbody.innerHTML = '';
-
-      let sumBoys = 0;
-      let sumGirls = 0;
-      let sumSC = 0;
-      let sumST = 0;
-      let sumOBC = 0;
-      let sumOth = 0;
-      let sumTotal = 0;
 
       let activeClasses = [];
       selectedClassGroups.forEach(g => {
         const clsList = classGroups[g] || [];
         clsList.forEach(c => {
-          if (!activeClasses.includes(c)) {
+          if (!activeClasses.includes(c) && !hiddenClasses.includes(c)) {
             activeClasses.push(c);
           }
         });
       });
       activeClasses.sort((a, b) => classes.indexOf(a) - classes.indexOf(b));
 
+      const showUnassigned = allStudents.some(s => getStudentCasteGroup(s) === 'Unassigned');
+
+      const classData = {};
       activeClasses.forEach(c => {
-        const bCount = cachedClassData[c].b;
-        const gCount = cachedClassData[c].g;
-        const scCount = cachedClassData[c].sc;
-        const stCount = cachedClassData[c].st;
-        const obcCount = cachedClassData[c].obc;
-        const othCount = cachedClassData[c].oth;
-        const total = bCount + gCount;
-
-        sumBoys += bCount;
-        sumGirls += gCount;
-        sumSC += scCount;
-        sumST += stCount;
-        sumOBC += obcCount;
-        sumOth += othCount;
-        sumTotal += total;
-
-        const row = document.createElement('tr');
-        row.className = 'hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors duration-150';
-
-        let cellsHtml = `
-          <td class="px-4 py-2.5 font-bold text-slate-800 dark:text-slate-200">
-            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-extrabold border border-slate-200/50 dark:border-slate-700/50">
-              ${classLabels[c]}
-            </span>
-          </td>
-        `;
-
-        if (currentEnrollmentView === 'gender') {
-          cellsHtml += `
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" 
-                      class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-bold transition border border-sky-100/50 dark:border-sky-900/30">
-                <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${bCount}
-              </button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
-                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
-                <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
-              </button>
-            </td>
-          `;
-        } else if (currentEnrollmentView === 'caste') {
-          cellsHtml += `
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleCasteClick('${classLabels[c]}', 'SC')" 
-                      class="inline-flex items-center justify-center min-w-[32px] bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-2 py-1 rounded-md text-xs font-bold transition border border-emerald-100/50 dark:border-emerald-900/30">${scCount}</button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleCasteClick('${classLabels[c]}', 'ST')" 
-                      class="inline-flex items-center justify-center min-w-[32px] bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-2 py-1 rounded-md text-xs font-bold transition border border-teal-100/50 dark:border-teal-900/30">${stCount}</button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleCasteClick('${classLabels[c]}', 'OBC')" 
-                      class="inline-flex items-center justify-center min-w-[32px] bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-2 py-1 rounded-md text-xs font-bold transition border border-indigo-100/50 dark:border-indigo-900/30">${obcCount}</button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleCasteClick('${classLabels[c]}', 'OTHERS')" 
-                      class="inline-flex items-center justify-center min-w-[32px] bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 px-2 py-1 rounded-md text-xs font-bold transition border border-slate-200/50 dark:border-slate-700/30">${othCount}</button>
-            </td>
-          `;
-        } else { // 'all'
-          cellsHtml += `
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Boys')" 
-                      class="inline-flex items-center gap-1 bg-sky-50 dark:bg-sky-950/40 hover:bg-sky-100 dark:hover:bg-sky-900/40 text-sky-600 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-bold transition border border-sky-100/50 dark:border-sky-900/30">
-                <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${bCount}
-              </button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <button onclick="handleGenderClick('${classLabels[c]}', 'Girls')" 
-                      class="inline-flex items-center gap-1 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 text-rose-600 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-bold transition border border-rose-100/50 dark:border-rose-900/30">
-                <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${gCount}
-              </button>
-            </td>
-            <td class="px-4 py-2.5 text-center">
-              <div class="flex items-center justify-center gap-1 flex-wrap">
-                <button onclick="handleCasteClick('${classLabels[c]}', 'SC')" class="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${scCount}</button>
-                <button onclick="handleCasteClick('${classLabels[c]}', 'ST')" class="bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${stCount}</button>
-                <button onclick="handleCasteClick('${classLabels[c]}', 'OBC')" class="bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${obcCount}</button>
-                <button onclick="handleCasteClick('${classLabels[c]}', 'OTHERS')" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-355 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${othCount}</button>
-              </div>
-            </td>
-          `;
-        }
-
-        cellsHtml += `
-          <td class="px-4 py-2.5 text-center">
-            <button onclick="handleTotalClick('${classLabels[c]}')" 
-                    class="inline-flex items-center justify-center min-w-[36px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 px-2 py-1 rounded-md text-xs font-extrabold transition border border-slate-200/30 dark:border-slate-700/30 shadow-sm">
-              ${total}
-            </button>
-          </td>
-        `;
-
-        row.innerHTML = cellsHtml;
-        tbody.appendChild(row);
+        classData[c] = {
+          sc_b: 0, sc_g: 0,
+          st_b: 0, st_g: 0,
+          c1_b: 0, c1_g: 0,
+          min_b: 0, min_g: 0,
+          obc_b: 0, obc_g: 0,
+          unas_b: 0, unas_g: 0,
+          b: 0, g: 0, tot: 0
+        };
       });
 
-      // 3. Render Total Row
-      const totalRow = document.createElement('tr');
-      totalRow.className = 'bg-slate-100 dark:bg-slate-800/80 font-bold border-t-2 border-slate-200 dark:border-slate-700/60';
+      allStudents.forEach(s => {
+        const cls = normalizeClass(s.enroll_class);
+        if (activeClasses.includes(cls) && classData[cls]) {
+          const g = (s.gender || '').toString().toLowerCase().trim();
+          const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು') || g === 'm' || g === 'b';
+          const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು') || g === 'f' || g === 'g';
+          
+          if (!isBoy && !isGirl) return;
 
-      let totalRowHtml = `
-        <td class="px-4 py-3 text-slate-900 dark:text-white font-extrabold text-xs">
-          Total / ಒಟ್ಟು
-        </td>
-      `;
+          const casteGrp = getStudentCasteGroup(s);
+          const target = classData[cls];
 
-      if (currentEnrollmentView === 'gender') {
-        totalRowHtml += `
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Boys')" 
-                    class="inline-flex items-center gap-1 bg-sky-100/70 dark:bg-sky-950/60 hover:bg-sky-200/70 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-extrabold transition border border-sky-200/55 dark:border-sky-900/50">
-              <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${sumBoys}
-            </button>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Girls')" 
-                    class="inline-flex items-center gap-1 bg-rose-100/70 dark:bg-rose-950/60 hover:bg-rose-200/70 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-extrabold transition border border-rose-200/55 dark:border-rose-900/50">
-              <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${sumGirls}
-            </button>
-          </td>
-        `;
-      } else if (currentEnrollmentView === 'caste') {
-        totalRowHtml += `
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'SC')" 
-                    class="inline-flex items-center justify-center min-w-[32px] bg-emerald-100/70 dark:bg-emerald-950/40 hover:bg-emerald-200/70 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-450 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-emerald-250/50 dark:border-emerald-900/30">${sumSC}</button>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'ST')" 
-                    class="inline-flex items-center justify-center min-w-[32px] bg-teal-100/70 dark:bg-teal-950/40 hover:bg-teal-200/70 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-450 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-teal-250/50 dark:border-teal-900/30">${sumST}</button>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OBC')" 
-                    class="inline-flex items-center justify-center min-w-[32px] bg-indigo-100/70 dark:bg-indigo-950/40 hover:bg-indigo-200/70 dark:hover:bg-indigo-900/40 text-indigo-700 dark:text-indigo-400 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-indigo-250/50 dark:border-indigo-900/30">${sumOBC}</button>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OTHERS')" 
-                    class="inline-flex items-center justify-center min-w-[32px] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 px-2.5 py-1.5 rounded-md text-xs font-bold transition border border-slate-200/50 dark:border-slate-700/30">${sumOth}</button>
-          </td>
-        `;
-      } else { // 'all'
-        totalRowHtml += `
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Boys')" 
-                    class="inline-flex items-center gap-1 bg-sky-100/70 dark:bg-sky-950/60 hover:bg-sky-200/70 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-400 px-3 py-1 rounded-full text-xs font-extrabold transition border border-sky-200/55 dark:border-sky-900/50">
-              <i class="fa-solid fa-mars text-[10px] opacity-75"></i> ${sumBoys}
-            </button>
-          </td>
-          <td class="px-4 py-3 text-center">
-            <button onclick="handleGenderClick('${activeClasses.join(',')}', 'Girls')" 
-                    class="inline-flex items-center gap-1 bg-rose-100/70 dark:bg-rose-950/60 hover:bg-rose-200/70 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-455 px-3 py-1 rounded-full text-xs font-extrabold transition border border-rose-200/55 dark:border-rose-900/50">
-              <i class="fa-solid fa-venus text-[10px] opacity-75"></i> ${sumGirls}
-            </button>
-          </td>
-          <td class="px-4 py-3 text-center text-xs">
-            <div class="flex items-center justify-center gap-1 flex-wrap font-extrabold">
-              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'SC')" class="bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-emerald-100/50 dark:border-emerald-900/30">SC: ${sumSC}</button>
-              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'ST')" class="bg-teal-50 dark:bg-teal-950/30 hover:bg-teal-100 dark:hover:bg-teal-900/30 text-teal-700 dark:text-teal-450 px-1.5 py-0.5 rounded text-[10px] font-bold border border-teal-100/50 dark:border-teal-900/30">ST: ${sumST}</button>
-              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OBC')" class="bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.5 rounded text-[10px] font-bold border border-indigo-100/50 dark:border-indigo-900/30">OBC: ${sumOBC}</button>
-              <button onclick="handleCasteClick('${activeClasses.join(',')}', 'OTHERS')" class="bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-355 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200/50 dark:border-slate-700/30">Oth: ${sumOth}</button>
-            </div>
-          </td>
-        `;
+          if (isBoy) {
+            target.b++;
+            if (casteGrp === 'SC') target.sc_b++;
+            else if (casteGrp === 'ST') target.st_b++;
+            else if (casteGrp === 'C1') target.c1_b++;
+            else if (casteGrp === 'Minority') target.min_b++;
+            else if (casteGrp === 'Unassigned') target.unas_b++;
+            else target.obc_b++;
+          } else if (isGirl) {
+            target.g++;
+            if (casteGrp === 'SC') target.sc_g++;
+            else if (casteGrp === 'ST') target.st_g++;
+            else if (casteGrp === 'C1') target.c1_g++;
+            else if (casteGrp === 'Minority') target.min_g++;
+            else if (casteGrp === 'Unassigned') target.unas_g++;
+            else target.obc_g++;
+          }
+          target.tot = target.b + target.g;
+        }
+      });
+
+      const totals = {
+        'lkg-ukg': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
+        '1-5': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
+        '6-7': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
+        '8-10': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
+        '6-10': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
+        'grand': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 }
+      };
+
+      function addToGroup(grp, data) {
+        const t = totals[grp];
+        t.sc_b += data.sc_b;   t.sc_g += data.sc_g;
+        t.st_b += data.st_b;   t.st_g += data.st_g;
+        t.c1_b += data.c1_b;   t.c1_g += data.c1_g;
+        t.min_b += data.min_b; t.min_g += data.min_g;
+        t.obc_b += data.obc_b; t.obc_g += data.obc_g;
+        t.unas_b += data.unas_b; t.unas_g += data.unas_g;
+        t.b += data.b;         t.g += data.g;
+        t.tot += data.tot;
       }
 
-      totalRowHtml += `
-        <td class="px-4 py-3 text-center">
-          <button onclick="handleTotalClick('${activeClasses.join(',')}')" 
-                  class="inline-flex items-center justify-center min-w-[36px] bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 px-2.5 py-1.5 rounded-md text-xs font-black transition border border-slate-300 dark:border-slate-650 shadow-sm text-slate-900 dark:text-slate-100">
-            ${sumTotal}
-          </button>
-        </td>
+      activeClasses.forEach(c => {
+        const d = classData[c];
+        if (['LKG', 'UKG'].includes(c)) addToGroup('lkg-ukg', d);
+        if (['1', '2', '3', '4', '5'].includes(c)) addToGroup('1-5', d);
+        if (['6', '7'].includes(c)) addToGroup('6-7', d);
+        if (['8', '9', '10'].includes(c)) addToGroup('8-10', d);
+        if (['6', '7', '8', '9', '10'].includes(c)) addToGroup('6-10', d);
+        addToGroup('grand', d);
+      });
+
+      const fields = [
+        ['sc_b', 'sc_g', 'SC', 'ಪರಿಶಿಷ್ಟ ಜಾತಿ / SC', 'bg-slate-100/60 dark:bg-slate-800/60'],
+        ['st_b', 'st_g', 'ST', 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ / ST', 'bg-slate-100/60 dark:bg-slate-800/60'],
+        ['c1_b', 'c1_g', 'C1', 'ಪ್ರವರ್ಗ-1 / C1', 'bg-slate-100/60 dark:bg-slate-800/60'],
+        ['min_b', 'min_g', 'Minority', 'ಅಲ್ಪಸಂಖ್ಯಾತರು / Minority', 'bg-slate-100/60 dark:bg-slate-800/60'],
+        ['obc_b', 'obc_g', 'OBC', 'OBC General', 'bg-slate-100/60 dark:bg-slate-800/60']
+      ];
+      if (showUnassigned) {
+        fields.push(['unas_b', 'unas_g', 'Unassigned', 'ವರ್ಗೀಕರಿಸದ / Unassigned', 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400']);
+      }
+
+      let theadHTML = `
+        <tr class="bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white font-bold text-center border-b border-black dark:border-slate-700">
+          <th rowspan="2" class="py-2.5 px-1 border border-black dark:border-slate-700 text-xs text-center">ಕ್ರ.ಸಂ</th>
+          <th rowspan="2" class="py-2.5 px-2 border border-black dark:border-slate-700 text-xs text-center">ತರಗತಿ</th>
       `;
+      fields.forEach(([f_b, f_g, grp, label, bgClass]) => {
+        theadHTML += `<th colspan="2" class="py-1 px-1 border border-black dark:border-slate-700 text-[10px] text-center ${bgClass}">${label}</th>`;
+      });
+      theadHTML += `
+          <th colspan="2" class="py-1 px-1 border border-black dark:border-slate-700 text-[10px] text-center bg-slate-200 dark:bg-slate-850">ಒಟ್ಟು ಲಿಂಗಾವಾರು</th>
+          <th rowspan="2" class="py-2.5 px-1.5 border border-black dark:border-slate-700 text-xs text-center bg-slate-200 dark:bg-slate-850">ಒಟ್ಟು</th>
+          <th rowspan="2" class="py-2.5 px-1 border border-black dark:border-slate-700 text-xs text-center no-print bg-slate-200 dark:bg-slate-850">Action</th>
+        </tr>
+        <tr class="bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold text-center border-b border-black dark:border-slate-700 text-[9px]">
+      `;
+      fields.forEach(() => {
+        theadHTML += `<th class="py-1.5 px-0.5 border border-black dark:border-slate-700 text-center">ಗಂಡು</th><th class="py-1.5 px-0.5 border border-black dark:border-slate-700 text-center">ಹೆಣ್ಣು</th>`;
+      });
+      theadHTML += `
+          <th class="py-1.5 px-0.5 border border-black dark:border-slate-700 text-center bg-slate-100 dark:bg-slate-800">ಗಂಡು</th>
+          <th class="py-1.5 px-0.5 border border-black dark:border-slate-700 text-center bg-slate-100 dark:bg-slate-800">ಹೆಣ್ಣು</th>
+        </tr>
+      `;
+      const theadEl = tableEl.querySelector('thead');
+      if (theadEl) theadEl.innerHTML = theadHTML;
 
-      totalRow.innerHTML = totalRowHtml;
-      tbody.appendChild(totalRow);
-    }
+      const rowsToRender = [];
+      let slNo = 1;
+      const grps = [
+        { classes: ['LKG', 'UKG'], group: 'lkg-ukg', label: 'LKG-UKG ಒಟ್ಟು' },
+        { classes: ['1', '2', '3', '4', '5'], group: '1-5', label: '1-5 ಒಟ್ಟು' },
+        { classes: ['6', '7'], group: '6-7', label: '6-7 ಒಟ್ಟು' },
+        { classes: ['8', '9', '10'], group: '8-10', label: '8-10 ಒಟ್ಟು' }
+      ];
+      grps.forEach(g => {
+        const cls = activeClasses.filter(c => g.classes.includes(c));
+        cls.forEach(c => rowsToRender.push({ type: 'class', code: c, slNo: slNo++ }));
+        if (cls.length > 0) rowsToRender.push({ type: 'subtotal', group: g.group, label: g.label });
+      });
+      if (activeClasses.filter(c => ['6', '7', '8', '9', '10'].includes(c)).length > 0) rowsToRender.push({ type: 'subtotal', group: '6-10', label: '6-10 ಒಟ್ಟು' });
+      if (activeClasses.length > 0) rowsToRender.push({ type: 'grand', group: 'grand', label: 'ಒಟ್ಟು' });
 
-    function handleGenderClick(classesStr, gender) {
-      const genderVal = (gender === 'Boys') ? 'Boy' : 'Girl';
-      const categoriesParam = selectedCastes.join(',');
-      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&gender=${genderVal}&category=${encodeURIComponent(categoriesParam)}`;
-    }
+      rowsToRender.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-200 dark:border-slate-800 text-center text-xs font-semibold transition-all duration-150';
+        let rowData, isClassRow = (row.type === 'class');
+        
+        let isSelected = false;
+        if (isClassRow && chartSelectedClass === row.code) {
+          isSelected = true;
+        } else if (!isClassRow && chartSelectedGroup === row.group) {
+          isSelected = true;
+        }
 
-    function handleCasteClick(classesStr, category) {
-      const gendersParam = selectedGenders.join(',');
-      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&category=${category}&gender=${encodeURIComponent(gendersParam)}`;
-    }
+        if (isClassRow) {
+          rowData = classData[row.code];
+          if (isSelected) {
+            tr.classList.add('active-row');
+            tr.className += ' font-extrabold shadow-sm';
+          } else {
+            tr.className += ' hover:bg-slate-50 dark:hover:bg-slate-800/40 text-slate-800 dark:text-slate-200';
+          }
+        } else {
+          rowData = totals[row.group];
+          if (isSelected) {
+            tr.classList.add('active-row');
+            tr.className += ' font-black shadow-sm';
+          } else {
+            tr.className += row.type === 'subtotal' ? ' bg-amber-100/50 dark:bg-yellow-950/20 font-bold text-slate-900 dark:text-yellow-100' : ' bg-orange-100 dark:bg-orange-950/30 font-black text-slate-955 dark:text-orange-100';
+          }
+        }
+        const targetCode = isClassRow ? row.code : row.group;
 
-    function handleTotalClick(classesStr) {
-      const gendersParam = selectedGenders.join(',');
-      const categoriesParam = selectedCastes.join(',');
-      window.location.href = `StudentList.html?class=${encodeURIComponent(classesStr)}&gender=${encodeURIComponent(gendersParam)}&category=${encodeURIComponent(categoriesParam)}`;
+        // Make row clickable for Table-to-Chart Sync (no-print)
+        tr.style.cursor = 'pointer';
+        tr.title = isClassRow 
+          ? `ಕ್ಲಿಕ್ ಮಾಡಿ ಚಾರ್ಟ್ ಫಿಲ್ಟರ್ ಮಾಡಲು / Click to filter charts for Class ${row.code}`
+          : `ಕ್ಲಿಕ್ ಮಾಡಿ ಚಾರ್ಟ್ ಫಿಲ್ಟರ್ ಮಾಡಲು / Click to filter charts for Group ${row.label}`;
+        
+        tr.onclick = (e) => {
+          if (e.target.tagName.toLowerCase() === 'button' || e.target.closest('button') || e.target.tagName.toLowerCase() === 'i') {
+            return;
+          }
+          if (isClassRow) {
+            if (chartSelectedClass === row.code) {
+              chartSelectedClass = null;
+            } else {
+              chartSelectedClass = row.code;
+              chartSelectedGroup = null;
+            }
+          } else {
+            if (row.group === 'grand') {
+              chartSelectedClass = null;
+              chartSelectedGroup = null;
+            } else {
+              if (chartSelectedGroup === row.group) {
+                chartSelectedGroup = null;
+              } else {
+                chartSelectedGroup = row.group;
+                chartSelectedClass = null;
+              }
+            }
+          }
+          renderClasswiseTable();
+          renderAnalyticsCharts(allStudents);
+          
+          // Open charts panel if closed so they see the sync
+          const panel = document.getElementById('analyticsChartsPanel');
+          if (panel && panel.classList.contains('hidden')) {
+            toggleAnalyticsChartsPanel();
+          }
+        };
+
+        const tdSl = document.createElement('td');
+        tdSl.className = 'py-2 px-1 border border-slate-300 dark:border-slate-700 font-bold';
+        tdSl.innerText = isClassRow ? row.slNo : '';
+        tr.appendChild(tdSl);
+
+        const tdClass = document.createElement('td');
+        tdClass.className = 'py-2 px-2 border border-slate-300 dark:border-slate-700 font-bold';
+        if (isClassRow || row.group !== 'grand') {
+          tdClass.innerHTML = `<span class="text-indigo-650 dark:text-indigo-400 hover:text-indigo-800 hover:underline cursor-pointer flex items-center justify-center gap-1"><i class="fa-solid fa-chart-simple text-[9px] opacity-60"></i> ${isClassRow ? row.code : row.label}</span>`;
+        } else {
+          tdClass.innerText = row.label;
+        }
+        tr.appendChild(tdClass);
+
+        fields.forEach(([f_b, f_g, grpName]) => {
+          const t_b = rowData[f_b] || 0;
+          const t_g = rowData[f_g] || 0;
+          
+          [
+            { val: t_b, gender: 'Boy' },
+            { val: t_g, gender: 'Girl' }
+          ].forEach(item => {
+            const td = document.createElement('td');
+            td.className = 'py-2 px-1 border border-slate-350 dark:border-slate-850' + (grpName === 'Unassigned' && item.val > 0 ? ' text-rose-600 dark:text-rose-400 font-bold' : '');
+            if (item.val > 0) {
+              const btn = document.createElement('button');
+              btn.className = 'font-bold ' + (isClassRow ? 'text-slate-700 dark:text-slate-300' : 'text-slate-900 dark:text-slate-100') + ' hover:text-indigo-600 hover:underline bg-transparent border-0 cursor-pointer p-0';
+              btn.innerText = item.val;
+              btn.onclick = () => (grpName === 'Unassigned' && isClassRow) ? redirectToUnassignedEdit(targetCode, item.gender) : handleDetailedFilterClick(targetCode, item.gender, grpName);
+              btn.addEventListener('mouseenter', (e) => showHoverLookup(e, targetCode, item.gender, grpName));
+              btn.addEventListener('mouseleave', hideHoverLookup);
+              td.appendChild(btn);
+            } else {
+              td.innerText = item.val;
+            }
+            tr.appendChild(td);
+          });
+        });
+
+        // Tot Boys
+        const tdTotB = document.createElement('td');
+        tdTotB.className = 'py-2 px-1 border border-slate-300 dark:border-slate-700 font-bold bg-sky-50/20 dark:bg-sky-950/10';
+        if (rowData.b > 0) {
+          tdTotB.innerHTML = `<button onclick="handleDetailedFilterClick('${targetCode}', 'Boy', 'ALL')" class="font-black ${isClassRow ? 'text-slate-800 dark:text-slate-200' : 'text-slate-955 dark:text-white'} hover:text-indigo-600 hover:underline bg-transparent border-0 cursor-pointer p-0">${rowData.b}</button>`;
+          const btn = tdTotB.querySelector('button');
+          if (btn) {
+            btn.addEventListener('mouseenter', (e) => showHoverLookup(e, targetCode, 'Boy', 'ALL'));
+            btn.addEventListener('mouseleave', hideHoverLookup);
+          }
+        } else {
+          tdTotB.innerText = rowData.b;
+        }
+        tr.appendChild(tdTotB);
+
+        // Tot Girls
+        const tdTotG = document.createElement('td');
+        tdTotG.className = 'py-2 px-1 border border-slate-300 dark:border-slate-700 font-bold bg-rose-50/20 dark:bg-rose-950/10';
+        if (rowData.g > 0) {
+          tdTotG.innerHTML = `<button onclick="handleDetailedFilterClick('${targetCode}', 'Girl', 'ALL')" class="font-black ${isClassRow ? 'text-slate-800 dark:text-slate-200' : 'text-slate-955 dark:text-white'} hover:text-indigo-600 hover:underline bg-transparent border-0 cursor-pointer p-0">${rowData.g}</button>`;
+          const btn = tdTotG.querySelector('button');
+          if (btn) {
+            btn.addEventListener('mouseenter', (e) => showHoverLookup(e, targetCode, 'Girl', 'ALL'));
+            btn.addEventListener('mouseleave', hideHoverLookup);
+          }
+        } else {
+          tdTotG.innerText = rowData.g;
+        }
+        tr.appendChild(tdTotG);
+
+        // Row Total
+        const tdTot = document.createElement('td');
+        tdTot.className = 'py-2 px-1 border border-slate-300 dark:border-slate-700 font-black bg-slate-100/50 dark:bg-slate-800/50';
+        if (rowData.tot > 0) {
+          tdTot.innerHTML = `<button onclick="handleDetailedFilterClick('${targetCode}', 'ALL', 'ALL')" class="font-black ${isClassRow ? 'text-slate-900 dark:text-white' : 'text-slate-955 dark:text-white'} hover:text-indigo-600 hover:underline bg-transparent border-0 cursor-pointer p-0">${rowData.tot}</button>`;
+          const btn = tdTot.querySelector('button');
+          if (btn) {
+            btn.addEventListener('mouseenter', (e) => showHoverLookup(e, targetCode, 'ALL', 'ALL'));
+            btn.addEventListener('mouseleave', hideHoverLookup);
+          }
+        } else {
+          tdTot.innerText = rowData.tot;
+        }
+        tr.appendChild(tdTot);
+
+        // Action Column
+        const tdAct = document.createElement('td');
+        tdAct.className = 'py-2 px-1 border border-slate-300 dark:border-slate-700 no-print';
+        if (isClassRow) {
+          tdAct.innerHTML = `
+            <button onclick="hideClassFromTable('${row.code}')" class="bg-rose-600 hover:bg-rose-700 text-white rounded p-1 w-6 h-6 flex items-center justify-center cursor-pointer transition transform hover:scale-110 border-0" title="ತರಗತಿ ಮರೆಮಾಡಿ">
+              <i class="fa-solid fa-xmark text-[10px]"></i>
+            </button>
+          `;
+        }
+        tr.appendChild(tdAct);
+
+        tbody.appendChild(tr);
+      });
     }
 
     // Sidebar & Theme helpers
@@ -1176,6 +2387,10 @@
       document.body.setAttribute('data-theme', savedTheme);
       const selector = document.getElementById('themeSelector');
       if (selector) selector.value = savedTheme;
+
+      if (typeof updateOnlineStatus === 'function') {
+        updateOnlineStatus();
+      }
 
 
 
@@ -1195,6 +2410,11 @@
 
           const name = profile?.name || user.user_metadata?.name || user.email;
           if (headerUser) headerUser.innerText = name;
+
+          if (profile && (profile.role === 'Admin' || profile.role === 'developer')) {
+            const cleanBtn = document.getElementById('btn-db-cleanup-dash');
+            if (cleanBtn) cleanBtn.classList.remove('hidden');
+          }
 
           if (profile && profile.role === 'developer') {
             if (headerUser) headerUser.innerHTML = `<span class="bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 px-2 py-0.5 rounded text-[10px] font-bold mr-1.5 uppercase">Dev</span>${name}`;
@@ -1278,7 +2498,396 @@
         console.error("Error loading user session for header:", e);
       }
     }
+
+    // Global Student Search (Feature 4)
+    let searchTimeout = null;
+    
+    window.handleGlobalSearch = function(query) {
+      const dropdown = document.getElementById('searchDropdown');
+      if (!dropdown) return;
+      
+      if (!query || query.trim().length < 2) {
+        dropdown.innerHTML = '<div class="p-3 text-slate-400 dark:text-slate-500 text-center">ಹುಡುಕಲು ಕನಿಷ್ಠ ೨ ಅಕ್ಷರಗಳನ್ನು ಟೈಪ್ ಮಾಡಿ. / Type 2+ chars to search.</div>';
+        dropdown.classList.remove('hidden');
+        return;
+      }
+      
+      const cleanQ = query.toLowerCase().trim();
+      const results = allStudents.filter(s => {
+        const nameEn = (s.name_english || '').toLowerCase();
+        const nameKn = (s.student_name || '').toLowerCase();
+        const appNo = (s.app_no || '').toString();
+        const pen = (s.pen || '').toString().toLowerCase();
+        const sat = (s.student_aadhaar || '').toString();
+        return nameEn.includes(cleanQ) || nameKn.includes(cleanQ) || appNo.includes(cleanQ) || pen.includes(cleanQ) || sat.includes(cleanQ);
+      });
+      
+      if (results.length === 0) {
+        dropdown.innerHTML = '<div class="p-3 text-slate-400 dark:text-slate-500 text-center">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ. / No results found.</div>';
+      } else {
+        let html = '';
+        results.slice(0, 15).forEach(s => {
+          const name = s.name_english || s.student_name || 'Unnamed';
+          const details = `${s.enroll_class} Class | ${s.gender === 'Boy' ? 'Boy/ಗಂಡು' : 'Girl/ಹೆಣ್ಣು'}`;
+          html += `
+            <div onclick="window.location.href='StudentUpdate.html?id=${s.id}'" class="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer flex flex-col gap-0.5 transition-colors">
+              <div class="font-extrabold text-slate-800 dark:text-slate-200">${name}</div>
+              <div class="text-[9px] text-slate-450 dark:text-slate-500 flex items-center justify-between">
+                <span>${details}</span>
+                <span class="font-bold text-indigo-500">ತಿದ್ದುಪಡಿ / Edit</span>
+              </div>
+            </div>
+          `;
+        });
+        dropdown.innerHTML = html;
+      }
+      dropdown.classList.remove('hidden');
+    };
+    
+    window.showSearchDropdown = function() {
+      const dropdown = document.getElementById('searchDropdown');
+      if (dropdown) dropdown.classList.remove('hidden');
+      const val = document.getElementById('globalStudentSearch')?.value;
+      if (val) handleGlobalSearch(val);
+    };
+    
+    window.hideSearchDropdownDelayed = function() {
+      setTimeout(() => {
+        const dropdown = document.getElementById('searchDropdown');
+        if (dropdown) dropdown.classList.add('hidden');
+      }, 250);
+    };
+    
+    // Ctrl+K key listener for search bar focus
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('globalStudentSearch');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    });
+
+    // Reset All Dashboard Filters (Feature 3)
+    window.resetAllFilters = function() {
+      selectedClassGroups = ['all'];
+      selectedGenders = ['Boy', 'Girl'];
+      selectedCastes = ['SC', 'ST', 'OBC', 'Others'];
+      hiddenClasses = [];
+      chartSelectedClass = null;
+      chartSelectedGroup = null;
+      
+      const resetBtn = document.getElementById('hiddenClassesResetContainer');
+      if (resetBtn) resetBtn.classList.add('hidden');
+      
+      updateFilterButtonsUI();
+      updateDashboardStats();
+      renderAnalyticsCharts(allStudents);
+      
+      showToast("ಶೋಧಕಗಳನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ", "ಎಲ್ಲಾ ಶೋಧಕಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ತೆರವುಗೊಳಿಸಲಾಗಿದೆ. / All filters cleared.", "success");
+    };
+
+    // Distributions & Attendance Popup Modal (Features 1 & 5)
+    window.openAnalyticsPopupModal = async function() {
+      const modal = document.getElementById('analyticsPopupModal');
+      if (modal) modal.classList.remove('hidden');
+      
+      const attendanceContainer = document.getElementById('attendancePopupContent');
+      const distributionsContainer = document.getElementById('distributionsPopupContent');
+      if (!attendanceContainer || !distributionsContainer) return;
+      
+      attendanceContainer.innerHTML = `<div class="text-center py-4 text-slate-400"><i class="fa-solid fa-circle-notch animate-spin text-lg mb-1 block"></i> ಹಾಜರಾತಿ ಪ್ರಗತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</div>`;
+      distributionsContainer.innerHTML = `<div class="text-center py-4 text-slate-400"><i class="fa-solid fa-circle-notch animate-spin text-lg mb-1 block"></i> ಸವಲತ್ತುಗಳ ವಿತರಣೆ ಲೆಕ್ಕಿಸಲಾಗುತ್ತಿದೆ...</div>`;
+      
+      const schoolId = localStorage.getItem('school_id');
+      const todayStr = new Date().toISOString().split('T')[0];
+      
+      // Load Attendance
+      try {
+        const { data: attData } = await supabaseClient
+          .from('attendance')
+          .select('present_days, working_days')
+          .eq('attendance_type', 'daily')
+          .eq('attendance_date', todayStr);
+          
+        if (attData && attData.length > 0) {
+          let presentCount = 0;
+          let absentCount = 0;
+          attData.forEach(r => {
+            if (r.present_days > 0) presentCount++;
+            else absentCount++;
+          });
+          const totalRecords = attData.length;
+          const rate = Math.round((presentCount / totalRecords) * 100);
+          
+          attendanceContainer.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-slate-800 dark:text-slate-200">ಇಂದಿನ ಹಾಜರಾತಿ ದರ / Attendance Rate</div>
+                <div class="text-[10px] text-slate-450 dark:text-slate-500 mt-0.5">ದಿನಾಂಕ / Date: ${todayStr}</div>
+              </div>
+              <div class="text-right">
+                <div class="text-base font-black text-indigo-650 dark:text-indigo-400">${rate}%</div>
+                <div class="text-[9px] font-bold text-slate-450">ಹಾಜರಾದವರು: ${presentCount} / ಗೈರು: ${absentCount}</div>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden mt-1 shadow-inner border border-slate-200/50 dark:border-slate-700/50">
+              <div class="bg-indigo-500 h-full transition-all duration-500" style="width: ${rate}%"></div>
+            </div>
+          `;
+        } else {
+          attendanceContainer.innerHTML = `
+            <div class="flex items-center gap-2.5 text-amber-600 dark:text-amber-450 py-1">
+              <i class="fa-solid fa-circle-exclamation text-lg"></i>
+              <div>
+                <div class="text-xs font-extrabold">ಇಂದಿನ ಹಾಜರಾತಿ ದಾಖಲಿಸಿಲ್ಲ! / Attendance not marked yet</div>
+                <div class="text-[9px] text-slate-450 mt-0.5">ದಿನಾಂಕ / Date: ${todayStr}</div>
+              </div>
+            </div>
+            <button onclick="window.location.href='Attendance.html'" class="w-full mt-2 bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-2 rounded-xl text-[10px] cursor-pointer transition shadow-sm border-0">
+              ಹಾಜರಾತಿ ದಾಖಲಿಸಿ / Record Attendance Now
+            </button>
+          `;
+        }
+      } catch (err) {
+        console.error("Attendance load error:", err);
+        attendanceContainer.innerHTML = `<div class="text-[10px] text-rose-500 py-2 text-center">ಹಾಜರಾತಿ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. / Attendance error: ${err.message}</div>`;
+      }
+      
+      // Load Distribution Progress
+      try {
+        const admittedCount = allStudents.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').length;
+        if (admittedCount === 0) {
+          distributionsContainer.innerHTML = `<div class="text-[10px] text-slate-450 py-4 text-center">ಶಾಲೆಯಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳಿಲ್ಲ. / No student records found.</div>`;
+          return;
+        }
+        
+        const { data: incData } = await supabaseClient
+          .from('student_incentives')
+          .select('is_distributed, template_id')
+          .eq('is_distributed', true);
+          
+        const { data: templates } = await supabaseClient
+          .from('incentive_templates')
+          .select('id, name');
+          
+        if (incData && templates) {
+          const map = {};
+          templates.forEach(t => {
+            const tId = t.id;
+            const tName = t.name.toLowerCase();
+            let key = 'others';
+            if (tName.includes('textbook') || tName.includes('ಪುಸ್ತಕ') || tName.includes('ಪಠ್ಯ')) key = 'textbook';
+            else if (tName.includes('uniform') || tName.includes('ಸೀರೆ') || tName.includes('ಪೋಷಾಕು') || tName.includes('ಯುನಿಫಾರ್ಮ್')) key = 'uniform';
+            else if (tName.includes('shoe') || tName.includes('socks') || tName.includes('ಶೂ') || tName.includes('ಸಾಕ್ಸ್')) key = 'shoes';
+            else if (tName.includes('egg') || tName.includes('milk') || tName.includes('banana') || tName.includes('ಹಾಲು') || tName.includes('ಮೊಟ್ಟೆ')) key = 'food';
+            
+            map[tId] = key;
+          });
+          
+          const counts = { textbook: 0, uniform: 0, shoes: 0, food: 0 };
+          incData.forEach(i => {
+            const key = map[i.template_id];
+            if (key && counts[key] !== undefined) {
+              counts[key]++;
+            }
+          });
+          
+          const textbookRate = Math.min(100, Math.round((counts.textbook / admittedCount) * 100)) || 0;
+          const uniformRate = Math.min(100, Math.round((counts.uniform / admittedCount) * 100)) || 0;
+          const shoesRate = Math.min(100, Math.round((counts.shoes / admittedCount) * 100)) || 0;
+          const foodRate = Math.min(100, Math.round((counts.food / admittedCount) * 100)) || 0;
+          
+          distributionsContainer.innerHTML = `
+            ${renderProgressItem('ಪಠ್ಯಪುಸ್ತಕ ವಿತರಣೆ / Textbooks', textbookRate, 'textbook', 'TextbookDistribution.html')}
+            ${renderProgressItem('ಯುನಿಫಾರ್ಮ್ ವಿತರಣೆ / Uniforms', uniformRate, 'uniform', 'UniformDistribution.html')}
+            ${renderProgressItem('ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ / Shoe & Socks', shoesRate, 'shoes', 'ShoeSocksDistribution.html')}
+            ${renderProgressItem('ಮೊಟ್ಟೆ / ಬಾಳೆಹಣ್ಣು ವಿತರಣೆ / Food Plans', foodRate, 'food', 'EggBananaDistribution.html')}
+          `;
+        } else {
+          distributionsContainer.innerHTML = `<div class="text-[10px] text-slate-450 py-4 text-center">ವಿತರಣಾ ವಿವರಗಳು ಲಭ್ಯವಿಲ್ಲ. / No distribution records found.</div>`;
+        }
+      } catch (err) {
+        console.error("Incentives progress error:", err);
+        distributionsContainer.innerHTML = `<div class="text-[10px] text-rose-500 py-2 text-center">ವಿತರಣೆ ಲೆಕ್ಕಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. / Distribution error: ${err.message}</div>`;
+      }
+    };
+    
+    function renderProgressItem(label, rate, type, link) {
+      const colors = {
+        textbook: 'from-sky-500 to-sky-400 bg-sky-100 text-sky-700',
+        uniform: 'from-indigo-600 to-indigo-400 bg-indigo-100 text-indigo-700',
+        shoes: 'from-emerald-600 to-emerald-400 bg-emerald-100 text-emerald-700',
+        food: 'from-amber-500 to-amber-400 bg-amber-100 text-amber-700'
+      };
+      
+      return `
+        <div class="space-y-1">
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-extrabold text-slate-800 dark:text-slate-200">${label}</span>
+            <div class="flex items-center gap-2">
+              <span class="font-black text-slate-900 dark:text-slate-200">${rate}%</span>
+              <button onclick="window.location.href='${link}'" class="text-indigo-650 hover:underline bg-transparent border-0 cursor-pointer p-0 text-[9px] font-bold">ವಿತರಿಸಿ / Manage</button>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner border border-slate-200/50 dark:border-slate-700/50">
+            <div class="bg-gradient-to-r ${colors[type].split(' bg-')[0]} h-full transition-all duration-500" style="width: ${rate}%"></div>
+          </div>
+        </div>
+      `;
+    }
+    
+    window.closeAnalyticsPopupModal = function() {
+      const modal = document.getElementById('analyticsPopupModal');
+      if (modal) modal.classList.add('hidden');
+    };
+
+    // Connection Status indicator (Feature 4 additions)
+    window.updateOnlineStatus = function() {
+      const statusEl = document.getElementById('dbSyncStatus');
+      if (!statusEl) return;
+      if (navigator.onLine) {
+        statusEl.innerText = "🟢 Connected";
+        statusEl.className = "inline-flex items-center gap-1 bg-emerald-500/20 text-emerald-450 border border-emerald-500/30 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ml-1 select-none";
+      } else {
+        statusEl.innerText = "🔴 Offline Mode";
+        statusEl.className = "inline-flex items-center gap-1 bg-rose-500/20 text-rose-450 border border-rose-500/30 px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider ml-1 select-none animate-pulse";
+      }
+    };
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // Dynamic Action Insights (Feature 3 additions)
+    window.focusOnActionInsight = function() {
+      if (currentInsightAction === 'attendance') {
+        window.location.href = 'Attendance.html';
+      } else if (currentInsightAction === 'health') {
+        const panel = document.getElementById('dataHealthInspectorPanel');
+        if (panel && panel.classList.contains('hidden')) {
+          toggleDataHealthInspectorPanel();
+        }
+        document.getElementById('dataHealthInspectorPanel')?.scrollIntoView({ behavior: 'smooth' });
+      } else if (currentInsightAction === 'healthy') {
+        openAnalyticsPopupModal();
+      }
+    };
+    
+    window.computeDynamicInsight = async function() {
+      const textEl = document.getElementById('insightCardText');
+      const iconEl = document.getElementById('insightCardIcon');
+      const iconBackEl = document.getElementById('insightCardIconBack');
+      if (!textEl || !iconEl || !iconBackEl) return;
+      
+      const schoolId = localStorage.getItem('school_id');
+      const todayStr = new Date().toISOString().split('T')[0];
+      
+      // 1. Check Attendance
+      try {
+        const { data, error } = await supabaseClient
+          .from('attendance')
+          .select('id')
+          .eq('attendance_type', 'daily')
+          .eq('attendance_date', todayStr)
+          .limit(1);
+          
+        if (!error && (!data || data.length === 0)) {
+          currentInsightAction = 'attendance';
+          textEl.innerHTML = `📝 ಇಂದಿನ ಹಾಜರಾತಿ ದಾಖಲಿಸಿಲ್ಲ! / Attendance not marked today!`;
+          
+          iconEl.className = "fa-solid fa-pen-to-square text-amber-500";
+          iconBackEl.className = "fa-solid fa-pen-to-square text-amber-100 dark:text-slate-800 text-7xl opacity-50";
+          
+          const container = document.getElementById('insightCardContainer');
+          if (container) {
+            container.className = container.className.replace(/border-[a-z]+-1[0-9]0/g, 'border-amber-150');
+          }
+          return;
+        }
+      } catch (err) {
+        console.error("Insight attendance check failed:", err);
+      }
+      
+      // 2. Check Data Health Audit Errors
+      if (lastAuditErrors && lastAuditErrors.length > 0) {
+        currentInsightAction = 'health';
+        textEl.innerHTML = `⚠️ ${lastAuditErrors.length} ಡೇಟಾ ಲೋಪಗಳು ಪತ್ತೆಯಾಗಿವೆ! / ${lastAuditErrors.length} Data issues found!`;
+        
+        iconEl.className = "fa-solid fa-triangle-exclamation text-rose-500";
+        iconBackEl.className = "fa-solid fa-triangle-exclamation text-rose-100 dark:text-slate-800 text-7xl opacity-50";
+        
+        const container = document.getElementById('insightCardContainer');
+        if (container) {
+          container.className = container.className.replace(/border-[a-z]+-1[0-9]0/g, 'border-rose-150');
+        }
+        return;
+      }
+      
+      // 3. Fallback: School is Healthy!
+      currentInsightAction = 'healthy';
+      textEl.innerHTML = `✅ ಶಾಲೆಯ ಡೇಟಾ ಪರಿಪೂರ್ಣವಾಗಿದೆ! / School data is 100% healthy!`;
+      
+      iconEl.className = "fa-solid fa-circle-check text-emerald-500";
+      iconBackEl.className = "fa-solid fa-circle-check text-emerald-100 dark:text-slate-800 text-7xl opacity-50";
+      
+      const container = document.getElementById('insightCardContainer');
+      if (container) {
+        container.className = container.className.replace(/border-[a-z]+-1[0-9]0/g, 'border-emerald-150');
+      }
+    };
 </script>
+
+  <!-- Analytics & Distributions Info Popup Modal (no-print) -->
+  <div id="analyticsPopupModal" class="hidden fixed inset-0 z-50 overflow-y-auto no-print">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity" onclick="closeAnalyticsPopupModal()"></div>
+    
+    <!-- Modal Dialog -->
+    <div class="flex min-h-full items-center justify-center p-4">
+      <div class="relative transform overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 text-left shadow-2xl transition-all w-full max-w-lg space-y-4">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 class="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-square-poll-vertical text-indigo-500 text-sm"></i> ಸಾರಾಂಶ ಮತ್ತು ಸವಲತ್ತುಗಳು / Analytics & Distributions Info
+          </h3>
+          <button onclick="closeAnalyticsPopupModal()" class="text-slate-450 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer bg-transparent border-0 text-base">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        
+        <!-- Content -->
+        <div class="space-y-5">
+          <!-- Daily Attendance Section -->
+          <div class="space-y-2">
+            <h4 class="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">ಹಾಜರಾತಿ ಪ್ರಗತಿ / Daily Attendance Summary</h4>
+            <div id="attendancePopupContent" class="p-3.5 bg-slate-50/50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800/80 space-y-2.5">
+              <div class="text-center py-4 text-slate-450">
+                <i class="fa-solid fa-circle-notch animate-spin text-lg mb-1 block"></i> ಲೋಡ್ ಆಗುತ್ತಿದೆ...
+              </div>
+            </div>
+          </div>
+          
+          <!-- Distributions Section -->
+          <div class="space-y-2">
+            <h4 class="text-[10px] font-extrabold text-slate-450 dark:text-slate-500 uppercase tracking-wider">ಸವಲತ್ತುಗಳ ವಿತರಣಾ ಪ್ರಗತಿ / Distribution Tracker</h4>
+            <div id="distributionsPopupContent" class="p-3.5 bg-slate-50/50 dark:bg-slate-800/40 rounded-2xl border border-slate-100 dark:border-slate-800/80 space-y-3.5">
+              <div class="text-center py-4 text-slate-450">
+                <i class="fa-solid fa-circle-notch animate-spin text-lg mb-1 block"></i> ಲೋಡ್ ಆಗುತ್ತಿದೆ...
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="flex justify-end pt-2">
+          <button onclick="closeAnalyticsPopupModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs cursor-pointer transition border-0">
+            ಮುಚ್ಚಿ / Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="navbar.js"></script>
 </body>
 </html>

@@ -60,6 +60,37 @@
       border: 1px solid rgba(255, 255, 255, 0.5);
     }
     
+    @media print {
+      .no-print, #navbar-placeholder, aside, header, footer, button, select, input, #dynamic-stats-grid, #dynamic-filters-bar {
+        display: none !important;
+      }
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .max-w-\[98\%\] {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+      }
+      th, td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 6px !important;
+        font-size: 10px !important;
+      }
+      .overflow-x-auto {
+        overflow: visible !important;
+        max-height: none !important;
+      }
+    }
+    
     /* Theme overrides */
     body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
     body[data-theme="dark"] .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
@@ -151,17 +182,130 @@
       </div>
 
       <!-- Table View (Visible if data exists) -->
-      <div id="table-zone" class="hidden space-y-4">
-        <!-- Search and stats -->
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="relative w-full md:w-80">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-            </span>
-            <input type="text" id="sheet-search" oninput="filterSheetTable()" placeholder="Search in sheet data..." class="w-full pl-9 pr-4 py-2 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 text-slate-700 font-semibold shadow-inner">
+      <div id="table-zone" class="hidden space-y-6">
+        
+        <!-- Dynamic Statistics Cards Grid -->
+        <div id="dynamic-stats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          <!-- Total Rows Card -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಒಟ್ಟು ಸಾಲುಗಳು / Total Rows</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-rows-count">0</div>
+            </div>
           </div>
-          <div class="text-xs font-bold text-slate-500">
-            ಒಟ್ಟು ಸಾಲುಗಳು / Total Rows Loaded: <span id="sheet-total-rows" class="text-slate-800 font-extrabold text-sm">0</span>
+
+          <!-- Boys Count Card -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-mars"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಗಂಡು ಮಕ್ಕಳು / Boys</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-boys-count">0</div>
+            </div>
+          </div>
+
+          <!-- Girls Count Card -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-venus"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಹೆಣ್ಣು ಮಕ್ಕಳು / Girls</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-girls-count">0</div>
+            </div>
+          </div>
+
+          <!-- Aadhaar Status Card -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 tracking-wider">ಆಧಾರ್ ಸಿಂಕ್ / Aadhaar Coverage</div>
+              <div class="text-xs font-black text-indigo-650" id="stat-aadhaar-coverage">0%</div>
+            </div>
+          </div>
+
+          <!-- APAAR Status Card -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-address-card"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 tracking-wider">ಅಪಾರ್ ಸಿಂಕ್ / APAAR Coverage</div>
+              <div class="text-xs font-black text-purple-650" id="stat-apaar-coverage">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Filter Controls Bar -->
+        <div id="dynamic-filters-bar" class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-4 items-end justify-between no-print">
+          <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 w-full">
+            <!-- Search bar -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] font-bold text-slate-505 uppercase tracking-wider">ಹುಡುಕಾಟ / Search Student</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                </span>
+                <input type="text" id="sheet-search" oninput="filterSheetTable()" placeholder="Type to search..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-slate-50/50 text-slate-700 font-semibold shadow-inner">
+              </div>
+            </div>
+
+            <!-- Class Filter -->
+            <div class="space-y-1.5" id="class-filter-container">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ತರಗತಿ / Class Filter</label>
+              <select id="class-filter-select" onchange="filterSheetTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                <option value="ALL">All Classes / ಎಲ್ಲಾ</option>
+              </select>
+            </div>
+
+            <!-- Gender Filter -->
+            <div class="space-y-1.5" id="gender-filter-container">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ಲಿಂಗ / Gender Filter</label>
+              <select id="gender-filter-select" onchange="filterSheetTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                <option value="ALL">All Genders / ಎಲ್ಲಾ</option>
+                <option value="MALE">Male / ಗಂಡು</option>
+                <option value="FEMALE">Female / ಹೆಣ್ಣು</option>
+              </select>
+            </div>
+
+            <!-- Aadhaar Filter -->
+            <div class="space-y-1.5" id="aadhaar-filter-container">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ಆಧಾರ್ ಸ್ಥಿತಿ / Aadhaar Filter</label>
+              <select id="aadhaar-filter-select" onchange="filterSheetTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                <option value="ALL">All Status / ಎಲ್ಲಾ</option>
+                <option value="YES">Aadhaar Available / ಆಧಾರ್ ಇದೆ</option>
+                <option value="NO">Aadhaar Missing / ಆಧಾರ್ ಇಲ್ಲ</option>
+              </select>
+            </div>
+
+            <!-- APAAR Filter -->
+            <div class="space-y-1.5" id="apaar-filter-container">
+              <label class="block text-[10px] font-bold text-slate-505 uppercase tracking-wider">ಅಪಾರ್ ಸ್ಥಿತಿ / APAAR Filter</label>
+              <select id="apaar-filter-select" onchange="filterSheetTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                <option value="ALL">All Status / ಎಲ್ಲಾ</option>
+                <option value="YES">APAAR Available / ಅಪಾರ್ ಇದೆ</option>
+                <option value="NO">APAAR Missing / ಅಪಾರ್ ಇಲ್ಲ</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Actions block (Print and Export) -->
+          <div class="flex items-center gap-2 w-full lg:w-auto justify-end border-t lg:border-t-0 pt-3 lg:pt-0">
+            <button id="btn-sync-database" onclick="syncUdiseToDatabase()" class="bg-gradient-to-tr from-indigo-600 to-purple-500 hover:from-indigo-750 hover:to-purple-650 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md hidden">
+              <i class="fa-solid fa-rotate mr-1"></i> ಡೇಟಾಬೇಸ್‌ಗೆ ಸಿಂಕ್ / Sync to DB
+            </button>
+            <button onclick="printReportSheet()" class="bg-white hover:bg-slate-50 text-slate-750 border border-slate-350 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm">
+              <i class="fa-solid fa-print text-indigo-500"></i> ಪ್ರಿಂಟ್ / Print Table
+            </button>
+            <button onclick="exportToCSV()" class="bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md">
+              <i class="fa-solid fa-file-csv"></i> CSV ರಫ್ತು / Export CSV
+            </button>
           </div>
         </div>
 
@@ -220,16 +364,31 @@
         return;
       }
 
-      // Load config title
-      const configList = JSON.parse(localStorage.getItem('udise_reports_config') || '[]');
-      currentConfig = configList.find(r => r.id === reportId);
-      if (!currentConfig) {
-        alert("ವರದಿ ವರ್ಗ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ / Report category does not exist");
+      // Load config title from Supabase
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('udise_reports')
+          .select('*')
+          .eq('id', reportId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          alert("ವರದಿ ವರ್ಗ ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ / Report category does not exist");
+          window.location.href = "UdiseDashboard.html";
+          return;
+        }
+
+        currentConfig = data;
+        document.getElementById('report-title-heading').innerHTML = `<i class="fa-solid fa-file-excel text-emerald-600"></i> UDISE+: ${currentConfig.name}`;
+      } catch (err) {
+        console.error("Failed to load report category:", err);
+        alert("ವರದಿ ವರ್ಗ ಮಾಹಿತಿ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
         window.location.href = "UdiseDashboard.html";
         return;
       }
-
-      document.getElementById('report-title-heading').innerHTML = `<i class="fa-solid fa-file-excel text-emerald-600"></i> UDISE+: ${currentConfig.name}`;
       
       // Load stored sheet if exists
       await loadStoredSheetData();
@@ -370,6 +529,7 @@
         tableZone.classList.remove('hidden');
         clearBtn.classList.remove('hidden');
 
+        calculateSheetStatsAndFilters();
         renderSheetTable(sheetData);
       } catch (err) {
         console.error("Failed to load sheet data:", err);
@@ -379,12 +539,142 @@
       }
     }
 
+    function findColumnByKeywords(keywords) {
+      if (!sheetCols) return null;
+      return sheetCols.find(c => {
+        const name = c.toLowerCase();
+        return keywords.some(kw => name.includes(kw));
+      }) || null;
+    }
+
+    function isValidAadhaar(val) {
+      if (!val) return false;
+      const clean = val.toString().trim().replace(/[\s-]/g, '');
+      if (/^\d{12}$/.test(clean)) return true;
+      if (/^[xX*]{8}\d{4}$/.test(clean) || /^[xX*]{4}[xX*]{4}\d{4}$/.test(clean)) return true;
+      if (clean.length === 12 && /[xX*\d]{12}/.test(clean)) return true;
+      return false;
+    }
+
+    function isValidApaar(val) {
+      if (!val) return false;
+      const clean = val.toString().trim().replace(/[\s-]/g, '');
+      if (/^\d{12}$/.test(clean)) return true;
+      if (/^[xX*]{8}\d{4}$/.test(clean) || /^[xX*]{4}[xX*]{4}\d{4}$/.test(clean)) return true;
+      if (clean.length === 12 && /[xX*\d]{12}/.test(clean)) return true;
+      return false;
+    }
+
+    function calculateSheetStatsAndFilters() {
+      const genderCol = findColumnByKeywords(['gender', 'ಲಿಂಗ', 'sex', 'boy', 'girl']);
+      const classCol = findColumnByKeywords(['class', 'ತರಗತಿ', 'grade', 'std']);
+      const aadhaarCol = findColumnByKeywords(['aadhaar', 'adhar', 'ಆಧಾರ್', 'aadhar', 'adhara']);
+      const apaarCol = findColumnByKeywords(['apaar', 'apar', 'ಅಪಾರ್']);
+
+      // 1. Calculate stats
+      document.getElementById('stat-rows-count').textContent = sheetData.length;
+
+      let boysCount = 0;
+      let girlsCount = 0;
+      if (genderCol) {
+        sheetData.forEach(row => {
+          const val = row[genderCol] ? row[genderCol].toString().toUpperCase() : '';
+          const isMale = val.includes('BOY') || (val.includes('MALE') && !val.includes('FEMALE')) || val.includes('ಗಂಡು');
+          const isFemale = val.includes('GIRL') || val.includes('FEMALE') || val.includes('ಹೆಣ್ಣು');
+          if (isMale) boysCount++;
+          if (isFemale) girlsCount++;
+        });
+      }
+      document.getElementById('stat-boys-count').textContent = boysCount;
+      document.getElementById('stat-girls-count').textContent = girlsCount;
+
+      let hasAadhaarCount = 0;
+      if (aadhaarCol) {
+        sheetData.forEach(row => {
+          const val = row[aadhaarCol];
+          if (isValidAadhaar(val)) {
+            hasAadhaarCount++;
+          }
+        });
+      }
+      const aadhaarPercentage = sheetData.length > 0 ? Math.round((hasAadhaarCount / sheetData.length) * 100) : 0;
+      document.getElementById('stat-aadhaar-coverage').textContent = `${aadhaarPercentage}% (${hasAadhaarCount}/${sheetData.length})`;
+
+      let hasApaarCount = 0;
+      if (apaarCol) {
+        sheetData.forEach(row => {
+          const val = row[apaarCol];
+          if (isValidApaar(val)) {
+            hasApaarCount++;
+          }
+        });
+      }
+      const apaarPercentage = sheetData.length > 0 ? Math.round((hasApaarCount / sheetData.length) * 100) : 0;
+      document.getElementById('stat-apaar-coverage').textContent = `${apaarPercentage}% (${hasApaarCount}/${sheetData.length})`;
+
+      // 2. Populate Class filter dynamically
+      const classFilterSelect = document.getElementById('class-filter-select');
+      classFilterSelect.innerHTML = '<option value="ALL">All Classes / ಎಲ್ಲಾ</option>';
+      
+      if (classCol) {
+        const uniqueClasses = new Set();
+        sheetData.forEach(row => {
+          const val = row[classCol] ? row[classCol].toString().trim() : '';
+          if (val) uniqueClasses.add(val);
+        });
+
+        // Sort classes alphabetically/numerically
+        const sortedClasses = Array.from(uniqueClasses).sort((a, b) => {
+          const numA = parseInt(a.replace(/\D/g, '')) || 0;
+          const numB = parseInt(b.replace(/\D/g, '')) || 0;
+          if (numA && numB) return numA - numB;
+          return a.localeCompare(b);
+        });
+
+        sortedClasses.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.toUpperCase();
+          opt.textContent = `Class ${c}`;
+          classFilterSelect.appendChild(opt);
+        });
+        
+        document.getElementById('class-filter-container').classList.remove('hidden');
+      } else {
+        document.getElementById('class-filter-container').classList.add('hidden');
+      }
+
+      // Toggle Filter visibilities
+      if (genderCol) {
+        document.getElementById('gender-filter-container').classList.remove('hidden');
+      } else {
+        document.getElementById('gender-filter-container').classList.add('hidden');
+      }
+
+      if (aadhaarCol) {
+        document.getElementById('aadhaar-filter-container').classList.remove('hidden');
+      } else {
+        document.getElementById('aadhaar-filter-container').classList.add('hidden');
+      }
+
+      if (apaarCol) {
+        document.getElementById('apaar-filter-container').classList.remove('hidden');
+      } else {
+        document.getElementById('apaar-filter-container').classList.add('hidden');
+      }
+
+      // Check if Student State Code / STS exists to show Sync button
+      const stsCol = findColumnByKeywords(['student state code', 'state code', 'sats', 'sts', 'app_no', 'ರಾಜ್ಯ']);
+      const syncBtn = document.getElementById('btn-sync-database');
+      if (stsCol && syncBtn) {
+        syncBtn.classList.remove('hidden');
+      } else if (syncBtn) {
+        syncBtn.classList.add('hidden');
+      }
+    }
+
     function renderSheetTable(data) {
       const theadRow = document.getElementById('sheet-thead-row');
       const tbody = document.getElementById('sheet-tbody');
-      
-      // Update count
-      document.getElementById('sheet-total-rows').textContent = data.length;
 
       // Render headers
       let headersHtml = `<th class="p-3 text-center w-12 bg-slate-50 border-r">Sl.No</th>`;
@@ -409,18 +699,148 @@
 
     function filterSheetTable() {
       const q = document.getElementById('sheet-search').value.trim().toUpperCase();
-      if (!q) {
-        renderSheetTable(sheetData);
-        return;
-      }
+      const selectedClass = document.getElementById('class-filter-select').value;
+      const selectedGender = document.getElementById('gender-filter-select').value;
+      const selectedAadhaar = document.getElementById('aadhaar-filter-select').value;
+      const selectedApaar = document.getElementById('apaar-filter-select').value;
+
+      const genderCol = findColumnByKeywords(['gender', 'ಲಿಂಗ', 'sex', 'boy', 'girl']);
+      const classCol = findColumnByKeywords(['class', 'ತರಗತಿ', 'grade', 'std']);
+      const aadhaarCol = findColumnByKeywords(['aadhaar', 'adhar', 'ಆಧಾರ್', 'aadhar', 'adhara']);
+      const apaarCol = findColumnByKeywords(['apaar', 'apar', 'ಅಪಾರ್']);
 
       const filtered = sheetData.filter(row => {
-        return sheetCols.some(col => {
+        // Search text match
+        const searchMatch = !q || sheetCols.some(col => {
           const val = row[col] ? row[col].toString().toUpperCase() : '';
           return val.includes(q);
         });
+
+        // Class match
+        let classMatch = selectedClass === 'ALL';
+        if (!classMatch && classCol) {
+          const val = row[classCol] ? row[classCol].toString().trim().toUpperCase() : '';
+          classMatch = val === selectedClass;
+        }
+
+        // Gender match
+        let genderMatch = selectedGender === 'ALL';
+        if (!genderMatch && genderCol) {
+          const val = row[genderCol] ? row[genderCol].toString().trim().toUpperCase() : '';
+          const isMale = val.includes('BOY') || (val.includes('MALE') && !val.includes('FEMALE')) || val.includes('ಗಂಡು');
+          const isFemale = val.includes('GIRL') || val.includes('FEMALE') || val.includes('ಹೆಣ್ಣು');
+          
+          if (selectedGender === 'MALE') genderMatch = isMale;
+          if (selectedGender === 'FEMALE') genderMatch = isFemale;
+        }
+
+        // Aadhaar match
+        let aadhaarMatch = selectedAadhaar === 'ALL';
+        if (!aadhaarMatch && aadhaarCol) {
+          const val = row[aadhaarCol];
+          const hasAadhaar = isValidAadhaar(val);
+          
+          if (selectedAadhaar === 'YES') aadhaarMatch = hasAadhaar;
+          if (selectedAadhaar === 'NO') aadhaarMatch = !hasAadhaar;
+        }
+
+        // APAAR match
+        let apaarMatch = selectedApaar === 'ALL';
+        if (!apaarMatch && apaarCol) {
+          const val = row[apaarCol];
+          const hasApaar = isValidApaar(val);
+          
+          if (selectedApaar === 'YES') apaarMatch = hasApaar;
+          if (selectedApaar === 'NO') apaarMatch = !hasApaar;
+        }
+
+        return searchMatch && classMatch && genderMatch && aadhaarMatch && apaarMatch;
       });
+
       renderSheetTable(filtered);
+    }
+
+    function printReportSheet() {
+      window.print();
+    }
+
+    function exportToCSV() {
+      if (sheetData.length === 0) return;
+      
+      const q = document.getElementById('sheet-search').value.trim().toUpperCase();
+      const selectedClass = document.getElementById('class-filter-select').value;
+      const selectedGender = document.getElementById('gender-filter-select').value;
+      const selectedAadhaar = document.getElementById('aadhaar-filter-select').value;
+      const selectedApaar = document.getElementById('apaar-filter-select').value;
+
+      const genderCol = findColumnByKeywords(['gender', 'ಲಿಂಗ', 'sex', 'boy', 'girl']);
+      const classCol = findColumnByKeywords(['class', 'ತರಗತಿ', 'grade', 'std']);
+      const aadhaarCol = findColumnByKeywords(['aadhaar', 'adhar', 'ಆಧಾರ್', 'aadhar', 'adhara']);
+      const apaarCol = findColumnByKeywords(['apaar', 'apar', 'ಅಪಾರ್']);
+
+      const filtered = sheetData.filter(row => {
+        const searchMatch = !q || sheetCols.some(col => {
+          const val = row[col] ? row[col].toString().toUpperCase() : '';
+          return val.includes(q);
+        });
+
+        let classMatch = selectedClass === 'ALL';
+        if (!classMatch && classCol) {
+          const val = row[classCol] ? row[classCol].toString().trim().toUpperCase() : '';
+          classMatch = val === selectedClass;
+        }
+
+        let genderMatch = selectedGender === 'ALL';
+        if (!genderMatch && genderCol) {
+          const val = row[genderCol] ? row[genderCol].toString().trim().toUpperCase() : '';
+          const isMale = val.includes('BOY') || (val.includes('MALE') && !val.includes('FEMALE')) || val.includes('ಗಂಡು');
+          const isFemale = val.includes('GIRL') || val.includes('FEMALE') || val.includes('ಹೆಣ್ಣು');
+          
+          if (selectedGender === 'MALE') genderMatch = isMale;
+          if (selectedGender === 'FEMALE') genderMatch = isFemale;
+        }
+
+        let aadhaarMatch = selectedAadhaar === 'ALL';
+        if (!aadhaarMatch && aadhaarCol) {
+          const val = row[aadhaarCol];
+          const hasAadhaar = isValidAadhaar(val);
+          
+          if (selectedAadhaar === 'YES') aadhaarMatch = hasAadhaar;
+          if (selectedAadhaar === 'NO') aadhaarMatch = !hasAadhaar;
+        }
+
+        let apaarMatch = selectedApaar === 'ALL';
+        if (!apaarMatch && apaarCol) {
+          const val = row[apaarCol];
+          const hasApaar = isValidApaar(val);
+          
+          if (selectedApaar === 'YES') apaarMatch = hasApaar;
+          if (selectedApaar === 'NO') apaarMatch = !hasApaar;
+        }
+
+        return searchMatch && classMatch && genderMatch && aadhaarMatch && apaarMatch;
+      });
+
+      let csvContent = "\uFEFF"; 
+      csvContent += sheetCols.map(c => `"${c.replace(/"/g, '""')}"`).join(",") + "\n";
+      
+      filtered.forEach(row => {
+        const line = sheetCols.map(col => {
+          const val = row[col] !== undefined && row[col] !== null ? row[col].toString() : '';
+          return `"${val.replace(/"/g, '""')}"`;
+        }).join(",");
+        csvContent += line + "\n";
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `${currentConfig.name.replace(/\s+/g, '_')}_export.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     async function clearUploadedData() {
@@ -438,6 +858,219 @@
           console.error("Failed to clear data:", err);
           alert("ಡೇಟಾ ಡಿಲೀಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Failed to clear data: " + err.message);
         }
+      }
+    }
+
+    async function syncUdiseToDatabase() {
+      if (sheetData.length === 0) return;
+      
+      const stsCol = findColumnByKeywords(['student state code', 'state code', 'sats', 'sts', 'app_no', 'ರಾಜ್ಯ']);
+      const aadhaarCol = findColumnByKeywords(['aadhaar', 'adhar', 'ಆಧಾರ್', 'aadhar', 'adhara']);
+      const apaarCol = findColumnByKeywords(['apaar', 'apar', 'ಅಪಾರ್']);
+      const penCol = findColumnByKeywords(['pen', 'permanent education', 'ರಾಷ್ಟ್ರೀಯ', 'national id']);
+      const fatherCol = findColumnByKeywords(['father', 'ತಂದೆ']);
+      const motherCol = findColumnByKeywords(['mother', 'ತಾಯಿ']);
+      const nameCol = findColumnByKeywords(['student name', 'name', 'ವಿದ್ಯಾರ್ಥಿ', 'ಹೆಸರು']);
+      const dobCol = findColumnByKeywords(['dob', 'birth', 'ಹುಟ್ಟಿದ']);
+      const genderCol = findColumnByKeywords(['gender', 'sex', 'ಲಿಂಗ']);
+
+      if (!stsCol) {
+        alert("ದೋಷ: 'Student State Code' (STS No) ಕಾಲಮ್ ಕಂಡುಬಂದಿಲ್ಲ! / Error: 'Student State Code' column not found!");
+        return;
+      }
+
+      if (!aadhaarCol && !apaarCol && !penCol && !fatherCol && !motherCol && !nameCol && !dobCol && !genderCol) {
+        alert("ದೋಷ: ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಯಾವುದೇ ಸೂಕ್ತ ಕಾಲಮ್ ಕಂಡುಬಂದಿಲ್ಲ! / Error: No updateable columns found in UDISE sheet!");
+        return;
+      }
+
+      let confirmMsg = `ಈ ಕ್ರಿಯೆಯು UDISE+ ಶೀಟ್‌ನಲ್ಲಿರುವ ವಿವರಗಳನ್ನು (ಹೆಸರು, DOB, ಲಿಂಗ, ಆಧಾರ್, ಅಪಾರ್, PEN ಮತ್ತು ಪೋಷಕರ ಹೆಸರುಗಳನ್ನು) ಡೇಟಾಬೇಸ್‌ಗೆ ನೇರವಾಗಿ ಸಿಂಕ್ ಮಾಡುತ್ತದೆ.\n`;
+      confirmMsg += `ನಿಜವಾಗಿಯೂ ಸಿಂಕ್ ಮಾಡಲು ಬಯಸುವಿರಾ?\n\n`;
+      confirmMsg += `This action will sync details (Name, DOB, Gender, Aadhaar, APAAR, PEN, and Father/Mother names) from the UDISE+ sheet directly into the database. Are you sure?`;
+
+      if (!confirm(confirmMsg)) return;
+
+      const syncBtn = document.getElementById('btn-sync-database');
+      const originalText = syncBtn.innerHTML;
+      syncBtn.disabled = true;
+      syncBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin mr-1"></i> ಸಿಂಕ್ ಆಗುತ್ತಿದೆ... / Syncing...`;
+
+      function parseExcelDate(dateStr) {
+        if (!dateStr) return null;
+        const clean = dateStr.toString().trim().replace(/[-\s]/g, '/');
+        const parts = clean.split('/');
+        if (parts.length === 3) {
+          if (parts[0].length === 4) {
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+          }
+          if (parts[2].length === 4) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+          }
+        }
+        return dateStr;
+      }
+
+      try {
+        // 1. Fetch local students with all details
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('id, app_no, student_name, name_english, dob, gender, student_aadhaar, apaar, pen, father_name_az, mother_name_az');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data: localStudents, error: fetchErr } = await query;
+        if (fetchErr) throw fetchErr;
+
+        if (!localStudents || localStudents.length === 0) {
+          alert("ಸಿಸ್ಟಮ್‌ನಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ. / No students found in local database.");
+          return;
+        }
+
+        // 2. Prepare updates list
+        const updatesList = [];
+        let skippedCount = 0;
+
+        sheetData.forEach(row => {
+          const excelStsVal = row[stsCol] ? row[stsCol].toString().replace(/\D/g, '') : '';
+          if (!excelStsVal) return;
+
+          // Find match in local student roster by normalizing STS values (stripping spaces/dashes)
+          const matchedStudent = localStudents.find(s => {
+            const cleanLocalSats = s.app_no ? s.app_no.toString().replace(/\D/g, '') : '';
+            return cleanLocalSats === excelStsVal;
+          });
+          if (matchedStudent) {
+            const updatePayload = {};
+            let hasNewData = false;
+
+            // Student Name check
+            if (nameCol) {
+              const excelName = row[nameCol] ? row[nameCol].toString().trim() : '';
+              if (excelName) {
+                if (!matchedStudent.name_english) {
+                  updatePayload.name_english = excelName;
+                  hasNewData = true;
+                }
+                if (!matchedStudent.student_name) {
+                  updatePayload.student_name = excelName;
+                  hasNewData = true;
+                }
+              }
+            }
+
+            // DOB check
+            if (dobCol) {
+              const excelDob = row[dobCol] ? row[dobCol].toString().trim() : '';
+              if (excelDob && !matchedStudent.dob) {
+                const parsedDob = parseExcelDate(excelDob);
+                if (parsedDob) {
+                  updatePayload.dob = parsedDob;
+                  hasNewData = true;
+                }
+              }
+            }
+
+            // Gender check
+            if (genderCol) {
+              const excelGender = row[genderCol] ? row[genderCol].toString().toUpperCase().trim() : '';
+              if (excelGender && !matchedStudent.gender) {
+                const isMale = excelGender.includes('BOY') || (excelGender.includes('MALE') && !excelGender.includes('FEMALE')) || excelGender.includes('ಗಂಡು');
+                updatePayload.gender = isMale ? 'Boy' : 'Girl';
+                hasNewData = true;
+              }
+            }
+
+            // Aadhaar check
+            if (aadhaarCol) {
+              const excelAadhaar = row[aadhaarCol] ? row[aadhaarCol].toString().trim().replace(/[\s-]/g, '') : '';
+              if (isValidAadhaar(excelAadhaar) && excelAadhaar !== matchedStudent.student_aadhaar) {
+                updatePayload.student_aadhaar = excelAadhaar;
+                hasNewData = true;
+              }
+            }
+
+            // APAAR check
+            if (apaarCol) {
+              const excelApaar = row[apaarCol] ? row[apaarCol].toString().trim().replace(/[\s-]/g, '') : '';
+              if (isValidApaar(excelApaar) && excelApaar !== matchedStudent.apaar) {
+                updatePayload.apaar = excelApaar;
+                hasNewData = true;
+              }
+            }
+
+            // PEN check
+            if (penCol) {
+              const excelPen = row[penCol] ? row[penCol].toString().trim() : '';
+              if (excelPen && excelPen !== matchedStudent.pen) {
+                updatePayload.pen = excelPen;
+                hasNewData = true;
+              }
+            }
+
+            // Father Name check
+            if (fatherCol) {
+              const excelFather = row[fatherCol] ? row[fatherCol].toString().trim() : '';
+              if (excelFather && !matchedStudent.father_name_az) {
+                updatePayload.father_name_az = excelFather;
+                hasNewData = true;
+              }
+            }
+
+            // Mother Name check
+            if (motherCol) {
+              const excelMother = row[motherCol] ? row[motherCol].toString().trim() : '';
+              if (excelMother && !matchedStudent.mother_name_az) {
+                updatePayload.mother_name_az = excelMother;
+                hasNewData = true;
+              }
+            }
+
+            if (hasNewData) {
+              updatesList.push({
+                id: matchedStudent.id,
+                name: matchedStudent.student_name,
+                payload: updatePayload
+              });
+            }
+          } else {
+            skippedCount++;
+          }
+        });
+
+        if (updatesList.length === 0) {
+          alert("ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಯಾವುದೇ ಹೊಸ ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳು ಕಂಡುಬಂದಿಲ್ಲ (ಎಲ್ಲವೂ ಈಗಾಗಲೇ ಸಿಂಕ್ ಆಗಿದೆ). / No new updates found to sync.");
+          return;
+        }
+
+        // 3. Batch updates to Supabase (run in chunks of 15 in parallel)
+        const chunkSize = 15;
+        let successCount = 0;
+
+        for (let i = 0; i < updatesList.length; i += chunkSize) {
+          const chunk = updatesList.slice(i, i + chunkSize);
+          const promises = chunk.map(async (up) => {
+            const { error: updateErr } = await supabaseClient
+              .from('admissions')
+              .update(up.payload)
+              .eq('id', up.id);
+            if (updateErr) {
+              console.error(`Failed to update ${up.name}:`, updateErr);
+            } else {
+              successCount++;
+            }
+          });
+          await Promise.all(promises);
+        }
+
+        alert(`ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ!\n${successCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ.\nSuccess! Updated details for ${successCount} students.`);
+        
+        // Refresh local student data on screen
+        await loadStoredSheetData();
+      } catch (err) {
+        console.error("Sync failed:", err);
+        alert("ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Sync failed: " + err.message);
+      } finally {
+        syncBtn.disabled = false;
+        syncBtn.innerHTML = originalText;
       }
     }
   </script>

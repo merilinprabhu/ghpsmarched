@@ -134,7 +134,10 @@
         { name: "New Admission List", href: "NewAdmissionList.html" },
         { name: "View Students", href: "StudentList.html" },
         { name: "Update Details", href: "StudentUpdate.html" },
-        { name: "Aadhar Update", href: "ApaarModule.html" }
+        { name: "Aadhar Update", href: "ApaarModule.html" },
+        { name: "Certificates Dashboard / ಪ್ರಮಾಣ ಪತ್ರಗಳ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", href: "certificates.html" },
+        { name: "Transfer Certificate / ಟಿಸಿ", href: "tc.html" },
+        { name: "Marks Card / ಅಂಕಪಟ್ಟಿ", href: "marks_card.html" }
       ]
     },
     {
@@ -143,7 +146,8 @@
       color: "text-amber-500",
       items: [
         { name: "Dashboard", href: "UdiseDashboard.html" },
-        { name: "Compare Data", href: "UdiseCompare.html" }
+        { name: "Compare Data", href: "UdiseCompare.html" },
+        { name: "Verification Report", href: "UdiseVerification.html" }
       ]
     },
     {
@@ -164,7 +168,12 @@
       icon: "fa-gift",
       color: "text-amber-400",
       items: [
-        { name: "Incentives Dashboard", href: "incentives.html" }
+        { name: "Incentives Dashboard", href: "incentives.html" },
+        { name: "Shoe & Socks Distribution", href: "ShoeSocksDistribution.html" },
+        { name: "Egg & Banana Distribution", href: "EggBananaDistribution.html" },
+        { name: "Textbook Distribution", href: "TextbookDistribution.html" },
+        { name: "Uniform Distribution", href: "UniformDistribution.html" },
+        { name: "Height & Weight Tracker", href: "HeightWeightTracker.html" }
       ]
     },
     {
@@ -218,7 +227,76 @@
 
     let headerHtml = '';
 
-    if (layout === 'side') {
+    if (layout === 'compact_top') {
+      headerHtml = `
+        <div id="navbar-container" class="mx-auto mt-2 mb-2 max-w-[98%] rounded-2xl border border-slate-900/10 backdrop-blur-2xl bg-white/50 shadow-[0_8px_30px_rgba(0,0,0,0.08)] text-slate-900 no-print flex flex-col flex-shrink-0">
+          <div class="w-full flex items-center justify-between px-4 py-2 border-b border-slate-900/5 gap-4">
+            <!-- Left Brand -->
+            <div class="flex items-center gap-2 shrink-0">
+              <img src="${logoUrl}" alt="School Logo" class="h-8 w-8 object-contain rounded-lg border border-slate-200 bg-white p-0.5">
+              <div class="min-w-0">
+                <h1 class="text-xs font-black uppercase tracking-wider text-slate-800 school-title-short truncate">GHPS Marched</h1>
+                <p class="text-[7px] text-indigo-900/80 font-bold school-title-kn truncate">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ</p>
+              </div>
+            </div>
+
+            <!-- Center Sticky Desktop Navigation -->
+            <nav class="hidden lg:flex flex-1 justify-center items-center gap-1 z-40 flex-wrap" id="desktopNav">
+              <!-- Desktop menu items will be injected here with compact styling -->
+            </nav>
+
+            <!-- Right Controls -->
+            <div class="flex items-center gap-2 text-xs shrink-0">
+              <!-- Layout Selector -->
+              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-xl px-2 py-1 shadow-sm">
+                <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-table-columns text-indigo-500"></i> Layout:</span>
+                <select id="layoutSelector" onchange="window.applyNavLayout(this.value)" class="bg-transparent text-slate-800 border-0 text-xs font-bold focus:outline-none cursor-pointer">
+                  <option class="bg-slate-900 text-white" value="default_top">Default Top</option>
+                  <option class="bg-slate-900 text-white" value="modern_top">Modern Top</option>
+                  <option class="bg-slate-900 text-white" value="side">Left Sidebar</option>
+                  <option class="bg-slate-900 text-white" value="compact_top">Compact Top</option>
+                </select>
+              </div>
+
+              <!-- Theme Selector -->
+              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-xl px-2 py-1 shadow-sm">
+                <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500"></i> Theme:</span>
+                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-xs font-bold focus:outline-none cursor-pointer">
+                  <option class="bg-slate-900 text-white" value="light">Light</option>
+                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
+                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
+                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
+                  <option class="bg-slate-900 text-white" value="green">Green</option>
+                </select>
+              </div>
+
+              <!-- User Badge Capsule -->
+              <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-2.5 py-1 shadow-inner">
+                <i class="fa-solid fa-user-circle text-indigo-500 text-xs"></i>
+                <span id="headerUser" class="font-bold text-slate-850 text-[11px] truncate max-w-[80px]">User</span>
+              </div>
+
+              <!-- Logout Button -->
+              <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-2.5 py-1 rounded-full text-[10px] font-bold transition duration-300 cursor-pointer flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Logout</span>
+              </button>
+
+              <!-- Hamburger menu button -->
+              <button id="mobileMenuBtn" class="flex lg:hidden items-center justify-center p-1.5 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
+                <i class="fa-solid fa-bars text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Drawer (screens < 1024px) -->
+          <div id="mobileMenuPanel" class="hidden lg:hidden w-full bg-white border-t border-slate-250 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-35 rounded-b-2xl shadow-lg">
+            <div class="px-4 py-3 space-y-1.5 text-sm font-semibold" id="mobileNav">
+              <!-- Mobile menu items will be injected here -->
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (layout === 'side') {
       headerHtml = `
         <div id="navbar-container" class="no-print">
           <!-- Desktop Left Sidebar (screens >= 1024px) -->
@@ -254,6 +332,17 @@
                 <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs glow-text-emerald"></span>
               </div>
               
+              <!-- Layout Selector -->
+              <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">
+                <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-table-columns text-indigo-455 mr-1"></i> Layout:</span>
+                <select id="layoutSelector" onchange="window.applyNavLayout(this.value)" class="bg-transparent text-white border-0 text-xs font-bold focus:outline-none cursor-pointer">
+                  <option class="bg-slate-900 text-white" value="default_top">Default Top</option>
+                  <option class="bg-slate-900 text-white" value="modern_top">Modern Top</option>
+                  <option class="bg-slate-900 text-white" value="side">Left Sidebar</option>
+                  <option class="bg-slate-900 text-white" value="compact_top">Compact Top</option>
+                </select>
+              </div>
+
               <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">
                 <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-400 mr-1"></i> Theme:</span>
                 <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-white border-0 text-xs font-bold focus:outline-none cursor-pointer">
@@ -326,73 +415,62 @@
         <div id="navbar-container" class="mx-auto mt-3 mb-2 max-w-[98%] rounded-3xl border border-slate-900/10 backdrop-blur-2xl bg-white/50 shadow-[0_12px_40px_rgba(0,0,0,0.12)] text-slate-900 no-print flex flex-col flex-shrink-0">
           <!-- Top Neon Radium Gradient line -->
           <div class="h-[3px] w-full bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-500 rounded-t-3xl"></div>
-          <!-- Main Header Row (Flex column right, logo left) -->
-          <div class="w-full flex items-stretch">
-            <!-- Left Logo Pane (Spans Row 1 and Row 2 height) -->
-            <div class="flex items-center justify-center p-4 border-r border-slate-900/10 flex-shrink-0 rounded-bl-3xl">
-              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 lg:h-24 lg:w-24 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-slate-900/10 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
+          
+          <!-- Top Row (Logo, School Name, Controls) -->
+          <div class="w-full px-6 py-4 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+            <!-- Left Logo -->
+            <div class="flex items-center gap-3 shrink-0">
+              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 lg:h-20 lg:w-20 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
             </div>
 
-            <!-- Right Pane: Row 1 (Title/Controls) & Row 2 (Nav Bar) -->
-            <div class="flex-1 flex flex-col justify-between min-w-0">
-              <!-- Row 1: Brand (School Title) -->
-              <div class="w-full px-5 lg:px-7 py-2.5 flex justify-start items-center border-b border-slate-900/5">
-                <!-- Brand Text -->
-                <div class="min-w-0">
-                  <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
-                  <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
-                </div>
+            <!-- Center Brand Name -->
+            <div class="flex-1 text-center min-w-0 px-2 sm:px-4">
+              <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
+              <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
+            </div>
+
+            <!-- Right Status & Controls -->
+            <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
+              <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
+                <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
+                <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
               </div>
 
-              <!-- Row 2: Status Bar (Controls) -->
-              <div class="w-full px-5 lg:px-7 py-2 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5 bg-slate-900/[0.01]">
-                <!-- Status/Date info left, other controls right -->
-                <div class="flex items-center gap-2 text-xs">
-                  <div class="flex items-center gap-3 bg-slate-950/95 border border-slate-800/60 rounded-xl px-2.5 py-1.5 shadow-inner">
-                    <span id="liveDate" class="hidden sm:inline text-[10px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                    <div class="hidden sm:inline w-px h-3 bg-slate-800"></div>
-                    <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs tracking-wider glow-text-emerald"></span>
-                  </div>
-                </div>
-
-                <!-- Right Controls -->
-                <div class="flex items-center gap-2 text-xs flex-shrink-0">
-                  <!-- Theme Selector -->
-                  <div class="hidden sm:flex items-center gap-2 bg-slate-900/5 border border-slate-900/10 rounded-xl px-2.5 py-1.5 shadow-sm">
-                    <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Theme:</span>
-                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-xs font-bold focus:outline-none cursor-pointer">
-                      <option class="bg-slate-900 text-white" value="light">Light</option>
-                      <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                      <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                      <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                      <option class="bg-slate-900 text-white" value="green">Green</option>
-                    </select>
-                  </div>
-
-                  <!-- User Badge Capsule -->
-                  <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-3 py-1.5 shadow-inner">
-                    <i class="fa-solid fa-user-circle text-indigo-500 text-xs"></i>
-                    <span id="headerUser" class="font-bold text-slate-850 text-xs truncate max-w-[80px] sm:max-w-[120px]">User</span>
-                  </div>
-
-                  <!-- Logout Button -->
-                  <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-3 py-1.5 rounded-full text-xs font-bold transition duration-300 cursor-pointer flex items-center gap-1 shadow-sm glow-shadow-red-hover">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i> <span class="hidden sm:inline">Logout</span>
-                  </button>
-
-                  <!-- Hamburger menu button -->
-                  <button id="mobileMenuBtn" class="flex lg:hidden items-center justify-center p-2 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                    <i class="fa-solid fa-bars text-sm"></i>
-                  </button>
-                </div>
+              <!-- Theme Selector -->
+              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-lg px-2 py-1 shadow-sm">
+                <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
+                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-[10px] font-bold focus:outline-none cursor-pointer py-0">
+                  <option class="bg-slate-900 text-white" value="light">Light</option>
+                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
+                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
+                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
+                  <option class="bg-slate-900 text-white" value="green">Green</option>
+                </select>
               </div>
 
-              <!-- Row 2: Sticky Center Navigation -->
-              <nav class="hidden lg:flex w-full bg-slate-900/[0.02] text-slate-900 px-6 py-2 justify-center items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-br-3xl" id="desktopNav">
-                <!-- Desktop menu items will be injected here -->
-              </nav>
+              <!-- User Badge Capsule -->
+              <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-2.5 py-0.5 shadow-inner">
+                <i class="fa-solid fa-user-circle text-indigo-500 text-[10px]"></i>
+                <span id="headerUser" class="font-bold text-slate-850 text-[10px] truncate max-w-[70px] sm:max-w-[100px]">User</span>
+              </div>
+
+              <!-- Logout Button -->
+              <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition duration-300 cursor-pointer flex items-center gap-1 shadow-sm glow-shadow-red-hover">
+                <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
+              </button>
+
+              <!-- Hamburger menu button -->
+              <button id="mobileMenuBtn" class="flex lg:hidden items-center justify-center p-1 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
+                <i class="fa-solid fa-bars text-xs"></i>
+              </button>
             </div>
           </div>
+
+          <!-- Bottom Row: Navigation menu -->
+          <nav class="hidden lg:flex w-full bg-slate-900/[0.01] text-slate-900 px-6 pb-4 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-b-3xl" id="desktopNav">
+            <!-- Desktop menu items will be injected here -->
+          </nav>
 
           <!-- Mobile Menu Drawer (screens < 1024px) -->
           <div id="mobileMenuPanel" class="hidden lg:hidden w-full bg-white border-t border-slate-250 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-35 rounded-b-3xl shadow-lg">
@@ -424,73 +502,62 @@
         <div id="navbar-container" class="mx-auto mt-3 mb-2 max-w-[98%] rounded-3xl border border-slate-900/10 backdrop-blur-2xl bg-white/50 shadow-[0_12px_40px_rgba(0,0,0,0.12)] text-slate-900 no-print flex flex-col flex-shrink-0">
           <!-- Top Neon Radium Gradient line -->
           <div class="h-[3px] w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-3xl"></div>
-          <!-- Main Header Row (Flex column right, logo left) -->
-          <div class="w-full flex items-stretch">
-            <!-- Left Logo Pane (Spans Row 1 and Row 2 height) -->
-            <div class="flex items-center justify-center p-4 border-r border-slate-900/10 flex-shrink-0 rounded-bl-3xl">
-              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 md:h-24 md:w-24 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-slate-900/10 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
+          
+          <!-- Top Row (Logo, School Name, Controls) -->
+          <div class="w-full px-6 py-4 flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
+            <!-- Left Logo -->
+            <div class="flex items-center gap-3 shrink-0">
+              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
             </div>
 
-            <!-- Right Pane: Row 1 (Title/Controls) & Row 2 (Nav Bar) -->
-            <div class="flex-1 flex flex-col justify-between min-w-0">
-              <!-- Row 1: Brand (School Title) -->
-              <div class="w-full px-5 md:px-7 py-2.5 flex justify-start items-center border-b border-slate-900/5">
-                <!-- Brand Text -->
-                <div class="min-w-0">
-                  <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
-                  <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-widest uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
-                </div>
+            <!-- Center Brand Name -->
+            <div class="flex-1 text-center min-w-0 px-2 md:px-4">
+              <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
+              <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-widest uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
+            </div>
+
+            <!-- Right Status & Controls -->
+            <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
+              <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
+                <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
+                <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
               </div>
 
-              <!-- Row 2: Status Bar (Controls) -->
-              <div class="w-full px-5 md:px-7 py-2 flex justify-between items-center z-50 gap-4 border-b border-slate-900/5 bg-slate-900/[0.01]">
-                <!-- Clock / Date Left -->
-                <div class="flex items-center gap-2 text-xs">
-                  <div class="flex items-center gap-3 bg-slate-950/95 border border-slate-800/60 rounded-2xl px-3 py-1.5 shadow-inner">
-                    <span id="liveDate" class="hidden sm:inline text-[10px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                    <div class="hidden sm:inline w-px h-3 bg-slate-800"></div>
-                    <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs tracking-wider glow-text-emerald"></span>
-                  </div>
-                </div>
-
-                <!-- Controls Right -->
-                <div class="flex items-center gap-2 md:gap-4 text-xs flex-shrink-0">
-                  <!-- Theme Selector -->
-                  <div class="hidden sm:flex items-center gap-2 bg-slate-900/5 border border-slate-900/10 rounded-2xl px-3 py-1.5 shadow-sm transition-all duration-300">
-                    <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[10px]"></i> Theme:</span>
-                    <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 rounded text-xs font-bold focus:outline-none cursor-pointer">
-                      <option class="bg-slate-900 text-white" value="light">Light</option>
-                      <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                      <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                      <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                      <option class="bg-slate-900 text-white" value="green">Green</option>
-                    </select>
-                  </div>
-                  
-                  <!-- User Badge -->
-                  <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-3.5 py-1.5 shadow-inner transition-all duration-300 group">
-                    <i class="fa-solid fa-user-circle text-xs text-indigo-500 group-hover:scale-105 transition-transform"></i>
-                    <span id="headerUser" class="font-bold text-slate-850 text-xs truncate max-w-[90px] md:max-w-[140px]">User</span>
-                  </div>
-
-                  <!-- Logout Button -->
-                  <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i> <span class="hidden sm:inline">Logout</span>
-                  </button>
-
-                  <!-- Hamburger menu button -->
-                  <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-2 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                    <i class="fa-solid fa-bars text-sm"></i>
-                  </button>
-                </div>
+              <!-- Theme Selector -->
+              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-lg px-2 py-1 shadow-sm transition-all duration-300">
+                <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
+                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 rounded text-[10px] font-bold focus:outline-none cursor-pointer py-0">
+                  <option class="bg-slate-900 text-white" value="light">Light</option>
+                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
+                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
+                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
+                  <option class="bg-slate-900 text-white" value="green">Green</option>
+                </select>
+              </div>
+              
+              <!-- User Badge -->
+              <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-2.5 py-0.5 shadow-inner transition-all duration-300 group">
+                <i class="fa-solid fa-user-circle text-[10px] text-indigo-500 group-hover:scale-105 transition-transform"></i>
+                <span id="headerUser" class="font-bold text-slate-850 text-[10px] truncate max-w-[70px] md:max-w-[100px]">User</span>
               </div>
 
-              <!-- Row 2: Sticky Desktop Menu -->
-              <nav class="hidden md:flex w-full bg-slate-900/[0.02] text-slate-900 px-6 py-2 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-br-3xl" id="desktopNav">
-                <!-- Navigation menu items will be injected here -->
-              </nav>
+              <!-- Logout Button -->
+              <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-650 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
+                <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
+              </button>
+
+              <!-- Hamburger menu button -->
+              <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-1.5 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
+                <i class="fa-solid fa-bars text-xs"></i>
+              </button>
             </div>
           </div>
+
+          <!-- Bottom Row: Navigation menu -->
+          <nav class="hidden md:flex w-full bg-slate-900/[0.01] text-slate-900 px-6 pb-4 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-b-3xl" id="desktopNav">
+            <!-- Navigation menu items will be injected here -->
+          </nav>
 
           <!-- Mobile Menu Panel -->
           <div id="mobileMenuPanel" class="hidden md:hidden w-full bg-white border-t border-slate-250 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-30 rounded-b-3xl shadow-lg">
@@ -543,6 +610,7 @@
       'NewAdmissionList.html': 'admission_list',
       'StudentList.html': 'student_list',
       'StudentUpdate.html': 'student_update',
+      'HeightWeightTracker.html': 'incentives',
       'ApaarModule.html': 'aadhar_update',
       'BridgeCourse.html': 'bridge_course',
       'CceAssessmet.html': 'cce_assessment',
@@ -550,7 +618,14 @@
       'FlnAssessment.html': 'fln_assessment',
       'custom_reports.html': 'custom_reports',
       'incentives.html': 'incentives',
-      'teachers.html': 'teachers_directory'
+      'ShoeSocksDistribution.html': 'incentives',
+      'EggBananaDistribution.html': 'incentives',
+      'TextbookDistribution.html': 'incentives',
+      'UniformDistribution.html': 'incentives',
+      'teachers.html': 'teachers_directory',
+      'certificates.html': 'student_list',
+      'tc.html': 'student_list',
+      'marks_card.html': 'student_list'
     };
 
     const activeMenuData = menuData.map(item => {
@@ -596,8 +671,9 @@
           
           const dashboardItem = filteredItems.find(sub => sub.href === "UdiseDashboard.html") || { name: "Dashboard", href: "UdiseDashboard.html" };
           const compareItem = filteredItems.find(sub => sub.href === "UdiseCompare.html") || { name: "Compare Data", href: "UdiseCompare.html" };
+          const verificationItem = filteredItems.find(sub => sub.href === "UdiseVerification.html") || { name: "Verification Report", href: "UdiseVerification.html" };
           
-          filteredItems = [dashboardItem, ...dynamicSubmenus, compareItem];
+          filteredItems = [dashboardItem, ...dynamicSubmenus, compareItem, verificationItem];
         }
         
         return { ...item, items: filteredItems };
@@ -612,6 +688,10 @@
         activeClassDesktop = active 
           ? 'bg-gradient-to-r from-indigo-500/15 to-purple-500/15 border-l-4 border-indigo-500 text-indigo-400 font-bold shadow-inner' 
           : 'text-slate-350 hover:bg-white/5 hover:text-white border-l-4 border-transparent';
+      } else if (layout === 'compact_top') {
+        activeClassDesktop = active 
+          ? 'bg-indigo-650 text-white font-extrabold px-2.5 py-1 text-[10px] rounded-lg shadow-sm border border-indigo-700' 
+          : 'text-slate-700 hover:bg-slate-100 hover:text-black px-2.5 py-1 text-[10px] font-bold border border-transparent';
       } else {
         activeClassDesktop = active 
           ? 'active-nav-tab border border-indigo-500/30' 
@@ -658,20 +738,39 @@
               </div>
             </div>
           `;
+        } else if (layout === 'compact_top') {
+          // Compact dropdown for horizontal nav
+          menuHtmlDesktop += `
+            <div class="nav-dropdown-item group relative">
+              <button class="flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold ${activeClassDesktop} transition focus:outline-none cursor-pointer">
+                <i class="fa-solid ${item.icon} ${item.color} text-[10px]"></i>
+                <span>${item.name}</span>
+                <i class="fa-solid fa-chevron-down text-[8px] opacity-70 ml-0.5 group-hover:rotate-180 transition-transform duration-200"></i>
+              </button>
+              <div class="nav-dropdown-list absolute left-0 mt-1 w-48 rounded-xl bg-white border border-slate-200 text-slate-900 shadow-xl backdrop-blur-2xl py-1.5 z-50">
+                ${item.items.map(sub => `
+                  <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="flex items-center justify-between px-3 py-1.5 text-[10px] font-bold text-slate-800 hover:bg-indigo-650 hover:text-white transition-all duration-200 rounded-lg mx-1">
+                    <span>${sub.name}</span>
+                    ${sub.external ? '<i class="fa-solid fa-arrow-up-right-from-square text-[8px] opacity-50"></i>' : ''}
+                  </a>
+                `).join('')}
+              </div>
+            </div>
+          `;
         } else {
           // Dropdown for horizontal nav
           menuHtmlDesktop += `
             <div class="nav-dropdown-item group relative">
-              <button class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ${activeClassDesktop} transition focus:outline-none cursor-pointer">
-                <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
+              <button class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${activeClassDesktop} transition focus:outline-none cursor-pointer">
+                <i class="fa-solid ${item.icon} ${item.color} text-[10px]"></i>
                 <span>${item.name}</span>
-                <i class="fa-solid fa-chevron-down text-[9px] opacity-70 ml-0.5 group-hover:rotate-180 transition-transform duration-200"></i>
+                <i class="fa-solid fa-chevron-down text-[8px] opacity-70 ml-0.5 group-hover:rotate-180 transition-transform duration-200"></i>
               </button>
-              <div class="nav-dropdown-list absolute left-0 mt-1 w-56 rounded-2xl bg-white border border-slate-200 text-slate-900 shadow-xl backdrop-blur-2xl py-2 z-50">
+              <div class="nav-dropdown-list absolute left-0 mt-1 w-48 rounded-xl bg-white border border-slate-200 text-slate-900 shadow-xl backdrop-blur-2xl py-1.5 z-50">
                 ${item.items.map(sub => `
-                  <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="flex items-center justify-between px-4 py-2.5 text-xs font-bold text-slate-800 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all duration-200 rounded-xl mx-1.5">
+                  <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="flex items-center justify-between px-3 py-1.5 text-[10px] font-bold text-slate-800 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all duration-200 rounded-lg mx-1">
                     <span>${sub.name}</span>
-                    ${sub.external ? '<i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-50"></i>' : ''}
+                    ${sub.external ? '<i class="fa-solid fa-arrow-up-right-from-square text-[8px] opacity-50"></i>' : ''}
                   </a>
                 `).join('')}
               </div>
@@ -702,12 +801,21 @@
         `;
       } else {
         // Direct link (Desktop)
-        menuHtmlDesktop += `
-          <a href="${item.href}" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold ${activeClassDesktop} transition">
-            <i class="fa-solid ${item.icon} ${item.color} text-xs"></i>
-            <span>${item.name}</span>
-          </a>
-        `;
+        if (layout === 'compact_top') {
+          menuHtmlDesktop += `
+            <a href="${item.href}" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${activeClassDesktop} transition">
+              <i class="fa-solid ${item.icon} ${item.color} text-[10px]"></i>
+              <span>${item.name}</span>
+            </a>
+          `;
+        } else {
+          menuHtmlDesktop += `
+            <a href="${item.href}" class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold ${activeClassDesktop} transition">
+              <i class="fa-solid ${item.icon} ${item.color} text-[10px]"></i>
+              <span>${item.name}</span>
+            </a>
+          `;
+        }
 
         // Direct link (Mobile)
         menuHtmlMobile += `
@@ -745,7 +853,14 @@
     if (selMobile) selMobile.value = savedTheme;
     document.body.setAttribute('data-theme', savedTheme);
 
+    // Sync layout selector
+    const savedLayout = localStorage.getItem('school_nav_layout') || 'default_top';
+    const laySel = document.getElementById('layoutSelector');
+    if (laySel) laySel.value = savedLayout;
+
     initSessionAndUser();
+    injectLanguageToggle();
+    applyLanguagePreference();
   }
 
   async function initSessionAndUser() {
@@ -908,6 +1023,7 @@
               'NewAdmissionList.html': 'admission_list',
               'StudentList.html': 'student_list',
               'StudentUpdate.html': 'student_update',
+              'HeightWeightTracker.html': 'incentives',
               'ApaarModule.html': 'aadhar_update',
               'BridgeCourse.html': 'bridge_course',
               'CceAssessmet.html': 'cce_assessment',
@@ -915,7 +1031,14 @@
               'FlnAssessment.html': 'fln_assessment',
               'custom_reports.html': 'custom_reports',
               'incentives.html': 'incentives',
-              'teachers.html': 'teachers_directory'
+              'ShoeSocksDistribution.html': 'incentives',
+              'EggBananaDistribution.html': 'incentives',
+              'TextbookDistribution.html': 'incentives',
+              'UniformDistribution.html': 'incentives',
+              'teachers.html': 'teachers_directory',
+              'certificates.html': 'student_list',
+              'tc.html': 'student_list',
+              'marks_card.html': 'student_list'
             };
             const permKey = pagePermissionMap[currentPath];
             if (permKey) {
@@ -1245,9 +1368,14 @@
     activePrintConfig = config;
     window.activePrintConfig = config;
     
-    // Pre-populate custom title
+    // Pre-populate custom title & developer name
     const customTitleInput = document.getElementById('pdCustomTitle');
     if (customTitleInput) customTitleInput.value = config.title || '';
+    
+    const developerInput = document.getElementById('pdSigDeveloperName');
+    if (developerInput) {
+      developerInput.value = localStorage.getItem('developer_name') || 'Antigravity AI';
+    }
     
     // Toggle student-specific UI sections
     const isTeachers = config.type === 'teachers';
@@ -1373,6 +1501,9 @@
       const gridStyle = document.getElementById('pdGridStyle') ? document.getElementById('pdGridStyle').value : 'classic';
       const watermarkText = document.getElementById('pdWatermark') ? document.getElementById('pdWatermark').value : 'none';
       
+      const developerName = document.getElementById('pdSigDeveloperName') ? document.getElementById('pdSigDeveloperName').value.trim() : 'Antigravity AI';
+      localStorage.setItem('developer_name', developerName);
+      
       // Signature custom names
       const teacherName = document.getElementById('pdSigTeacherName') ? document.getElementById('pdSigTeacherName').value.trim() : '';
       const crpName = document.getElementById('pdSigCrpName') ? document.getElementById('pdSigCrpName').value.trim() : '';
@@ -1387,6 +1518,18 @@
       const fontSizeVal = document.getElementById('pdFontSize').value;
       const rotateHeaders = document.getElementById('pdRotateCheck').checked;
       const customTitle = document.getElementById('pdCustomTitle').value.trim() || config.title;
+      const pageBreakFreq = document.getElementById('pdPageBreakFreq') ? document.getElementById('pdPageBreakFreq').value : 'auto';
+      
+      let preventSplitCss = '';
+      const preventSplitCheck = document.getElementById('pdPreventSplitCheck');
+      if (preventSplitCheck && preventSplitCheck.checked) {
+        preventSplitCss = `
+          #printArea tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+        `;
+      }
       
       // 2. Setup dynamic print stylesheets
       let styleSheet = document.getElementById('dynamic-print-settings');
@@ -1430,7 +1573,7 @@
             margin: 10mm 12mm !important;
           }
           body {
-            padding-bottom: 25px !important;
+            padding-bottom: 35px !important;
           }
           #printArea {
             font-size: ${fontSizeVal} !important;
@@ -1438,12 +1581,17 @@
             color: #000000 !important;
             width: 100% !important;
             max-width: 100% !important;
+            counter-reset: page !important;
           }
           #printArea table {
             font-size: ${fontSizeVal} !important;
           }
+          .page-number-placeholder::after {
+            content: counter(page) !important;
+          }
           ${verticalHeadersCss}
           ${colorFilterCss}
+          ${preventSplitCss}
         }
       `;
       
@@ -1750,6 +1898,14 @@
           tr.appendChild(tdRem);
         }
         
+        if (pageBreakFreq !== 'auto') {
+          const limit = parseInt(pageBreakFreq);
+          if (rIdx > 0 && rIdx % limit === 0) {
+            tr.style.pageBreakBefore = 'always';
+            tr.style.breakBefore = 'always';
+          }
+        }
+        
         printTbody.appendChild(tr);
       });
       printTable.appendChild(printTbody);
@@ -1855,15 +2011,18 @@
           right: 0;
           display: flex;
           justify-content: space-between;
+          align-items: center;
           font-size: 8px;
-          color: #64748b;
-          border-top: 1px solid #cbd5e1;
+          color: #000000;
+          border-top: 1.2px solid #000000;
           padding-top: 4px;
           font-family: 'Inter', sans-serif;
+          background: white;
         `;
         footerDiv.innerHTML = `
           <span>${schoolNameStr} - ${isTeachers ? 'Teaching Staff Directory' : 'Student Report Sheet'}</span>
-          <span>Generated on ${new Date().toLocaleDateString('kn-IN')} | Page Numbers via System Print</span>
+          <span style="flex-grow: 1; text-align: center; font-weight: bold; color: #334155;">Developed by: ${developerName}</span>
+          <span>Generated on ${new Date().toLocaleDateString('kn-IN')} | Page: <span class="page-number-placeholder"></span></span>
         `;
         printArea.appendChild(footerDiv);
       }
@@ -1912,7 +2071,7 @@
         const originalTitle = document.title;
         const cleanTitle = (customTitle || "Report").trim().replace(/[^a-zA-Z0-9\u0C80-\u0CFF\s_-]/g, '').replace(/\s+/g, '_');
         document.title = cleanTitle + "_" + new Date().toLocaleDateString('kn-IN').replace(/\//g, '-');
-        alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+        alert("To download as a high-quality PDF:\\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\\n2. Click 'Save'.\\n\\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
         window.print();
         document.title = originalTitle;
       } else {
@@ -1924,7 +2083,6 @@
     }
   };
 
-  // Inject Print settings drawer HTML
   function injectPrintDrawerHTML() {
     let drawer = document.getElementById('globalPrintSettingsDrawer');
     if (!drawer) {
@@ -1935,10 +2093,10 @@
       drawer.innerHTML = `
         <div class="bg-[#fefcf8] border border-[#e8e2d5] w-full max-w-2xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden text-slate-800 transition-all transform scale-95 opacity-0 duration-300" id="printSettingsModalContent">
           <!-- Header -->
-          <div class="px-6 py-4 bg-gradient-to-r from-[#f5efe6] to-[#eadecb] border-b border-[#e8e2d5] flex justify-between items-center">
+          <div class="px-6 py-4 bg-gradient-to-r from-[#f5efe6] via-[#eae3d5] to-[#f5efe6] border-b border-[#e8e2d5] flex justify-between items-center">
             <h3 class="text-sm font-black flex items-center gap-2 text-slate-800">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <i class="fa-solid fa-print text-indigo-600"></i> ವರದಿ ಮುದ್ರಣ ಸಂರಚನೆ / Print & PDF Settings Dashboard
+              <i class="fa-solid fa-print text-indigo-650"></i> ವರದಿ ಮುದ್ರಣ ಸಂರಚನೆ / Print & PDF Settings Dashboard
             </h3>
             <button onclick="closePrintDrawer()" class="text-slate-500 hover:text-slate-800 bg-transparent border-0 cursor-pointer text-lg transition">
               <i class="fa-solid fa-xmark"></i>
@@ -1957,7 +2115,7 @@
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವರದಿ ಶೀರ್ಷಿಕೆ / Custom Report Title</label>
                   <input type="text" id="pdCustomTitle" class="w-full bg-white border border-slate-350 rounded-xl px-3 py-2 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs shadow-inner">
                 </div>
-
+ 
                 <!-- Font Size selection -->
                 <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವರದಿ ಅಕ್ಷರಗಳ ಗಾತ್ರ / Print Font Size</label>
@@ -1974,6 +2132,24 @@
                   </select>
                 </div>
 
+                <!-- Page-Break Settings -->
+                <div class="grid grid-cols-2 gap-3 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
+                  <div class="flex flex-col gap-1.5 justify-center">
+                    <label class="flex items-center gap-1.5 cursor-pointer text-xs font-bold text-indigo-750 uppercase"><input type="checkbox" id="pdPreventSplitCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Prevent Split</span></label>
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">Rows Per Page</label>
+                    <select id="pdPageBreakFreq" class="w-full bg-white border border-slate-350 rounded-xl px-2 py-1.5 text-slate-800 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer text-xs">
+                      <option value="auto" selected>Auto</option>
+                      <option value="15">15 rows</option>
+                      <option value="20">20 rows</option>
+                      <option value="25">25 rows</option>
+                      <option value="30">30 rows</option>
+                      <option value="35">35 rows</option>
+                    </select>
+                  </div>
+                </div>
+ 
                 <!-- Watermark & Border Theme -->
                 <div class="grid grid-cols-2 gap-3 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <div class="flex flex-col gap-1.5">
@@ -1994,17 +2170,17 @@
                     </select>
                   </div>
                 </div>
-
+ 
                 <!-- Student Name Mode -->
                 <div id="pdStudentNameModeContainer" class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು / Student Name Mode</label>
                   <div class="flex gap-4 font-semibold text-slate-700 text-xs mt-1">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="both" checked class="text-indigo-600 focus:ring-indigo-500"> <span>Both</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="en" class="text-indigo-600 focus:ring-indigo-500"> <span>English</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="kn" class="text-indigo-600 focus:ring-indigo-500"> <span>ಕನ್ನಡ</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="both" checked class="text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Both</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="en" class="text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>English</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="radio" name="pdNameMode" value="kn" class="text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>ಕನ್ನಡ</span></label>
                   </div>
                 </div>
-
+ 
                 <!-- Parents Name Mode -->
                 <div id="pdParentsNameModeContainer" class="grid grid-cols-2 gap-3 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <div class="flex flex-col gap-1.5">
@@ -2027,12 +2203,12 @@
                   </div>
                 </div>
               </div>
-
+ 
               <!-- Right Column -->
               <div class="space-y-4">
                 <!-- Student Columns Toggle & Color Mode -->
                 <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
-                  <label id="pdColumnsTitle" class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3\u0020\u0CAE\u0CA4\u0CCD\u0CA4\u0CC1\u0020\u0C95\u0CBE\u0CB2\u0CAE\u0CCD\u0C97\u0CB3\u0CC1 / Theme & Student Columns</label>
+                  <label id="pdColumnsTitle" class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">Theme & Student Columns</label>
                   <div class="grid grid-cols-2 gap-3 mt-1.5">
                     <div class="flex flex-col gap-1">
                       <span class="text-[9px] font-bold text-slate-450 uppercase">Print Theme</span>
@@ -2042,25 +2218,25 @@
                       </select>
                     </div>
                     <div id="pdGenderCheckboxContainer" class="flex flex-col gap-1.5 font-semibold text-slate-700 text-xs justify-center">
-                      <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdGenderCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0CB2\u0CBF\u0C82\u0C97 / Gender</span></label>
+                      <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdGenderCheck" class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>ಲಿಂಗ / Gender</span></label>
                     </div>
                   </div>
                   <div id="pdOtherCheckboxesContainer" class="grid grid-cols-2 gap-1.5 font-semibold text-slate-700 text-xs mt-1">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdCasteCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0C9C\u0CBE\u0CA4\u0CBF / Caste</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdAadhaarCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>\u0C86\u0CA7\u0CBE\u0CB0\u0CCD / Aadhaar</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdCasteCheck" class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>ಜಾತಿ / Caste</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdAadhaarCheck" class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>ಆಧಾರ್ / Aadhaar</span></label>
                   </div>
                 </div>
-
+ 
                 <!-- Signature Rows & Custom Names -->
                 <div class="flex flex-col gap-2.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ಸಹಿ ಸಾಲುಗಳು / Signature Blocks</label>
                   <div class="grid grid-cols-2 gap-2.5 font-semibold text-slate-700 text-xs mt-0.5">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigTeacherCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span id="pdSigTeacherLabel">Class Teacher</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigHmCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Head Master</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigCrpCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>CRP Signature</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdRotateCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Vertical Headers</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigTeacherCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span id="pdSigTeacherLabel">Class Teacher</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigHmCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Head Master</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdSigCrpCheck" class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>CRP Signature</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdRotateCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Vertical Headers</span></label>
                   </div>
-                  <div class="grid grid-cols-3 gap-2 mt-1 border-t border-[#e8e2d5]/60 pt-2">
+                  <div class="grid grid-cols-3 gap-2 mt-1 border-t border-[#e8e2d5]/65 pt-2">
                     <div class="flex flex-col gap-1">
                       <span class="text-[8px] font-bold text-slate-450 uppercase">Teacher Name</span>
                       <input type="text" id="pdSigTeacherName" placeholder="e.g. Ramesh K." class="w-full bg-white border border-slate-350 rounded-lg px-2 py-1 text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-[10px]">
@@ -2075,20 +2251,24 @@
                     </div>
                   </div>
                 </div>
-
+ 
                 <!-- Extra settings -->
-                <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5] border">
+                <div class="flex flex-col gap-1.5 bg-[#fbf9f3] p-4 rounded-2xl border border-[#e8e2d5]">
                   <label class="text-[10px] font-bold text-indigo-750 uppercase tracking-wider">ಇತರೆ ಆಯ್ಕೆಗಳು / Extra Settings</label>
                   <div class="grid grid-cols-2 gap-2.5 font-semibold text-slate-700 text-xs mt-1">
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdRemarksCheck" class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Remarks Col</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdBarcodeCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Barcode</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdEmblemCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>School Emblem</span></label>
-                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdFooterCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500"> <span>Page Numbers</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdRemarksCheck" class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Remarks Col</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdBarcodeCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Barcode</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdEmblemCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>School Emblem</span></label>
+                    <label class="flex items-center gap-1.5 cursor-pointer hover:text-slate-900"><input type="checkbox" id="pdFooterCheck" checked class="rounded text-indigo-600 focus:ring-indigo-500 bg-white border-slate-350"> <span>Page Numbers</span></label>
+                  </div>
+                  <div class="flex flex-col gap-1 mt-2 border-t border-[#e8e2d5]/60 pt-2">
+                    <span class="text-[8px] font-bold text-slate-450 uppercase">Developer Name</span>
+                    <input type="text" id="pdSigDeveloperName" placeholder="e.g. Antigravity AI" class="w-full bg-white border border-slate-350 rounded-lg px-2 py-1 text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-[10px]">
                   </div>
                 </div>
               </div>
             </div>
-
+ 
             <!-- Custom Report Columns Section -->
             <div class="bg-[#fbf9f3] border border-[#e8e2d5] p-4 rounded-2xl space-y-3">
               <div class="flex justify-between items-center">
@@ -2115,6 +2295,120 @@
       document.body.appendChild(drawer);
     }
   }
+
+  // Dynamic Language visibility controllers
+  function applyLanguagePreference() {
+    const lang = localStorage.getItem("portal_lang") || "bilingual";
+    
+    // Select all elements containing text or placeholders that might be bilingual
+    const elements = document.querySelectorAll("label, th, h1, h2, h3, h4, h5, h6, span, button, a, option, p, .section-title");
+    
+    elements.forEach(el => {
+      if (el.closest('.no-translate') || el.id === 'toast-message') return;
+      
+      if (!el.hasAttribute('data-orig-text')) {
+        const textVal = el.innerText || '';
+        if (textVal.includes(' / ')) {
+          el.setAttribute('data-orig-text', textVal);
+        }
+      }
+      
+      const origText = el.getAttribute('data-orig-text');
+      if (origText) {
+        const parts = origText.split(' / ');
+        if (lang === 'kannada') {
+          el.innerText = parts[0].trim();
+        } else if (lang === 'english') {
+          el.innerText = parts[1].trim();
+        } else {
+          el.innerText = origText;
+        }
+      }
+    });
+
+    // Also handle input placeholders
+    const inputs = document.querySelectorAll("input[placeholder], textarea[placeholder]");
+    inputs.forEach(input => {
+      if (!input.hasAttribute('data-orig-placeholder')) {
+        const phVal = input.placeholder || '';
+        if (phVal.includes(' / ')) {
+          input.setAttribute('data-orig-placeholder', phVal);
+        }
+      }
+      
+      const origPlaceholder = input.getAttribute('data-orig-placeholder');
+      if (origPlaceholder) {
+        const parts = origPlaceholder.split(' / ');
+        if (lang === 'kannada') {
+          input.placeholder = parts[0].trim();
+        } else if (lang === 'english') {
+          input.placeholder = parts[1].trim();
+        } else {
+          input.placeholder = origPlaceholder;
+        }
+      }
+    });
+  }
+
+  function injectLanguageToggle() {
+    const themeSel = document.getElementById('themeSelector');
+    if (!themeSel) return;
+    
+    const themeCapsule = themeSel.parentElement;
+    if (!themeCapsule) return;
+    
+    if (document.getElementById('languageSelector')) return;
+    
+    const langCapsule = document.createElement('div');
+    langCapsule.className = "hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-xl px-2 py-1 shadow-sm no-print";
+    langCapsule.innerHTML = `
+      <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-language text-indigo-500 mr-0.5"></i> Lang:</span>
+      <select id="languageSelector" onchange="window.setLanguagePreference(this.value)" class="bg-transparent text-slate-800 border-0 text-xs font-bold focus:outline-none cursor-pointer">
+        <option class="bg-slate-900 text-white" value="bilingual">ಕನ್ನಡ / Eng</option>
+        <option class="bg-slate-900 text-white" value="kannada">ಕನ್ನಡ ಮಾತ್ರ</option>
+        <option class="bg-slate-900 text-white" value="english">English Only</option>
+      </select>
+    `;
+    themeCapsule.parentNode.insertBefore(langCapsule, themeCapsule.nextSibling);
+    
+    // Mobile
+    const themeSelMobile = document.getElementById('themeSelectorMobile');
+    if (themeSelMobile) {
+      const themeCapsuleMobile = themeSelMobile.parentElement;
+      if (themeCapsuleMobile && !document.getElementById('languageSelectorMobile')) {
+        const langCapsuleMobile = document.createElement('div');
+        langCapsuleMobile.className = "flex items-center gap-1.5 py-1.5 border-b border-white/5 no-print";
+        langCapsuleMobile.innerHTML = `
+          <span class="text-slate-400 font-bold text-[10px] uppercase tracking-wider"><i class="fa-solid fa-language text-indigo-500 mr-0.5"></i> Lang:</span>
+          <select id="languageSelectorMobile" onchange="window.setLanguagePreference(this.value)" class="bg-transparent text-white border-0 text-xs focus:outline-none cursor-pointer">
+            <option class="bg-slate-900 text-white" value="bilingual">ಕನ್ನಡ / Eng</option>
+            <option class="bg-slate-900 text-white" value="kannada">ಕನ್ನಡ ಮಾತ್ರ</option>
+            <option class="bg-slate-900 text-white" value="english">English Only</option>
+          </select>
+        `;
+        themeCapsuleMobile.parentNode.insertBefore(langCapsuleMobile, themeCapsuleMobile.nextSibling);
+      }
+    }
+    
+    // Set values
+    const savedLang = localStorage.getItem("portal_lang") || "bilingual";
+    const selector = document.getElementById('languageSelector');
+    if (selector) selector.value = savedLang;
+    
+    const selectorMobile = document.getElementById('languageSelectorMobile');
+    if (selectorMobile) selectorMobile.value = savedLang;
+  }
+
+  window.setLanguagePreference = function(lang) {
+    localStorage.setItem("portal_lang", lang);
+    applyLanguagePreference();
+    const selector = document.getElementById('languageSelector');
+    if (selector) selector.value = lang;
+    const selectorMobile = document.getElementById('languageSelectorMobile');
+    if (selectorMobile) selectorMobile.value = lang;
+  };
+  
+  window.applyLanguagePreference = applyLanguagePreference;
 
   // Run on Document Load
   if (document.readyState === 'loading') {

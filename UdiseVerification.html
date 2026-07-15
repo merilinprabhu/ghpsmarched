@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Profile Verification & Parent Notices - GHPS Marched</title>
+  
+  <!-- CSS Framework & Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    /* Theme overrides */
+    body[data-theme="dark"] { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] .text-slate-800 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .text-slate-700 { color: #cbd5e1 !important; }
+    body[data-theme="dark"] .text-slate-600 { color: #94a3b8 !important; }
+    body[data-theme="dark"] .text-slate-500 { color: #64748b !important; }
+    body[data-theme="dark"] .bg-slate-50 { background-color: #0f172a !important; color: #f1f5f9 !important; }
+    body[data-theme="dark"] .border-slate-200 { border-color: #334155 !important; }
+    body[data-theme="dark"] input, body[data-theme="dark"] select { background-color: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+    body[data-theme="dark"] tr:hover { background-color: rgba(255, 255, 255, 0.02) !important; }
+
+    /* Custom scrollbars */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    body[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+
+    /* Print styling layout */
+    #print-notices-container {
+      display: none;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #main-app-content, #navbar-placeholder, aside, header, footer {
+        display: none !important;
+      }
+      #print-notices-container {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .print-page {
+        page-break-after: always;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+      }
+      .print-letter {
+        border: 1px solid #64748b !important;
+        padding: 1.25rem !important;
+        font-size: 10px !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        border-radius: 4px;
+      }
+      .print-letter table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .print-letter th, .print-letter td {
+        border: 1px solid #94a3b8 !important;
+        padding: 4px 8px !important;
+      }
+      .print-letter th {
+        background-color: #f1f5f9 !important;
+        color: #000000 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between transition-colors duration-200">
+
+  <!-- Print area placeholder -->
+  <div id="print-notices-container"></div>
+
+  <div class="no-print">
+    <!-- Navigation Sidebar Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content Container -->
+    <div class="max-w-[98%] lg:max-w-[1400px] mx-auto w-full p-6">
+      <main class="flex-grow space-y-6">
+      
+      <!-- Top trilingual bar -->
+      <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 no-print">
+        <div>
+          <a href="UdiseDashboard.html" class="text-xs text-indigo-500 hover:text-indigo-750 font-bold transition flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Back to UDISE+ Dashboard</a>
+          <div class="flex flex-col mt-2">
+            <h2 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+              <i class="fa-solid fa-address-card text-amber-500 animate-pulse"></i> ಮಗುವಿನ ವಿವರಗಳ ಪರಿಶೀಲನೆ ಮತ್ತು ಪೋಷಕರ ಪತ್ರಗಳು / Verification & Notice Generator
+            </h2>
+            <p class="text-xs text-slate-500 mt-1">
+              ಇಲ್ಲಿ ನೀವು ಶಾಲಾ ದಾಖಲೆಗಳು ಮತ್ತು UDISE+ ಎಕ್ಸೆಲ್ ಶೀಟ್ ನಡುವಿನ ವ್ಯತ್ಯಾಸಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು ಹಾಗೂ ಪೋಷಕರಿಗೆ ತಿದ್ದುಪಡಿ ಪತ್ರಗಳನ್ನು ಮುದ್ರಿಸಬಹುದು.
+            </p>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="report-selector" onchange="handleReportSelection()" class="p-2.5 bg-slate-50 border rounded-2xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+            <option value="">ವರದಿ ವರ್ಗ ಆರಿಸಿ / Select Report Category</option>
+          </select>
+          <button onclick="openMappingWizard()" id="btn-mapping" class="bg-white hover:bg-slate-50 text-slate-750 border border-slate-350 px-4 py-2.5 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm hidden">
+            <i class="fa-solid fa-sliders text-amber-500"></i> ಮ್ಯಾಪಿಂಗ್ / Map Columns
+          </button>
+          <button onclick="printParentLetters()" id="btn-print-letters" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md hidden">
+            <i class="fa-solid fa-print"></i> ಪೋಷಕರ ಪತ್ರಗಳು / Print Notices
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty/Intro View -->
+      <div id="empty-verify-view" class="bg-white p-12 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-slate-400 gap-4 no-print">
+        <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center text-3xl">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="text-center max-w-md">
+          <p class="text-sm font-bold text-slate-700">ವರದಿ ವರ್ಗವನ್ನು ಆರಿಸಿ / Select Report Category</p>
+          <p class="text-xs text-slate-500 mt-1">
+            ಮೇಲಿನ ಡ್ರಾಪ್‌ಡೌನ್ ಮೆನುವಿನಿಂದ ವರದಿ ವರ್ಗವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. ಸಿಸ್ಟಮ್ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಶೀಟ್‌ನಲ್ಲಿರುವ ವಿವರಗಳನ್ನು ಸ್ಥಳೀಯ ಡೇಟಾಬೇಸ್ ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳೊಂದಿಗೆ ಹೋಲಿಸುತ್ತದೆ.
+          </p>
+        </div>
+      </div>
+
+      <!-- Verification Zone (Visible if category selected) -->
+      <div id="verification-zone" class="hidden space-y-6 no-print">
+        
+        <!-- Stats Summary grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-slate-500/10 text-slate-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಹೋಲಿಕೆಯಾದ ಒಟ್ಟು ಮಕ್ಕಳು / Matched Students</div>
+              <div class="text-xl font-extrabold text-slate-800" id="stat-total-matched">0</div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ವ್ಯತ್ಯಾಸವಿರುವ ಮಕ್ಕಳು / Profile Mismatches</div>
+              <div class="text-xl font-extrabold text-rose-650" id="stat-mismatch-count">0</div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಸರಿಯಿರುವ ಮಕ್ಕಳು / Fully Matched</div>
+              <div class="text-xl font-extrabold text-emerald-650" id="stat-exact-match">0</div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-print"></i>
+            </div>
+            <div>
+              <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">ಆಯ್ಕೆಯಾದ ಪತ್ರಗಳು / Selected Notices</div>
+              <div class="text-xl font-extrabold text-indigo-650" id="stat-selected-count">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters grid -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-4 items-end justify-between">
+          <div class="flex-grow grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <!-- Search bar -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ಹುಡುಕಾಟ / Search Student</label>
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+                </span>
+                <input type="text" id="verify-search" oninput="filterVerificationTable()" placeholder="Type to search..." class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 bg-slate-50/50 text-slate-700 font-semibold shadow-inner">
+              </div>
+            </div>
+
+            <!-- Class Filter -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ತರಗತಿ / Class Filter</label>
+              <select id="verify-class-select" onchange="filterVerificationTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                <option value="ALL">All Classes / ಎಲ್ಲಾ</option>
+              </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="space-y-1.5">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">ಸ್ಥಿತಿ / Match Status</label>
+              <select id="verify-status-select" onchange="filterVerificationTable()" class="w-full p-2 bg-slate-50 border rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer">
+                <option value="MISMATCH">Mismatch Only / ವ್ಯತ್ಯಾಸವಿರುವ ಮಕ್ಕಳು</option>
+                <option value="ALL">All Matched Records / ಎಲ್ಲಾ</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Table -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto max-h-[600px] custom-scrollbar">
+            <table class="w-full text-left text-xs whitespace-nowrap" id="verify-table">
+              <thead class="bg-slate-50 border-b font-bold uppercase tracking-wider text-slate-650 sticky top-0 z-10">
+                <tr>
+                  <th class="p-3 text-center w-10">
+                    <input type="checkbox" id="verify-select-all" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
+                  </th>
+                  <th class="p-3 text-center w-12 border-r">Sl.No</th>
+                  <th class="p-3 border-r">ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Identity</th>
+                  <th class="p-3 border-r">ಹೆಸರು / Name</th>
+                  <th class="p-3 border-r">ತಂದೆ ಹೆಸರು / Father Name</th>
+                  <th class="p-3 border-r">ತಾಯಿ ಹೆಸರು / Mother Name</th>
+                  <th class="p-3 border-r text-center">DOB</th>
+                  <th class="p-3 border-r text-center">ಲಿಂಗ / Gender</th>
+                  <th class="p-3 border-r text-center">ಆಧಾರ್ / Aadhaar</th>
+                  <th class="p-3 border-r text-center">ಅಪಾರ್ / APAAR</th>
+                  <th class="p-3 text-center">PEN</th>
+                </tr>
+              </thead>
+              <tbody id="verify-tbody" class="divide-y divide-slate-100 font-medium text-slate-750">
+                <!-- Data rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- COLUMN MAPPING WIZARD MODAL -->
+  <div id="mapping-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden no-print">
+    <div class="bg-white rounded-3xl w-[90%] max-w-xl shadow-xl overflow-hidden border border-slate-200">
+      <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+        <div>
+          <h3 class="text-sm font-black text-slate-800"><i class="fa-solid fa-sliders text-amber-500 mr-1.5"></i> Column Mapping Settings</h3>
+          <p class="text-[10px] text-slate-500 mt-0.5">Map UDISE+ Excel columns to system variables for profile verification.</p>
+        </div>
+        <button onclick="closeMappingWizard()" class="text-slate-400 hover:text-slate-600 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <div class="p-6 max-h-[60vh] overflow-y-auto space-y-4 custom-scrollbar">
+        <!-- STS column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Student State Code (STS No) *</label>
+          <select id="map-sts" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+        
+        <!-- Name Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Student Name Column</label>
+          <select id="map-name" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- Father Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Father's Name Column</label>
+          <select id="map-father" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- Mother Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Mother's Name Column</label>
+          <select id="map-mother" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- DOB Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Date of Birth Column</label>
+          <select id="map-dob" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- Gender Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Gender Column</label>
+          <select id="map-gender" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- Aadhaar Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">Aadhaar Number Column</label>
+          <select id="map-aadhaar" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- APAAR Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">APAAR Number Column</label>
+          <select id="map-apaar" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+
+        <!-- PEN Column -->
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <label class="text-xs font-bold text-slate-700">PEN Number Column</label>
+          <select id="map-pen" class="p-2 border rounded-xl text-xs bg-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500"></select>
+        </div>
+      </div>
+
+      <div class="p-6 border-t bg-slate-50 flex justify-end gap-3">
+        <button onclick="closeMappingWizard()" class="bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Cancel</button>
+        <button onclick="saveMappingSettings()" class="bg-gradient-to-tr from-amber-600 to-orange-500 hover:from-amber-700 hover:to-orange-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition cursor-pointer border-0 shadow-md">Apply Mapping</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    let reportList = [];
+    let selectedReportId = "";
+    let sheetData = [];
+    let sheetCols = [];
+    let localStudents = [];
+    let verificationResults = [];
+    
+    // Active column mappings
+    let columnMappings = {
+      sts: "",
+      name: "",
+      father: "",
+      mother: "",
+      dob: "",
+      gender: "",
+      aadhaar: "",
+      apaar: "",
+      pen: ""
+    };
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // 1. Authenticate Guard
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Initialize dynamic navbar
+      if (typeof window.initSidebar === 'function') {
+        window.initSidebar();
+      }
+
+      // Populate Report selector dropdown
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('udise_reports').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data, error } = await query.order('created_at', { ascending: false });
+        if (error) throw error;
+        reportList = data || [];
+        
+        const sel = document.getElementById('report-selector');
+        reportList.forEach(r => {
+          const opt = document.createElement('option');
+          opt.value = r.id;
+          opt.textContent = r.name;
+          sel.appendChild(opt);
+        });
+      } catch (err) {
+        console.error("Failed to load reports category selector:", err);
+      }
+
+      // Load local roster
+      await fetchLocalRoster();
+    });
+
+    async function fetchLocalRoster() {
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('*');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        localStudents = data || [];
+      } catch (err) {
+        console.error("Failed to fetch local database roster:", err);
+      }
+    }
+
+    async function handleReportSelection() {
+      const sel = document.getElementById('report-selector');
+      selectedReportId = sel.value;
+
+      const emptyView = document.getElementById('empty-verify-view');
+      const verifyZone = document.getElementById('verification-zone');
+      const mappingBtn = document.getElementById('btn-mapping');
+      const printBtn = document.getElementById('btn-print-letters');
+
+      if (!selectedReportId) {
+        emptyView.classList.remove('hidden');
+        verifyZone.classList.add('hidden');
+        mappingBtn.classList.add('hidden');
+        printBtn.classList.add('hidden');
+        return;
+      }
+
+      try {
+        // Fetch sheet details
+        const { data, error } = await supabaseClient
+          .from('udise_sheet_data')
+          .select('*')
+          .eq('report_id', selectedReportId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          alert("ವರದಿಯಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಆದ ಯಾವುದೇ ವಿವರಗಳು ಕಂಡುಬಂದಿಲ್ಲ! / No uploaded data found in selected report.");
+          sel.value = "";
+          handleReportSelection();
+          return;
+        }
+
+        sheetData = data.sheet_data || [];
+        sheetCols = data.sheet_cols || [];
+
+        // Dynamic guesses for mapping columns
+        guessColumnMappings();
+
+        emptyView.classList.add('hidden');
+        verifyZone.classList.remove('hidden');
+        mappingBtn.classList.remove('hidden');
+        printBtn.classList.remove('hidden');
+
+        // Check if mappings are incomplete, open wizard
+        if (!columnMappings.sts) {
+          openMappingWizard();
+        } else {
+          runVerificationCompare();
+        }
+
+      } catch (err) {
+        console.error("Failed to load sheet details:", err);
+        alert("ಡೇಟಾ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    function findColByKeywords(keywords) {
+      if (!sheetCols) return "";
+      return sheetCols.find(c => {
+        const n = c.toLowerCase();
+        return keywords.some(kw => n.includes(kw));
+      }) || "";
+    }
+
+    function guessColumnMappings() {
+      columnMappings.sts = findColByKeywords(['student state code', 'state code', 'sats', 'sts', 'app_no', 'ರಾಜ್ಯ']);
+      columnMappings.name = findColByKeywords(['student name', 'name', 'ವಿದ್ಯಾರ್ಥಿ', 'ಹೆಸರು']);
+      columnMappings.father = findColByKeywords(['father', 'ತಂದೆ']);
+      columnMappings.mother = findColByKeywords(['mother', 'ತಾಯಿ']);
+      columnMappings.dob = findColByKeywords(['dob', 'birth', 'ಹುಟ್ಟಿದ']);
+      columnMappings.gender = findColByKeywords(['gender', 'sex', 'ಲಿಂಗ']);
+      columnMappings.aadhaar = findColByKeywords(['aadhaar', 'adhar', 'ಆಧಾರ್']);
+      columnMappings.apaar = findColByKeywords(['apaar', 'apar', 'ಅಪಾರ್']);
+      columnMappings.pen = findColByKeywords(['pen', 'permanent education', 'ರಾಷ್ಟ್ರೀಯ', 'national id']);
+    }
+
+    function openMappingWizard() {
+      const modal = document.getElementById('mapping-modal');
+      
+      const selects = ['sts', 'name', 'father', 'mother', 'dob', 'gender', 'aadhaar', 'apaar', 'pen'];
+      selects.forEach(s => {
+        const el = document.getElementById(`map-${s}`);
+        el.innerHTML = '<option value="">-- Do Not Compare --</option>';
+        sheetCols.forEach(col => {
+          const opt = document.createElement('option');
+          opt.value = col;
+          opt.textContent = col;
+          el.appendChild(opt);
+        });
+        el.value = columnMappings[s] || "";
+      });
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeMappingWizard() {
+      document.getElementById('mapping-modal').classList.add('hidden');
+    }
+
+    function saveMappingSettings() {
+      const selects = ['sts', 'name', 'father', 'mother', 'dob', 'gender', 'aadhaar', 'apaar', 'pen'];
+      selects.forEach(s => {
+        columnMappings[s] = document.getElementById(`map-${s}`).value;
+      });
+
+      if (!columnMappings.sts) {
+        alert("Student State Code (STS No) Column is required to match students!");
+        return;
+      }
+
+      closeMappingWizard();
+      runVerificationCompare();
+    }
+
+    function isValidAadhaar(val) {
+      if (!val) return false;
+      const clean = val.toString().trim().replace(/[\s-]/g, '');
+      if (/^\d{12}$/.test(clean)) return true;
+      if (/^[xX*]{8}\d{4}$/.test(clean) || /^[xX*]{4}[xX*]{4}\d{4}$/.test(clean)) return true;
+      if (clean.length === 12 && /[xX*\d]{12}/.test(clean)) return true;
+      return false;
+    }
+
+    function isValidApaar(val) {
+      if (!val) return false;
+      const clean = val.toString().trim().replace(/[\s-]/g, '');
+      if (/^\d{12}$/.test(clean)) return true;
+      if (/^[xX*]{8}\d{4}$/.test(clean) || /^[xX*]{4}[xX*]{4}\d{4}$/.test(clean)) return true;
+      if (clean.length === 12 && /[xX*\d]{12}/.test(clean)) return true;
+      return false;
+    }
+
+    function cleanText(str) {
+      return str ? str.toString().toUpperCase().replace(/[^A-Z]/g, '') : '';
+    }
+
+    function normalizeGender(str) {
+      if (!str) return '';
+      const s = str.toString().trim().toUpperCase();
+      if (s === 'BOY' || s === 'MALE' || s === 'ಗಂಡು') return 'MALE';
+      if (s === 'GIRL' || s === 'FEMALE' || s === 'ಹೆಣ್ಣು') return 'FEMALE';
+      return s;
+    }
+
+    function runVerificationCompare() {
+      verificationResults = [];
+
+      let totalMatched = 0;
+      let mismatchCount = 0;
+      let exactCount = 0;
+
+      // unique class names list for drop down
+      const classes = new Set();
+
+      sheetData.forEach(row => {
+        const excelStsVal = columnMappings.sts && row[columnMappings.sts] ? row[columnMappings.sts].toString().replace(/\D/g, '') : '';
+        if (!excelStsVal) return;
+
+        // Find student in database using normalized STS No lookup
+        const s = localStudents.find(st => {
+          const localSts = st.app_no ? st.app_no.toString().replace(/\D/g, '') : '';
+          return localSts === excelStsVal;
+        });
+
+        if (s) {
+          totalMatched++;
+          if (s.enroll_class) classes.add(s.enroll_class);
+
+          // Compare profile details
+          const details = {
+            id: s.id,
+            appNo: s.app_no || "",
+            className: s.enroll_class || "",
+            name: { field: "student_name", local: (s.name_english || s.student_name || "").toUpperCase(), excel: columnMappings.name && row[columnMappings.name] ? row[columnMappings.name].toString().toUpperCase() : "" },
+            father: { field: "father_name", local: (s.father_name_az || s.father_name_kn || "").toUpperCase(), excel: columnMappings.father && row[columnMappings.father] ? row[columnMappings.father].toString().toUpperCase() : "" },
+            mother: { field: "mother_name", local: (s.mother_name_az || s.mother_name_kn || "").toUpperCase(), excel: columnMappings.mother && row[columnMappings.mother] ? row[columnMappings.mother].toString().toUpperCase() : "" },
+            dob: { field: "dob", local: s.dob || "", excel: columnMappings.dob && row[columnMappings.dob] ? row[columnMappings.dob].toString().trim() : "" },
+            gender: { field: "gender", local: s.gender || "", excel: columnMappings.gender && row[columnMappings.gender] ? row[columnMappings.gender].toString().trim() : "" },
+            aadhaar: { field: "student_aadhaar", local: s.student_aadhaar || "", excel: columnMappings.aadhaar && row[columnMappings.aadhaar] ? row[columnMappings.aadhaar].toString().trim() : "" },
+            apaar: { field: "apaar", local: s.apaar || "", excel: columnMappings.apaar && row[columnMappings.apaar] ? row[columnMappings.apaar].toString().trim() : "" },
+            pen: { field: "pen", local: s.pen || "", excel: columnMappings.pen && row[columnMappings.pen] ? row[columnMappings.pen].toString().trim() : "" }
+          };
+
+          // Discrepancy flags check
+          let hasMismatch = false;
+
+          // 1. Name Match (clean strings)
+          if (columnMappings.name && cleanText(details.name.local) !== cleanText(details.name.excel)) {
+            details.name.mismatch = true;
+            hasMismatch = true;
+          }
+
+          // 2. Father Match
+          if (columnMappings.father && details.father.excel && cleanText(details.father.local) !== cleanText(details.father.excel)) {
+            details.father.mismatch = true;
+            hasMismatch = true;
+          }
+
+          // 3. Mother Match
+          if (columnMappings.mother && details.mother.excel && cleanText(details.mother.local) !== cleanText(details.mother.excel)) {
+            details.mother.mismatch = true;
+            hasMismatch = true;
+          }
+
+          // 4. DOB Match (normalize date format checks)
+          if (columnMappings.dob && details.dob.excel) {
+            const lDob = details.dob.local.replace(/[-/]/g, '');
+            const eDob = details.dob.excel.replace(/[-/]/g, '');
+            if (lDob !== eDob) {
+              details.dob.mismatch = true;
+              hasMismatch = true;
+            }
+          }
+
+          // 5. Gender Match
+          if (columnMappings.gender && details.gender.excel) {
+            if (normalizeGender(details.gender.local) !== normalizeGender(details.gender.excel)) {
+              details.gender.mismatch = true;
+              hasMismatch = true;
+            }
+          }
+
+          // 6. Aadhaar Match
+          if (columnMappings.aadhaar && details.aadhaar.excel) {
+            const lAadhaar = details.aadhaar.local.replace(/[\s-]/g, '');
+            const eAadhaar = details.aadhaar.excel.replace(/[\s-]/g, '');
+            if (isValidAadhaar(eAadhaar) && lAadhaar !== eAadhaar) {
+              details.aadhaar.mismatch = true;
+              hasMismatch = true;
+            }
+          }
+
+          // 7. APAAR Match
+          if (columnMappings.apaar && details.apaar.excel) {
+            const lApaar = details.apaar.local.replace(/[\s-]/g, '');
+            const eApaar = details.apaar.excel.replace(/[\s-]/g, '');
+            if (isValidApaar(eApaar) && lApaar !== eApaar) {
+              details.apaar.mismatch = true;
+              hasMismatch = true;
+            }
+          }
+
+          // 8. PEN Match
+          if (columnMappings.pen && details.pen.excel) {
+            const lPen = details.pen.local.trim();
+            const ePen = details.pen.excel.trim();
+            if (ePen && lPen !== ePen) {
+              details.pen.mismatch = true;
+              hasMismatch = true;
+            }
+          }
+
+          if (hasMismatch) {
+            mismatchCount++;
+          } else {
+            exactCount++;
+          }
+
+          details.hasMismatch = hasMismatch;
+          verificationResults.push(details);
+        }
+      });
+
+      // Populate counts
+      document.getElementById('stat-total-matched').textContent = totalMatched;
+      document.getElementById('stat-mismatch-count').textContent = mismatchCount;
+      document.getElementById('stat-exact-match').textContent = exactCount;
+
+      // Populate Class filter
+      const classSelect = document.getElementById('verify-class-select');
+      classSelect.innerHTML = '<option value="ALL">All Classes / ಎಲ್ಲಾ</option>';
+      const sortedClasses = Array.from(classes).sort((a, b) => {
+        const numA = parseInt(a.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.replace(/\D/g, '')) || 0;
+        return numA - numB;
+      });
+      sortedClasses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = `Class ${c}`;
+        classSelect.appendChild(opt);
+      });
+
+      filterVerificationTable();
+    }
+
+    function filterVerificationTable() {
+      const q = document.getElementById('verify-search').value.trim().toUpperCase();
+      const selectedClass = document.getElementById('verify-class-select').value;
+      const statusFilter = document.getElementById('verify-status-select').value;
+
+      const filtered = verificationResults.filter(r => {
+        // Search text query match
+        const nameVal = r.name.local || '';
+        const stsVal = r.appNo || '';
+        const searchMatch = !q || nameVal.includes(q) || stsVal.includes(q);
+
+        // Class match
+        const classMatch = selectedClass === 'ALL' || r.className === selectedClass;
+
+        // Status match
+        const statusMatch = statusFilter === 'ALL' || (statusFilter === 'MISMATCH' && r.hasMismatch);
+
+        return searchMatch && classMatch && statusMatch;
+      });
+
+      renderVerificationTable(filtered);
+    }
+
+    function renderVerificationTable(data) {
+      const tbody = document.getElementById('verify-tbody');
+      tbody.innerHTML = "";
+
+      // Reset Select All checkbox
+      document.getElementById('verify-select-all').checked = false;
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400 font-bold">ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ / No matching verification rows</td></tr>`;
+        updateSelectedCount();
+        return;
+      }
+
+      data.forEach((r, idx) => {
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-50/50 transition duration-150";
+
+        const getCellHTML = (item) => {
+          if (!item.excel) return `<td class="p-3 border-r text-center text-slate-400 font-bold">—</td>`;
+          if (item.mismatch) {
+            return `
+              <td class="p-3 border-r text-left bg-rose-50/30 text-rose-650">
+                <div class="font-bold text-[10px] text-slate-400 uppercase">SYS: ${item.local || 'Empty'}</div>
+                <div class="font-black text-xs mt-0.5"><i class="fa-solid fa-triangle-exclamation text-rose-500 mr-0.5"></i>UDISE: ${item.excel}</div>
+              </td>
+            `;
+          }
+          return `
+            <td class="p-3 border-r text-left text-slate-700">
+              <span class="font-bold text-xs"><i class="fa-solid fa-circle-check text-emerald-500 mr-0.5"></i>${item.local}</span>
+            </td>
+          `;
+        };
+
+        row.innerHTML = `
+          <td class="p-3 text-center w-10">
+            <input type="checkbox" class="verify-row-checkbox w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer" data-id="${r.id}" onchange="updateSelectedCount()">
+          </td>
+          <td class="p-3 text-center border-r font-bold text-slate-400 font-mono">${idx + 1}</td>
+          <td class="p-3 border-r text-left">
+            <div class="font-bold text-slate-800 text-[11px]">${r.name.local || '—'}</div>
+            <div class="text-[9px] text-slate-400 font-semibold font-mono mt-0.5">STS: ${r.appNo} | Class: ${r.className}</div>
+          </td>
+          ${getCellHTML(r.name)}
+          ${getCellHTML(r.father)}
+          ${getCellHTML(r.mother)}
+          ${getCellHTML(r.dob)}
+          ${getCellHTML(r.gender)}
+          ${getCellHTML(r.aadhaar)}
+          ${getCellHTML(r.apaar)}
+          ${getCellHTML(r.pen)}
+        `;
+
+        tbody.appendChild(row);
+      });
+
+      updateSelectedCount();
+    }
+
+    function toggleSelectAll(isChecked) {
+      const checkboxes = document.querySelectorAll('.verify-row-checkbox');
+      checkboxes.forEach(c => c.checked = isChecked);
+      updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+      const selected = document.querySelectorAll('.verify-row-checkbox:checked').length;
+      document.getElementById('stat-selected-count').textContent = selected;
+    }
+
+    function printParentLetters() {
+      const checkedBoxes = document.querySelectorAll('.verify-row-checkbox:checked');
+      if (checkedBoxes.length === 0) {
+        alert("ದಯವಿಟ್ಟು ಪತ್ರ ಮುದ್ರಿಸಲು ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ! / Please select students to print letters!");
+        return;
+      }
+
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      const printContainer = document.getElementById('print-notices-container');
+      printContainer.innerHTML = "";
+
+      let lettersHtml = "";
+
+      selectedIds.forEach(studentId => {
+        const r = verificationResults.find(st => st.id === studentId);
+        if (!r) return;
+
+        let mismatchesHtml = "";
+        
+        const checkMismatch = (labelKn, labelEn, fieldObj) => {
+          if (fieldObj.mismatch) {
+            mismatchesHtml += `
+              <tr class="border-b border-slate-350">
+                <td class="p-2 border-r border-slate-350 font-bold">${labelKn} / ${labelEn}</td>
+                <td class="p-2 border-r border-slate-350 bg-red-50/20 text-red-650 font-black">${fieldObj.local || '—'}</td>
+                <td class="p-2 border-r border-slate-350 bg-emerald-50/20 text-emerald-650 font-black">${fieldObj.excel || '—'}</td>
+                <td class="p-2 border-b border-slate-400"></td>
+              </tr>
+            `;
+          }
+        };
+
+        checkMismatch("ಹೆಸರು", "Student Name", r.name);
+        checkMismatch("ತಂದೆಯ ಹೆಸರು", "Father's Name", r.father);
+        checkMismatch("ತಾಯಿಯ ಹೆಸರು", "Mother's Name", r.mother);
+        checkMismatch("ಹುಟ್ಟಿದ ದಿನಾಂಕ", "Date of Birth", r.dob);
+        checkMismatch("ಲಿಂಗ", "Gender", r.gender);
+        checkMismatch("ಆಧಾರ್ ಸಂಖ್ಯೆ", "Aadhaar Number", r.aadhaar);
+        checkMismatch("APAAR ಸಂಖ್ಯೆ", "APAAR Number", r.apaar);
+        checkMismatch("PEN ಸಂಖ್ಯೆ", "PEN Number", r.pen);
+
+        const buildNoticeHtml = (copyLabel) => {
+          return `
+            <div class="print-letter border border-slate-400 p-4 max-w-[800px] mx-auto bg-white text-slate-800 space-y-3 relative">
+              <!-- Copy Type Badge -->
+              <span class="absolute top-2 right-2 bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[8px] font-extrabold uppercase border border-slate-300">${copyLabel}</span>
+
+              <!-- School Header -->
+              <div class="text-center border-b pb-2 space-y-0.5">
+                <h2 class="text-sm font-extrabold uppercase tracking-tight">Government Higher Primary School, Marched</h2>
+                <h3 class="text-xs font-bold text-slate-700">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್</h3>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Verification Correction Notice / ಪೋಷಕರ ತಿದ್ದುಪಡಿ ವಿನಂತಿ ಪತ್ರ</p>
+              </div>
+
+              <!-- Letter Meta -->
+              <div class="flex justify-between items-center text-[10px] font-semibold">
+                <div>ದಿನಾಂಕ / Date: ${new Date().toLocaleDateString('en-IN')}</div>
+                <div>STS No: ${r.appNo}</div>
+              </div>
+
+              <!-- Body -->
+              <div class="space-y-1 text-[10px] leading-relaxed text-slate-700">
+                <p class="font-bold">ಮಾನ್ಯ ಪೋಷಕರೆ, / Dear Parent,</p>
+                <p class="text-[9.5px]">
+                  ನಿಮ್ಮ ಮಗುವಾದ <strong>${r.name.local || '—'}</strong> (ತರಗತಿ: <strong>${r.className}</strong>) ಇವರ ಶಾಲಾ ದಾಖಲೆಗಳು ಹಾಗೂ UDISE+ / ಅಧಿಕೃತ ದಾಖಲೆಗಳ (ಆಧಾರ್ ಪತ್ರ) ನಡುವೆ ಕೆಲವು ವ್ಯತ್ಯಾಸಗಳು ಕಂಡುಬಂದಿವೆ. ದಯವಿಟ್ಟು ಕೆಳಗಿನ ತಪ್ಪು-ಒಪ್ಪುಗಳನ್ನು ಪರಿಶೀಲಿಸಿ, ಸರಿಯಾದ ವಿವರಗಳನ್ನು ದಾಖಲೆಗಳೊಂದಿಗೆ ಶಾಲಾ ಕಚೇರಿಗೆ ತಂದು ಸಲ್ಲಿಸಲು ಕೋರುತ್ತೇವೆ.
+                </p>
+                <p class="text-[9px] text-slate-500 leading-tight">
+                  We noticed a mismatch in the records of your child <strong>${r.name.local || '—'}</strong> (Class: <strong>${r.className}</strong>) between the school database and UDISE+. Please verify the details below and return this slip along with copies of supporting documents to the school office for correction.
+                </p>
+              </div>
+
+              <!-- Mismatch Table -->
+              <table class="w-full text-left text-[9.5px] border-collapse border border-slate-350">
+                <thead>
+                  <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-350">
+                    <th class="p-1 border-r border-slate-350 w-1/4">ವಿಷಯ / Field</th>
+                    <th class="p-1 border-r border-slate-350 w-1/3 bg-red-50/20 text-red-650">ಶಾಲಾ ದಾಖಲೆ / School Record</th>
+                    <th class="p-1 border-r border-slate-350 w-1/3 bg-emerald-50/20 text-emerald-650">ಅಧಿಕೃತ ದಾಖಲೆ (UDISE+)</th>
+                    <th class="p-1 w-1/4">ಸರಿಯಾದ ವಿವರ (Write Here)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-350 font-semibold text-slate-750">
+                  ${mismatchesHtml}
+                </tbody>
+              </table>
+
+              <!-- Acknowledgement slip -->
+              <div class="border-t border-dashed border-slate-300 pt-2 flex justify-between items-center text-[10px]">
+                <div class="text-center">
+                  <div class="w-32 border-b border-slate-300 mx-auto"></div>
+                  <p class="mt-0.5 text-[9px] font-bold">ಮುಖ್ಯೋಪಾಧ್ಯಾಯರು / Headmaster</p>
+                </div>
+                <div class="text-center">
+                  <div class="w-32 border-b border-slate-300 mx-auto"></div>
+                  <p class="mt-0.5 text-[9px] font-bold">ಪೋಷಕರ ಸಹಿ / Parent Signature</p>
+                </div>
+              </div>
+            </div>
+          `;
+        };
+
+        lettersHtml += `
+          <div class="print-page space-y-4" style="page-break-after: always; padding: 1.5rem 0;">
+            ${buildNoticeHtml("Office Copy / ಕಚೇರಿ ಪ್ರತಿ")}
+            
+            <div class="relative py-2 my-2 text-center text-slate-400 font-bold text-[9px] uppercase select-none tracking-widest no-print-cut">
+              <span class="absolute inset-y-0 left-0 right-0 flex items-center"><span class="w-full border-t border-dashed border-slate-400"></span></span>
+              <span class="relative bg-white px-3"><i class="fa-solid fa-scissors mr-1 text-slate-500"></i> ಇಲ್ಲಿ ಕತ್ತರಿಸಿ / CUT HERE</span>
+            </div>
+            
+            ${buildNoticeHtml("Parent Copy / ಪೋಷಕರ ಪ್ರತಿ")}
+          </div>
+        `;
+      });
+
+      printContainer.innerHTML = lettersHtml;
+      
+      // Trigger print dialog
+      window.print();
+    }
+  </script>
+
+  <!-- Load Dynamic Navbar script -->
+  <script src="navbar.js"></script>
+</body>
+</html>

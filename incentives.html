@@ -163,7 +163,7 @@
       #printArea table { 
         width: 100% !important; 
         border-collapse: collapse !important; 
-        font-size: 10px !important; 
+        font-size: 9.5px !important; 
         margin-top: 15px !important; 
         border: 1.5px solid #000000 !important; 
         background-color: #ffffff !important; 
@@ -178,12 +178,13 @@
       }
       #printArea th, #printArea td { 
         border: 1px solid #000000 !important; 
-        padding: 6px 6px !important; 
+        padding: 4px 5px !important; 
         text-align: center !important; 
         min-width: 0 !important;
         width: auto !important;
         white-space: normal !important;
         word-break: break-word !important;
+        overflow-wrap: break-word !important;
       }
       #printArea th { 
         font-weight: bold !important; 
@@ -201,10 +202,10 @@
       }
       
       /* Print Column Width Settings */
-      #printArea th:nth-child(1), #printArea td:nth-child(1) { width: 5% !important; }
-      #printArea th:nth-child(2), #printArea td:nth-child(2) { width: 12% !important; }
-      #printArea th:nth-child(3), #printArea td:nth-child(3) { width: 28% !important; text-align: left !important; }
-      #printArea .print-sign-col { width: 15% !important; min-width: 90px !important; }
+      #printArea th:nth-child(1), #printArea td:nth-child(1) { width: 4% !important; }
+      #printArea th:nth-child(2), #printArea td:nth-child(2) { width: 10% !important; }
+      #printArea th:nth-child(3), #printArea td:nth-child(3) { width: 22% !important; text-align: left !important; }
+      #printArea .print-sign-col { width: 12% !important; min-width: 80px !important; }
 
       /* Remarks block styling */
       #printArea .print-remarks-block {
@@ -401,6 +402,20 @@
                 ಯಾವುದೇ ಇನ್ಸೆಂಟಿವ್ಸ್ ಪುಟಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಮೇಲಿನ ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಹೊಸ ಪುಟ ಸೃಜಿಸಿ.
               </div>
             </div>
+          </div>
+
+          <!-- System Diagnostics Panel -->
+          <div id="diagnosticsPanel" class="no-print mt-8 p-5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl text-[11px] font-mono text-slate-500 space-y-1.5 shadow-inner">
+            <div class="font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800 pb-1.5 mb-2.5 flex items-center gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block animate-pulse"></span>
+              <span>System Diagnostics / ಸಿಸ್ಟಮ್ ವಿವರಗಳು</span>
+            </div>
+            <div>User Email / ಬಳಕೆದಾರ ಇಮೇಲ್: <span id="diagUserEmail" class="font-bold text-slate-800 dark:text-white">Loading...</span></div>
+            <div>Session School ID / ಸೆಷನ್ ಶಾಲೆ ಐಡಿ: <span id="diagSessionSchoolId" class="font-bold text-slate-800 dark:text-white">Loading...</span></div>
+            <div>LocalStorage School ID / ಲೋಕಲ್ ಶೇಖರಣಾ ಶಾಲೆ ಐಡಿ: <span id="diagLocalSchoolId" class="font-bold text-slate-800 dark:text-white">Loading...</span></div>
+            <div>Query School ID Used / ಕ್ಯೂರಿಗೆ ಬಳಸಿದ ಶಾಲೆ ಐಡಿ: <span id="diagQuerySchoolId" class="font-bold text-slate-800 dark:text-white">Loading...</span></div>
+            <div>Templates Count Fetched / ಒಟ್ಟು ಇನ್ಸೆಂಟಿವ್ ಪುಟಗಳು: <span id="diagTemplatesCount" class="font-bold text-slate-800 dark:text-white">Loading...</span></div>
+            <div>Query Error / ಕ್ಯೂರಿ ದೋಷ ವಿವರಣೆ: <span id="diagQueryError" class="font-bold text-emerald-600 dark:text-emerald-400">None / ಯಾವುದೇ ದೋಷವಿಲ್ಲ</span></div>
           </div>
         </div>
 
@@ -612,103 +627,118 @@
           </div>
 
           <!-- Class Filter and Progress Panel -->
-          <div class="bg-slate-50/70 border border-slate-200/50 p-5 rounded-2xl grid grid-cols-1 md:grid-cols-4 gap-6 items-center no-print">
-            <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ತರಗತಿ ಆರಿಸಿ / Filter Class</label>
-              <select id="classSelector" onchange="loadClassData()" class="w-full bg-white border border-slate-250 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                <option value="">-- ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ / Select Class --</option>
-                <option value="LKG">LKG</option>
-                <option value="UKG">UKG</option>
-                <option value="1">ತರಗತಿ 1 / Class 1</option>
-                <option value="2">ತರಗತಿ 2 / Class 2</option>
-                <option value="3">ತರಗತಿ 3 / Class 3</option>
-                <option value="4">ತರಗತಿ 4 / Class 4</option>
-                <option value="5">ತರಗತಿ 5 / Class 5</option>
-                <option value="6">ತರಗತಿ 6 / Class 6</option>
-                <option value="7">ತರಗತಿ 7 / Class 7</option>
-                <option value="8">ತರಗತಿ 8 / Class 8</option>
-                <option value="9">ತರಗತಿ 9 / Class 9</option>
-                <option value="10">ತರಗತಿ 10 / Class 10</option>
-              </select>
-            </div>
-
-            <!-- Auto-Allocation Rule Selector -->
-            <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಸ್ವಯಂ ವಿತರಣೆ / Auto-Allocate (Rule)</label>
-              <div class="flex gap-1.5">
-                <select id="autoAllocateRule" class="w-full bg-white border border-slate-250 rounded-xl px-3 py-2.5 text-[11px] font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
-                  <option value="">-- ನಿಯಮ ಆರಿಸಿ / Select Rule --</option>
-                  <option value="all">ಎಲ್ಲಾ ಮಕ್ಕಳಿಗೆ (All Students)</option>
-                  <option value="boys">ಗಂಡು ಮಕ್ಕಳಿಗೆ (Boys Only)</option>
-                  <option value="girls">ಹೆಣ್ಣು ಮಕ್ಕಳಿಗೆ (Girls Only)</option>
-                  <option value="sc_st">ಪರಿಶಿಷ್ಟ ಜಾತಿ / ಪಂಗಡ (SC / ST)</option>
-                  <option value="obc">ಇತರ ಹಿಂದುಳಿದ ವರ್ಗ (OBC)</option>
-                </select>
-                <button onclick="applyAutoAllocation()" class="bg-gradient-to-tr from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 active:scale-[0.98] border-none cursor-pointer flex items-center gap-1 shadow-sm shadow-indigo-100" title="Apply Auto-Allocation">
-                  <i class="fa-solid fa-bolt"></i>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ಈ ತರಗತಿಯ ಪ್ರಗತಿ / Class Progress</span>
-              <div class="flex items-center gap-3">
-                <div class="flex-grow bg-slate-200 h-3 rounded-full overflow-hidden">
-                  <div id="classProgressBar" class="bg-indigo-600 h-full transition-all duration-500" style="width: 0%"></div>
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch no-print mb-4">
+            <!-- Left Side: Controls Panel (occupies 4 cols) -->
+            <div id="detailControlsCard" class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl flex flex-col justify-center gap-3 shadow-sm min-h-[140px]">
+              <!-- Filter & Auto-Allocate Controls -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <!-- Class Filter -->
+                <div>
+                  <label class="block text-[9px] font-black text-slate-455 dark:text-slate-400 uppercase tracking-wider mb-1">ತರಗತಿ ಆರಿಸಿ / Filter Class</label>
+                  <select id="classSelector" onchange="loadClassData()" class="w-full bg-white dark:bg-slate-800 border border-slate-250 dark:border-slate-700 rounded-lg px-2 py-1.5 text-[11px] font-bold focus:outline-none cursor-pointer">
+                    <option value="">-- ತರಗತಿ --</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1">ತರಗತಿ 1</option>
+                    <option value="2">ತರಗತಿ 2</option>
+                    <option value="3">ತರಗತಿ 3</option>
+                    <option value="4">ತರಗತಿ 4</option>
+                    <option value="5">ತರಗತಿ 5</option>
+                    <option value="6">ತರಗತಿ 6</option>
+                    <option value="7">ತರಗತಿ 7</option>
+                    <option value="8">ತರಗತಿ 8</option>
+                    <option value="9">ತರಗತಿ 9</option>
+                    <option value="10">ತರಗತಿ 10</option>
+                  </select>
                 </div>
-                <span id="classProgressPct" class="text-xs font-black text-slate-800">0%</span>
+
+                <!-- Auto Allocate Rule -->
+                <div>
+                  <label class="block text-[9px] font-black text-slate-455 dark:text-slate-400 uppercase tracking-wider mb-1">ಸ್ವಯಂ ವಿತರಣೆ / Auto</label>
+                  <div class="flex gap-1">
+                    <select id="autoAllocateRule" class="w-full bg-white dark:bg-slate-800 border border-slate-250 dark:border-slate-700 rounded-lg px-1.5 py-1 text-[10px] font-bold focus:outline-none cursor-pointer">
+                      <option value="">-- ನಿಯಮ --</option>
+                      <option value="all">ಎಲ್ಲರಿಗೂ</option>
+                      <option value="boys">ಗಂಡು</option>
+                      <option value="girls">ಹೆಣ್ಣು</option>
+                      <option value="sc_st">SC/ST</option>
+                      <option value="obc">OBC</option>
+                    </select>
+                    <button onclick="applyAutoAllocation()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center justify-center shrink-0">
+                      <i class="fa-solid fa-bolt text-[10px]"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <!-- Bulk actions -->
-            <div class="flex gap-2 justify-end self-end">
-              <button onclick="handleBulkAction(true)" id="bulkCheckBtn" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 border border-indigo-500/20 px-3 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer">
-                <i class="fa-solid fa-square-check mr-1 text-sm"></i> ಎಲ್ಲರಿಗೂ ವಿತರಿಸು / Mark All
-              </button>
-              <button onclick="handleBulkAction(false)" id="bulkClearBtn" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 border border-rose-500/20 px-3 py-2.5 rounded-2xl text-xs font-bold transition-all duration-300 active:scale-[0.98] cursor-pointer">
-                <i class="fa-solid fa-square-xmark mr-1 text-sm"></i> ತೆರವುಗೊಳಿಸಿ / Clear All
-              </button>
+            <!-- Right Side: Bird's Eye Size Table Panel (occupies 8 cols) -->
+            <div id="birdEyeSizeCard" class="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl flex flex-col justify-between gap-1 shadow-sm min-h-[140px]">
+              <span class="block text-[9px] font-black text-slate-455 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between border-b border-slate-150 dark:border-slate-800/80 pb-1 shrink-0">
+                <span id="birdEyeSizeTitle"><i class="fa-solid fa-ruler-combined text-indigo-500 mr-1"></i>ಗಾತ್ರವಾರು ವಿವರ / Size Summary (Boys/Girls)</span>
+              </span>
+              <div class="flex-grow overflow-y-auto max-h-[105px] custom-scrollbar">
+                <table class="w-full text-left text-[9px] border-collapse" id="birdEyeSizeTable">
+                  <thead>
+                    <tr class="bg-slate-950 text-white font-extrabold text-center border-b border-slate-350 sticky top-0">
+                      <th id="birdEyeSizeTableHeader" class="p-1 border-r border-slate-800">Size</th>
+                      <th class="p-1 border-r border-slate-800">Boys</th>
+                      <th class="p-1 border-r border-slate-800">Girls</th>
+                      <th class="p-1 border-r border-slate-800">Dist</th>
+                      <th class="p-1">Req</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-
-
-          <!-- Mini Dashboard Statistics and Chart -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
-            <div class="bg-slate-50/50 border border-slate-200/50 p-5 rounded-2xl flex flex-col justify-between">
-              <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider">ವರ್ಗಾವಾರು ಹಂಚಿಕೆ ವರದಿ / Analytics</h4>
-              <div class="py-4 space-y-3">
-                <div class="flex justify-between items-center text-xs">
-                  <span class="text-slate-500">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು (ತರಗತಿ):</span>
-                  <span id="detailClassTotalStudents" class="font-black text-slate-800">0</span>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                  <span class="text-slate-500">ವಿತರಿಸಲಾದ ಒಟ್ಟು ಐಟಮ್ಸ್:</span>
-                  <span id="detailClassTotalDistributed" class="font-black text-emerald-600">0</span>
-                </div>
-                <div class="flex justify-between items-center text-xs">
-                  <span class="text-slate-500">ಬಾಕಿ ಇರುವ ಒಟ್ಟು ಐಟಮ್ಸ್:</span>
-                  <span id="detailClassTotalPending" class="font-black text-amber-500">0</span>
-                </div>
-                <div id="detailStockRow" class="hidden flex justify-between items-center text-xs border-t border-slate-100 dark:border-slate-800 pt-2.5 mt-1">
-                  <span class="text-slate-500">ಒಟ್ಟು ದಾಸ್ತಾನು / Total Stock:</span>
-                  <span id="detailTotalStock" class="font-black text-slate-850 dark:text-white">0</span>
-                </div>
-                <div id="detailRemainingStockRow" class="hidden flex justify-between items-center text-xs">
-                  <span class="text-slate-500">ಉಳಿದ ದಾಸ್ತಾನು / Remaining:</span>
-                  <span id="detailRemainingStock" class="font-black text-emerald-600">0</span>
+          <!-- Detailed Distribution Breakdown (Collapsible Panel) -->
+          <div id="detailedBreakdownPanel" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm no-print hidden space-y-4">
+            <button onclick="toggleDetailedBreakdown()" class="w-full flex justify-between items-center text-xs font-black text-slate-500 uppercase tracking-wider border-0 bg-transparent cursor-pointer outline-none">
+              <span><i class="fa-solid fa-chart-pie text-indigo-500 mr-1.5 animate-pulse"></i> ಲಿಂಗ ಮತ್ತು ಗಾತ್ರವಾರು ಅಂಕಿ-ಅಂಶಗಳು / Gender & Size-wise Summary Report</span>
+              <i id="breakdown-chevron" class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+            </button>
+            <div id="detailedBreakdownContent" class="hidden mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Gender-wise Table -->
+              <div class="space-y-2">
+                <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-venus-mars text-pink-500 mr-1"></i> ಲಿಂಗವಾರು ವರದಿ / Gender-wise Distribution</h5>
+                <div class="overflow-x-auto border rounded-xl">
+                  <table class="w-full text-left text-xs border-collapse" id="breakdown-gender-table">
+                    <thead class="bg-slate-50 border-b font-bold text-slate-600">
+                      <tr>
+                        <th class="p-2 border-r">ಲಿಂಗ / Gender</th>
+                        <th class="p-2 border-r text-center">ವಿತರಿಸಲಾಗಿದೆ / Distributed</th>
+                        <th class="p-2 text-center">ಬಾಕಿ / Pending</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-semibold text-slate-700">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
                 </div>
               </div>
-              <div class="text-[10px] text-indigo-400 font-semibold bg-indigo-50 p-2.5 rounded-xl border border-indigo-100 flex items-center gap-1.5">
-                <i class="fa-solid fa-info-circle"></i> ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಾಲಮ್‌ನ ಡೇಟಾ ಬದಲಾಯಿಸಿದರೆ ಅದು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್ ಆಗುತ್ತದೆ.
-              </div>
-            </div>
 
-            <!-- Chart Panel -->
-            <div class="bg-slate-50/50 border border-slate-200/50 p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between min-h-[220px]">
-              <h4 class="text-xs font-black text-slate-500 uppercase tracking-wider mb-2">ತರಗತಿವಾರು ಪ್ರಗತಿ ನಕ್ಷೆ / Progress Chart by Class</h4>
-              <div class="relative w-full h-[150px]">
-                <canvas id="progressChart"></canvas>
+              <!-- Size-wise Table -->
+              <div class="space-y-2">
+                <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-ruler-combined text-amber-500 mr-1"></i> ಗಾತ್ರವಾರು ವರದಿ / Size-wise Distribution</h5>
+                <div class="overflow-x-auto border rounded-xl">
+                  <table class="w-full text-left text-xs border-collapse" id="breakdown-size-table">
+                    <thead class="bg-slate-50 border-b font-bold text-slate-600">
+                      <tr>
+                        <th class="p-2 border-r">ಅಳತೆ / Size</th>
+                        <th class="p-2 border-r text-center">ವಿತರಿಸಲಾಗಿದೆ / Distributed</th>
+                        <th class="p-2 text-center">ಬಾಕಿ / Pending</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 font-semibold text-slate-750">
+                      <!-- Rendered dynamically -->
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -769,10 +799,10 @@
             <div class="overflow-x-auto overflow-y-auto max-h-[600px] border border-slate-200 rounded-2xl shadow-sm bg-white min-h-[150px] custom-scrollbar">
               <table id="distributionTable" class="w-full text-left border-collapse text-xs whitespace-nowrap table-layout-auto">
                 <thead>
-                  <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
-                    <th class="p-3 border-r border-slate-800 w-12 min-w-[48px] text-center no-print">Sl.No</th>
-                    <th class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center">STS No</th>
-                    <th class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left">Student Name</th>
+                  <tr class="bg-slate-950 dark:bg-slate-900 text-white font-black uppercase tracking-wider text-center border-b border-slate-300 dark:border-slate-700">
+                    <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-12 min-w-[48px] text-center no-print">Sl.No</th>
+                    <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-28 min-w-[112px] text-center">STS No</th>
+                    <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-72 min-w-[280px] text-left">Student Name</th>
                     <!-- Dynamic column headers insert here -->
                   </tr>
                 </thead>
@@ -853,6 +883,7 @@
 
     function normalizeClass(classStr) {
       if (!classStr) return "";
+
       let clean = classStr.toString().trim().toLowerCase();
       
       if (!clean.includes("lkg")) {
@@ -874,6 +905,20 @@
       if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
       
       return classStr.toString().trim();
+    }
+
+    function normalizeTemplateColumns(t) {
+      if (!t) return t;
+      let cols = [];
+      if (t.columns) {
+        try {
+          cols = typeof t.columns === 'string' ? JSON.parse(t.columns) : t.columns;
+        } catch (e) {
+          console.error("Error parsing columns JSON:", e);
+        }
+      }
+      t.columns = Array.isArray(cols) ? cols : [];
+      return t;
     }
 
     // Live Date/Clock Setup
@@ -934,7 +979,7 @@
     let syncQueue = JSON.parse(localStorage.getItem('incentive_sync_queue') || '[]');
     let html5QrScanner = null;
 
-    document.addEventListener("DOMContentLoaded", async function() {
+    async function initPage() {
       await initUserAndTheme();
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) {
@@ -990,7 +1035,13 @@
 
       loadIncentiveTemplates();
       addFieldRow(); // Add one default field row
-    });
+    }
+
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      initPage();
+    } else {
+      document.addEventListener("DOMContentLoaded", initPage);
+    }
 
     async function loadIncentiveTemplates() {
       try {
@@ -999,12 +1050,12 @@
         
         let query = supabaseClient.from('incentive_templates').select('*');
         if (schoolId) {
-          query = query.eq('school_id', schoolId);
+          query = query.or(`school_id.eq.${schoolId},school_id.is.null`);
         }
         const { data, error } = await query.order('created_at', { ascending: false });
 
         if (error) throw error;
-        templates = data || [];
+        templates = (data || []).map(normalizeTemplateColumns);
 
         // Fetch counts for dashboard
         let studentsCount = 0;
@@ -1051,6 +1102,15 @@
         renderTemplatesGrid();
         renderGlobalSummaryMatrix(admissionsList);
 
+        // Update Diagnostics UI
+        if (document.getElementById('diagUserEmail')) {
+          document.getElementById('diagUserEmail').innerText = session?.user?.email || 'N/A';
+          document.getElementById('diagSessionSchoolId').innerText = session?.user?.user_metadata?.school_id || 'N/A';
+          document.getElementById('diagLocalSchoolId').innerText = localStorage.getItem("school_id") || 'N/A';
+          document.getElementById('diagQuerySchoolId').innerText = schoolId || 'N/A';
+          document.getElementById('diagTemplatesCount').innerText = templates.length;
+        }
+
         // Handle URL parameters routing
         const urlParams = new URLSearchParams(window.location.search);
         const paramTemplateId = urlParams.get('template_id');
@@ -1072,6 +1132,10 @@
         }
       } catch (err) {
         console.error("Error loading templates:", err);
+        if (document.getElementById('diagQueryError')) {
+          document.getElementById('diagQueryError').innerText = err.message || err;
+          document.getElementById('diagQueryError').className = "font-bold text-rose-500";
+        }
         alert("ಡೇಟಾಬೇಸ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message);
       }
     }
@@ -1628,7 +1692,9 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        if (!schoolId) throw new Error("No active school session.");
+        if (!schoolId) {
+          console.warn("No active school session. Saving template globally.");
+        }
 
         let error;
         if (editingTemplateId) {
@@ -1650,7 +1716,7 @@
           const res = await supabaseClient
             .from('incentive_templates')
             .insert({
-              school_id: schoolId,
+              school_id: schoolId || null,
               name: name,
               columns: columns,
               print_header: printHeader,
@@ -2178,7 +2244,7 @@
           .eq('id', selectedTemplate.id)
           .single();
         if (error) throw error;
-        selectedTemplate = data;
+        selectedTemplate = normalizeTemplateColumns(data);
       } catch (err) {
         console.error("Error refreshing template details on class load:", err);
       }
@@ -2266,19 +2332,18 @@
       
       if (!hasNested) {
         thead.innerHTML = `
-          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-200">
-            <th class="p-3 border-r border-slate-800 w-12 min-w-[48px] no-print text-center">Sl.No</th>
-            <th class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center">STS No</th>
-            <th class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left">Student Name</th>
-            ${cols.map(col => `<th class="p-3 border-r border-slate-800 text-center min-w-[140px]">${col.name}</th>`).join('')}
-            <th class="p-3 border-r border-slate-800 text-center no-print w-24">Actions / ಕ್ರಿಯೆಗಳು</th>
+          <tr class="bg-slate-950 dark:bg-slate-900 text-white font-black uppercase tracking-wider text-center border-b border-slate-300 dark:border-slate-700">
+            <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-12 min-w-[48px] no-print text-center">Sl.No</th>
+            <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-28 min-w-[112px] text-center">STS No</th>
+            <th class="p-3 border-r border-slate-300 dark:border-slate-700 w-72 min-w-[280px] text-left">Student Name</th>
+            ${cols.map(col => `<th class="p-3 border-r border-slate-300 dark:border-slate-700 text-center min-w-[140px]">${col.name}</th>`).join('')}
           </tr>
         `;
       } else {
         let tr1Html = `
-          <th rowspan="2" class="p-3 border-r border-slate-800 w-12 min-w-[48px] no-print text-center align-middle">Sl.No</th>
-          <th rowspan="2" class="p-3 border-r border-slate-800 w-28 min-w-[112px] text-center align-middle">STS No</th>
-          <th rowspan="2" class="p-3 border-r border-slate-800 w-72 min-w-[280px] text-left align-middle">Student Name</th>
+          <th rowspan="2" class="p-3 border-r border-slate-300 dark:border-slate-700 w-12 min-w-[48px] no-print text-center align-middle">Sl.No</th>
+          <th rowspan="2" class="p-3 border-r border-slate-300 dark:border-slate-700 w-28 min-w-[112px] text-center align-middle">STS No</th>
+          <th rowspan="2" class="p-3 border-r border-slate-300 dark:border-slate-700 w-72 min-w-[280px] text-left align-middle">Student Name</th>
         `;
         let tr2Html = '';
         
@@ -2288,7 +2353,7 @@
           const parent = col.parentHeader ? col.parentHeader.trim() : '';
           
           if (parent === '') {
-            tr1Html += `<th rowspan="2" class="p-3 border-r border-slate-800 text-center align-middle min-w-[140px]">${col.name}</th>`;
+            tr1Html += `<th rowspan="2" class="p-3 border-r border-slate-300 dark:border-slate-700 text-center align-middle min-w-[140px]">${col.name}</th>`;
             i++;
           } else {
             let count = 0;
@@ -2298,10 +2363,10 @@
               j++;
             }
             
-            tr1Html += `<th colspan="${count}" class="p-3 border-r border-slate-800 text-center border-b border-slate-800 align-middle min-w-[140px]">${parent}</th>`;
+            tr1Html += `<th colspan="${count}" class="p-3 border-r border-slate-300 dark:border-slate-700 text-center border-b border-slate-300 dark:border-slate-700 align-middle min-w-[140px]">${parent}</th>`;
             
             for (let k = i; k < j; k++) {
-              tr2Html += `<th class="p-3 border-r border-slate-800 text-center min-w-[140px]">${cols[k].name}</th>`;
+              tr2Html += `<th class="p-3 border-r border-slate-300 dark:border-slate-700 text-center min-w-[140px]">${cols[k].name}</th>`;
             }
             
             i = j;
@@ -2309,8 +2374,8 @@
         }
         
         thead.innerHTML = `
-          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr1Html}<th rowspan="2" class="p-3 border-r border-slate-800 text-center align-middle no-print w-24">Actions / ಕ್ರಿಯೆಗಳು</th></tr>
-          <tr class="bg-slate-900 text-white font-bold uppercase tracking-wider text-center border-b border-slate-800">${tr2Html}</tr>
+          <tr class="bg-slate-950 dark:bg-slate-900 text-white font-black uppercase tracking-wider text-center border-b border-slate-300 dark:border-slate-700">${tr1Html}</tr>
+          <tr class="bg-slate-950 dark:bg-slate-900 text-white font-black uppercase tracking-wider text-center border-b border-slate-300 dark:border-slate-700">${tr2Html}</tr>
         `;
       }
 
@@ -2324,7 +2389,7 @@
       students.forEach((student, index) => {
         const tr = document.createElement('tr');
         tr.dataset.studentId = student.id;
-        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/40 transition border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350 font-medium";
+        tr.className = "hover:bg-indigo-50/20 even:bg-slate-50/45 dark:hover:bg-slate-800/30 dark:even:bg-slate-900/10 transition border-b border-slate-300 dark:border-slate-700 text-slate-850 dark:text-slate-200 font-semibold";
         
         let colsHtml = '';
         const studVals = incentiveData[student.id] || {};
@@ -2395,16 +2460,16 @@
             }
           }
 
-          colsHtml += `<td class="p-2 border-r border-slate-200 dark:border-slate-800 text-center align-middle">${inputFieldHtml}</td>`;
+          colsHtml += `<td class="p-2 border-r border-slate-300 dark:border-slate-700 text-center align-middle">${inputFieldHtml}</td>`;
         });
 
         const nameEn = (student.name_english || '').trim().toUpperCase();
         const nameKn = (student.student_name || '').trim();
         let nameHtml = '';
         if (nameEn && nameKn) {
-          nameHtml = `<div class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">${nameKn}</div>`;
+          nameHtml = `<div class="font-bold text-slate-850 dark:text-slate-200 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">${nameKn}</div>`;
         } else {
-          nameHtml = `<span class="font-bold text-slate-800 dark:text-slate-200 text-[11px]">${nameEn || nameKn || '-'}</span>`;
+          nameHtml = `<span class="font-bold text-slate-850 dark:text-slate-200 text-[11px]">${nameEn || nameKn || '-'}</span>`;
         }
 
         const fatherEn = (student.father_name_az || '').trim().toUpperCase();
@@ -2424,17 +2489,10 @@
         }
 
         tr.innerHTML = `
-          <td class="p-3 text-center border-r border-slate-200 dark:border-slate-800 font-medium no-print">${index + 1}</td>
-          <td class="p-3 border-r border-slate-200 dark:border-slate-800 font-mono text-slate-500 dark:text-slate-400 font-bold text-center">${student.app_no}</td>
-          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-left">${nameHtml}${fatherHtml}${attWarningHtml}</td>
+          <td class="p-3 text-center border-r border-slate-300 dark:border-slate-700 font-medium no-print">${index + 1}</td>
+          <td class="p-3 border-r border-slate-300 dark:border-slate-700 font-mono text-slate-500 dark:text-slate-400 font-bold text-center">${student.app_no}</td>
+          <td class="p-3 border-r border-slate-300 dark:border-slate-700 text-left">${nameHtml}${fatherHtml}${attWarningHtml}</td>
           ${colsHtml}
-          <td class="p-3 border-r border-slate-200 dark:border-slate-800 text-center align-middle no-print">
-            <div class="flex items-center justify-center">
-              <button onclick="sendParentAlert('${student.id}')" class="text-emerald-500 hover:text-emerald-600 transition p-1.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/30 border-none bg-transparent cursor-pointer flex items-center justify-center" title="ಪೋಷಕರಿಗೆ ವಾಟ್ಸಾಪ್ ಸಂದೇಶ ಕಳುಹಿಸಿ / Send WhatsApp Alert">
-                <i class="fa-brands fa-whatsapp text-sm"></i>
-              </button>
-            </div>
-          </td>
         `;
         
         tbody.appendChild(tr);
@@ -2446,12 +2504,20 @@
     function updateClassProgressStats(distributed, totalPossible) {
       const pct = totalPossible > 0 ? Math.round((distributed / totalPossible) * 100) : 0;
       
-      document.getElementById('classProgressBar').style.width = pct + '%';
-      document.getElementById('classProgressPct').innerText = pct + '%';
+      const bar = document.getElementById('classProgressBar');
+      if (bar) bar.style.width = pct + '%';
       
-      document.getElementById('detailClassTotalStudents').innerText = students.length;
-      document.getElementById('detailClassTotalDistributed').innerText = distributed;
-      document.getElementById('detailClassTotalPending').innerText = Math.max(0, totalPossible - distributed);
+      const pctText = document.getElementById('classProgressPct');
+      if (pctText) pctText.innerText = pct + '%';
+      
+      const totalText = document.getElementById('detailClassTotalStudents');
+      if (totalText) totalText.innerText = students.length;
+      
+      const distText = document.getElementById('detailClassTotalDistributed');
+      if (distText) distText.innerText = distributed;
+      
+      const pendingText = document.getElementById('detailClassTotalPending');
+      if (pendingText) pendingText.innerText = Math.max(0, totalPossible - distributed);
     }
 
     async function autoSaveValue(studentId, colName, value) {
@@ -2532,6 +2598,326 @@
       });
 
       updateClassProgressStats(distributedCount, totalPossible);
+      recalcDetailedBreakdown();
+    }
+
+    function toggleDetailedBreakdown() {
+      const content = document.getElementById('detailedBreakdownContent');
+      const chevron = document.getElementById('breakdown-chevron');
+      if (content) {
+        content.classList.toggle('hidden');
+        if (chevron) chevron.classList.toggle('rotate-180');
+      }
+    }
+
+    function recalcDetailedBreakdown() {
+      const panel = document.getElementById('detailedBreakdownPanel');
+      if (!selectedTemplate || !panel) return;
+
+      const cls = document.getElementById('classSelector').value;
+      if (!cls || !students || students.length === 0) {
+        panel.classList.add('hidden');
+        return;
+      }
+      panel.classList.remove('hidden');
+
+      const cols = typeof selectedTemplate.columns === 'string' ? JSON.parse(selectedTemplate.columns) : selectedTemplate.columns;
+      const booleanCols = cols.filter(c => c.type === 'boolean');
+      const dropdownCols = cols.filter(c => c.type === 'dropdown');
+
+      // Find the size column in the selected template representing a size/incentive value
+      const sizeCol = cols.find(c => {
+        const nameLower = c.name.toLowerCase();
+        return (c.type === 'dropdown') && (nameLower.includes("size") || nameLower.includes("ಅಳತೆ") || nameLower.includes("shoe") || nameLower.includes("ಶೂ") || nameLower.includes("uniform") || nameLower.includes("ಸಮವಸ್ತ್ರ"));
+      });
+
+      // Adjust top dashboard layout columns dynamically based on whether size or item summary is present
+      const controlsCard = document.getElementById('detailControlsCard');
+      const sizeCard = document.getElementById('birdEyeSizeCard');
+      const hasSummary = sizeCol || booleanCols.length > 0;
+      
+      if (hasSummary) {
+        if (sizeCard) sizeCard.classList.remove('hidden');
+        if (controlsCard) {
+          controlsCard.className = "lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl flex flex-col justify-center gap-3 shadow-sm min-h-[140px]";
+        }
+      } else {
+        if (sizeCard) sizeCard.classList.add('hidden');
+        if (controlsCard) {
+          controlsCard.className = "lg:col-span-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 rounded-2xl flex flex-col justify-center gap-3 shadow-sm min-h-[140px]";
+        }
+      }
+
+      // Dynamic title and summary options based on page type
+      const sizeTitleEl = document.getElementById('birdEyeSizeTitle');
+      const sizeTableHeader = document.getElementById('birdEyeSizeTableHeader');
+      let sizeOptions = [];
+      const templateNameLower = selectedTemplate.name.toLowerCase();
+      const colNameLower = sizeCol ? sizeCol.name.toLowerCase() : '';
+      
+      const isShoe = templateNameLower.includes("shoe") || templateNameLower.includes("ಶೂ") || colNameLower.includes("shoe") || colNameLower.includes("ಶೂ");
+      const isUniform = templateNameLower.includes("uniform") || templateNameLower.includes("ಸಮವಸ್ತ್ರ") || colNameLower.includes("uniform") || colNameLower.includes("ಸಮವಸ್ತ್ರ");
+      const isEggBanana = templateNameLower.includes("egg") || templateNameLower.includes("ಮೊಟ್ಟೆ") || templateNameLower.includes("banana") || templateNameLower.includes("ಬಾಳೆಹಣ್ಣು") || templateNameLower.includes("diet") || templateNameLower.includes("ಆಹಾರ");
+
+      // 1. Dynamic Card Title and Icon
+      if (sizeTitleEl) {
+        if (isShoe) {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-shoe-prints text-indigo-500 mr-1.5 animate-pulse"></i>ಪಾದರಕ್ಷೆ ವಿತರಣಾ ವಿವರ / Shoe Distribution Summary`;
+        } else if (isUniform) {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-shirt text-indigo-500 mr-1.5 animate-pulse"></i>ಸಮವಸ್ತ್ರ ವಿತರಣಾ ವಿವರ / Uniform Distribution Summary`;
+        } else if (isEggBanana) {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-apple-whole text-indigo-500 mr-1.5 animate-pulse"></i>ಆಹಾರ ವಿತರಣಾ ವಿವರ / Diet Distribution Summary`;
+        } else if (templateNameLower.includes("book") || templateNameLower.includes("ಪುಸ್ತಕ") || templateNameLower.includes("textbook")) {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-book text-indigo-500 mr-1.5 animate-pulse"></i>ಪಠ್ಯಪುಸ್ತಕ ವಿತರಣಾ ವಿವರ / Textbook Distribution Summary`;
+        } else if (templateNameLower.includes("cycle") || templateNameLower.includes("ಸೈಕಲ್") || templateNameLower.includes("bicycle")) {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-bicycle text-indigo-500 mr-1.5 animate-pulse"></i>ಸೈಕಲ್ ವಿತರಣಾ ವಿವರ / Bicycle Distribution Summary`;
+        } else {
+          sizeTitleEl.innerHTML = `<i class="fa-solid fa-ruler-combined text-indigo-500 mr-1.5 animate-pulse"></i>ವಿತರಣಾ ವಿವರ / Distribution Summary`;
+        }
+      }
+
+      // 2. Dynamic Table Header Label
+      if (sizeTableHeader) {
+        if (sizeCol) {
+          if (isShoe || isUniform) {
+            sizeTableHeader.innerText = 'Size / ಗಾತ್ರ';
+          } else {
+            sizeTableHeader.innerText = 'Option / ಆಯ್ಕೆ';
+          }
+        } else {
+          sizeTableHeader.innerText = 'Item / ವಸ್ತು';
+        }
+      }
+
+      // 3. Resolve static size options
+      if (sizeCol) {
+        if (sizeCol.options && sizeCol.options.length > 0) {
+          sizeOptions = sizeCol.options.map(o => o.toString().trim()).filter(o => o !== '');
+        } else {
+          // Fallback to static standard sizes
+          if (isShoe) {
+            sizeOptions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
+          } else if (isUniform) {
+            sizeOptions = ['Small', 'Medium', 'Large', 'XL'];
+          } else {
+            sizeOptions = ['S', 'M', 'L', 'XL'];
+          }
+        }
+      }
+
+      // Gender-wise statistics
+      let boysTotal = 0;
+      let boysDist = 0;
+      let girlsTotal = 0;
+      let girlsDist = 0;
+
+      students.forEach(student => {
+        const g = (student.gender || '').toString().toLowerCase().trim();
+        const isBoy = g === 'boy' || g === 'male' || g === 'ಗಂಡು';
+        const vals = incentiveData[student.id] || {};
+
+        booleanCols.forEach(col => {
+          if (isBoy) {
+            boysTotal++;
+            if (vals[col.name] === true || vals[col.name] === 'true') {
+              boysDist++;
+            }
+          } else {
+            girlsTotal++;
+            if (vals[col.name] === true || vals[col.name] === 'true') {
+              girlsDist++;
+            }
+          }
+        });
+      });
+
+      const boysPending = boysTotal - boysDist;
+      const girlsPending = girlsTotal - girlsDist;
+
+      const genderTbody = document.querySelector('#breakdown-gender-table tbody');
+      if (genderTbody) {
+        genderTbody.innerHTML = `
+          <tr class="hover:bg-slate-50/50">
+            <td class="p-2 border-r font-bold text-slate-700"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 text-sky-600">Boy / ಗಂಡು</span></td>
+            <td class="p-2 border-r text-center font-extrabold text-emerald-600">${boysDist} / ${boysTotal}</td>
+            <td class="p-2 text-center font-extrabold text-amber-600">${boysPending}</td>
+          </tr>
+          <tr class="hover:bg-slate-50/50">
+            <td class="p-2 border-r font-bold text-slate-700"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-50 text-pink-600">Girl / ಹೆಣ್ಣು</span></td>
+            <td class="p-2 border-r text-center font-extrabold text-emerald-600">${girlsDist} / ${girlsTotal}</td>
+            <td class="p-2 text-center font-extrabold text-amber-600">${girlsPending}</td>
+          </tr>
+        `;
+      }
+
+      const sizeCounts = {};
+      const sizeSummary = {}; // sz -> { boys: 0, girls: 0, dist: 0, total: 0 }
+      const unassignedKey = 'Pending';
+
+      if (sizeCol) {
+        // Initialize all static options as keys
+        sizeOptions.forEach(opt => {
+          sizeCounts[opt] = { total: 0, dist: 0 };
+          sizeSummary[opt] = { boys: 0, girls: 0, dist: 0, total: 0 };
+        });
+        sizeCounts[unassignedKey] = { total: 0, dist: 0 };
+        sizeSummary[unassignedKey] = { boys: 0, girls: 0, dist: 0, total: 0 };
+
+        students.forEach(student => {
+          const g = (student.gender || '').toString().toLowerCase().trim();
+          const isBoy = g === 'boy' || g === 'male' || g === 'ಗಂಡು';
+          const vals = incentiveData[student.id] || {};
+          
+          let sizeVal = vals[sizeCol.name] ? vals[sizeCol.name].toString().trim() : '';
+          
+          if (!sizeVal || !sizeOptions.includes(sizeVal)) {
+            sizeVal = unassignedKey;
+          }
+
+          sizeCounts[sizeVal].total++;
+          sizeSummary[sizeVal].total++;
+          if (isBoy) {
+            sizeSummary[sizeVal].boys++;
+          } else {
+            sizeSummary[sizeVal].girls++;
+          }
+
+          // Resolve isDistributed correctly for both local and linked columns
+          const sameParentBoolCols = booleanCols.filter(bc => bc.parentHeader === sizeCol.parentHeader);
+          
+          const checkBoolCol = (bc) => {
+            let bVal = vals[bc.name];
+            return bVal === true || bVal === 'true';
+          };
+
+          let isDistributed = false;
+          if (sameParentBoolCols.length > 0) {
+            isDistributed = sameParentBoolCols.some(checkBoolCol);
+          } else {
+            isDistributed = booleanCols.some(checkBoolCol);
+          }
+
+          if (isDistributed) {
+            sizeCounts[sizeVal].dist++;
+            sizeSummary[sizeVal].dist++;
+          }
+        });
+      }
+
+      // Boolean Columns-based Item Summary (For Egg & Banana, Textbooks, Bicycles)
+      const itemSummary = {}; // colName -> { boys: 0, girls: 0, dist: 0, total: 0 }
+      if (!sizeCol && booleanCols.length > 0) {
+        booleanCols.forEach(col => {
+          itemSummary[col.name] = { boys: 0, girls: 0, dist: 0, total: students.length };
+        });
+
+        students.forEach(student => {
+          const g = (student.gender || '').toString().toLowerCase().trim();
+          const isBoy = g === 'boy' || g === 'male' || g === 'ಗಂಡು';
+          const vals = incentiveData[student.id] || {};
+
+          booleanCols.forEach(col => {
+            const isDistributed = vals[col.name] === true || vals[col.name] === 'true';
+            if (isDistributed) {
+              itemSummary[col.name].dist++;
+              if (isBoy) {
+                itemSummary[col.name].boys++;
+              } else {
+                itemSummary[col.name].girls++;
+              }
+            }
+          });
+        });
+      }
+
+      const sizeTbody = document.querySelector('#breakdown-size-table tbody');
+      if (sizeTbody) {
+        sizeTbody.innerHTML = "";
+        if (sizeCol) {
+          const sizeKeys = Object.keys(sizeCounts).filter(k => k !== unassignedKey || sizeCounts[k].total > 0).sort();
+          if (sizeKeys.length === 0) {
+            sizeTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 font-bold">ಯಾವುದೇ ಅಳತೆ ದಾಖಲಾಗಿಲ್ಲ / No sizes entered</td></tr>`;
+          } else {
+            sizeKeys.forEach(sz => {
+              const total = sizeCounts[sz].total;
+              const dist = sizeCounts[sz].dist;
+              const pending = total - dist;
+              sizeTbody.innerHTML += `
+                <tr class="hover:bg-slate-50/50">
+                  <td class="p-2 border-r font-bold text-slate-700">${sz}</td>
+                  <td class="p-2 border-r text-center font-extrabold text-emerald-600">${dist} / ${total}</td>
+                  <td class="p-2 text-center font-extrabold text-amber-600">${pending}</td>
+                </tr>
+              `;
+            });
+          }
+        } else if (booleanCols.length > 0) {
+          booleanCols.forEach(col => {
+            const stats = itemSummary[col.name] || { boys: 0, girls: 0, dist: 0, total: 0 };
+            const pending = stats.total - stats.dist;
+            sizeTbody.innerHTML += `
+              <tr class="hover:bg-slate-50/50">
+                <td class="p-2 border-r font-bold text-slate-700">${col.name}</td>
+                <td class="p-2 border-r text-center font-extrabold text-emerald-600">${stats.dist} / ${stats.total}</td>
+                <td class="p-2 text-center font-extrabold text-amber-600">${pending}</td>
+              </tr>
+            `;
+          });
+        } else {
+          sizeTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-400 font-bold">ಯಾವುದೇ ವಿವರಗಳಿಲ್ಲ / No items</td></tr>`;
+        }
+      }
+
+      // Render Bird's Eye size summary table
+      const birdEyeTbody = document.querySelector('#birdEyeSizeTable tbody');
+      if (birdEyeTbody) {
+        birdEyeTbody.innerHTML = '';
+        if (sizeCol) {
+          // Render size-based options (Scenario 1)
+          sizeOptions.forEach(sz => {
+            const stats = sizeSummary[sz] || { boys: 0, girls: 0, dist: 0, total: 0 };
+            birdEyeTbody.innerHTML += `
+              <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-850/50 text-center">
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white">${sz}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-sky-600 dark:text-sky-400 font-extrabold">${stats.boys}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-pink-650 dark:text-pink-400 font-extrabold">${stats.girls}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-emerald-650 dark:text-emerald-450 font-extrabold">${stats.dist}</td>
+                <td class="p-1 text-slate-800 dark:text-white font-extrabold">${stats.total}</td>
+              </tr>
+            `;
+          });
+
+          // Render unassigned/pending row if total is greater than 0
+          const unassignedStats = sizeSummary[unassignedKey];
+          if (unassignedStats && unassignedStats.total > 0) {
+            birdEyeTbody.innerHTML += `
+              <tr class="bg-amber-500/5 hover:bg-amber-500/10 text-center border-t border-slate-200 dark:border-slate-800">
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 font-bold text-amber-600">Pending</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-sky-600 dark:text-sky-400 font-extrabold">${unassignedStats.boys}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-pink-650 dark:text-pink-400 font-extrabold">${unassignedStats.girls}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-emerald-650 dark:text-emerald-450 font-extrabold">${unassignedStats.dist}</td>
+                <td class="p-1 text-amber-650 dark:text-amber-455 font-extrabold">${unassignedStats.total}</td>
+              </tr>
+            `;
+          }
+        } else if (booleanCols.length > 0) {
+          // Render item-based options (Scenario 2)
+          booleanCols.forEach(col => {
+            const stats = itemSummary[col.name] || { boys: 0, girls: 0, dist: 0, total: 0 };
+            birdEyeTbody.innerHTML += `
+              <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-850/50 text-center">
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 font-bold text-slate-900 dark:text-white text-left pl-2">${col.name}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-sky-600 dark:text-sky-400 font-extrabold">${stats.boys}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-pink-650 dark:text-pink-400 font-extrabold">${stats.girls}</td>
+                <td class="p-1 border-r border-slate-200 dark:border-slate-800 text-emerald-650 dark:text-emerald-450 font-extrabold">${stats.dist}</td>
+                <td class="p-1 text-slate-800 dark:text-white font-extrabold">${stats.total}</td>
+              </tr>
+            `;
+          });
+        } else {
+          birdEyeTbody.innerHTML = `<tr><td colspan="5" class="p-2 text-center text-slate-400 font-bold">ಯಾವುದೇ ವಿವರಗಳಿಲ್ಲ / No items</td></tr>`;
+        }
+      }
     }
 
     function renderGlobalStockDetails() {
@@ -2539,8 +2925,7 @@
       const footerParts = (selectedTemplate.print_footer || '').split('||');
       const stockVal = footerParts[3] ? parseInt(footerParts[3]) : 0;
       
-      const stockRow = document.getElementById('detailStockRow');
-      const remainingRow = document.getElementById('detailRemainingStockRow');
+      const stockCard = document.getElementById('detailStockCard');
       
       if (stockVal > 0) {
         let globalDistributed = 0;
@@ -2560,22 +2945,23 @@
         
         const remaining = stockVal - globalDistributed;
         
-        document.getElementById('detailTotalStock').innerText = stockVal;
+        const totalEl = document.getElementById('detailTotalStock');
+        if (totalEl) totalEl.innerText = stockVal;
         
         const remainingEl = document.getElementById('detailRemainingStock');
-        remainingEl.innerText = remaining;
-        if (remaining < 0) {
-          remainingEl.className = "font-black text-rose-550 dark:text-rose-450 flex items-center gap-1";
-          remainingEl.innerHTML = `${remaining} <i class="fa-solid fa-triangle-exclamation animate-bounce text-[10px]"></i>`;
-        } else {
-          remainingEl.className = "font-black text-emerald-600 dark:text-emerald-400";
+        if (remainingEl) {
+          remainingEl.innerText = remaining;
+          if (remaining < 0) {
+            remainingEl.className = "font-black text-rose-500 flex items-center gap-1";
+            remainingEl.innerHTML = `${remaining} <i class="fa-solid fa-triangle-exclamation animate-bounce text-[10px]"></i>`;
+          } else {
+            remainingEl.className = "font-black text-emerald-600 dark:text-emerald-400";
+          }
         }
         
-        if (stockRow) stockRow.classList.remove('hidden');
-        if (remainingRow) remainingRow.classList.remove('hidden');
+        if (stockCard) stockCard.classList.remove('hidden');
       } else {
-        if (stockRow) stockRow.classList.add('hidden');
-        if (remainingRow) remainingRow.classList.add('hidden');
+        if (stockCard) stockCard.classList.add('hidden');
       }
     }
 
@@ -2743,7 +3129,6 @@
         subject: '',
         students: []
       });
-    }
     }
 
     async function handleBulkAction(isCheck) {
@@ -2938,7 +3323,9 @@
     }
 
     function renderChart(labels, data) {
-      const ctx = document.getElementById('progressChart').getContext('2d');
+      const chartEl = document.getElementById('progressChart');
+      if (!chartEl) return;
+      const ctx = chartEl.getContext('2d');
       if (chartInstance) {
         chartInstance.destroy();
       }
@@ -3924,9 +4311,13 @@
     });
 
     // Run initial UI update on load
-    document.addEventListener("DOMContentLoaded", () => {
+    if (document.readyState === "complete" || document.readyState === "interactive") {
       updateSyncQueueUI();
-    });
+    } else {
+      document.addEventListener("DOMContentLoaded", () => {
+        updateSyncQueueUI();
+      });
+    }
 
     function toggleDrawerFatherKnCheckbox() {
       const fatherChecked = document.getElementById('drawerPrintOptFather').checked;

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -252,7 +252,7 @@
             <div class="w-full sm:w-36">
               <select id="medium-filter" onchange="applyFilters()" class="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
                 <option value="">-- All Mediums --</option>
-                <option value="Kannada">Kannada / ಕನ್ನಡ</option>
+                <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
                 <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
               </select>
             </div>
@@ -285,12 +285,12 @@
           <!-- Right: Action Panel -->
           <div class="flex flex-wrap items-center gap-1.5 w-full xl:w-auto xl:justify-end border-t xl:border-t-0 pt-3 xl:pt-0 border-slate-200">
             <!-- Download CSV Template -->
-            <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-arrow-down text-slate-500 text-base md:text-lg"></i>
+            <button onclick="downloadCSVTemplate()" title="ಎಕ್ಸೆಲ್ ನಮೂನೆ ಪಡೆ / Download Excel Template" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-file-arrow-down text-emerald-600 text-base md:text-lg"></i>
             </button>
-            <!-- Import CSV -->
-            <input type="file" id="csv-file-input" class="hidden" accept=".csv" onchange="handleCSVFileSelect(this)">
-            <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ ಆಮದು / Import CSV" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+            <!-- Import CSV / Excel -->
+            <input type="file" id="csv-file-input" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleCSVFileSelect(this)">
+            <button onclick="triggerCSVImport()" title="ಸಿಎಸ್ವಿ/ಎಕ್ಸೆಲ್ ಆಮದು / Import CSV & Excel" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
               <i class="fa-solid fa-file-import text-amber-600 text-base md:text-lg"></i>
             </button>
             <!-- Export CSV -->
@@ -396,6 +396,10 @@
             <!-- PDF -->
             <button onclick="downloadSelectedStudentPdf()" id="mass-pdf-btn" class="bg-teal-600 hover:bg-teal-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-file-pdf text-[10px]"></i> PDF / ಪಿಡಿಎಫ್
+            </button>
+            <!-- ID Cards -->
+            <button onclick="generateSelectedStudentIdCards()" id="mass-idcard-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-address-card text-[10px]"></i> ID Cards / ಐಡಿ ಕಾರ್ಡ್‌ಗಳು
             </button>
             <button onclick="deleteSelectedStudents()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-trash text-[10px]"></i> Delete / ಅಳಿಸಿ
@@ -525,8 +529,14 @@
       <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar space-y-4">
         <p class="text-xs text-slate-500 font-medium">ಇಲ್ಲಿ ನೀವು ಪಟ್ಟಿಯಲ್ಲಿ ಯಾವ ಕಾಲಮ್‌ಗಳು ಕಾಣಿಸಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು. / Toggle column visibility here:</p>
         
+        <!-- Column Search Space -->
+        <div class="relative no-print">
+          <input type="text" id="column-search-input" placeholder="ಹುಡುಕಿ / Search columns..." oninput="filterColumnSettingsList(this.value)" class="w-full text-xs px-3 py-2 pl-9 rounded-xl border border-slate-200/80 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/25 transition">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        </div>
+
         <!-- Column List Checkboxes -->
-        <div id="columns-list-container" class="space-y-2 max-h-[350px] overflow-y-auto custom-scrollbar">
+        <div id="columns-list-container" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar">
           <!-- Checkbox items will be rendered dynamically -->
         </div>
       </div>
@@ -538,28 +548,52 @@
 
   <!-- Student Detail Quick View Modal -->
   <div id="student-detail-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
-    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-id-card text-sky-600 text-base"></i> ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Detailed Profile
-        </h3>
-        <div class="flex items-center gap-2">
-          <button id="modal-edit-btn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 border-0 cursor-pointer transition">
-            <i class="fa-solid fa-pen text-[10px]"></i> Edit
-          </button>
-          <button onclick="closeStudentDetailModal()" class="text-slate-400 hover:text-slate-650 text-lg border-0 bg-transparent cursor-pointer">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+    <!-- Outer Relative Wrapper (Prevents overflow-hidden clipping of buttons!) -->
+    <div class="relative w-full max-w-2xl">
+      <!-- Left/Right navigation buttons -->
+      <button id="modal-prev-btn" class="absolute left-2 md:-left-14 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg border border-slate-200 flex items-center justify-center text-slate-700 hover:text-sky-600 transition z-50 cursor-pointer no-print border-0">
+        <i class="fa-solid fa-chevron-left text-lg"></i>
+      </button>
+      <button id="modal-next-btn" class="absolute right-2 md:-right-14 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-lg border border-slate-200 flex items-center justify-center text-slate-700 hover:text-sky-600 transition z-50 cursor-pointer no-print border-0">
+        <i class="fa-solid fa-chevron-right text-lg"></i>
+      </button>
+
+      <!-- Inner Modal Container (With rounded corners and layout clipping) -->
+      <div class="bg-white w-full rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[90vh] overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+          <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-id-card text-sky-600 text-base"></i> ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Detailed Profile
+          </h3>
+          <div class="flex items-center gap-2">
+            <button id="modal-edit-btn" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 border-0 cursor-pointer transition">
+              <i class="fa-solid fa-pen text-[10px]"></i> Edit
+            </button>
+            <button onclick="closeStudentDetailModal()" class="text-slate-400 hover:text-slate-650 text-lg border-0 bg-transparent cursor-pointer">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar space-y-6" id="student-detail-content">
-        <!-- Details will be rendered dynamically -->
-      </div>
-      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
-        <button id="modal-print-btn" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-4 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
-          <i class="fa-solid fa-print"></i> Print Form
-        </button>
-        <button onclick="closeStudentDetailModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">Close</button>
+        <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar space-y-6" id="student-detail-content">
+          <!-- Details will be rendered dynamically -->
+        </div>
+        <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 flex-wrap text-xs font-bold">
+          <button id="modal-approve-btn" class="bg-emerald-700 hover:bg-emerald-600 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check"></i> Approve / ಅನುಮೋದಿಸಿ
+          </button>
+          <button id="modal-delete-btn" class="bg-rose-600 hover:bg-rose-500 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-trash-can"></i> Delete / ಅಳಿಸಿ
+          </button>
+          <button id="modal-whatsapp-btn" class="bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp Receipt
+          </button>
+          <button id="modal-receipt-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-file-invoice"></i> Print Receipt
+          </button>
+          <button id="modal-print-btn" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-print"></i> Print Form
+          </button>
+          <button onclick="closeStudentDetailModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-xl transition border-0 cursor-pointer">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -579,6 +613,36 @@
     </div>
   </div>
 
+  <!-- Excel Auto-filter Dropdown -->
+  <div id="excel-filter-dropdown" class="absolute hidden bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 z-[9999] w-64 text-slate-800 dark:text-slate-200 flex flex-col gap-3 font-sans">
+    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-2">
+      <h4 class="text-xs font-bold text-slate-850 dark:text-slate-100 flex items-center gap-1.5">
+        <i class="fa-solid fa-filter text-sky-600 dark:text-sky-400 text-xs"></i> ಫಿಲ್ಟರ್ / Column Filter
+      </h4>
+      <button onclick="closeExcelFilterDropdown()" class="text-slate-400 hover:text-slate-650 dark:text-slate-500 dark:hover:text-slate-350 text-sm border-0 bg-transparent cursor-pointer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div id="excel-sort-container" class="flex flex-col gap-1 border-b border-slate-100 dark:border-slate-700 pb-2">
+      <!-- Sorting buttons will be injected dynamically -->
+    </div>
+    <div class="relative">
+      <input type="text" placeholder="ಹುಡುಕಿ / Search values..." oninput="excelFilterUniqueValues(this.value)" class="w-full text-xs px-2.5 py-1.5 pl-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:focus:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-sky-500/25 transition text-slate-800 dark:text-slate-200" id="excel-search-input">
+      <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
+    </div>
+    <div class="max-h-[160px] overflow-y-auto custom-scrollbar flex flex-col gap-1.5 p-1 border border-slate-100/50 dark:border-slate-700/50 rounded-xl" id="excel-values-list">
+      <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer">
+        <input type="checkbox" id="excel-select-all" checked onchange="excelToggleSelectAllValues(this.checked)" class="w-3.5 h-3.5 rounded text-sky-600 focus:ring-sky-500 border-slate-350 dark:border-slate-600 cursor-pointer">
+        <span>(Select All)</span>
+      </label>
+      <!-- Unique value checkbox items will go here -->
+    </div>
+    <div class="flex justify-end gap-2 border-t border-slate-100 dark:border-slate-700 pt-2 text-[11px] font-bold">
+      <button onclick="closeExcelFilterDropdown()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-1.5 px-3 rounded-lg border-0 cursor-pointer transition">Cancel</button>
+      <button id="excel-ok-btn" class="bg-sky-600 hover:bg-sky-500 text-white py-1.5 px-4.5 rounded-lg border-0 cursor-pointer shadow transition">OK</button>
+    </div>
+  </div>
+
   <!-- Script block -->
   <script>
     const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
@@ -586,18 +650,252 @@
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     window.supabaseClient = supabaseClient;
 
+    // Excel Auto-filter variables
+    let activeExcelFilters = {};
+    let uniqueValuesGlobal = [];
+
+    // Reset columns search text input
+    function openManageColumnsModal() {
+      const searchInput = document.getElementById('column-search-input');
+      if (searchInput) searchInput.value = '';
+      renderColumnSettingsList();
+      document.getElementById('manage-columns-modal').classList.remove('hidden');
+    }
+
+    // Filter Column Settings Checklist based on query
+    function filterColumnSettingsList(query) {
+      const container = document.getElementById("columns-list-container");
+      if (!container) return;
+      const divs = container.children;
+      const q = query.toLowerCase().trim();
+      
+      standardColumns.forEach((col, idx) => {
+        const div = divs[idx];
+        if (!div) return;
+        const textEn = (col.labelEn || '').toLowerCase();
+        const textKn = (col.labelKn || '').toLowerCase();
+        if (textEn.includes(q) || textKn.includes(q)) {
+          div.style.display = "";
+        } else {
+          div.style.display = "none";
+        }
+      });
+    }
+
+    // Excel Auto-filter controllers
+    function toggleFilterDropdown(event, colId) {
+      event.stopPropagation();
+      const rect = event.currentTarget.getBoundingClientRect();
+      const dropdown = document.getElementById('excel-filter-dropdown');
+      
+      if (!dropdown.classList.contains('hidden') && dropdown.dataset.activeCol === colId) {
+        closeExcelFilterDropdown();
+        return;
+      }
+      
+      dropdown.dataset.activeCol = colId;
+      document.getElementById('excel-search-input').value = '';
+      
+      const top = rect.bottom + window.scrollY;
+      let left = rect.left + window.scrollX;
+      
+      const dropdownWidth = 260;
+      if (left + dropdownWidth > window.innerWidth) {
+        left = window.innerWidth - dropdownWidth - 20;
+      }
+      
+      dropdown.style.top = `${top + 5}px`;
+      dropdown.style.left = `${left}px`;
+      dropdown.classList.remove('hidden');
+      
+      const sortContainer = document.getElementById('excel-sort-container');
+      sortContainer.innerHTML = `
+        <button class="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 p-2 rounded-xl text-left border-0 bg-transparent cursor-pointer font-bold text-xs text-slate-700 dark:text-slate-200" onclick="excelSortColumn('${colId}', 'asc')">
+          <i class="fa-solid fa-arrow-down-a-z text-sky-600 dark:text-sky-400"></i> Sort A to Z / Smallest to Largest
+        </button>
+        <button class="flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-700/50 p-2 rounded-xl text-left border-0 bg-transparent cursor-pointer font-bold text-xs text-slate-700 dark:text-slate-200" onclick="excelSortColumn('${colId}', 'desc')">
+          <i class="fa-solid fa-arrow-up-z-a text-sky-600 dark:text-sky-400"></i> Sort Z to A / Largest to Smallest
+        </button>
+      `;
+
+      uniqueValuesGlobal = Array.from(new Set(allStudentsData.map(s => {
+        return getStudentColumnValueRaw(s, colId);
+      }))).filter(v => v !== '').sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+      
+      document.getElementById('excel-ok-btn').onclick = () => applyExcelFiltersForColumn(colId);
+      
+      renderExcelCheckboxes(colId);
+      
+      setTimeout(() => {
+        document.addEventListener('click', closeDropdownOnOutsideClick);
+      }, 0);
+    }
+
+    function closeExcelFilterDropdown() {
+      const dropdown = document.getElementById('excel-filter-dropdown');
+      if (dropdown) dropdown.classList.add('hidden');
+      document.removeEventListener('click', closeDropdownOnOutsideClick);
+    }
+
+    function closeDropdownOnOutsideClick(e) {
+      const dropdown = document.getElementById('excel-filter-dropdown');
+      if (dropdown && !dropdown.contains(e.target)) {
+        closeExcelFilterDropdown();
+      }
+    }
+
+    function renderExcelCheckboxes(colId, filterQuery = '') {
+      const container = document.getElementById('excel-values-list');
+      if (!container) return;
+      
+      const q = filterQuery.toLowerCase().trim();
+      const selectAllLabel = container.firstElementChild;
+      container.innerHTML = '';
+      container.appendChild(selectAllLabel);
+      
+      const selectedValuesSet = activeExcelFilters[colId] ? new Set(activeExcelFilters[colId]) : null;
+      
+      let visibleCount = 0;
+      uniqueValuesGlobal.forEach((val) => {
+        if (q && !val.toLowerCase().includes(q)) return;
+        visibleCount++;
+        
+        const isChecked = selectedValuesSet ? selectedValuesSet.has(val) : true;
+        
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2 text-xs font-semibold text-slate-650 dark:text-slate-300 cursor-pointer p-1.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded-xl transition';
+        label.innerHTML = `
+          <input type="checkbox" value="${val.replace(/"/g, '&quot;')}" ${isChecked ? 'checked' : ''} onchange="excelValueCheckboxChanged('${colId}')" class="excel-value-checkbox w-3.5 h-3.5 rounded text-sky-600 focus:ring-sky-500 border-slate-350 dark:border-slate-600">
+          <span class="truncate">${val}</span>
+        `;
+        container.appendChild(label);
+      });
+      
+      const checkboxes = container.querySelectorAll('.excel-value-checkbox');
+      const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      document.getElementById('excel-select-all').checked = (checkedCount === checkboxes.length);
+      document.getElementById('excel-select-all').indeterminate = (checkedCount > 0 && checkedCount < checkboxes.length);
+    }
+
+    function excelToggleSelectAllValues(checked) {
+      const container = document.getElementById('excel-values-list');
+      const checkboxes = container.querySelectorAll('.excel-value-checkbox');
+      checkboxes.forEach(cb => {
+        const label = cb.parentElement;
+        if (label && label.style.display !== 'none') {
+          cb.checked = checked;
+        }
+      });
+    }
+
+    function excelValueCheckboxChanged(colId) {
+      const container = document.getElementById('excel-values-list');
+      const checkboxes = container.querySelectorAll('.excel-value-checkbox');
+      const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      const selectAll = document.getElementById('excel-select-all');
+      selectAll.checked = (checkedCount === checkboxes.length);
+      selectAll.indeterminate = (checkedCount > 0 && checkedCount < checkboxes.length);
+    }
+
+    function excelFilterUniqueValues(query) {
+      const container = document.getElementById('excel-values-list');
+      if (!container) return;
+      const labels = container.querySelectorAll('label');
+      const q = query.toLowerCase().trim();
+      
+      let visibleCount = 0;
+      let checkedCount = 0;
+      for (let i = 1; i < labels.length; i++) {
+        const label = labels[i];
+        const text = label.textContent.toLowerCase();
+        if (text.includes(q)) {
+          label.style.display = '';
+          visibleCount++;
+          const cb = label.querySelector('input');
+          if (cb && cb.checked) checkedCount++;
+        } else {
+          label.style.display = 'none';
+        }
+      }
+      
+      const selectAll = document.getElementById('excel-select-all');
+      selectAll.checked = (visibleCount > 0 && checkedCount === visibleCount);
+      selectAll.indeterminate = (checkedCount > 0 && checkedCount < visibleCount);
+    }
+
+    function applyExcelFiltersForColumn(colId) {
+      const container = document.getElementById('excel-values-list');
+      const checkboxes = container.querySelectorAll('.excel-value-checkbox');
+      
+      const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+      
+      if (checkedBoxes.length === checkboxes.length) {
+        delete activeExcelFilters[colId];
+      } else {
+        activeExcelFilters[colId] = checkedBoxes.map(cb => cb.value);
+      }
+      
+      applyFilters();
+      closeExcelFilterDropdown();
+    }
+
+    function excelSortColumn(colId, direction) {
+      currentSortColumn = colId;
+      currentSortOrder = direction;
+      const multiplier = direction === 'asc' ? 1 : -1;
+      
+      allStudentsData.sort((a, b) => {
+        let valA = getStudentColumnValueRaw(a, colId);
+        let valB = getStudentColumnValueRaw(b, colId);
+        return valA.toString().localeCompare(valB.toString(), undefined, { sensitivity: 'base', numeric: true }) * multiplier;
+      });
+      
+      buildTableHeader ? buildTableHeader() : renderTable(allStudentsData);
+      applyFilters();
+      closeExcelFilterDropdown();
+    }
+
+    function getStudentColumnValueRaw(student, colId) {
+      let val = '';
+      if (colId === 'app_no') {
+        val = student.app_no || '';
+      } else if (colId === 'student_name') {
+        val = student.name_english || student.name || '';
+      } else if (colId === 'enroll_class') {
+        val = student.className || student.enroll_class || '';
+      } else if (colId === 'father_name_kn') {
+        val = student.father_name_az || student.father_name_kn || '';
+      } else if (colId === 'mother_name_kn') {
+        val = student.mother_name_az || student.mother_name_kn || '';
+      } else if (colId === 'student_aadhaar') {
+        val = student.aadhaar || student.student_aadhaar || '';
+      } else if (colId === 'mobile_number') {
+        val = student.mobile || student.mobile_number || '';
+      } else if (colId === 'is_admitted') {
+        const status = (student.is_admitted === true || student.is_admitted === 'true' || student.isAdmitted === true || student.isAdmitted === 'true');
+        val = status ? 'Admitted' : 'Pending';
+      } else if (colId === 'gender') {
+        val = student.gender === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು';
+      } else {
+        val = student[colId] !== undefined && student[colId] !== null ? student[colId] : '';
+      }
+      return val.toString().trim();
+    }
+
     const standardColumns = [
-      { id: 'app_no', labelKn: 'ವಿದ್ಯಾರ್ಥಿ ಐಡಿ / App No', labelEn: 'Student ID / App No' },
+      { id: 'app_no', labelKn: 'ಅರ್ಜಿ ಸಂಖ್ಯೆ / Application No', labelEn: 'Application No' },
       { id: 'student_name', labelKn: 'ಹೆಸರು / Student Name', labelEn: 'Student Name' },
       { id: 'name_english', labelKn: 'ಹೆಸರು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ / Name English', labelEn: 'Name English' },
       { id: 'enroll_class', labelKn: 'ತರಗತಿ / Class', labelEn: 'Class' },
       { id: 'gender', labelKn: 'ಲಿಂಗ / Gender', labelEn: 'Gender' },
       { id: 'dob', labelKn: 'ಹುಟ್ಟಿದ ದಿನಾಂಕ / DOB', labelEn: 'DOB' },
       { id: 'student_aadhaar', labelKn: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar', labelEn: 'Aadhaar' },
+      { id: 'apaar', labelKn: 'ಅಪಾರ್ ಸಂಖ್ಯೆ / APAAR No', labelEn: 'APAAR No' },
+      { id: 'pen', labelKn: 'PEN ಸಂಖ್ಯೆ / PEN No', labelEn: 'PEN No' },
       { id: 'religion', labelKn: 'ಧರ್ಮ / Religion', labelEn: 'Religion' },
       { id: 'social_class', labelKn: 'ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category', labelEn: 'Social Category' },
-      { id: 'student_caste', labelKn: 'ಜಾತಿ / Caste', labelEn: 'Caste' },
-      { id: 'caste', labelKn: 'ಉಪಜಾತಿ / Sub-Caste', labelEn: 'Sub-Caste' },
+      { id: 'caste', labelKn: 'ಜಾತಿ / Caste', labelEn: 'Caste' },
+      { id: 'student_caste', labelKn: 'ಉಪಜಾತಿ / Sub-Caste', labelEn: 'Sub-Caste' },
       { id: 'mother_tongue', labelKn: 'ಮಾತೃಭಾಷೆ / Mother Tongue', labelEn: 'Mother Tongue' },
       { id: 'mobile_number', labelKn: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile No', labelEn: 'Mobile No' },
       { id: 'special_need', labelKn: 'ವಿಶೇಷ ಅಗತ್ಯತೆ / Special Need', labelEn: 'Special Need' },
@@ -651,9 +949,10 @@
       { id: 'prev_pin_code', labelKn: 'ಹಿಂದಿನ ಶಾಲೆಯ ಪಿನ್‌ಕೋಡ್ / Prev Pin Code', labelEn: 'Prev Pin Code' },
       { id: 'prev_village', labelKn: 'ಹಿಂದಿನ ಶಾಲೆಯ ಗ್ರಾಮ / Prev Village', labelEn: 'Prev Village' },
       { id: 'form_date', labelKn: 'ಅರ್ಜಿ ದಿನಾಂಕ / Form Date', labelEn: 'Form Date' },
+      { id: 'is_admitted', labelKn: 'ದಾಖಲಾತಿ ಸ್ಥಿತಿ / Admission Status', labelEn: 'Admission Status' }
     ];
-
-    function loadColumnOrder() {
+    
+function loadColumnOrder() {
       const storedOrder = localStorage.getItem('student_columns_order');
       if (storedOrder) {
         try {
@@ -791,6 +1090,194 @@
       initSidebar();
       buildTableHeader();
       fetchStudentsDatabase();
+
+      // Event delegation for double click inline editing (WOW Spreadsheet style!)
+      document.getElementById('students-table-body')?.addEventListener('dblclick', function(event) {
+        const td = event.target.closest('td');
+        if (!td) return;
+
+        const tr = td.closest('tr');
+        if (!tr) return;
+
+        const studentId = tr.getAttribute('data-student-id');
+        if (!studentId) return;
+
+        const cellIndex = td.cellIndex;
+        const visibility = getColumnVisibility();
+        const visibleCols = [];
+        
+        standardColumns.forEach(col => {
+          if (visibility[col.id] !== false) {
+            visibleCols.push(col);
+          }
+        });
+        
+        const colIdx = cellIndex - 2; // Offset for checkbox and SL No columns
+        if (colIdx < 0 || colIdx >= visibleCols.length) return;
+        
+        const col = visibleCols[colIdx];
+        const editableFields = ['student_name', 'name_english', 'student_sts', 'mobile_number', 'app_no', 'father_name_kn', 'mother_name_kn'];
+        if (!editableFields.includes(col.id)) return;
+
+        if (td.querySelector('input')) return;
+
+        const student = allStudentsData.find(s => s.realId === studentId);
+        if (!student) return;
+
+        const isDual = ['student_name', 'father_name_kn', 'mother_name_kn'].includes(col.id);
+        
+        td.innerHTML = "";
+        
+        let inputEn, inputKn, singleInput;
+        
+        if (isDual) {
+          let valEn = "", valKn = "", keyEn = "", keyKn = "";
+          
+          if (col.id === 'student_name') {
+            valEn = student.name_english || "";
+            valKn = student.student_name_kn || "";
+            keyEn = "name_english";
+            keyKn = "student_name_kn";
+          } else if (col.id === 'father_name_kn') {
+            valEn = student.father_name_az || "";
+            valKn = student.father_name_kn || "";
+            keyEn = "father_name_az";
+            keyKn = "father_name_kn";
+          } else if (col.id === 'mother_name_kn') {
+            valEn = student.mother_name_az || "";
+            valKn = student.mother_name_kn || "";
+            keyEn = "mother_name_az";
+            keyKn = "mother_name_kn";
+          }
+          
+          const container = document.createElement("div");
+          container.className = "flex flex-col gap-1 w-full p-1";
+          
+          inputEn = document.createElement("input");
+          inputEn.type = "text";
+          inputEn.value = valEn;
+          inputEn.placeholder = "English";
+          inputEn.className = "w-full p-1 text-[10px] border border-sky-400 rounded focus:outline-none focus:ring-1 focus:ring-sky-500 bg-white text-slate-850 font-bold uppercase";
+          
+          inputKn = document.createElement("input");
+          inputKn.type = "text";
+          inputKn.value = valKn;
+          inputKn.placeholder = "ಕನ್ನಡ";
+          inputKn.className = "w-full p-1 text-[10px] border border-sky-400 rounded focus:outline-none focus:ring-1 focus:ring-sky-500 bg-white text-slate-850 font-bold";
+          
+          container.appendChild(inputEn);
+          container.appendChild(inputKn);
+          td.appendChild(container);
+          inputEn.focus();
+          
+          let hasSaved = false;
+          const saveDualChanges = async () => {
+            if (hasSaved) return;
+            hasSaved = true;
+            
+            const newValEn = inputEn.value.trim().toUpperCase();
+            const newValKn = inputKn.value.trim();
+            
+            if (newValEn === valEn && newValKn === valKn) {
+              applyFilters();
+              return;
+            }
+            
+            td.innerHTML = `<span class="text-slate-400 text-[10px]"><i class="fa-solid fa-circle-notch animate-spin"></i></span>`;
+            
+            try {
+              const payload = {};
+              payload[keyEn] = newValEn;
+              payload[keyKn] = newValKn;
+              
+              const { error } = await supabaseClient
+                .from('admissions')
+                .update(payload)
+                .eq('id', studentId);
+                
+              if (error) throw error;
+              
+              student[keyEn] = newValEn;
+              student[keyKn] = newValKn;
+              showToast("ಯಶಸ್ವಿ / Success", "ಹೆಸರುಗಳನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ. / Names updated.", "success");
+            } catch (err) {
+              showToast("ದೋಷ: ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+            } finally {
+              applyFilters();
+            }
+          };
+
+          const handleKey = (e) => {
+            if (e.key === 'Enter') saveDualChanges();
+            else if (e.key === 'Escape') { hasSaved = true; applyFilters(); }
+          };
+          inputEn.addEventListener('keydown', handleKey);
+          inputKn.addEventListener('keydown', handleKey);
+          
+          let blurTimeout;
+          const handleBlur = () => {
+            clearTimeout(blurTimeout);
+            blurTimeout = setTimeout(() => {
+              if (document.activeElement !== inputEn && document.activeElement !== inputKn) {
+                saveDualChanges();
+              }
+            }, 200);
+          };
+          inputEn.addEventListener('blur', handleBlur);
+          inputKn.addEventListener('blur', handleBlur);
+          
+        } else {
+          const val = student[col.id] || "";
+          singleInput = document.createElement("input");
+          singleInput.type = "text";
+          singleInput.value = val;
+          singleInput.className = "w-full p-1 text-[11px] border border-sky-400 rounded focus:outline-none focus:ring-1 focus:ring-sky-500 bg-white text-slate-850 font-bold";
+          if (col.id === 'student_sts' || col.id === 'mobile_number') {
+            singleInput.className += " font-mono text-center";
+          }
+          td.appendChild(singleInput);
+          singleInput.focus();
+          
+          let hasSaved = false;
+          const saveSingleChanges = async () => {
+            if (hasSaved) return;
+            hasSaved = true;
+            
+            const newVal = singleInput.value.trim();
+            if (newVal === val) {
+              applyFilters();
+              return;
+            }
+            
+            td.innerHTML = `<span class="text-slate-400 text-[10px]"><i class="fa-solid fa-circle-notch animate-spin"></i></span>`;
+            
+            try {
+              const payload = {};
+              payload[col.id] = newVal;
+              
+              const { error } = await supabaseClient
+                .from('admissions')
+                .update(payload)
+                .eq('id', studentId);
+                
+              if (error) throw error;
+              
+              student[col.id] = newVal;
+              showToast("ಯಶಸ್ವಿ / Success", "ವಿವರವನ್ನು ನವೀಕರಿಸಲಾಗಿದೆ. / Field updated.", "success");
+            } catch (err) {
+              showToast("ದೋಷ: ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+            } finally {
+              applyFilters();
+            }
+          };
+
+          singleInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') saveSingleChanges();
+            else if (e.key === 'Escape') { hasSaved = true; applyFilters(); }
+          });
+          singleInput.addEventListener('blur', saveSingleChanges);
+        }
+      });
     });
 
     function applyUrlParameters() {
@@ -847,9 +1334,29 @@
         if (error) throw error;
 
         allStudentsData = (data || []).map(s => {
-          const mapped = { ...s };
+          let app_no = s.app_no || '';
+          let student_sts = s.student_sts || '';
+          let enrolment_no = s.enrolment_no || '';
+
+          const isNineDigit = (val) => /^\d{9}$/.test(String(val).replace(/\s+/g, '').trim());
+
+          if (isNineDigit(app_no)) {
+            if (!student_sts) {
+              student_sts = app_no;
+            }
+            app_no = '';
+          }
+
+          if (isNineDigit(enrolment_no)) {
+            if (!student_sts) {
+              student_sts = enrolment_no;
+            }
+            enrolment_no = '';
+          }
+
+          const mapped = { ...s, app_no, student_sts, enrolment_no };
           mapped.realId = s.id;
-          mapped.id = s.app_no || s.id;
+          mapped.id = app_no || s.id;
           mapped.name = s.name_english || s.student_name || '';
           mapped.student_name_kn = s.student_name || '';
           mapped.name_english = s.name_english || '';
@@ -882,12 +1389,23 @@
       if (!classStr) return "";
       let clean = classStr.toString().trim().toLowerCase();
       
+      // Remove any Kannada suffixes like "ನೇ" or "ನೆ"
+      clean = clean.replace(/ನೇ/g, '').replace(/ನೆ/g, '').replace(/ನೇ ತರಗತಿ/g, '').replace(/ತರಗತಿ/g, '');
+      
+      // Convert Kannada digits to English digits
+      const kanDigits = {'೧':'1', '೨':'2', '೩':'3', '೪':'4', '೫':'5', '೬':'6', '೭':'7', '೮':'8', '೯':'9', '೧೦':'10', '೦':'0'};
+      for (const key in kanDigits) {
+        clean = clean.replace(new RegExp(key, 'g'), kanDigits[key]);
+      }
+      
+      clean = clean.trim();
+
       if (!clean.includes("lkg")) {
         clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
       }
       
-      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
-      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("ಎಲ್.ಕೆ.ಜಿ") || clean.includes("ಎಲ್ಕೆಜಿ")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2") || clean.includes("ಯು.ಕೆ.ಜಿ") || clean.includes("ಯುಕೆಜಿ")) return "UKG";
       
       if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
       if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
@@ -903,6 +1421,34 @@
       return classStr.toString().trim();
     }
 
+    function getStudentColumnValue(student, colId) {
+      let val = '';
+      if (colId === 'app_no') {
+        val = student.app_no || student.id || '';
+      } else if (colId === 'student_name') {
+        val = `${student.student_name || ''} ${student.name || ''} ${student.name_english || ''} ${student.student_name_kn || ''}`;
+      } else if (colId === 'enroll_class') {
+        val = student.enroll_class || student.className || '';
+      } else if (colId === 'father_name_kn') {
+        val = `${student.father_name_kn || ''} ${student.father || ''} ${student.father_name_az || ''}`;
+      } else if (colId === 'mother_name_kn') {
+        val = `${student.mother_name_kn || ''} ${student.mother || ''} ${student.mother_name_az || ''}`;
+      } else if (colId === 'student_aadhaar') {
+        val = student.student_aadhaar || student.aadhaar || '';
+      } else if (colId === 'mobile_number') {
+        val = student.mobile_number || student.mobile || '';
+      } else if (colId === 'is_admitted') {
+        const status = (student.is_admitted === true || student.is_admitted === 'true' || student.isAdmitted === true || student.isAdmitted === 'true');
+        val = status ? 'Admitted' : 'Pending';
+      } else if (colId === 'gender') {
+        const isBoy = (student.gender === 'Boy');
+        val = isBoy ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು';
+      } else {
+        val = student[colId] !== undefined && student[colId] !== null ? student[colId] : '';
+      }
+      return val.toString().toUpperCase().trim();
+    }
+
     function applyFilters() {
       const q = document.getElementById('roster-search').value.trim().toUpperCase();
       const selectedClass = document.getElementById('class-filter').value;
@@ -912,16 +1458,22 @@
       const selectedStatus = document.getElementById('status-filter').value;
 
       const filtered = allStudentsData.filter(student => {
-        const searchMatch = !q || 
-          (student.name || '').toUpperCase().includes(q) || 
-          (student.name_english || '').toUpperCase().includes(q) || 
-          (student.id || '').toUpperCase().includes(q) || 
-          (student.father || '').toUpperCase().includes(q) ||
-          (student.father_name_kn || '').toUpperCase().includes(q) ||
-          (student.mother || '').toUpperCase().includes(q) ||
-          (student.mother_name_kn || '').toUpperCase().includes(q) ||
-          (student.aadhaar || '').toUpperCase().includes(q) ||
-          (student.mobile || '').toUpperCase().includes(q);
+        let searchMatch = true;
+        if (q) {
+          const tokens = q.split(/\s+/).filter(t => t.length > 0);
+          searchMatch = tokens.every(token => {
+            return (student.name || '').toUpperCase().includes(token) || 
+                   (student.name_english || '').toUpperCase().includes(token) || 
+                   (student.id || '').toUpperCase().includes(token) || 
+                   (student.father || '').toUpperCase().includes(token) ||
+                   (student.father_name_kn || '').toUpperCase().includes(token) ||
+                   (student.mother || '').toUpperCase().includes(token) ||
+                   (student.mother_name_kn || '').toUpperCase().includes(token) ||
+                   (student.aadhaar || '').toUpperCase().includes(token) ||
+                   (student.mobile || '').toUpperCase().includes(token) ||
+                   (student.className || '').toUpperCase().includes(token);
+          });
+        }
 
         let classMatch = !selectedClass;
         if (selectedClass) {
@@ -930,8 +1482,13 @@
 
         const genderMatch = !selectedGender || student.gender === selectedGender;
 
-        const mediumMatch = !selectedMedium || 
-          (student.medium || '').toLowerCase() === selectedMedium.toLowerCase();
+        let normMed = (student.medium || '').trim();
+        if (normMed.toUpperCase() === 'KANNADA' || normMed === 'ಕನ್ನಡ' || normMed === 'KN') {
+          normMed = 'ಕನ್ನಡ';
+        } else if (normMed.toUpperCase() === 'ENGLISH' || normMed.toLowerCase() === 'english' || normMed === 'EN') {
+          normMed = 'English';
+        }
+        const mediumMatch = !selectedMedium || normMed === selectedMedium;
 
         const categoryMatch = !selectedCategory || 
           (student.social_class || '').toUpperCase() === selectedCategory.toUpperCase();
@@ -943,7 +1500,20 @@
           statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
         }
 
-        return searchMatch && classMatch && genderMatch && mediumMatch && categoryMatch && statusMatch;
+        // Check Excel filter matches
+        let excelFiltersMatch = true;
+        for (const colId in activeExcelFilters) {
+          const selectedVals = activeExcelFilters[colId];
+          if (selectedVals && selectedVals.length > 0) {
+            const studentVal = getStudentColumnValueRaw(student, colId);
+            if (!selectedVals.includes(studentVal)) {
+              excelFiltersMatch = false;
+              break;
+            }
+          }
+        }
+
+        return searchMatch && classMatch && genderMatch && mediumMatch && categoryMatch && statusMatch && excelFiltersMatch;
       });
 
       renderTable(filtered);
@@ -1014,12 +1584,27 @@
         <th class="p-3 text-center w-10 no-print">
           <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
         </th>
-        <th class="p-3 text-center w-12">Sl.No</th>
+        <th class="p-3 text-center w-12 font-bold text-[11px] whitespace-nowrap text-white">Sl.No</th>
       `;
       
       standardColumns.forEach(col => {
         if (visibility[col.id] !== false) {
-          headersHtml += `<th class="p-3 text-center cursor-pointer select-none hover:bg-slate-700 transition" onclick="sortRosterData('${col.id}')">${col.labelEn}${sortIcon(col.id)}</th>`;
+          const filterActive = activeExcelFilters[col.id] && activeExcelFilters[col.id].length > 0;
+          const filterIconClass = filterActive 
+            ? 'fa-solid fa-filter text-sky-600 dark:text-sky-400 opacity-100 scale-110' 
+            : 'fa-solid fa-filter opacity-40 hover:opacity-100';
+          
+          headersHtml += `
+            <th class="p-3 text-center cursor-pointer select-none hover:bg-slate-700/10 dark:hover:bg-slate-700 transition" style="min-width: 140px;">
+              <div class="flex items-center justify-between gap-1.5 w-full">
+                <span class="text-[11px] font-bold text-white whitespace-nowrap" onclick="sortRosterData('${col.id}')">${col.labelEn}</span>
+                <div class="flex items-center gap-1 no-print">
+                  ${sortIcon(col.id)}
+                  <i class="${filterIconClass} text-[10px] cursor-pointer p-1" onclick="toggleFilterDropdown(event, '${col.id}')"></i>
+                </div>
+              </div>
+            </th>
+          `;
         }
       });
       
@@ -1031,12 +1616,17 @@
       const str = text.toString();
       if (!query) return str;
       
-      const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      const regex = new RegExp(`(${escapedQuery})`, 'gi');
+      const tokens = query.trim().split(/\s+/).filter(t => t.length > 0);
+      if (tokens.length === 0) return str;
+      
+      const escapedTokens = tokens.map(t => t.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+      const pattern = `(${escapedTokens.join('|')})`;
+      const regex = new RegExp(pattern, 'gi');
       return str.replace(regex, '<mark class="bg-yellow-250 text-slate-950 font-bold px-[2px] py-[1px] rounded shadow-sm">$1</mark>');
     }
 
     function renderTable(students) {
+      window.currentFilteredStudents = students;
       const tbody = document.getElementById('students-table-body');
       const q = document.getElementById('roster-search').value.trim();
       
@@ -1088,7 +1678,7 @@
             } else if (col.id === 'is_admitted') {
               cellsHtml += `<td class="p-3 text-center">${val === true || val === 'true' ? 'Admitted' : 'Pending'}</td>`;
             } else if (col.id === 'app_no') {
-              cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${highlightMatch(s.id, q)}</td>`;
+              cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${highlightMatch(s.app_no || '-', q)}</td>`;
             } else if (col.id === 'student_name') {
               const nameEn = (s.name_english || '').trim().toUpperCase();
               const nameKn = (s.student_name_kn || '').trim();
@@ -1147,6 +1737,34 @@
               cellsHtml += `<td class="p-3 font-mono text-center">${highlightMatch(s.aadhaar || '-', q)}</td>`;
             } else if (col.id === 'mobile_number') {
               cellsHtml += `<td class="p-3 font-mono text-center">${highlightMatch(s.mobile || '-', q)}</td>`;
+            } else if (col.id === 'medium') {
+              let displayMed = val;
+              const clean = (val || '').toString().trim().toLowerCase();
+              if (clean === 'ಕನ್ನಡ' || clean === 'kannada' || clean === 'kn') {
+                displayMed = 'ಕನ್ನಡ';
+              } else if (clean === 'english' || clean === 'en') {
+                displayMed = 'English';
+              }
+              cellsHtml += `<td class="p-3 text-center">${highlightMatch(displayMed || '-', q)}</td>`;
+            } else if (col.id === 'religion') {
+              let displayRel = val;
+              const cleanMed = (s.medium || '').toString().trim();
+              const isKn = cleanMed === 'ಕನ್ನಡ' || cleanMed.toLowerCase() === 'kannada' || cleanMed === 'KN';
+              const cleanRel = (val || '').toString().trim().toUpperCase();
+              
+              if (isKn) {
+                if (cleanRel === 'HINDU') displayRel = 'ಹಿಂದೂ';
+                else if (cleanRel === 'ISLAM') displayRel = 'ಮುಸ್ಲಿಂ';
+                else if (cleanRel === 'CHRISTIAN') displayRel = 'ಕ್ರಿಶ್ಚಿಯನ್';
+                else if (cleanRel === 'PARSI') displayRel = 'ಪಾರ್ಸಿ';
+                else if (cleanRel === 'JAIN') displayRel = 'ಜೈನ';
+                else if (cleanRel === 'BUDDHIST') displayRel = 'ಬೌದ್ಧ';
+                else if (cleanRel === 'SIKH') displayRel = 'ಸಿಖ್';
+                else if (cleanRel === 'OTHERS') displayRel = 'ಇತರೆ';
+              } else {
+                displayRel = cleanRel;
+              }
+              cellsHtml += `<td class="p-3 text-center">${highlightMatch(displayRel || '-', q)}</td>`;
             } else {
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(val || '-', q)}</td>`;
             }
@@ -1160,6 +1778,7 @@
         `;
       });
       tbody.innerHTML = rowsHtml;
+      if (window.applyLanguagePreference) window.applyLanguagePreference();
     }
 
     function saveCustomValue(studentId, colName, value) {
@@ -1251,14 +1870,8 @@
           bar.classList.add('translate-y-0', 'opacity-100');
         }
         
-        // Single selection features
-        if (count === 1) {
-          if (printBtn) printBtn.classList.remove('hidden');
-          if (pdfBtn) pdfBtn.classList.remove('hidden');
-        } else {
-          if (printBtn) printBtn.classList.add('hidden');
-          if (pdfBtn) pdfBtn.classList.add('hidden');
-        }
+        if (printBtn) printBtn.classList.remove('hidden');
+        if (pdfBtn) pdfBtn.classList.remove('hidden');
       } else {
         if (bar) {
           bar.classList.remove('translate-y-0', 'opacity-100');
@@ -1352,18 +1965,250 @@
 
     function printSelectedStudentForm() {
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
-      if (checkedBoxes.length === 1) {
-        const studentId = checkedBoxes[0].getAttribute('data-id');
-        window.open('Preview.html?id=' + encodeURIComponent(studentId), '_blank');
+      if (checkedBoxes.length >= 1) {
+        const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+        window.open('Preview.html?id=' + encodeURIComponent(selectedIds.join(',')), '_blank');
       }
     }
 
     function downloadSelectedStudentPdf() {
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
-      if (checkedBoxes.length === 1) {
-        const studentId = checkedBoxes[0].getAttribute('data-id');
-        window.open('Preview.html?id=' + encodeURIComponent(studentId) + '&autoDownloadPdf=true', '_blank');
+      if (checkedBoxes.length >= 1) {
+        const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+        window.open('Preview.html?id=' + encodeURIComponent(selectedIds.join(',')) + '&autoDownloadPdf=true', '_blank');
       }
+    }
+
+    function generateSelectedStudentIdCards() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 0) {
+        showToast("ಆಯ್ಕೆ ಮಾಡಿ / Select Students", "ದಯವಿಟ್ಟು ಕನಿಷ್ಠ ಒಬ್ಬ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. / Please select at least one student.", "error");
+        return;
+      }
+      
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      const studentsToPrint = allStudentsData.filter(s => selectedIds.includes(s.realId));
+      
+      const printWin = window.open('', '_blank');
+      
+      const schoolName = localStorage.getItem('school_name') || "GHPS Marched";
+      const defaultLogoUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+      const logoUrl = localStorage.getItem('school_logo_url') || defaultLogoUrl;
+      const academicYear = "2026-27";
+
+      let idCardsHtml = "";
+      studentsToPrint.forEach(s => {
+        const photoUrl = s.student_photo || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
+        const nameEn = (s.name_english || '').trim().toUpperCase();
+        const nameKn = (s.student_name_kn || '').trim();
+        const fatherEn = (s.father_name_az || '').trim().toUpperCase();
+        const motherEn = (s.mother_name_az || '').trim().toUpperCase();
+        const sts = s.student_sts || s.app_no || "-";
+        const enrollClass = s.className || s.enroll_class || "-";
+        const mobile = s.mobile || "-";
+
+        idCardsHtml += `
+          <div class="id-card">
+            <div class="card-header">
+              <img src="${logoUrl}" class="card-logo">
+              <div class="header-text">
+                <h3 class="school-title">${schoolName}</h3>
+                <span class="sub-title">STUDENT IDENTITY CARD</span>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              <img src="${photoUrl}" class="student-photo">
+              
+              <div class="student-name-kn">${nameKn}</div>
+              <div class="student-name-en">${nameEn}</div>
+              
+              <div class="info-grid">
+                <span class="label">Class:</span> <span class="value">${enrollClass} Std</span>
+                <span class="label">STS No:</span> <span class="value font-mono">${sts}</span>
+                <span class="label">Father:</span> <span class="value">${fatherEn}</span>
+                <span class="label">Mother:</span> <span class="value">${motherEn}</span>
+                <span class="label">Phone:</span> <span class="value font-mono">${mobile}</span>
+              </div>
+            </div>
+            
+            <div class="card-footer">
+              <span>Academic Year: ${academicYear}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Student ID Cards - ${schoolName}</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+            
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              font-family: 'Plus Jakarta Sans', sans-serif;
+              background-color: #f1f5f9;
+              padding: 20px;
+              display: flex;
+              justify-content: center;
+            }
+            .cards-container {
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 20px;
+              width: 100%;
+              max-width: 1050px;
+            }
+            .id-card {
+              width: 300px;
+              height: 440px;
+              background: white;
+              border-radius: 16px;
+              border: 1px solid #e2e8f0;
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+              overflow: hidden;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+              position: relative;
+            }
+            
+            .card-header {
+              background: linear-gradient(135deg, #1e3a8a, #0d9488);
+              color: white;
+              padding: 10px 12px;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              height: 60px;
+            }
+            .card-logo {
+              width: 32px;
+              height: 32px;
+              object-fit: contain;
+              border-radius: 6px;
+              background: white;
+              padding: 2px;
+            }
+            .header-text {
+              display: flex;
+              flex-direction: column;
+              min-width: 0;
+            }
+            .school-title {
+              font-size: 10px;
+              font-weight: 800;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            .sub-title {
+              font-size: 7px;
+              font-weight: 700;
+              letter-spacing: 1px;
+              opacity: 0.9;
+            }
+            
+            .card-body {
+              padding: 12px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              flex: 1;
+              justify-content: center;
+            }
+            .student-photo {
+              width: 90px;
+              height: 110px;
+              object-fit: cover;
+              border-radius: 8px;
+              border: 2px solid #e2e8f0;
+              margin-bottom: 8px;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
+            .student-name-kn {
+              font-size: 12px;
+              color: #0f172a;
+              font-weight: bold;
+              text-align: center;
+              margin-bottom: 1px;
+            }
+            .student-name-en {
+              font-size: 10px;
+              color: #475569;
+              font-weight: 700;
+              text-align: center;
+              margin-bottom: 8px;
+              letter-spacing: 0.5px;
+            }
+            .info-grid {
+              display: grid;
+              grid-template-columns: 50px 1fr;
+              gap: 3px 6px;
+              width: 100%;
+              font-size: 9.5px;
+              color: #334155;
+              border-top: 1px dashed #e2e8f0;
+              padding-top: 8px;
+            }
+            .label {
+              font-weight: 700;
+              color: #64748b;
+              text-transform: uppercase;
+              font-size: 8px;
+              align-self: center;
+            }
+            .value {
+              font-weight: 600;
+              color: #1e293b;
+            }
+            
+            .card-footer {
+              background: #f8fafc;
+              border-top: 1px solid #f1f5f9;
+              padding: 6px;
+              text-align: center;
+              font-size: 8px;
+              font-weight: bold;
+              color: #64748b;
+            }
+            
+            @media print {
+              body { background: white; padding: 0; margin: 0; }
+              .cards-container {
+                gap: 15px;
+                grid-template-columns: repeat(3, 1fr);
+              }
+              .id-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                page-break-inside: avoid;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="cards-container">
+            ${idCardsHtml}
+          </div>
+          \x3Cscript>
+            window.onload = function() {
+              setTimeout(() => {
+                window.print();
+              }, 500);
+            };
+          \x3C/script>
+        </body>
+        </html>
+      `);
+      
+      printWin.document.close();
     }
 
     function printSelectedStudents() {
@@ -1655,21 +2500,21 @@
 
     // CSV Functions
     function downloadCSVTemplate() {
+      if (typeof XLSX === 'undefined') {
+        showToast("ದೋಷ: ಎಕ್ಸೆಲ್ ಲೈಬ್ರರಿ ಲೋಡ್ ಆಗಿಲ್ಲ. / Excel library not loaded.", "error");
+        return;
+      }
+      
       const headers = csvColumns.map(col => col.label);
       const sampleRow = csvColumns.map(col => col.default);
       
-      let csvContent = "\uFEFF"; 
-      csvContent += headers.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\r\n";
-      csvContent += sampleRow.map(r => `"${r.replace(/"/g, '""')}"`).join(",") + "\r\n";
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", "GHPS_New_Admission_Template.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const data = [headers, sampleRow];
+      
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "AdmissionTemplate");
+      
+      XLSX.writeFile(wb, "GHPS_New_Admission_Template.xlsx");
     }
 
     function triggerCSVImport() {
@@ -1681,11 +2526,30 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
-        const text = e.target.result;
-        parseAndValidateCSV(text);
-      };
-      reader.readAsText(file, 'UTF-8');
+      const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+      if (isExcel) {
+        reader.onload = function(e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const csvText = XLSX.utils.sheet_to_csv(worksheet);
+            parseAndValidateCSV(csvText);
+          } catch (err) {
+            console.error("Excel parse error:", err);
+            showToast("ದೋಷ: ಎಕ್ಸೆಲ್ ಫೈಲ್ ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. / Failed to read Excel file.", "error");
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.onload = function(e) {
+          const text = e.target.result;
+          parseAndValidateCSV(text);
+        };
+        reader.readAsText(file, 'UTF-8');
+      }
       input.value = ''; 
     }
 
@@ -2071,7 +2935,7 @@
           } else if (col.id === 'is_admitted') {
             row.push(val === true || val === 'true' ? 'Admitted' : 'Pending');
           } else if (col.id === 'app_no') {
-            row.push(s.id || '');
+            row.push(s.app_no || '');
           } else if (col.id === 'student_name') {
             row.push(s.name || '');
           } else if (col.id === 'enroll_class') {
@@ -2139,7 +3003,7 @@
           } else if (col.id === 'is_admitted') {
             row.push(val === true || val === 'true' ? 'Admitted' : 'Pending');
           } else if (col.id === 'app_no') {
-            row.push(s.id || '');
+            row.push(s.app_no || '');
           } else if (col.id === 'student_name') {
             row.push(s.name || '');
           } else if (col.id === 'enroll_class') {
@@ -2455,20 +3319,173 @@
       }
     }
 
+    function getNavigationStudentIds() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length > 0) {
+        return Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      }
+      
+      // Fallback: get all students currently rendered in the table
+      if (window.currentFilteredStudents && window.currentFilteredStudents.length > 0) {
+        return window.currentFilteredStudents.map(s => s.realId);
+      }
+      
+      // Fallback: get all loaded students
+      return allStudentsData.map(s => s.realId);
+    }
+
+    async function admitSingleStudent(studentId) {
+      if (!confirm("ವಿದ್ಯಾರ್ಥಿಯ ಪ್ರವೇಶವನ್ನು ಅನುಮೋದಿಸಲು ಖಚಿತಪಡಿಸಿ?\nAre you sure you want to approve this student's admission?")) return;
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({ is_admitted: true })
+          .eq('id', studentId);
+        if (error) throw error;
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", "ವಿದ್ಯಾರ್ಥಿ ಪ್ರವೇಶವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅನುಮೋದಿಸಲಾಗಿದೆ.", "success");
+        const student = allStudentsData.find(s => s.realId === studentId);
+        if (student) {
+          student.is_admitted = true;
+          student.isAdmitted = true;
+        }
+        applyFilters();
+        openStudentDetailModal(studentId);
+      } catch (err) {
+        console.error("Admit error:", err);
+        alert("Error: " + err.message);
+      }
+    }
+
+    async function deleteSingleStudent(studentId) {
+      if (!confirm("ಎಚ್ಚರಿಕೆ! ಈ ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಖಚಿತಪಡಿಸಿ?\nWarning! Are you sure you want to permanently delete this student record?")) return;
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .delete()
+          .eq('id', studentId);
+        if (error) throw error;
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", "ವಿದ್ಯಾರ್ಥಿ ದಾಖಲೆಯನ್ನು ಅಳಿಸಲಾಗಿದೆ.", "success");
+        allStudentsData = allStudentsData.filter(s => s.realId !== studentId);
+        applyFilters();
+        closeStudentDetailModal();
+      } catch (err) {
+        console.error("Delete error:", err);
+        alert("Error: " + err.message);
+      }
+    }
+
+    // Keyboard arrow swiping listeners
+    window.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('student-detail-modal');
+      if (modal && !modal.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft') {
+          const prevBtn = document.getElementById('modal-prev-btn');
+          if (prevBtn && !prevBtn.classList.contains('hidden')) prevBtn.click();
+        } else if (e.key === 'ArrowRight') {
+          const nextBtn = document.getElementById('modal-next-btn');
+          if (nextBtn && !nextBtn.classList.contains('hidden')) nextBtn.click();
+        } else if (e.key === 'Escape') {
+          closeStudentDetailModal();
+        }
+      }
+    });
+
+    // Listen to messages from embedded NewAdmission iframe
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.action === 'embedSubmitSuccess') {
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", "ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ.", "success");
+        closeStudentDetailModal();
+        fetchAdmissions();
+      }
+    });
+
     function openStudentDetailModal(realId) {
       const student = allStudentsData.find(s => s.realId === realId);
       if (!student) return;
+
+      // Reset Edit button UI to read-only view
+      const editBtn = document.getElementById('modal-edit-btn');
+      editBtn.disabled = false;
+      editBtn.classList.remove('hidden');
+      editBtn.innerHTML = `<i class="fa-solid fa-pen text-[10px]"></i> Edit`;
+      editBtn.className = "bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 border-0 cursor-pointer transition";
+
+      const cancelBtn = document.getElementById('modal-cancel-btn');
+      if (cancelBtn) cancelBtn.classList.add('hidden');
+
+      // Re-show other action buttons in the footer
+      document.getElementById('modal-approve-btn').classList.remove('hidden');
+      document.getElementById('modal-delete-btn').classList.remove('hidden');
+      document.getElementById('modal-receipt-btn').classList.remove('hidden');
+      document.getElementById('modal-whatsapp-btn').classList.remove('hidden');
+      document.getElementById('modal-print-btn').classList.remove('hidden');
 
       const content = document.getElementById('student-detail-content');
       
       // Setup dynamic button events
       document.getElementById('modal-edit-btn').onclick = () => {
-        window.location.href = `NewAdmission.html?id=${student.realId}`;
+        enterEditModeInModal(student.realId);
       };
       document.getElementById('modal-print-btn').onclick = () => {
         window.open('Preview.html?id=' + encodeURIComponent(student.realId) + '&autoDownloadPdf=true', '_blank');
       };
+      
+      const receiptBtn = document.getElementById('modal-receipt-btn');
+      if (receiptBtn) {
+        receiptBtn.onclick = () => {
+          window.open('Preview.html?id=' + encodeURIComponent(student.realId) + '&triggerReceiptPrint=true', '_blank');
+        };
+      }
+      
+      const whatsappBtn = document.getElementById('modal-whatsapp-btn');
+      if (whatsappBtn) {
+        whatsappBtn.onclick = () => {
+          window.open('Preview.html?id=' + encodeURIComponent(student.realId) + '&triggerReceiptPdfDownload=true', '_blank');
+        };
+      }
 
+      // Configure single-student Approve/Delete actions
+      const approveBtn = document.getElementById('modal-approve-btn');
+      if (approveBtn) {
+        if (student.is_admitted === true || student.is_admitted === 'true') {
+          approveBtn.classList.add('hidden');
+        } else {
+          approveBtn.classList.remove('hidden');
+          approveBtn.onclick = () => admitSingleStudent(student.realId);
+        }
+      }
+      
+      const deleteBtn = document.getElementById('modal-delete-btn');
+      if (deleteBtn) {
+        deleteBtn.onclick = () => deleteSingleStudent(student.realId);
+      }
+
+      // Setup left/right swipe navigation buttons
+      const prevBtn = document.getElementById('modal-prev-btn');
+      const nextBtn = document.getElementById('modal-next-btn');
+      const navIds = getNavigationStudentIds();
+      const currentIndex = navIds.indexOf(realId);
+      
+      if (currentIndex === -1 || navIds.length <= 1) {
+        if (prevBtn) prevBtn.classList.add('hidden');
+        if (nextBtn) nextBtn.classList.add('hidden');
+      } else {
+        if (prevBtn) {
+          prevBtn.classList.remove('hidden');
+          prevBtn.onclick = () => {
+            const prevIndex = (currentIndex - 1 + navIds.length) % navIds.length;
+            openStudentDetailModal(navIds[prevIndex]);
+          };
+        }
+        if (nextBtn) {
+          nextBtn.classList.remove('hidden');
+          nextBtn.onclick = () => {
+            const nextIndex = (currentIndex + 1) % navIds.length;
+            openStudentDetailModal(navIds[nextIndex]);
+          };
+        }
+      }
+      
       const renderSection = (title, items) => {
         let itemsHtml = '';
         items.forEach(item => {
@@ -2512,8 +3529,10 @@
             { label: 'ದಾಖಲಾತಿ ಸಂಖ್ಯೆ / Enrolment No', value: student.enrolment_no },
             { label: 'ದಾಖಲಾತಿ ದಿನಾಂಕ / Enrolment Date', value: student.enrolment_date },
             { label: 'ಜನ್ಮ ದಿನಾಂಕ / DOB', value: student.dob },
-            { label: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar', value: student.student_aadhaar || student.aadhaar },
-            { label: 'ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile No', value: student.mobile_number || student.mobile },
+            { label: 'ವಯಸ್ಸು / Age', value: student.age },
+            { label: 'ವಯಸ್ಸಿನ ಸಡಿಲಿಕೆ ಕಾರಣ / Age Relaxation Reason', value: student.age_reason },
+            { label: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Student Aadhaar', value: student.student_aadhaar || student.aadhaar },
+            { label: 'ಆಧಾರ್‌ನಲ್ಲಿರುವ ಹೆಸರು / Name as in Aadhaar', value: student.name_aadhaar },
             { label: 'ಧರ್ಮ / Religion', value: student.religion },
             { label: 'ಸಾಮಾಜಿಕ ವರ್ಗ / Social Category', value: student.social_class },
             { label: 'ಜಾತಿ / Caste', value: student.student_caste },
@@ -2521,38 +3540,59 @@
             { label: 'ಮಾತೃಭಾಷೆ / Mother Tongue', value: student.mother_tongue },
             { label: 'ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium', value: student.medium },
             { label: 'ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Academic Year', value: student.academic_year },
-            { label: 'ವಯಸ್ಸು / Age', value: student.age },
             { label: 'ವಿಶೇಷ ಅಗತ್ಯತೆ / Special Need (CWSN)', value: student.special_need },
-            { label: 'ವಿಶೇಷ ವರ್ಗ / Special Category', value: student.special_category }
+            { label: 'ವಿಶೇಷ ವರ್ಗ / Special Category', value: student.special_category },
+            { label: 'ಭಾಗ್ಯಲಕ್ಷ್ಮಿ ಬಾಂಡ್ ಸಂಖ್ಯೆ / Bhagyalakshmi Bond', value: student.bhagyalakshmi_bond },
+            { label: 'ಇಮೇಲ್ / Student Email', value: student.email }
           ])}
 
           ${renderSection({ text: 'ಪೋಷಕರ ವಿವರಗಳು / Parents Details', icon: 'fa-solid fa-users' }, [
-            { label: 'ತಂದೆಯ ಹೆಸರು / Father Name', value: student.father_name_kn || student.father },
+            { label: 'ತಂದೆಯ ಹೆಸರು (Kannada) / Father Name', value: student.father_name_kn || student.father },
+            { label: 'ತಂದೆಯ ಹೆಸರು (English) / Father Name', value: student.father_name_az },
             { label: 'ತಂದೆಯ ಆಧಾರ್ / Father Aadhaar', value: student.father_aadhaar },
             { label: 'ತಂದೆಯ ವೃತ್ತಿ / Father Occupation', value: student.father_occupation },
-            { label: 'ತಾಯಿಯ ಹೆಸರು / Mother Name', value: student.mother_name_kn || student.mother },
+            { label: 'ತಂದೆಯ ಮೊಬೈಲ್ / Father Mobile', value: student.mobile_no_1 },
+            { label: 'ತಂದೆಯ ಇಮೇಲ್ / Father Email', value: student.father_email },
+            { label: 'ತಂದೆಯ ಜಾತಿ ಪತ್ರ / Father Caste Cert', value: student.father_caste_cert },
+            { label: 'ತಂದೆಯ ಆದಾಯ ಪತ್ರ / Father Income Cert', value: student.father_income_cert },
+            { label: 'ತಾಯಿಯ ಹೆಸರು (Kannada) / Mother Name', value: student.mother_name_kn || student.mother },
+            { label: 'ತಾಯಿಯ ಹೆಸರು (English) / Mother Name', value: student.mother_name_az },
             { label: 'ತಾಯಿಯ ಆಧಾರ್ / Mother Aadhaar', value: student.mother_aadhaar },
-            { label: 'ತಾಯಿಯ ವೃತ್ತಿ / Mother Occupation', value: student.mother_occupation }
+            { label: 'ತಾಯಿಯ ವೃತ್ತಿ / Mother Occupation', value: student.mother_occupation },
+            { label: 'ತಾಯಿಯ ಮೊಬೈಲ್ / Mother Mobile', value: student.mobile_no_2 },
+            { label: 'ತಾಯಿಯ ಇಮೇಲ್ / Mother Email', value: student.mother_email },
+            { label: 'ತಾಯಿಯ ಜಾತಿ ಪತ್ರ / Mother Caste Cert', value: student.mother_caste_cert },
+            { label: 'ತಾಯಿಯ ಆದಾಯ ಪತ್ರ / Mother Income Cert', value: student.mother_income_cert }
           ])}
 
-          ${renderSection({ text: 'ಸಂಪರ್ಕ ಮತ್ತು ಬ್ಯಾಂಕ್ ವಿವರಗಳು / Contact & Bank Info', icon: 'fa-solid fa-address-book' }, [
+          ${renderSection({ text: 'ವಿಳಾಸ ಮತ್ತು ಸಂಪರ್ಕ / Address & Contact', icon: 'fa-solid fa-map-location-dot' }, [
             { label: 'ವಿಳಾಸ / Address', value: student.address },
             { label: 'ಹೋಬಳಿ / Hobli', value: student.hobli },
             { label: 'ತಾಲ್ಲೂಕು / Taluk', value: student.taluk },
             { label: 'ಜಿಲ್ಲೆ / District', value: student.district },
             { label: 'ಪಿನ್ ಕೋಡ್ / Pin Code', value: student.pin_code },
-            { label: 'ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂ / Bank Account No', value: student.bank_acc_no },
-            { label: 'ಐಎಫ್‌ಎಸ್ಸಿ ಕೋಡ್ / IFSC Code', value: student.ifsc_code },
-            { label: 'ಬ್ಯಾಂಕ್ ಶಾಖೆ / Bank Name & Branch', value: student.bank_address }
+            { label: 'ಸಂಪರ್ಕ ಮೊಬೈಲ್ / Contact Mobile No', value: student.mobile_number || student.mobile }
           ])}
 
-          ${renderSection({ text: 'ಹಿಂದಿನ ಶಾಲೆ / Previous School Info', icon: 'fa-solid fa-school' }, [
+          ${renderSection({ text: 'ಬ್ಯಾಂಕ್ ವಿವರಗಳು / Bank Details', icon: 'fa-solid fa-wallet' }, [
+            { label: 'ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂ / Bank Account No', value: student.bank_acc_no },
+            { label: 'ಐಎಫ್‌ಎಸ್ಸಿ ಕೋಡ್ / IFSC Code', value: student.ifsc_code },
+            { label: 'ಬ್ಯಾಂಕ್ ಶಾಖೆ / Bank Name & Branch', value: student.bank_address },
+            { label: 'ಸ್ಕಾಲರ್‌ಶಿಪ್ ಸಂಖ್ಯೆ / Scholarship No', value: student.scholarship_no },
+            { label: 'ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Caste Certificate', value: student.student_caste_cert },
+            { label: 'ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Income Certificate', value: student.student_income_cert },
+            { label: 'ಬಿಪಿಎಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ / BPL Card No', value: student.bpl_card_no }
+          ])}
+
+          ${renderSection({ text: 'ಹಿಂದಿನ ಶಾಲೆ ಮತ್ತು ದಾಖಲೆ / Previous School & TC Details', icon: 'fa-solid fa-school' }, [
             { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ಹೆಸರು / Preschool Name', value: student.preschool_name },
             { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ಬೋರ್ಡ್ / Board', value: student.preschool_board },
             { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ವಿಧ / Type', value: student.preschool_type },
+            { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ವಿಳಾಸ / Preschool Address', value: student.preschool_address },
             { label: 'ಟಿ.ಸಿ ಸಂಖ್ಯೆ / TC Number', value: student.transfer_no },
             { label: 'ಟಿ.ಸಿ ದಿನಾಂಕ / TC Date', value: student.transfer_date },
-            { label: 'ಎಸ್ ಟಿ ಎಸ್ ಸಂಖ್ಯೆ / STS Number', value: student.student_sts }
+            { label: 'ಎಸ್ ಟಿ ಎಸ್ ಸಂಖ್ಯೆ / STS Number', value: student.student_sts },
+            { label: 'ಅರ್ಜಿ ಸಲ್ಲಿಸಿದ ದಿನಾಂಕ / Form Date', value: student.form_date }
           ])}
         </div>
       `;
@@ -2562,6 +3602,43 @@
 
     function closeStudentDetailModal() {
       document.getElementById('student-detail-modal').classList.add('hidden');
+    }
+
+    function enterEditModeInModal(realId) {
+      const student = allStudentsData.find(s => s.realId === realId);
+      if (!student) return;
+
+      // Hide non-edit actions and the edit button
+      document.getElementById('modal-edit-btn').classList.add('hidden');
+      document.getElementById('modal-approve-btn').classList.add('hidden');
+      document.getElementById('modal-delete-btn').classList.add('hidden');
+      document.getElementById('modal-receipt-btn').classList.add('hidden');
+      document.getElementById('modal-whatsapp-btn').classList.add('hidden');
+      document.getElementById('modal-print-btn').classList.add('hidden');
+
+      // Let's add a Cancel button to the header
+      let cancelBtn = document.getElementById('modal-cancel-btn');
+      if (!cancelBtn) {
+        cancelBtn = document.createElement('button');
+        cancelBtn.id = 'modal-cancel-btn';
+        cancelBtn.className = "bg-slate-500 hover:bg-slate-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center gap-1 border-0 cursor-pointer transition";
+        cancelBtn.innerHTML = `<i class="fa-solid fa-xmark text-[10px]"></i> Cancel / ರದ್ದು`;
+        const editBtn = document.getElementById('modal-edit-btn');
+        editBtn.parentNode.insertBefore(cancelBtn, editBtn);
+      }
+      cancelBtn.classList.remove('hidden');
+      cancelBtn.onclick = () => {
+        cancelBtn.classList.add('hidden');
+        openStudentDetailModal(realId);
+      };
+
+      const content = document.getElementById('student-detail-content');
+      // Mount the original form inside an iframe
+      content.innerHTML = `
+        <div class="w-full h-[70vh] rounded-2xl overflow-hidden border border-slate-200 shadow-inner">
+          <iframe src="NewAdmission.html?id=${student.realId}&embed=true" class="w-full h-full border-0"></iframe>
+        </div>
+      `;
     }
   </script>
   <script src="navbar.js"></script>

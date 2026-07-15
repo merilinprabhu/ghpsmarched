@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificates Dashboard - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    
+    body[data-theme="dark"] {
+      background-color: #020617 !important;
+      color: #f8fafc !important;
+    }
+    body[data-theme="dark"] .bg-white {
+      background-color: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #ffffff !important;
+    }
+    body[data-theme="dark"] h2, 
+    body[data-theme="dark"] h3, 
+    body[data-theme="dark"] h4 {
+      color: #f8fafc !important;
+    }
+    body[data-theme="dark"] p {
+      color: #94a3b8 !important;
+    }
+  </style>
+</head>
+<body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
+
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Outer Container -->
+  <div class="max-w-[98%] lg:max-w-[1600px] mx-auto w-full p-6">
+    <div class="flex flex-col gap-6">
+      
+      <!-- Welcome Header banner -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm transition duration-300">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-print text-indigo-500"></i>
+            <span>ಪ್ರಮಾಣ ಪತ್ರಗಳ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Certificates Dashboard</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-1">ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳೊಂದಿಗೆ ಸ್ವಯಂಚಾಲಿತ ಪ್ರಮಾಣ ಪತ್ರಗಳು ಹಾಗೂ ಅಂಕಪಟ್ಟಿಗಳನ್ನು ಮುದ್ರಿಸಿ.</p>
+        </div>
+      </div>
+
+      <!-- Dashboard Stats Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Stat 1 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition duration-300">
+          <div class="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 text-lg">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು / Total Students</p>
+            <h3 id="stat-total-students" class="text-xl font-bold text-slate-800">--</h3>
+          </div>
+        </div>
+        <!-- Stat 2 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition duration-300">
+          <div class="w-12 h-12 bg-rose-50 dark:bg-rose-950/40 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400 text-lg">
+            <i class="fa-solid fa-file-invoice"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ಕನ್ನಡ ಮಾಧ್ಯಮ / Kannada Medium</p>
+            <h3 id="stat-kannada-medium" class="text-xl font-bold text-slate-800">--</h3>
+          </div>
+        </div>
+        <!-- Stat 3 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition duration-300">
+          <div class="w-12 h-12 bg-sky-50 dark:bg-sky-950/40 rounded-xl flex items-center justify-center text-sky-600 dark:text-sky-400 text-lg">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ಇಂಗ್ಲಿಷ್ ಮಾಧ್ಯಮ / English Medium</p>
+            <h3 id="stat-english-medium" class="text-xl font-bold text-slate-800">--</h3>
+          </div>
+        </div>
+        <!-- Stat 4 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 hover:shadow-md transition duration-300">
+          <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/40 rounded-xl flex items-center justify-center text-amber-600 dark:text-amber-400 text-lg">
+            <i class="fa-solid fa-school"></i>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">ಒಟ್ಟು ತರಗತಿಗಳು / Total Classes</p>
+            <h3 id="stat-total-classes" class="text-xl font-bold text-slate-800">--</h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certificates Card Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Card 1: Transfer Certificate -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-80">
+          <div class="space-y-4">
+            <div class="w-12 h-12 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl flex items-center justify-center text-xl">
+              <i class="fa-solid fa-file-invoice"></i>
+            </div>
+            <div class="space-y-1.5">
+              <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-rose-100 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 rounded-full">SATS FORMAT</span>
+              <h3 class="text-base font-bold text-slate-800">ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ (TC) / Transfer Certificate</h3>
+              <p class="text-xs text-slate-400 leading-relaxed pt-1">
+                ಸರ್ಕಾರಿ ನಿಯಮಾವಳಿಗಳ ಪ್ರಕಾರ SATS ನಮೂನೆಯಲ್ಲಿ ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರಗಳನ್ನು ಮುದ್ರಿಸಿ. ವಿದ್ಯಾರ್ಥಿಯ ವರ್ಗಾವಣೆ ಸಂಖ್ಯೆ, ಮಾಧ್ಯಮ, ಶಾಲಾ ದಾಖಲಾತಿ ವಿವರಗಳು ಮತ್ತು ಜನ್ಮ ದಿನಾಂಕದ ಅಕ್ಷರಶಃ ಅನುವಾದವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಿದ್ಧಪಡಿಸುತ್ತದೆ.
+              </p>
+            </div>
+          </div>
+          <a href="tc.html" class="w-full text-center bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm hover:shadow duration-200 flex items-center justify-center gap-2 border-0 cursor-pointer">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <span>ಟಿಸಿ ಮುದ್ರಿಸಿ / Print TC</span>
+          </a>
+        </div>
+
+        <!-- Card 2: Marks Card -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-80">
+          <div class="space-y-4">
+            <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center text-xl">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="space-y-1.5">
+              <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 rounded-full">CCE FORMAT</span>
+              <h3 class="text-base font-bold text-slate-800">ಅಂಕಪಟ್ಟಿ (Marks Card) / Progress Report</h3>
+              <p class="text-xs text-slate-400 leading-relaxed pt-1">
+                ವಿದ್ಯಾರ್ಥಿಗಳ ಶೈಕ್ಷಣಿಕ (SA1, SA2) ಮತ್ತು ಶೈಕ್ಷಣಿಕೇತರ ಕೌಶಲ್ಯಗಳ ಮೌಲ್ಯಮಾಪನ ಅಂಕಪಟ್ಟಿಗಳನ್ನು ಮುದ್ರಿಸಿ. ಮಾಸಿಕ ಹಾಜರಾತಿ ವರದಿ ಹಾಗೂ ಗರಿಷ್ಠ ಪ್ರಗತಿ ಮೌಲ್ಯಮಾಪನ ವಿವರಗಳನ್ನು ಅಳವಡಿಸಿದೆ.
+              </p>
+            </div>
+          </div>
+          <a href="marks_card.html" class="w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow-sm hover:shadow duration-200 flex items-center justify-center gap-2 border-0 cursor-pointer">
+            <i class="fa-solid fa-circle-arrow-right"></i>
+            <span>ಅಂಕಪಟ್ಟಿ ಮುದ್ರಿಸಿ / Print Marks Card</span>
+          </a>
+        </div>
+
+        <!-- Card 3: Study Certificate (Placeholder) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-80 relative overflow-hidden group">
+          <!-- Blur overlay for coming soon -->
+          <div class="absolute inset-0 bg-slate-50/40 dark:bg-slate-900/60 backdrop-blur-[1px] group-hover:backdrop-blur-none transition duration-300 pointer-events-none"></div>
+          <div class="space-y-4 relative z-10">
+            <div class="w-12 h-12 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 rounded-xl flex items-center justify-center text-xl">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="space-y-1.5">
+              <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300 rounded-full">COMING SOON</span>
+              <h3 class="text-base font-bold text-slate-800">ಅಧ್ಯಯನ ಪ್ರಮಾಣ ಪತ್ರ / Study Certificate</h3>
+              <p class="text-xs text-slate-400 leading-relaxed pt-1">
+                ವಿದ್ಯಾರ್ಥಿಗಳ ವಿದ್ಯಾರ್ಥಿವೇತನ, ಹೊಸ ಪ್ರವೇಶ ಮತ್ತು ಇತರ ಕಚೇರಿ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಅಧಿಕೃತ ಅಧ್ಯಯನ ಮತ್ತು ನಡತೆ ಪ್ರಮಾಣ ಪತ್ರಗಳನ್ನು ಮುದ್ರಿಸಲು ಸೌಲಭ್ಯ.
+              </p>
+            </div>
+          </div>
+          <button disabled class="w-full text-center bg-slate-300 dark:bg-slate-800 text-slate-600 dark:text-slate-500 font-bold py-2.5 px-4 rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-2 relative z-10 border-0">
+            <i class="fa-solid fa-lock"></i>
+            <span>ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ / Coming Soon</span>
+          </button>
+        </div>
+
+        <!-- Card 4: Character Certificate (Placeholder) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-1 transition duration-300 flex flex-col justify-between h-80 relative overflow-hidden group">
+          <div class="absolute inset-0 bg-slate-50/40 dark:bg-slate-900/60 backdrop-blur-[1px] group-hover:backdrop-blur-none transition duration-300 pointer-events-none"></div>
+          <div class="space-y-4 relative z-10">
+            <div class="w-12 h-12 bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 rounded-xl flex items-center justify-center text-xl">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="space-y-1.5">
+              <span class="inline-block px-2.5 py-0.5 text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-300 rounded-full">COMING SOON</span>
+              <h3 class="text-base font-bold text-slate-800">ನಡತೆ ಪ್ರಮಾಣ ಪತ್ರ / Character Certificate</h3>
+              <p class="text-xs text-slate-400 leading-relaxed pt-1">
+                ವಿದ್ಯಾರ್ಥಿ ಶಾಲೆಯಲ್ಲಿದ್ದ ಅವಧಿಯ ನಡತೆ ಮತ್ತು ಶಿಸ್ತನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲು ಉನ್ನತ ಶಿಕ್ಷಣ ಸಂಸ್ಥೆಗಳಿಗೆ ಸಲ್ಲಿಸಲು ನೀಡುವ ನಡತೆ ಪತ್ರ.
+              </p>
+            </div>
+          </div>
+          <button disabled class="w-full text-center bg-slate-300 dark:bg-slate-800 text-slate-600 dark:text-slate-500 font-bold py-2.5 px-4 rounded-xl text-xs cursor-not-allowed flex items-center justify-center gap-2 relative z-10 border-0">
+            <i class="fa-solid fa-lock"></i>
+            <span>ಶೀಘ್ರದಲ್ಲೇ ಬರಲಿದೆ / Coming Soon</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let supabaseClient;
+
+    function setupSupabase() {
+      if (window.supabase) {
+        const url = localStorage.getItem('supabase_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+        const key = localStorage.getItem('supabase_key') || "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+        supabaseClient = window.supabase.createClient(url, key);
+      }
+    }
+
+    async function loadStats() {
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('medium, enroll_class');
+        if (schoolId) {
+          query = query.eq('school_id', schoolId);
+        }
+        
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const students = data || [];
+        document.getElementById('stat-total-students').innerText = students.length;
+
+        let knCount = 0;
+        let enCount = 0;
+        const classes = new Set();
+
+        students.forEach(s => {
+          const med = (s.medium || '').trim().toLowerCase();
+          if (med === 'kannada' || med === 'ಕನ್ನಡ' || med === 'kn') {
+            knCount++;
+          } else if (med === 'english' || med === 'ಇಂಗ್ಲಿಷ್' || med === 'en') {
+            enCount++;
+          }
+          if (s.enroll_class) {
+            classes.add(String(s.enroll_class).trim());
+          }
+        });
+
+        document.getElementById('stat-kannada-medium').innerText = knCount;
+        document.getElementById('stat-english-medium').innerText = enCount;
+        document.getElementById('stat-total-classes').innerText = classes.size;
+
+      } catch (err) {
+        console.error("Failed to load statistics:", err);
+      }
+    }
+
+    window.onload = async function() {
+      setupSupabase();
+      await loadStats();
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>
