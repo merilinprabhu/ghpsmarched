@@ -341,6 +341,11 @@
               <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400 text-base md:text-lg"></i>
             </button>
             
+            <!-- Inline Edit Toggle -->
+            <button id="btn-toggle-inline-edit" onclick="toggleInlineEditMode()" title="ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ / Inline Edit Mode" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-pen-to-square text-slate-550 dark:text-slate-400 text-base md:text-lg"></i>
+            </button>
+            
             <!-- Visual Divider -->
             <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
 
@@ -635,8 +640,16 @@
               <p id="prev-name-en" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl uppercase">-</p>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No (PEN)</label>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಆಧಾರ್ ಪ್ರಕಾರ ಹೆಸರು / Aadhaar Name</label>
+              <p id="prev-name-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಅರ್ಜಿ ಸಂಖ್ಯೆ / Application No</label>
               <p id="prev-app-no" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಎಸ್ ಟಿ ಎಸ್ ಸಂಖ್ಯೆ / STS Number</label>
+              <p id="prev-student-sts" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ತರಗತಿ / Enrollment Class</label>
@@ -649,6 +662,10 @@
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹುಟ್ಟಿದ ದಿನಾಂಕ / Date of Birth</label>
               <p id="prev-dob" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಯಸ್ಸು / Age</label>
+              <p id="prev-age" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ಆಧಾರ್ ಸಂಖ್ಯೆ / Student Aadhaar</label>
@@ -674,6 +691,26 @@
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ಮಾತೃಭಾಷೆ / Mother Tongue</label>
               <p id="prev-mother-tongue" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
             </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಬೋಧನಾ ಮಾಧ್ಯಮ / Medium</label>
+              <p id="prev-medium" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಶೈಕ್ಷಣಿಕ ವರ್ಷ / Academic Year</label>
+              <p id="prev-academic-year" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಇಮೇಲ್ / Email</label>
+              <p id="prev-email" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹೋಬಳಿ / Hobli</label>
+              <p id="prev-hobli-st" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಪಿನ್ ಕೋಡ್ / Pin Code</label>
+              <p id="prev-pincode-st" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
           </div>
         </div>
 
@@ -689,6 +726,23 @@
               <p id="prev-father-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
             <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Father Mobile</label>
+              <p id="prev-father-mobile" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಇಮೇಲ್ / Father Email</label>
+              <p id="prev-father-email" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Father Caste Cert</label>
+              <p id="prev-father-caste-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Father Income Cert</label>
+              <p id="prev-father-income-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+
+            <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಹೆಸರು / Mother's Name</label>
               <p id="prev-mother-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
             </div>
@@ -696,6 +750,23 @@
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಆಧಾರ್ / Mother's Aadhaar</label>
               <p id="prev-mother-aadhaar" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mother Mobile</label>
+              <p id="prev-mother-mobile" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಇಮೇಲ್ / Mother Email</label>
+              <p id="prev-mother-email" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Mother Caste Cert</label>
+              <p id="prev-mother-caste-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಾಯಿಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Mother Income Cert</label>
+              <p id="prev-mother-income-cert" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ತಂದೆಯ ವೃತ್ತಿ / Father's Occupation</label>
               <p id="prev-father-occ" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
@@ -705,7 +776,7 @@
               <p id="prev-mother-occ" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
             </div>
             <div>
-              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile Number</label>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಿದ್ಯಾರ್ಥಿ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile Number</label>
               <p id="prev-mobile" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
             <div>
@@ -758,6 +829,30 @@
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಹೆಸರು / Previous School Name</label>
               <p id="prev-ps-name" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
             </div>
+            <div class="md:col-span-2">
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ವಿಳಾಸ / Previous School Address</label>
+              <p id="prev-ps-address" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಜಿಲ್ಲೆ / Prev District</label>
+              <p id="prev-sch-district" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ತಾಲೂಕು / Prev Taluk</label>
+              <p id="prev-sch-taluk" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಹೋಬಳಿ / Prev Hobli</label>
+              <p id="prev-sch-hobli" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಗ್ರಾಮ / Prev Village</label>
+              <p id="prev-sch-village" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಹಿಂದಿನ ಶಾಲೆಯ ಪಿನ್‌ಕೋಡ್ / Prev Pin Code</label>
+              <p id="prev-sch-pincode" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ವರ್ಗಾವಣೆ ಪತ್ರದ ಸಂಖ್ಯೆ / TC Number</label>
               <p id="prev-tc-no" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
@@ -765,6 +860,10 @@
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ವರ್ಗಾವಣೆ ದಿನಾಂಕ / TC Date</label>
               <p id="prev-tc-date" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase">ಅರ್ಜಿ ದಿನಾಂಕ / Form Date</label>
+              <p id="prev-form-date" class="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-xl font-mono">-</p>
             </div>
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase">ವಿಶೇಷ ಅಗತ್ಯತೆಗಳು / Special Need (CWSN)</label>
@@ -2092,7 +2191,9 @@
         standardColumns.forEach(col => {
           if (visibility[col.id] !== false) {
             let val = s[col.id] !== undefined && s[col.id] !== null ? s[col.id] : '';
-            if (col.id === 'gender') {
+            if (window.isInlineEditMode) {
+              cellsHtml += `<td class="p-1 text-center">${renderInlineInput(s, col, val)}</td>`;
+            } else if (col.id === 'gender') {
               let genderLabel = '';
               if (val === 'Boy') {
                 genderLabel = 'Boy / ಗಂಡು';
@@ -2212,6 +2313,11 @@
                 }
                 cellsHtml += `<td class="p-3 text-center font-bold text-slate-700 dark:text-slate-350">${highlightMatch(displayRel, q)}</td>`;
               }
+            } else if (col.id === 'age') {
+              const displayAge = calculateStudentAge(s.dob, s.enrolment_date, s.academic_year);
+              cellsHtml += `<td class="p-3 text-center font-semibold text-slate-700 dark:text-slate-350">${highlightMatch(displayAge, q)}</td>`;
+            } else if (col.id === 'dob' || col.id === 'transfer_date' || col.id === 'enrolment_date' || col.id === 'form_date') {
+              cellsHtml += `<td class="p-3 text-center font-semibold font-mono text-slate-700 dark:text-slate-350">${highlightMatch(formatReadableDate(val) || '-', q)}</td>`;
             } else {
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(val || '-', q)}</td>`;
             }
@@ -2461,7 +2567,8 @@
             return;
           }
         }
-        window.location.href = `StudentUpdate.html?id=${studentId}`;
+        localStorage.setItem("editReferrer", "StudentList.html");
+        window.location.href = `NewAdmission.html?id=${studentId}`;
       }
     }
 
@@ -3661,21 +3768,39 @@
       
       document.getElementById('prev-name-kn').innerText = getVal(s.student_name_kn);
       document.getElementById('prev-name-en').innerText = getVal(s.name_english);
+      document.getElementById('prev-name-aadhaar').innerText = getVal(s.name_aadhaar);
       document.getElementById('prev-app-no').innerText = getVal(s.id || s.app_no);
+      document.getElementById('prev-student-sts').innerText = getVal(s.student_sts);
       document.getElementById('prev-class').innerText = getVal(s.className);
       document.getElementById('prev-gender').innerText = s.gender === 'Boy' ? 'Boy / ಗಂಡು' : (s.gender === 'Girl' ? 'Girl / ಹೆಣ್ಣು' : 'ವಿವರವಿಲ್ಲ / Missing');
-      document.getElementById('prev-dob').innerText = getVal(s.dob);
+      document.getElementById('prev-dob').innerText = s.dob ? formatReadableDate(s.dob) : '-';
+      document.getElementById('prev-age').innerText = calculateStudentAge(s.dob, s.enrolment_date, s.academic_year);
       document.getElementById('prev-aadhaar').innerText = getVal(s.aadhaar);
       document.getElementById('prev-apaar').innerText = getVal(s.apaar);
       document.getElementById('prev-pen').innerText = getVal(s.pen);
-      document.getElementById('prev-mother-tongue').innerText = getVal(s.mother_tongue);
       document.getElementById('prev-enrolment-no').innerText = getVal(s.enrolment_no);
-      document.getElementById('prev-enrolment-date').innerText = getVal(s.enrolment_date);
+      document.getElementById('prev-enrolment-date').innerText = s.enrolment_date ? formatReadableDate(s.enrolment_date) : '-';
+      document.getElementById('prev-mother-tongue').innerText = getVal(s.mother_tongue);
+      document.getElementById('prev-medium').innerText = getVal(s.medium);
+      document.getElementById('prev-academic-year').innerText = getVal(s.academic_year);
+      document.getElementById('prev-email').innerText = getVal(s.email);
+      document.getElementById('prev-hobli-st').innerText = getVal(s.hobli);
+      document.getElementById('prev-pincode-st').innerText = getVal(s.pin_code);
 
       document.getElementById('prev-father-name').innerText = `${getVal(s.father_name_kn)} / ${getVal(s.father_name_az)}`;
       document.getElementById('prev-father-aadhaar').innerText = getVal(s.father_aadhaar);
+      document.getElementById('prev-father-mobile').innerText = getVal(s.mobile_no_1);
+      document.getElementById('prev-father-email').innerText = getVal(s.father_email);
+      document.getElementById('prev-father-caste-cert').innerText = getVal(s.father_caste_cert);
+      document.getElementById('prev-father-income-cert').innerText = getVal(s.father_income_cert);
+
       document.getElementById('prev-mother-name').innerText = `${getVal(s.mother_name_kn)} / ${getVal(s.mother_name_az)}`;
       document.getElementById('prev-mother-aadhaar').innerText = getVal(s.mother_aadhaar);
+      document.getElementById('prev-mother-mobile').innerText = getVal(s.mobile_no_2);
+      document.getElementById('prev-mother-email').innerText = getVal(s.mother_email);
+      document.getElementById('prev-mother-caste-cert').innerText = getVal(s.mother_caste_cert);
+      document.getElementById('prev-mother-income-cert').innerText = getVal(s.mother_income_cert);
+
       document.getElementById('prev-father-occ').innerText = getVal(s.father_occupation);
       document.getElementById('prev-mother-occ').innerText = getVal(s.mother_occupation);
       document.getElementById('prev-mobile').innerText = getVal(s.mobile);
@@ -3691,8 +3816,15 @@
       document.getElementById('prev-ps-board').innerText = getVal(s.preschool_board);
       document.getElementById('prev-ps-type').innerText = getVal(s.preschool_type);
       document.getElementById('prev-ps-name').innerText = getVal(s.preschool_name);
+      document.getElementById('prev-ps-address').innerText = getVal(s.preschool_address);
+      document.getElementById('prev-sch-district').innerText = getVal(s.prev_district);
+      document.getElementById('prev-sch-taluk').innerText = getVal(s.prev_taluk);
+      document.getElementById('prev-sch-hobli').innerText = getVal(s.prev_hobli);
+      document.getElementById('prev-sch-village').innerText = getVal(s.prev_village);
+      document.getElementById('prev-sch-pincode').innerText = getVal(s.prev_pin_code);
       document.getElementById('prev-tc-no').innerText = getVal(s.transfer_no);
-      document.getElementById('prev-tc-date').innerText = getVal(s.transfer_date);
+      document.getElementById('prev-tc-date').innerText = s.transfer_date ? formatReadableDate(s.transfer_date) : '-';
+      document.getElementById('prev-form-date').innerText = s.form_date ? formatReadableDate(s.form_date) : '-';
       document.getElementById('prev-special-need').innerText = getVal(s.specialNeed) === 'NONE' || getVal(s.specialNeed) === 'ಯಾವುದೂ ಇಲ್ಲ' ? 'No / ಇಲ್ಲ' : getVal(s.specialNeed);
       document.getElementById('prev-special-category').innerText = getVal(s.special_category);
       document.getElementById('prev-bhagya-bond').innerText = getVal(s.bhagyalakshmi_bond);
@@ -3712,6 +3844,66 @@
 
     function closeStudentPreviewModal() {
       document.getElementById('student-preview-modal').classList.add('hidden');
+    }
+
+    function formatReadableDate(dateStr) {
+      if (!dateStr) return "";
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    // Robust age calculation helper
+    function calculateStudentAge(dobString, enrolmentDateString, academicYearString) {
+      if (!dobString) return '-';
+      
+      const parseDate = (str) => {
+        if (!str) return null;
+        const parts = str.split(/[-/]/);
+        if (parts.length !== 3) return null;
+        if (parts[0].length === 4) {
+          return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        } else if (parts[2].length === 4) {
+          return new Date(parseInt(parts[2], 10), parseInt(parts[1], 10) - 1, parseInt(parts[0], 10));
+        }
+        return null;
+      };
+      
+      const dobDate = parseDate(dobString);
+      if (!dobDate || isNaN(dobDate.getTime())) return '-';
+      
+      let refDate = parseDate(enrolmentDateString);
+      if (!refDate || isNaN(refDate.getTime())) {
+        // Fallback: June 1st of the academic year
+        const acadYear = academicYearString || '';
+        if (acadYear.includes('-')) {
+          const startYear = parseInt(acadYear.split('-')[0], 10);
+          refDate = new Date(startYear, 5, 1); // June 1st (month index 5 is June)
+        } else {
+          // Ultimate fallback: current date
+          refDate = new Date();
+        }
+      }
+      
+      if (isNaN(refDate.getTime())) return '-';
+      
+      let years = refDate.getFullYear() - dobDate.getFullYear();
+      let months = refDate.getMonth() - dobDate.getMonth();
+      let days = refDate.getDate() - dobDate.getDate();
+      
+      if (days < 0) {
+        months -= 1;
+        const prevMonthDate = new Date(refDate.getFullYear(), refDate.getMonth(), 0);
+        days += prevMonthDate.getDate();
+      }
+      
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+      
+      if (years < 0) return '0 Years 0 Months 0 Days';
+      return `${years} Years ${months} Months ${days} Days`;
     }
 
     // Document Manager Helper Functions
@@ -3903,6 +4095,191 @@
         console.error("Delete error:", err);
         alert("ದಾಖಲೆಯನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
       }
+    }
+
+    // Inline Edit Mode Helper Functions
+    window.isInlineEditMode = false;
+    
+    function toggleInlineEditMode() {
+      window.isInlineEditMode = !window.isInlineEditMode;
+      const btn = document.getElementById('btn-toggle-inline-edit');
+      const icon = btn.querySelector('i');
+      
+      if (window.isInlineEditMode) {
+        btn.classList.add('bg-sky-50', 'dark:bg-sky-950/40', 'border-sky-500', 'ring-2', 'ring-sky-500/20');
+        icon.className = 'fa-solid fa-pen-to-square text-sky-600 dark:text-sky-400 text-base md:text-lg';
+        showToast("ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ / Inline Edit Active", "ನೀವು ಈಗ ಟೇಬಲ್ ಒಳಗಿನ ವಿವರಗಳನ್ನು ನೇರವಾಗಿ ಬದಲಾಯಿಸಬಹುದು. / You can now edit cell values directly in the table.", "success");
+      } else {
+        btn.classList.remove('bg-sky-50', 'dark:bg-sky-950/40', 'border-sky-500', 'ring-2', 'ring-sky-500/20');
+        icon.className = 'fa-solid fa-pen-to-square text-slate-550 dark:text-slate-400 text-base md:text-lg';
+        showToast("ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ / Inline Edit Inactive", "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ. / Changes have been saved.", "info");
+      }
+      
+      renderTable(allStudentsData);
+    }
+
+    function renderInlineInput(s, col, val) {
+      const getRaw = (v) => (v === undefined || v === null) ? '' : v;
+      
+      if (col.id === 'gender') {
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'gender', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[70px] text-slate-700 dark:text-slate-200">
+            <option value="Boy" ${s.gender === 'Boy' ? 'selected' : ''}>Boy / ಗಂಡು</option>
+            <option value="Girl" ${s.gender === 'Girl' ? 'selected' : ''}>Girl / ಹೆಣ್ಣು</option>
+          </select>
+        `;
+      }
+      
+      if (col.id === 'enroll_class') {
+        const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'enroll_class', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[60px] text-slate-700 dark:text-slate-200">
+            ${classes.map(c => `<option value="${c}" ${s.className === c ? 'selected' : ''}>${c}</option>`).join('')}
+          </select>
+        `;
+      }
+      
+      if (col.id === 'religion') {
+        const cleanRel = (val || '').toString().trim().toUpperCase();
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'religion', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[90px] text-slate-700 dark:text-slate-200">
+            <option value="HINDU" ${cleanRel === 'HINDU' || cleanRel === 'HINDŪ' || cleanRel === 'ಹಿಂದೂ' ? 'selected' : ''}>ಹಿಂದೂ / HINDU</option>
+            <option value="ISLAM" ${cleanRel === 'ISLAM' || cleanRel === 'ಮುಸ್ಲಿಂ' ? 'selected' : ''}>ಮುಸ್ಲಿಂ / ISLAM</option>
+            <option value="CHRISTIAN" ${cleanRel === 'CHRISTIAN' || cleanRel === 'ಕ್ರಿಶ್ಚಿಯನ್' ? 'selected' : ''}>ಕ್ರಿಶ್ಚಿಯನ್ / CHRISTIAN</option>
+            <option value="JAIN" ${cleanRel === 'JAIN' || cleanRel === 'ಜೈನ' ? 'selected' : ''}>ಜೈನ / JAIN</option>
+            <option value="BUDDHIST" ${cleanRel === 'BUDDHIST' || cleanRel === 'ಬೌದ್ಧ' ? 'selected' : ''}>ಬೌದ್ಧ / BUDDHIST</option>
+            <option value="SIKH" ${cleanRel === 'SIKH' || cleanRel === 'ಸಿಖ್' ? 'selected' : ''}>ಸಿಖ್ / SIKH</option>
+            <option value="OTHERS" ${cleanRel === 'OTHERS' || cleanRel === 'ಇತರೆ' ? 'selected' : ''}>ಇತರೆ / OTHERS</option>
+          </select>
+        `;
+      }
+      
+      if (col.id === 'social_class') {
+        const scVal = (val || '').toString().trim().toUpperCase();
+        const scOptions = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS'];
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'social_class', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[70px] text-slate-700 dark:text-slate-200">
+            ${scOptions.map(sc => `<option value="${sc}" ${scVal === sc ? 'selected' : ''}>${sc}</option>`).join('')}
+          </select>
+        `;
+      }
+      
+      if (col.id === 'dob' || col.id === 'transfer_date' || col.id === 'enrolment_date') {
+        return `
+          <input type="date" value="${getRaw(val)}" onchange="saveInlineField('${s.realId}', '${col.id}', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[100px] text-slate-700 dark:text-slate-200">
+        `;
+      }
+      
+      if (col.id === 'student_name') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.name_english)}" onchange="saveInlineField('${s.realId}', 'name_english', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700 dark:text-slate-200">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.student_name_kn)}" onchange="saveInlineField('${s.realId}', 'student_name', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700 dark:text-slate-200">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'father_name_kn') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.father_name_az)}" onchange="saveInlineField('${s.realId}', 'father_name_az', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700 dark:text-slate-200">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.father_name_kn)}" onchange="saveInlineField('${s.realId}', 'father_name_kn', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700 dark:text-slate-200">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'mother_name_kn') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.mother_name_az)}" onchange="saveInlineField('${s.realId}', 'mother_name_az', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700 dark:text-slate-200">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.mother_name_kn)}" onchange="saveInlineField('${s.realId}', 'mother_name_kn', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700 dark:text-slate-200">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'is_admitted') {
+        return `<span class="text-[10px] font-semibold text-slate-500">${s.isAdmitted ? 'Admitted' : 'Pending'}</span>`;
+      }
+      if (col.id === 'age') {
+        const displayAge = calculateStudentAge(s.dob, s.enrolment_date, s.academic_year);
+        return `<span class="text-[10px] font-semibold text-slate-650 dark:text-slate-350">${displayAge}</span>`;
+      }
+      
+      let oninputStr = '';
+      if (col.id === 'student_aadhaar' || col.id === 'father_aadhaar' || col.id === 'mother_aadhaar') {
+        oninputStr = 'oninput="formatAadhaarInline(this)"';
+      } else if (col.id === 'mobile_number' || col.id === 'mobile_no_1' || col.id === 'mobile_no_2') {
+        oninputStr = 'oninput="formatMobileInline(this)"';
+      }
+      
+      return `
+        <input type="text" value="${getRaw(val)}" ${oninputStr} onchange="saveInlineField('${s.realId}', '${col.id}', this.value)" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[80px] text-slate-700 dark:text-slate-200">
+      `;
+    }
+
+    async function saveInlineField(studentId, dbField, value) {
+      let sanitisedVal = value;
+      if (dbField.includes('aadhaar')) {
+        sanitisedVal = value.replace(/\s+/g, '').trim();
+      } else if (dbField.includes('mobile') || dbField === 'mobile_number') {
+        sanitisedVal = value.replace(/[-\s]+/g, '').trim();
+      }
+      
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({ [dbField]: sanitisedVal })
+          .eq('id', studentId);
+          
+        if (error) throw error;
+        
+        showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", "ಕ್ಷೇತ್ರವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ. / Field updated successfully.", "success");
+        
+        const localIdx = allStudentsData.findIndex(st => st.realId === studentId);
+        if (localIdx !== -1) {
+          const s = allStudentsData[localIdx];
+          s[dbField] = sanitisedVal;
+          
+          if (dbField === 'enroll_class') s.className = sanitisedVal;
+          if (dbField === 'gender') s.gender = sanitisedVal;
+          if (dbField === 'student_aadhaar') s.aadhaar = sanitisedVal;
+          if (dbField === 'mobile_number') s.mobile = sanitisedVal;
+          if (dbField === 'student_name') s.student_name_kn = sanitisedVal;
+          if (dbField === 'name_english') s.name_english = sanitisedVal;
+          if (dbField === 'father_name_kn') s.father_name_kn = sanitisedVal;
+          if (dbField === 'father_name_az') s.father_name_az = sanitisedVal;
+          if (dbField === 'mother_name_kn') s.mother_name_kn = sanitisedVal;
+          if (dbField === 'mother_name_az') s.mother_name_az = sanitisedVal;
+          if (dbField === 'special_need') s.specialNeed = sanitisedVal;
+          
+          if (dbField === 'dob' || dbField === 'enrolment_date' || dbField === 'academic_year') {
+            s.age = calculateStudentAge(s.dob, s.enrolment_date, s.academic_year);
+          }
+        }
+      } catch (err) {
+        console.error("Inline save error:", err);
+        showToast("ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Save Failed", err.message, "error");
+      }
+    }
+
+    function formatAadhaarInline(input) {
+      let value = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length && i < 12; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += value[i];
+      }
+      input.value = formatted;
+    }
+    
+    function formatMobileInline(input) {
+      let value = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length && i < 10; i++) {
+        if (i === 5) formatted += '-';
+        formatted += value[i];
+      }
+      input.value = formatted;
     }
 </script>
   <script src="navbar.js"></script>

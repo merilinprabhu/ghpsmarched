@@ -1205,13 +1205,18 @@
                                 <div><strong data-key="admission_no">ದಾಖಲಾತಿ ಸಂಖ್ಯೆ :-</strong> <span class="underline-value" id="preview_office_adm_no" style="min-width: 120px; display: inline-block;"></span></div>
                                 <div><strong data-key="admission_date">ದಾಖಲಾತಿ ದಿನಾಂಕ :-</strong> <span class="underline-value" id="preview_office_adm_date" style="min-width: 120px; display: inline-block;"></span></div>
                             </div>
-                            
                             <div class="right" style="margin-top: 90px; font-weight: bold; font-size: 11px;" data-key="headmaster_sig">
                                 ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ ಹಾಗೂ ಮೊಹರು
                             </div>
                         </div>
                     </div>
 
+                </div>
+
+                <!-- APAAR & PEN No. exact above the footer on the right side -->
+                <div id="preview_apaar_pen_row" style="display: flex; justify-content: flex-end; gap: 30px; font-size: 10px; font-weight: bold; margin-bottom: 8px; padding-right: 5px;">
+                    <div id="preview_apaar_container"><strong>ಅಪಾರ್ ಸಂಖ್ಯೆ / APAAR No:-</strong> <span class="underline-value" id="preview_office_apaar" style="min-width: 140px; display: inline-block; text-align: left;"></span></div>
+                    <div id="preview_pen_container"><strong>PEN ಸಂಖ್ಯೆ / PEN No:-</strong> <span class="underline-value" id="preview_office_pen" style="min-width: 140px; display: inline-block; text-align: left;"></span></div>
                 </div>
 
                 <div class="footer">
@@ -1854,7 +1859,9 @@
 
                 // Office details
                 'preview_office_sts': data.studentSts || '',
-                'preview_office_adm_no': data.enrolmentNo || ''
+                'preview_office_adm_no': data.enrolmentNo || '',
+                'preview_office_apaar': data.apaar || '',
+                'preview_office_pen': data.pen || ''
             };
 
             for (let id in textFields) {
@@ -1862,6 +1869,28 @@
                 if (el) {
                     el.textContent = textFields[id];
                     if (!textFields[id]) el.innerHTML = '<span class="empty-field"></span>';
+                }
+            }
+
+            // Dynamically show/hide APAAR and PEN based on value availability
+            const apaarVal = (data.apaar || '').toString().trim();
+            const penVal = (data.pen || '').toString().trim();
+            
+            const apaarCont = document.getElementById('preview_apaar_container');
+            const penCont = document.getElementById('preview_pen_container');
+            const rowCont = document.getElementById('preview_apaar_pen_row');
+            
+            if (apaarCont) {
+                apaarCont.style.display = apaarVal ? 'block' : 'none';
+            }
+            if (penCont) {
+                penCont.style.display = penVal ? 'block' : 'none';
+            }
+            if (rowCont) {
+                if (!apaarVal && !penVal) {
+                    rowCont.style.display = 'none';
+                } else {
+                    rowCont.style.display = 'flex';
                 }
             }
 
@@ -1944,8 +1973,14 @@
             // Calculate age
             let refDate = data.enrolmentDate;
             if (!refDate) {
-                const d = new Date();
-                refDate = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+                const acadYear = data.academicYear || '';
+                if (acadYear.includes('-')) {
+                    const startYear = acadYear.split('-')[0];
+                    refDate = `${startYear}-06-01`;
+                } else {
+                    const d = new Date();
+                    refDate = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+                }
             }
             const age = calculateAge(data.dob, refDate);
             if (age) {
@@ -2509,11 +2544,6 @@
                     }, 1000);
                 }
             }
-
-            // Write to Supabase first
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-                const submitBtn = document.getElementById("btn-submit-app");
-                const lblSubmit = document.getElementById("lbl-submit");
                 
                 supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     const data = window.admissionData || {};
@@ -2648,6 +2678,7 @@
                             supabaseClient
                                 .from('admissions')
                                 .insert([payload])
+                                .select()
                                 .then(result => {
                                     if (result.error) {
                                         console.error("Supabase insert error:", result.error);
@@ -2659,6 +2690,9 @@
                                         lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
                                     } else {
                                         console.log("Supabase insert success:", result);
+                                        if (result.data && result.data.length > 0) {
+                                            saveScannedDocumentsAfterInsert(result.data[0].id);
+                                        }
                                         proceedToAppsScriptSubmit();
                                     }
                                 })
@@ -2669,6 +2703,40 @@
                                     submitBtn.style.opacity = "1";
                                     lblSubmit.textContent = currentLang === 'kn' ? "ಅರ್ಜಿ ಸಲ್ಲಿಸಿ" : "Submit Form";
                                 });
+                        }
+                    }
+
+                    async function saveScannedDocumentsAfterInsert(studentId) {
+                        let docs = [];
+                        try {
+                            if (window.parent && window.parent.scannedDocuments) {
+                                docs = window.parent.scannedDocuments;
+                            }
+                        } catch(e) {
+                            console.warn("Could not read parent scannedDocuments:", e);
+                        }
+
+                        if (!docs || docs.length === 0) return;
+
+                        console.log("Saving queued documents for student ID:", studentId, docs.length);
+                        const payloads = docs.map(doc => ({
+                            student_id: studentId,
+                            document_name: doc.document_name,
+                            file_type: doc.file_type,
+                            file_data: doc.file_data
+                        }));
+
+                        try {
+                            const { error } = await supabaseClient
+                                .from('student_documents')
+                                .insert(payloads);
+                            if (error) throw error;
+                            console.log("All queued documents successfully saved to database!");
+                            if (window.parent) {
+                                window.parent.scannedDocuments = [];
+                            }
+                        } catch (err) {
+                            console.error("Error saving documents:", err);
                         }
                     }
 
@@ -2953,7 +3021,9 @@
                 email: clean(row.email),
                 preschoolAddress: clean(row.preschool_address),
                 formDate: clean(row.form_date),
-                studentPhoto: clean(row.student_photo)
+                studentPhoto: clean(row.student_photo),
+                apaar: clean(row.apaar),
+                pen: clean(row.pen)
             };
         }
 

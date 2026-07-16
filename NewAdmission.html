@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     body { background-color: #f8fafc; padding-bottom: 50px; }
     body, input, select, textarea, button { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; }
@@ -620,6 +621,16 @@
       background-color: #f0fdf4 !important;
       border-color: #86efac !important;
     }
+    
+    /* Emerald Flash Highlight for Scanned Auto-fill */
+    @keyframes flash-emerald {
+        0% { background-color: transparent; }
+        30% { background-color: #d1fae5; box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+        100% { background-color: transparent; }
+    }
+    .flash-highlight {
+        animation: flash-emerald 1.5s ease-out;
+    }
   </style>
 </head>
 <body>
@@ -647,6 +658,63 @@
 
 <div class="container form-container">
   <form id="admissionForm" onsubmit="event.preventDefault(); showPreviewSection(event);">
+    
+    <!-- 📄 Smart Document Scanner Panel -->
+    <div class="card mb-4 border-slate-200 shadow-sm" style="border-radius: 20px; background: white; font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif;">
+      <div class="card-body p-4">
+        <h5 class="fw-bold text-slate-800 mb-2 flex align-items-center gap-2" style="font-size: 14px;">
+          <i class="fa-solid fa-wand-magic-sparkles text-sky-500"></i>
+          ದಾಖಲೆಗಳ ಸ್ಕ್ಯಾನರ್ ಮತ್ತು ಆಟೋ-ಫಿಲ್ / Smart Document Scanner & Auto-Fill
+        </h5>
+        <p class="text-secondary mb-3" style="font-size: 11px;">
+          ವಿದ್ಯಾರ್ಥಿ ಅಥವಾ ಪೋಷಕರ ದಾಖಲೆಗಳನ್ನು (ಆಧಾರ್, ಜನ್ಮ ಪ್ರಮಾಣಪತ್ರ, ಜಾತಿ/ಆದಾಯ ಪತ್ರ) ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ. ವಿವರಗಳು ತಂತಾನೇ ಫಾರ್ಮ್‌ನಲ್ಲಿ ಭರ್ತಿಯಾಗುತ್ತವೆ ಹಾಗೂ ದಾಖಲೆಯು ವಿದ್ಯಾರ್ಥಿಯ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಸೇವ್ ಆಗುತ್ತದೆ. 
+          / Upload a document (Aadhaar, Birth Certificate, Caste/Income). Text will be extracted, related fields will auto-fill, and the file will save in the student's document vault.
+        </p>
+        
+        <div class="row g-3">
+          <div class="col-12 col-md-4">
+            <label style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;" class="mb-1">ದಾಖಲೆ ಪ್ರಕಾರ / Document Type</label>
+            <select id="scanner-doc-type" class="form-select text-xs font-semibold" style="border-radius: 12px; font-size: 12px; padding: 10px;">
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate">ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate</option>
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate">ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate</option>
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate">ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate</option>
+              <option value="ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)">ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)</option>
+              <option value="ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book">ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-5">
+            <label style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;" class="mb-1">ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ (Image/PDF) / Choose File</label>
+            <input type="file" id="scanner-file-input" accept="image/*,application/pdf" class="form-control" style="border-radius: 12px; font-size: 12px; padding: 8px;">
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-end">
+            <button type="button" onclick="runSmartDocumentOCR()" id="btn-run-ocr" class="btn btn-primary w-100 fw-bold text-xs" style="border-radius: 12px; font-size: 12px; padding: 10px; background-color: #0284c7; border: 0; display: flex; align-items: center; justify-content: center; gap: 6px; color: white;">
+              <i class="fa-solid fa-expand"></i> ಸ್ಕ್ಯಾನ್ ಮಾಡಿ / Scan Document
+            </button>
+          </div>
+        </div>
+        
+        <!-- Progress bar container -->
+        <div id="ocr-progress-container" class="mt-3 d-none">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="text-sky-600 font-semibold" style="font-size: 11px;" id="ocr-status-text">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ... / OCR Processing...</span>
+            <span class="text-secondary font-mono" style="font-size: 11px;" id="ocr-progress-percent">0%</span>
+          </div>
+          <div class="progress" style="height: 6px; border-radius: 4px; background-color: #f1f5f9;">
+            <div id="ocr-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-sky-500" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        
+        <!-- Scan Log Alert Box -->
+        <div id="ocr-result-alert" class="mt-3 p-3 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-2xl d-none" style="font-size: 11px;">
+          <div class="d-flex align-items-center gap-1.5 font-bold mb-1">
+            <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+            ಯಶಸ್ವಿ ಆಟೋ-ಫಿಲ್! / Auto-Fill Successful!
+          </div>
+          <div id="ocr-extracted-summary">ಕೆಳಗಿನ ಮಾಹಿತಿಗಳನ್ನು ಗುರುತಿಸಿ ಭರ್ತಿ ಮಾಡಲಾಗಿದೆ: / The following fields were extracted and auto-filled:</div>
+        </div>
+      </div>
+    </div>
     
     <div id="student-details" class="section-block">
       <div class="section-title">1. ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳು / STUDENT DETAILS</div>
@@ -1014,7 +1082,7 @@
       </div>
     </div>
 
-    <button type="button" id="submitBtn" onclick="showPreviewSection(event)" class="btn btn-submit w-100 mt-4 d-none" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 16px; border: 0; font-weight: 700; padding: 12px; font-size: 16px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(2, 132, 199, 0.45)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(2, 132, 199, 0.3)';" onmousedown="this.style.transform='scale(0.98)';" onmouseup="this.style.transform='scale(1.02)';">ಮುನ್ನೋಟ / Preview</button>
+    <button type="button" id="submitBtn" onclick="showPreviewSection(event)" class="btn btn-submit w-100 mt-4" style="background: linear-gradient(135deg, #0284c7, #0369a1); border-radius: 16px; border: 0; font-weight: 700; padding: 12px; font-size: 16px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(2, 132, 199, 0.45)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 15px rgba(2, 132, 199, 0.3)';" onmousedown="this.style.transform='scale(0.98)';" onmouseup="this.style.transform='scale(1.02)';">ಮುನ್ನೋಟ / Preview</button>
   </form>
 </div>
 
@@ -1440,6 +1508,14 @@
     initDatePickers();
     initAutoTransliteration();
     initFormProgressTracker();
+
+    // Customize submit/preview button text if in edit/update mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlId = urlParams.get('id');
+    if (urlId) {
+      const btn = document.getElementById("submitBtn");
+      if (btn) btn.textContent = "ಮುನ್ನೋಟ ಮತ್ತು ನವೀಕರಿಸಿ / Preview & Update";
+    }
   }
 
   function registerDefaultBehaviorListeners() {
@@ -1719,34 +1795,14 @@
 
   function updatePreviewButtonsVisibility() {
     try {
-      const form = document.getElementById("admissionForm");
-      if (!form) return;
-      
-      const requiredElements = Array.from(form.querySelectorAll("[required]")).filter(el => {
-        // Only check elements that are currently visible
-        return el.offsetParent !== null;
-      });
-      
-      const allFilled = requiredElements.every(el => {
-        return el.value.trim() !== "";
-      });
-      
       const submitBtn = document.getElementById("submitBtn");
       const previewTabLink = document.getElementById("previewTabLink");
       
       if (submitBtn) {
-        if (allFilled) {
-          submitBtn.classList.remove("d-none");
-        } else {
-          submitBtn.classList.add("d-none");
-        }
+        submitBtn.classList.remove("d-none");
       }
       if (previewTabLink) {
-        if (allFilled) {
-          previewTabLink.classList.remove("d-none");
-        } else {
-          previewTabLink.classList.add("d-none");
-        }
+        previewTabLink.classList.remove("d-none");
       }
     } catch (err) {
       console.error("Error in updatePreviewButtonsVisibility:", err);
@@ -3331,8 +3387,17 @@
 
     let refDateVal = enrolmentInput;
     if (!refDateVal) {
-      let d = new Date();
-      refDateVal = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+      // Fallback: use Academic Year start date (June 1st)
+      const acadYearEl = document.getElementById("academicYear");
+      const acadYearVal = acadYearEl ? acadYearEl.value : "";
+      if (acadYearVal && acadYearVal.includes("-")) {
+        const startYear = acadYearVal.split("-")[0]; // "2026"
+        refDateVal = `${startYear}-06-01`;
+      } else {
+        // Ultimate fallback: current date
+        let d = new Date();
+        refDateVal = `${d.getFullYear()}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getDate().toString().padStart(2, '0')}`;
+      }
     }
 
     let age = calculateAge(dobInput, refDateVal);
@@ -3599,10 +3664,19 @@
       showFormSection('student-details');
     } else if (event.data && event.data.action === 'submitSuccess') {
       const isEdit = event.data.isEdit || event.data.id || (localStorage.getItem("editMode") === "true");
-      if (isEdit) {
-        window.location.href = "NewAdmissionList.html";
+      const isEmbedded = window.location.search.includes('embed=true');
+      if (isEmbedded) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ action: 'embedSubmitSuccess' }, '*');
+        }
       } else {
-        window.location.href = "NewAdmission.html";
+        if (isEdit) {
+          const referrer = localStorage.getItem("editReferrer") || "NewAdmissionList.html";
+          localStorage.removeItem("editReferrer");
+          window.location.href = referrer;
+        } else {
+          window.location.href = "NewAdmission.html";
+        }
       }
     } else if (event.data && event.data.action === 'backToForm') {
       let previewContainer = document.getElementById("preview-container");
@@ -4059,12 +4133,20 @@
         if (el.type === "checkbox" || el.type === "radio") {
           el.checked = (el.value === data[key]);
         } else {
-          el.value = data[key];
+          if (el._flatpickr) {
+            el._flatpickr.setDate(data[key], true);
+          } else {
+            el.value = data[key];
+          }
         }
       } else {
         const elById = document.getElementById(key);
         if (elById) {
-          elById.value = data[key];
+          if (elById._flatpickr) {
+            elById._flatpickr.setDate(data[key], true);
+          } else {
+            elById.value = data[key];
+          }
         }
       }
     }
@@ -4732,6 +4814,304 @@
       applyOverlay.classList.remove("active");
     }
     scannedCodeBuffer = "";
+  }
+
+  // --- SMART OCR SCANNER & AUTO-FILL INTEGRATION ---
+  window.scannedDocuments = [];
+
+  async function runSmartDocumentOCR() {
+    const docType = document.getElementById('scanner-doc-type').value;
+    const fileInput = document.getElementById('scanner-file-input');
+    const btn = document.getElementById('btn-run-ocr');
+    const progressContainer = document.getElementById('ocr-progress-container');
+    const progressBar = document.getElementById('ocr-progress-bar');
+    const progressPercent = document.getElementById('ocr-progress-percent');
+    const statusText = document.getElementById('ocr-status-text');
+    const resultAlert = document.getElementById('ocr-result-alert');
+    const summaryDiv = document.getElementById('ocr-extracted-summary');
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+      alert("ದಯವಿಟ್ಟು ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ! / Please select a file first!");
+      return;
+    }
+
+    const file = fileInput.files[0];
+    
+    // Show progress UI
+    progressContainer.classList.remove('d-none');
+    resultAlert.classList.add('d-none');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Processing...';
+    
+    // Read file and convert to Base64 (for archiving)
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Data = e.target.result;
+      
+      // Store in memory queue
+      window.scannedDocuments.push({
+        document_name: docType,
+        file_type: file.type,
+        file_data: base64Data
+      });
+
+      // If in edit mode, upload to database immediately
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlId = urlParams.get('id');
+      if (urlId) {
+        uploadScannedDocumentDirect(urlId, docType, file.type, base64Data);
+      }
+
+      // Initialize OCR
+      statusText.innerText = "OCR ಇಂಜಿನ್ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Loading OCR Engine...";
+      progressBar.style.width = '20%';
+      progressPercent.innerText = '20%';
+
+      try {
+        statusText.innerText = "ಡಾಕ್ಯುಮೆಂಟ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Recognizing Text...";
+        progressBar.style.width = '50%';
+        progressPercent.innerText = '50%';
+
+        const result = await Tesseract.recognize(base64Data, 'eng+kan', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              const p = Math.round(50 + (m.progress * 40));
+              progressBar.style.width = p + '%';
+              progressPercent.innerText = p + '%';
+            }
+          }
+        });
+
+        const text = result.data.text;
+        progressBar.style.width = '95%';
+        progressPercent.innerText = '95%';
+        statusText.innerText = "ಫೀಲ್ಡ್‌ಗಳನ್ನು ಆಟೋ-ಫಿಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Auto-filling fields...";
+
+        // Parse extracted text
+        const parsed = parseOCRText(text, docType);
+        
+        // Apply to form inputs and animate
+        const filledFields = applyParsedDataToForm(parsed);
+
+        // Success Feedback
+        progressBar.style.width = '100%';
+        progressPercent.innerText = '100%';
+        statusText.innerText = "ಯಶಸ್ವಿಯಾಗಿದೆ! / Scan Completed!";
+        
+        setTimeout(() => {
+          progressContainer.classList.add('d-none');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-expand"></i> ಸ್ಕ್ಯಾನ್ ಮಾಡಿ / Scan Document';
+          fileInput.value = ''; // clear input
+        }, 1000);
+
+        if (filledFields.length > 0) {
+          resultAlert.classList.remove('d-none');
+          summaryDiv.innerHTML = `
+            <strong>ಗುರುತಿಸಲಾದ ಕಾಲಮ್‌ಗಳು / Extracted Fields:</strong><br>
+            <ul class="mb-0 ps-3 mt-1" style="list-style-type: disc;">
+              ${filledFields.map(f => `<li><span class="fw-bold">${f.label}</span>: <span class="font-mono bg-light px-2 py-0.5 rounded text-dark" style="font-size: 11px;">${f.value}</span></li>`).join('')}
+            </ul>
+          `;
+        } else {
+          alert("ಡಾಕ್ಯುಮೆಂಟ್‌ನಿಂದ ಸೂಕ್ತ ವಿವರಗಳು ಪತ್ತೆಯಾಗಿಲ್ಲ. / No matching fields could be recognized from the document.");
+        }
+      } catch (ocrErr) {
+        console.error("OCR Error:", ocrErr);
+        alert("OCR ಪ್ರಕ್ರಿಯೆ ವಿಫಲವಾಗಿದೆ: " + ocrErr.message);
+        progressContainer.classList.add('d-none');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-expand"></i> ಸ್ಕ್ಯಾನ್ ಮಾಡಿ / Scan Document';
+      }
+    };
+    
+    reader.readAsDataURL(file);
+  }
+
+  async function uploadScannedDocumentDirect(studentId, docName, fileType, fileData) {
+    try {
+      if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+      const { error } = await supabaseClient
+        .from('student_documents')
+        .insert([{
+          student_id: studentId,
+          document_name: docName,
+          file_type: fileType,
+          file_data: fileData
+        }]);
+      if (error) throw error;
+      console.log("Document saved direct to DB in edit mode.");
+    } catch (err) {
+      console.error("Direct document upload error:", err);
+    }
+  }
+
+  function parseOCRText(text, docType) {
+    const data = {};
+    const cleanText = text.replace(/\s+/g, ' '); 
+    console.log("Extracted OCR Text:", cleanText);
+
+    // 1. Aadhaar matches
+    const aadhaarMatch = cleanText.match(/\b\d{4}\s\d{4}\s\d{4}\b/) || cleanText.replace(/\s/g, '').match(/\b\d{12}\b/);
+    if (aadhaarMatch) {
+      let num = aadhaarMatch[0].replace(/\s/g, '');
+      data.aadhaar = num.substring(0,4) + ' ' + num.substring(4,8) + ' ' + num.substring(8,12);
+    }
+
+    // 2. Date of birth matches (DD/MM/YYYY or DD-MM-YYYY or YYYY-MM-DD)
+    const dateMatches = cleanText.match(/\b\d{2}[/\-]\d{2}[/\-]\d{4}\b/g) || cleanText.match(/\b\d{4}[/\-]\d{2}[/\-]\d{2}\b/g);
+    if (dateMatches && dateMatches.length > 0) {
+      const parseDate = (dStr) => {
+        const parts = dStr.split(/[/\-]/);
+        if (parts[0].length === 4) {
+          return new Date(parts[0], parts[1]-1, parts[2]);
+        }
+        return new Date(parts[2], parts[1]-1, parts[0]);
+      };
+      dateMatches.sort((a, b) => parseDate(a) - parseDate(b));
+      
+      const oldestDateStr = dateMatches[0];
+      const parts = oldestDateStr.split(/[/\-]/);
+      if (parts[0].length === 4) {
+        data.dob_iso = oldestDateStr.replace(/\//g, '-');
+        data.dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      } else {
+        data.dob = oldestDateStr.replace(/\//g, '-');
+        data.dob_iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+    }
+
+    // 3. RD Certificate numbers
+    const rdMatch = cleanText.match(/\bRD\d{10,15}\b/i);
+    if (rdMatch) {
+      data.rdNumber = rdMatch[0].toUpperCase();
+    }
+
+    // 4. Specific parsing based on selected document type
+    if (docType.includes('Aadhaar')) {
+      if (cleanText.toLowerCase().includes('female') || cleanText.includes('ಹೆಣ್ಣು') || cleanText.toLowerCase().includes('girl')) {
+        data.gender = 'Girl';
+      } else if (cleanText.toLowerCase().includes('male') || cleanText.includes('ಗಂಡು') || cleanText.toLowerCase().includes('boy')) {
+        data.gender = 'Boy';
+      }
+      
+      const nameMatch = cleanText.match(/(?:name|ಹೆಸರು)\s*:?\s*([a-zA-Z\s]{4,30})/i);
+      if (nameMatch) {
+        data.name = nameMatch[1].trim();
+      }
+    } else if (docType.includes('Birth')) {
+      const nameMatch = cleanText.match(/(?:name|ಹೆಸರು|ವಿದ್ಯಾರ್ಥಿಯ)\s*:?\s*([a-zA-Z\s]{4,30})/i);
+      if (nameMatch) {
+        data.name = nameMatch[1].trim();
+      }
+      const fatherMatch = cleanText.match(/(?:father|ತಂದೆಯ|ಪಿತೃ)\s*:?\s*([a-zA-Z\s]{4,30})/i);
+      if (fatherMatch) {
+        data.fatherName = fatherMatch[1].trim();
+      }
+      const motherMatch = cleanText.match(/(?:mother|ತಾಯಿಯ|ಮಾತೃ)\s*:?\s*([a-zA-Z\s]{4,30})/i);
+      if (motherMatch) {
+        data.motherName = motherMatch[1].trim();
+      }
+    } else if (docType.includes('TC') || docType.includes('Transfer')) {
+      const tcNoMatch = cleanText.match(/(?:tc|ವರ್ಗಾವಣೆ|ಪತ್ರದ|ಸಂಖ್ಯೆ)\.?\s*:?\s*([a-zA-Z0-9/\-]+)/i);
+      if (tcNoMatch) {
+        data.tcNo = tcNoMatch[1].trim();
+      }
+    }
+
+    return data;
+  }
+
+  function applyParsedDataToForm(parsed) {
+    const docType = document.getElementById('scanner-doc-type').value;
+    const filled = [];
+
+    const flashElement = (el) => {
+      if (!el) return;
+      el.classList.add('flash-highlight');
+      setTimeout(() => el.classList.remove('flash-highlight'), 1600);
+    };
+
+    const setVal = (name, val, label) => {
+      const el = document.getElementsByName(name)[0] || document.getElementById(name);
+      if (el && val) {
+        el.value = val;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        flashElement(el);
+        filled.push({ label: label, value: val });
+        return true;
+      }
+      return false;
+    };
+
+    if (parsed.aadhaar) {
+      if (docType.includes('Aadhaar')) {
+        setVal('studentAadhaar', parsed.aadhaar, 'Student Aadhaar');
+      } else if (docType.includes('Father')) {
+        setVal('fatherAadhaar', parsed.aadhaar, 'Father Aadhaar');
+      } else if (docType.includes('Mother')) {
+        setVal('motherAadhaar', parsed.aadhaar, 'Mother Aadhaar');
+      } else {
+        setVal('studentAadhaar', parsed.aadhaar, 'Aadhaar Number');
+      }
+    }
+
+    if (parsed.dob_iso) {
+      const dobEl = document.getElementById('dob');
+      if (dobEl) {
+        if (dobEl._flatpickr) {
+          dobEl._flatpickr.setDate(parsed.dob_iso, true);
+        } else {
+          dobEl.value = parsed.dob_iso;
+        }
+        dobEl.dispatchEvent(new Event('input', { bubbles: true }));
+        dobEl.dispatchEvent(new Event('change', { bubbles: true }));
+        flashElement(dobEl);
+        filled.push({ label: 'Date of Birth (DOB)', value: parsed.dob_iso });
+      }
+    }
+
+    if (parsed.gender) {
+      const genderSelect = document.getElementById('gender');
+      if (genderSelect) {
+        genderSelect.value = parsed.gender;
+        genderSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        flashElement(genderSelect);
+        filled.push({ label: 'Gender', value: parsed.gender });
+      }
+    }
+
+    if (parsed.rdNumber) {
+      if (docType.includes('Caste')) {
+        setVal('studentCasteCert', parsed.rdNumber, 'Student Caste Cert No');
+      } else if (docType.includes('Income')) {
+        setVal('studentIncomeCert', parsed.rdNumber, 'Student Income Cert No');
+      }
+    }
+
+    if (parsed.name) {
+      if (docType.includes('Aadhaar') || docType.includes('Birth')) {
+        setVal('nameEnglish', parsed.name.toUpperCase(), 'Student Name (English)');
+        autoTransliterateAdmission('nameEnglish', 'studentName');
+      }
+    }
+
+    if (parsed.fatherName) {
+      setVal('fatherNameAz', parsed.fatherName.toUpperCase(), "Father's Name (English)");
+      autoTransliterateAdmission('fatherNameAz', 'fatherNameKn');
+    }
+    if (parsed.motherName) {
+      setVal('motherNameAz', parsed.motherName.toUpperCase(), "Mother's Name (English)");
+      autoTransliterateAdmission('motherNameAz', 'motherNameKn');
+    }
+
+    if (parsed.tcNo) {
+      setVal('transferNo', parsed.tcNo, 'TC Number');
+    }
+
+    updateFormProgress();
+    return filled;
   }
 </script>
 

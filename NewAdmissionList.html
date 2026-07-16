@@ -302,6 +302,11 @@
               <i class="fa-solid fa-sliders text-indigo-600 text-base md:text-lg"></i>
             </button>
             
+            <!-- Inline Edit Toggle -->
+            <button id="btn-toggle-inline-edit" onclick="toggleInlineEditMode()" title="ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ / Inline Edit Mode" class="bg-white hover:bg-slate-100 border border-slate-200 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
+              <i class="fa-solid fa-pen-to-square text-slate-550 text-base md:text-lg"></i>
+            </button>
+            
             <!-- Visual Divider -->
             <div class="h-6 w-[1px] bg-slate-300 mx-1 hidden sm:block"></div>
 
@@ -577,6 +582,9 @@
           <!-- Details will be rendered dynamically -->
         </div>
         <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 flex-wrap text-xs font-bold">
+          <button id="modal-docs-btn" onclick="openDocumentManagerFromPreview()" class="bg-amber-600 hover:bg-amber-500 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-folder-open"></i> Manage Documents / ದಾಖಲೆಗಳು
+          </button>
           <button id="modal-approve-btn" class="bg-emerald-700 hover:bg-emerald-600 text-white py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
             <i class="fa-solid fa-circle-check"></i> Approve / ಅನುಮೋದಿಸಿ
           </button>
@@ -640,6 +648,102 @@
     <div class="flex justify-end gap-2 border-t border-slate-100 dark:border-slate-700 pt-2 text-[11px] font-bold">
       <button onclick="closeExcelFilterDropdown()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-1.5 px-3 rounded-lg border-0 cursor-pointer transition">Cancel</button>
       <button id="excel-ok-btn" class="bg-sky-600 hover:bg-sky-500 text-white py-1.5 px-4.5 rounded-lg border-0 cursor-pointer shadow transition">OK</button>
+    </div>
+  </div>
+
+  <!-- Student Document Manager Modal -->
+  <div id="document-manager-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2100]">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh] m-4">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-slate-850 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-folder-open text-sky-500"></i>
+            ದಾಖಲೆಗಳ ನಿರ್ವಹಣೆ / Student Documents Manager
+          </h3>
+          <p class="text-[10px] text-slate-550 dark:text-slate-400 mt-0.5" id="doc-modal-subtitle">Student Name</p>
+        </div>
+        <button onclick="closeDocumentManagerModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="px-6 py-4 overflow-y-auto flex-1 flex flex-col gap-4">
+        
+        <!-- Upload Form -->
+        <div class="bg-slate-50 dark:bg-slate-800/40 border border-slate-150 dark:border-slate-800 p-4 rounded-2xl">
+          <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-cloud-arrow-up text-sky-500"></i>
+            ಹೊಸ ದಾಖಲೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ / Upload New Document
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">ದಾಖಲೆ ಪ್ರಕಾರ / Document Type</label>
+              <select id="doc-type-select" class="w-full text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 focus:outline-none focus:border-sky-500">
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate">ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate</option>
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate">ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate</option>
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate">ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate</option>
+                <option value="ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)">ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)</option>
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಅಂಕಪಟ್ಟಿ / Student Marks Card">ವಿದ್ಯಾರ್ಥಿ ಅಂಕಪಟ್ಟಿ / Student Marks Card</option>
+                <option value="ಭಾಗ್ಯಲಕ್ಷ್ಮೀ ಬಾಂಡ್ / Student Bhagyalakshmi Bond">ಭಾಗ್ಯಲಕ್ಷ್ಮೀ ಬಾಂಡ್ / Student Bhagyalakshmi Bond</option>
+                <option value="ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book">ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book</option>
+                <option value="ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Father Caste Certificate">ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Father Caste Certificate</option>
+                <option value="ತಂದೆಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Father Income Certificate">ತಂದೆಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Father Income Certificate</option>
+                <option value="ತಂದೆಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Father Aadhaar Card">ತಂದೆಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Father Aadhaar Card</option>
+                <option value="ತಾಯಿಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Mother Caste Certificate">ತಾಯಿಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Mother Caste Certificate</option>
+                <option value="ತಾಯಿಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Mother Income Certificate">ತಾಯಿಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Mother Income Certificate</option>
+                <option value="ತಾಯಿಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Mother Aadhaar Card">ತಾಯಿಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Mother Aadhaar Card</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ (Image/PDF) / Choose File</label>
+              <input type="file" id="doc-file-input" accept="image/*,application/pdf" class="w-full text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-2 focus:outline-none file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-semibold file:bg-slate-100 file:text-slate-700 dark:file:bg-slate-700 dark:file:text-white cursor-pointer">
+            </div>
+          </div>
+          <div class="mt-3 flex justify-end">
+            <button onclick="uploadStudentDocument()" id="btn-upload-doc" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-4 rounded-xl shadow-md transition border-0 cursor-pointer flex items-center gap-1.5">
+              <i class="fa-solid fa-upload"></i> ಅಪ್‌ಲೋಡ್ / Upload
+            </button>
+          </div>
+        </div>
+
+        <!-- Documents List -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-1.5">
+            <i class="fa-solid fa-list-check text-sky-500"></i>
+            ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾದ ದಾಖಲೆಗಳು / Uploaded Documents List
+          </h4>
+          <div id="doc-list-container" class="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+            <p class="text-xs text-slate-450 dark:text-slate-400 italic text-center py-6">ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ / No documents uploaded yet</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <button onclick="closeDocumentManagerModal()" class="bg-slate-600 hover:bg-slate-500 text-white font-bold text-xs py-2 px-5 rounded-xl transition border-0 cursor-pointer">
+          ಮುಚ್ಚಿ / Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Viewer Modal -->
+  <div id="document-viewer-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center z-[2200]">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl flex flex-col max-h-[90vh] m-4">
+      <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <h3 class="text-xs font-bold text-slate-850 dark:text-white" id="viewer-modal-title">ದಾಖಲೆ ನೋಟ / Document Viewer</h3>
+        <button onclick="closeDocumentViewerModal()" class="text-slate-450 hover:text-slate-650 dark:hover:text-slate-350 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex-1 overflow-auto p-6 flex justify-center items-center bg-slate-50 dark:bg-slate-950 rounded-b-3xl" id="viewer-content-container">
+        <!-- Image or PDF iframe will render here -->
+      </div>
     </div>
   </div>
 
@@ -1385,6 +1489,13 @@ function loadColumnOrder() {
       }
     }
 
+    function formatReadableDate(dateStr) {
+      if (!dateStr) return "";
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
     function normalizeClass(classStr) {
       if (!classStr) return "";
       let clean = classStr.toString().trim().toLowerCase();
@@ -1673,7 +1784,9 @@ function loadColumnOrder() {
         standardColumns.forEach(col => {
           if (visibility[col.id] !== false) {
             let val = s[col.id] !== undefined && s[col.id] !== null ? s[col.id] : '';
-            if (col.id === 'gender') {
+            if (window.isInlineEditMode) {
+              cellsHtml += `<td class="p-1 text-center">${renderInlineInput(s, col, val)}</td>`;
+            } else if (col.id === 'gender') {
               cellsHtml += `<td class="p-3 text-center">${val === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು'}</td>`;
             } else if (col.id === 'is_admitted') {
               cellsHtml += `<td class="p-3 text-center">${val === true || val === 'true' ? 'Admitted' : 'Pending'}</td>`;
@@ -1765,6 +1878,8 @@ function loadColumnOrder() {
                 displayRel = cleanRel;
               }
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(displayRel || '-', q)}</td>`;
+            } else if (col.id === 'dob' || col.id === 'transfer_date' || col.id === 'enrolment_date' || col.id === 'form_date') {
+              cellsHtml += `<td class="p-3 text-center font-semibold font-mono text-slate-700">${highlightMatch(formatReadableDate(val) || '-', q)}</td>`;
             } else {
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(val || '-', q)}</td>`;
             }
@@ -3402,6 +3517,7 @@ function loadColumnOrder() {
     function openStudentDetailModal(realId) {
       const student = allStudentsData.find(s => s.realId === realId);
       if (!student) return;
+      window.activeStudentId = student.realId;
 
       // Reset Edit button UI to read-only view
       const editBtn = document.getElementById('modal-edit-btn');
@@ -3419,6 +3535,7 @@ function loadColumnOrder() {
       document.getElementById('modal-receipt-btn').classList.remove('hidden');
       document.getElementById('modal-whatsapp-btn').classList.remove('hidden');
       document.getElementById('modal-print-btn').classList.remove('hidden');
+      document.getElementById('modal-docs-btn').classList.remove('hidden');
 
       const content = document.getElementById('student-detail-content');
       
@@ -3527,8 +3644,8 @@ function loadColumnOrder() {
         <div class="space-y-6">
           ${renderSection({ text: 'ವೈಯಕ್ತಿಕ ವಿವರಗಳು / Personal Details', icon: 'fa-solid fa-user' }, [
             { label: 'ದಾಖಲಾತಿ ಸಂಖ್ಯೆ / Enrolment No', value: student.enrolment_no },
-            { label: 'ದಾಖಲಾತಿ ದಿನಾಂಕ / Enrolment Date', value: student.enrolment_date },
-            { label: 'ಜನ್ಮ ದಿನಾಂಕ / DOB', value: student.dob },
+            { label: 'ದಾಖಲಾತಿ ದಿನಾಂಕ / Enrolment Date', value: formatReadableDate(student.enrolment_date) },
+            { label: 'ಜನ್ಮ ದಿನಾಂಕ / DOB', value: formatReadableDate(student.dob) },
             { label: 'ವಯಸ್ಸು / Age', value: student.age },
             { label: 'ವಯಸ್ಸಿನ ಸಡಿಲಿಕೆ ಕಾರಣ / Age Relaxation Reason', value: student.age_reason },
             { label: 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Student Aadhaar', value: student.student_aadhaar || student.aadhaar },
@@ -3590,9 +3707,9 @@ function loadColumnOrder() {
             { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ವಿಧ / Type', value: student.preschool_type },
             { label: 'ಪ್ರಿ ಸ್ಕೂಲ್ ವಿಳಾಸ / Preschool Address', value: student.preschool_address },
             { label: 'ಟಿ.ಸಿ ಸಂಖ್ಯೆ / TC Number', value: student.transfer_no },
-            { label: 'ಟಿ.ಸಿ ದಿನಾಂಕ / TC Date', value: student.transfer_date },
-            { label: 'ಎಸ್ ಟಿ ಎಸ್ ಸಂಖ್ಯೆ / STS Number', value: student.student_sts },
-            { label: 'ಅರ್ಜಿ ಸಲ್ಲಿಸಿದ ದಿನಾಂಕ / Form Date', value: student.form_date }
+            { label: 'ಟಿ.ಸಿ ದಿನಾಂಕ / TC Date', value: formatReadableDate(student.transfer_date) },
+            { label: 'ಎಸ್ ಟಿ STS ಸಂಖ್ಯೆ / STS Number', value: student.student_sts },
+            { label: 'ಅರ್ಜಿ ಸಲ್ಲಿಸಿದ ದಿನಾಂಕ / Form Date', value: formatReadableDate(student.form_date) }
           ])}
         </div>
       `;
@@ -3615,6 +3732,7 @@ function loadColumnOrder() {
       document.getElementById('modal-receipt-btn').classList.add('hidden');
       document.getElementById('modal-whatsapp-btn').classList.add('hidden');
       document.getElementById('modal-print-btn').classList.add('hidden');
+      document.getElementById('modal-docs-btn').classList.add('hidden');
 
       // Let's add a Cancel button to the header
       let cancelBtn = document.getElementById('modal-cancel-btn');
@@ -3639,6 +3757,350 @@ function loadColumnOrder() {
           <iframe src="NewAdmission.html?id=${student.realId}&embed=true" class="w-full h-full border-0"></iframe>
         </div>
       `;
+    }
+
+    // Inline Edit Mode & Document Manager Helper Functions
+    window.isInlineEditMode = false;
+    
+    function toggleInlineEditMode() {
+      window.isInlineEditMode = !window.isInlineEditMode;
+      const btn = document.getElementById('btn-toggle-inline-edit');
+      const icon = btn.querySelector('i');
+      
+      if (window.isInlineEditMode) {
+        btn.classList.add('bg-sky-50', 'border-sky-500', 'ring-2', 'ring-sky-500/20');
+        icon.className = 'fa-solid fa-pen-to-square text-sky-600 text-base md:text-lg';
+        showToast("ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ ಸಕ್ರಿಯವಾಗಿದೆ / Inline Edit Active", "ನೀವು ಈಗ ಟೇಬಲ್ ಒಳಗಿನ ವಿವರಗಳನ್ನು ನೇರವಾಗಿ ಬದಲಾಯಿಸಬಹುದು. / You can now edit cell values directly in the table.", "success");
+      } else {
+        btn.classList.remove('bg-sky-50', 'border-sky-500', 'ring-2', 'ring-sky-500/20');
+        icon.className = 'fa-solid fa-pen-to-square text-slate-550 text-base md:text-lg';
+        showToast("ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ / Inline Edit Inactive", "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗಿದೆ. / Changes have been saved.", "info");
+      }
+      
+      renderTable(allStudentsData);
+    }
+
+    function renderInlineInput(s, col, val) {
+      const getRaw = (v) => (v === undefined || v === null) ? '' : v;
+      
+      if (col.id === 'gender') {
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'gender', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[70px] text-slate-700">
+            <option value="Boy" ${s.gender === 'Boy' ? 'selected' : ''}>Boy / ಗಂಡು</option>
+            <option value="Girl" ${s.gender === 'Girl' ? 'selected' : ''}>Girl / ಹೆಣ್ಣು</option>
+          </select>
+        `;
+      }
+      
+      if (col.id === 'enroll_class') {
+        const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'enroll_class', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[60px] text-slate-700">
+            ${classes.map(c => `<option value="${c}" ${s.className === c ? 'selected' : ''}>${c}</option>`).join('')}
+          </select>
+        `;
+      }
+      
+      if (col.id === 'religion') {
+        const cleanRel = (val || '').toString().trim().toUpperCase();
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'religion', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[90px] text-slate-700">
+            <option value="HINDU" ${cleanRel === 'HINDU' || cleanRel === 'HINDŪ' || cleanRel === 'ಹಿಂದೂ' ? 'selected' : ''}>ಹಿಂದೂ / HINDU</option>
+            <option value="ISLAM" ${cleanRel === 'ISLAM' || cleanRel === 'ಮುಸ್ಲಿಂ' ? 'selected' : ''}>ಮುಸ್ಲಿಂ / ISLAM</option>
+            <option value="CHRISTIAN" ${cleanRel === 'CHRISTIAN' || cleanRel === 'ಕ್ರಿಶ್ಚಿಯನ್' ? 'selected' : ''}>ಕ್ರಿಶ್ಚಿಯನ್ / CHRISTIAN</option>
+            <option value="JAIN" ${cleanRel === 'JAIN' || cleanRel === 'ಜೈನ' ? 'selected' : ''}>ಜೈನ / JAIN</option>
+            <option value="BUDDHIST" ${cleanRel === 'BUDDHIST' || cleanRel === 'ಬೌದ್ಧ' ? 'selected' : ''}>ಬೌದ್ಧ / BUDDHIST</option>
+            <option value="SIKH" ${cleanRel === 'SIKH' || cleanRel === 'ಸಿಖ್' ? 'selected' : ''}>ಸಿಖ್ / SIKH</option>
+            <option value="OTHERS" ${cleanRel === 'OTHERS' || cleanRel === 'ಇತರೆ' ? 'selected' : ''}>ಇತರೆ / OTHERS</option>
+          </select>
+        `;
+      }
+      
+      if (col.id === 'social_class') {
+        const scVal = (val || '').toString().trim().toUpperCase();
+        const scOptions = ['SC', 'ST', 'C1', '2A', '2B', '3A', '3B', 'OTHERS'];
+        return `
+          <select onchange="saveInlineField('${s.realId}', 'social_class', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[70px] text-slate-700">
+            ${scOptions.map(sc => `<option value="${sc}" ${scVal === sc ? 'selected' : ''}>${sc}</option>`).join('')}
+          </select>
+        `;
+      }
+      
+      if (col.id === 'dob' || col.id === 'transfer_date' || col.id === 'enrolment_date') {
+        return `
+          <input type="date" value="${getRaw(val)}" onchange="saveInlineField('${s.realId}', '${col.id}', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[100px] text-slate-700">
+        `;
+      }
+      
+      if (col.id === 'student_name') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.name_english)}" onchange="saveInlineField('${s.realId}', 'name_english', this.value)" class="bg-white border border-slate-300 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.student_name_kn)}" onchange="saveInlineField('${s.realId}', 'student_name', this.value)" class="bg-white border border-slate-300 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'father_name_kn') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.father_name_az)}" onchange="saveInlineField('${s.realId}', 'father_name_az', this.value)" class="bg-white border border-slate-300 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.father_name_kn)}" onchange="saveInlineField('${s.realId}', 'father_name_kn', this.value)" class="bg-white border border-slate-300 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'mother_name_kn') {
+        return `
+          <div class="flex flex-col gap-1 w-full min-w-[120px]">
+            <input type="text" placeholder="English Name" value="${getRaw(s.mother_name_az)}" onchange="saveInlineField('${s.realId}', 'mother_name_az', this.value)" class="bg-white border border-slate-300 text-[9px] font-bold rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 uppercase text-slate-700">
+            <input type="text" placeholder="ಕನ್ನಡ ಹೆಸರು" value="${getRaw(s.mother_name_kn)}" onchange="saveInlineField('${s.realId}', 'mother_name_kn', this.value)" class="bg-white border border-slate-300 text-[9px] rounded px-1 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 text-slate-700">
+          </div>
+        `;
+      }
+      
+      if (col.id === 'is_admitted') {
+        return `<span class="text-[10px] font-semibold text-slate-500">${s.isAdmitted ? 'Admitted' : 'Pending'}</span>`;
+      }
+      if (col.id === 'age') {
+        // Fallback or calculate age
+        return `<span class="text-[10px] font-semibold text-slate-650">${s.age || '-'}</span>`;
+      }
+      
+      let oninputStr = '';
+      if (col.id === 'student_aadhaar' || col.id === 'father_aadhaar' || col.id === 'mother_aadhaar') {
+        oninputStr = 'oninput="formatAadhaarInline(this)"';
+      } else if (col.id === 'mobile_number' || col.id === 'mobile_no_1' || col.id === 'mobile_no_2') {
+        oninputStr = 'oninput="formatMobileInline(this)"';
+      }
+      
+      return `
+        <input type="text" value="${getRaw(val)}" ${oninputStr} onchange="saveInlineField('${s.realId}', '${col.id}', this.value)" class="bg-white border border-slate-300 text-[10px] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-sky-500 w-full min-w-[80px] text-slate-700">
+      `;
+    }
+
+    async function saveInlineField(studentId, dbField, value) {
+      let sanitisedVal = value;
+      if (dbField.includes('aadhaar')) {
+        sanitisedVal = value.replace(/\s+/g, '').trim();
+      } else if (dbField.includes('mobile') || dbField === 'mobile_number') {
+        sanitisedVal = value.replace(/[-\s]+/g, '').trim();
+      }
+      
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({ [dbField]: sanitisedVal })
+          .eq('id', studentId);
+          
+        if (error) throw error;
+        
+        showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", "ಕ್ಷೇತ್ರವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ. / Field updated successfully.", "success");
+        
+        const localIdx = allStudentsData.findIndex(st => st.realId === studentId);
+        if (localIdx !== -1) {
+          const s = allStudentsData[localIdx];
+          s[dbField] = sanitisedVal;
+          
+          if (dbField === 'enroll_class') s.className = sanitisedVal;
+          if (dbField === 'gender') s.gender = sanitisedVal;
+          if (dbField === 'student_aadhaar') s.aadhaar = sanitisedVal;
+          if (dbField === 'mobile_number') s.mobile = sanitisedVal;
+          if (dbField === 'student_name') s.student_name_kn = sanitisedVal;
+          if (dbField === 'name_english') s.name_english = sanitisedVal;
+          if (dbField === 'father_name_kn') s.father_name_kn = sanitisedVal;
+          if (dbField === 'father_name_az') s.father_name_az = sanitisedVal;
+          if (dbField === 'mother_name_kn') s.mother_name_kn = sanitisedVal;
+          if (dbField === 'mother_name_az') s.mother_name_az = sanitisedVal;
+          if (dbField === 'special_need') s.specialNeed = sanitisedVal;
+        }
+      } catch (err) {
+        console.error("Inline save error:", err);
+        showToast("ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ / Save Failed", err.message, "error");
+      }
+    }
+
+    function formatAadhaarInline(input) {
+      let value = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length && i < 12; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += value[i];
+      }
+      input.value = formatted;
+    }
+    
+    function formatMobileInline(input) {
+      let value = input.value.replace(/\D/g, '');
+      let formatted = '';
+      for (let i = 0; i < value.length && i < 10; i++) {
+        if (i === 5) formatted += '-';
+        formatted += value[i];
+      }
+      input.value = formatted;
+    }
+
+    // Document Manager Helper Functions
+    function openDocumentManagerFromPreview() {
+      let s = allStudentsData.find(st => st.realId === window.activeStudentId);
+      if (!s) {
+        s = allStudentsData.find(st => st.id === window.activeStudentId);
+      }
+      
+      const studentName = s ? (s.name_english || s.student_name || 'Student Profile') : 'Student Profile';
+      const studentIdStr = s ? (s.id || s.app_no || '-') : (window.activeStudentId || '-');
+
+      document.getElementById('doc-modal-subtitle').innerText = `${studentName} (ID: ${studentIdStr})`;
+      document.getElementById('document-manager-modal').classList.remove('hidden');
+      loadStudentDocuments();
+    }
+
+    function closeDocumentManagerModal() {
+      document.getElementById('document-manager-modal').classList.add('hidden');
+    }
+
+    async function loadStudentDocuments() {
+      const container = document.getElementById('doc-list-container');
+      container.innerHTML = '<div class="text-xs text-slate-500 italic text-center py-6">ದಾಖಲೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Loading documents...</div>';
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('student_documents')
+          .select('id, document_name, file_type, created_at')
+          .eq('student_id', window.activeStudentId);
+          
+        if (error) throw error;
+        
+        if (!data || data.length === 0) {
+          container.innerHTML = '<p class="text-xs text-slate-450 italic text-center py-6">ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ / No documents uploaded yet</p>';
+          return;
+        }
+        
+        let html = '';
+        data.forEach(doc => {
+          const createdDate = new Date(doc.created_at).toLocaleDateString('en-GB');
+          html += `
+            <div class="flex items-center justify-between bg-slate-50 border border-slate-200/60 p-3 rounded-xl hover:bg-slate-100/50 transition">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                  <i class="${doc.file_type.includes('pdf') ? 'fa-solid fa-file-pdf text-red-500' : 'fa-solid fa-file-image text-emerald-500'} text-lg"></i>
+                </div>
+                <div>
+                  <h5 class="text-xs font-bold text-slate-800">${doc.document_name}</h5>
+                  <p class="text-[9px] text-slate-400 font-medium">ಅಪ್‌ಲೋಡ್ ದಿನಾಂಕ / Uploaded: ${createdDate}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="viewDocument('${doc.id}', '${doc.document_name}')" class="bg-sky-50 hover:bg-sky-100 text-sky-600 text-[10px] font-bold py-1.5 px-3 rounded-lg border-0 cursor-pointer transition">ನೋಡು / View</button>
+                <button onclick="deleteDocument('${doc.id}', '${doc.document_name}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-[10px] font-bold py-1.5 px-3 rounded-lg border-0 cursor-pointer transition">ಅಳಿಸು / Delete</button>
+              </div>
+            </div>
+          `;
+        });
+        container.innerHTML = html;
+      } catch (err) {
+        console.error("Fetch error:", err);
+        container.innerHTML = `<div class="text-xs text-red-500 font-semibold text-center py-6">Error loading documents: ${err.message}</div>`;
+      }
+    }
+
+    async function uploadStudentDocument() {
+      const typeSelect = document.getElementById('doc-type-select');
+      const fileInput = document.getElementById('doc-file-input');
+      const btn = document.getElementById('btn-upload-doc');
+      
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("ದಯವಿಟ್ಟು ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ! / Please select a file to upload!");
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const docName = typeSelect.value;
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> ಅಪ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...';
+      
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Data = e.target.result;
+        
+        try {
+          const { error } = await supabaseClient
+            .from('student_documents')
+            .insert([{
+              student_id: window.activeStudentId,
+              document_name: docName,
+              file_type: file.type,
+              file_data: base64Data
+            }]);
+            
+          if (error) throw error;
+          
+          showToast("ಯಶಸ್ವಿ / Success", "ದಾಖಲೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ. / Document uploaded successfully.", "success");
+          fileInput.value = '';
+          loadStudentDocuments();
+        } catch (err) {
+          console.error("Upload error:", err);
+          alert("ಡಾಕ್ಯುಮೆಂಟ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-upload"></i> ಅಪ್‌ಲೋಡ್ / Upload';
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    async function viewDocument(docId, docName) {
+      const container = document.getElementById('viewer-content-container');
+      document.getElementById('viewer-modal-title').innerText = docName;
+      document.getElementById('document-viewer-modal').classList.remove('hidden');
+      container.innerHTML = '<div class="text-xs text-slate-500 italic text-center py-12">ದಾಖಲೆಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... / Loading document...</div>';
+      
+      try {
+        const { data, error } = await supabaseClient
+          .from('student_documents')
+          .select('file_data, file_type')
+          .eq('id', docId)
+          .single();
+          
+        if (error) throw error;
+        
+        if (data.file_type.includes('pdf')) {
+          container.innerHTML = `<iframe src="${data.file_data}" class="w-full h-[65vh] border-0 rounded-2xl"></iframe>`;
+        } else {
+          container.innerHTML = `<img src="${data.file_data}" class="max-w-full max-h-[65vh] object-contain rounded-2xl shadow-md border border-slate-100">`;
+        }
+      } catch (err) {
+        console.error("View error:", err);
+        container.innerHTML = `<div class="text-xs text-red-500 font-semibold text-center py-6">Error viewing document: ${err.message}</div>`;
+      }
+    }
+
+    function closeDocumentViewerModal() {
+      document.getElementById('document-viewer-modal').classList.add('hidden');
+      document.getElementById('viewer-content-container').innerHTML = '';
+    }
+
+    async function deleteDocument(docId, docName) {
+      if (!confirm(`ನಿಜವಾಗಿಯೂ "${docName}" ದಾಖಲೆಯನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?\nAre you sure you want to delete "${docName}"?`)) {
+        return;
+      }
+      
+      try {
+        const { error } = await supabaseClient
+          .from('student_documents')
+          .delete()
+          .eq('id', docId);
+          
+        if (error) throw error;
+        
+        showToast("ಅಳಿಸಲಾಗಿದೆ / Deleted", `ದಾಖಲೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ.`, "success");
+        loadStudentDocuments();
+      } catch (err) {
+        console.error("Delete error:", err);
+        alert("ದಾಖಲೆಯನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
     }
   </script>
   <script src="navbar.js"></script>
