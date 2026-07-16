@@ -682,6 +682,7 @@
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">ದಾಖಲೆ ಪ್ರಕಾರ / Document Type</label>
               <select id="doc-type-select" class="w-full text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 focus:outline-none focus:border-sky-500">
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ / Student Photo">ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ / Student Photo</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate">ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate">ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate</option>
@@ -2009,26 +2010,44 @@ function loadColumnOrder() {
         return;
       }
 
+      const startNoInput = prompt("ದಾಖಲಾತಿ ಸಂಖ್ಯೆಗಳನ್ನು (Enrollment numbers) ಸರಣಿ ರೂಪದಲ್ಲಿ ನೀಡಲು ಪ್ರಾರಂಭದ ಸಂಖ್ಯೆ ಬರೆಯಿರಿ (ಖಾಲಿ ಬಿಟ್ಟರೆ ಸಂಖ್ಯೆಗಳು ಅಪ್‌ಡೇಟ್ ಆಗುವುದಿಲ್ಲ):\n\nEnter starting enrollment number to assign sequentially (leave blank to skip):");
+
       const tbody = document.getElementById('students-table-body');
       const colCount = document.querySelectorAll('thead th').length;
       tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-2 text-lg"></i> ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ... / Admitting selected students...</td></tr>`;
 
       try {
-        const { error } = await supabaseClient
-          .from('admissions')
-          .update({ is_admitted: true })
-          .in('id', selectedIds);
-
-        if (error) throw error;
+        if (startNoInput && startNoInput.trim() !== '') {
+          let currentNo = parseInt(startNoInput.trim(), 10);
+          if (!isNaN(currentNo)) {
+            // Promise all for individual sequential updates
+            const promises = selectedIds.map((id, index) => {
+              return supabaseClient
+                .from('admissions')
+                .update({ is_admitted: true, enrolment_no: (currentNo + index).toString() })
+                .eq('id', id);
+            });
+            const results = await Promise.all(promises);
+            const err = results.find(r => r.error);
+            if (err) throw err.error;
+          } else {
+            const { error } = await supabaseClient
+              .from('admissions')
+              .update({ is_admitted: true })
+              .in('id', selectedIds);
+            if (error) throw error;
+          }
+        } else {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update({ is_admitted: true })
+            .in('id', selectedIds);
+          if (error) throw error;
+        }
 
         showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", `${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ಯಶಸ್ವಿಯಾಗಿದೆ.`, "success");
         
-        selectedIds.forEach(id => {
-          const student = allStudentsData.find(s => s.realId === id);
-          if (student) student.isAdmitted = true;
-        });
-
-        applyFilters();
+        fetchStudentsDatabase();
       } catch (err) {
         alert("ದಾಖಲಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to admit: " + err.message);
         fetchStudentsDatabase();
@@ -3625,11 +3644,21 @@ function loadColumnOrder() {
         `;
       };
 
-      content.innerHTML = `
-        <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-150">
-          <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-md">
+      const photoUrl = student.student_photo || '';
+      let avatarHtml = '';
+      if (photoUrl) {
+        avatarHtml = `<img src="${photoUrl}" class="w-14 h-14 rounded-full border-2 border-sky-500 object-cover shadow-md">`;
+      } else {
+        avatarHtml = `
+          <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-md">
             ${(student.name_english || student.name || 'S').charAt(0).toUpperCase()}
           </div>
+        `;
+      }
+
+      content.innerHTML = `
+        <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-150">
+          ${avatarHtml}
           <div>
             <h3 class="text-sm font-extrabold text-slate-800">${(student.name_english || '').toUpperCase()}</h3>
             <p class="text-xs text-slate-500 font-semibold mt-0.5">${student.student_name_kn || ''}</p>
@@ -3808,6 +3837,7 @@ function loadColumnOrder() {
             <option value="HINDU" ${cleanRel === 'HINDU' || cleanRel === 'HINDŪ' || cleanRel === 'ಹಿಂದೂ' ? 'selected' : ''}>ಹಿಂದೂ / HINDU</option>
             <option value="ISLAM" ${cleanRel === 'ISLAM' || cleanRel === 'ಮುಸ್ಲಿಂ' ? 'selected' : ''}>ಮುಸ್ಲಿಂ / ISLAM</option>
             <option value="CHRISTIAN" ${cleanRel === 'CHRISTIAN' || cleanRel === 'ಕ್ರಿಶ್ಚಿಯನ್' ? 'selected' : ''}>ಕ್ರಿಶ್ಚಿಯನ್ / CHRISTIAN</option>
+            <option value="PARSI" ${cleanRel === 'PARSI' || cleanRel === 'ಪಾರ್ಸಿ' ? 'selected' : ''}>ಪಾರ್ಸಿ / PARSI</option>
             <option value="JAIN" ${cleanRel === 'JAIN' || cleanRel === 'ಜೈನ' ? 'selected' : ''}>ಜೈನ / JAIN</option>
             <option value="BUDDHIST" ${cleanRel === 'BUDDHIST' || cleanRel === 'ಬೌದ್ಧ' ? 'selected' : ''}>ಬೌದ್ಧ / BUDDHIST</option>
             <option value="SIKH" ${cleanRel === 'SIKH' || cleanRel === 'ಸಿಖ್' ? 'selected' : ''}>ಸಿಖ್ / SIKH</option>
@@ -4024,7 +4054,6 @@ function loadColumnOrder() {
       reader.onload = async function(e) {
         const base64Data = e.target.result;
         
-        try {
           const { error } = await supabaseClient
             .from('student_documents')
             .insert([{
@@ -4035,6 +4064,32 @@ function loadColumnOrder() {
             }]);
             
           if (error) throw error;
+
+          // If the uploaded document is Student Photo, update the admissions table and local state
+          if (docName.includes("ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ") || docName.includes("Student Photo")) {
+            const { error: photoError } = await supabaseClient
+              .from('admissions')
+              .update({ student_photo: base64Data })
+              .eq('id', window.activeStudentId);
+
+            if (photoError) console.error("Error syncing student photo field:", photoError);
+
+            // Sync with local student state
+            const st = allStudentsData.find(s => s.realId === window.activeStudentId);
+            if (st) {
+              st.student_photo = base64Data;
+            }
+
+            // Sync with preview modal UI if visible
+            const modalContent = document.getElementById('student-detail-content');
+            if (modalContent) {
+              // Just call openStudentDetailModal again to redraw the header card!
+              openStudentDetailModal(window.activeStudentId);
+            }
+
+            // Re-render table to display the new avatar row thumbnail
+            renderTable();
+          }
           
           showToast("ಯಶಸ್ವಿ / Success", "ದಾಖಲೆಯನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ. / Document uploaded successfully.", "success");
           fileInput.value = '';

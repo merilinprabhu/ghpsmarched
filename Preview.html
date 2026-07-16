@@ -2256,16 +2256,15 @@
                 return { fieldName: 'medium', value: id.endsWith('kn') ? 'ಕನ್ನಡ' : 'ENGLISH' };
             }
             if (id.startsWith('p_gen_')) {
-                if (id.endsWith('male')) return { fieldName: 'gender', value: 'MALE' };
-                if (id.endsWith('female')) return { fieldName: 'gender', value: 'FEMALE' };
-                return { fieldName: 'gender', value: 'TRANSGENDER' };
+                if (id.endsWith('male')) return { fieldName: 'gender', value: 'Boy' };
+                if (id.endsWith('female')) return { fieldName: 'gender', value: 'Girl' };
+                return { fieldName: 'gender', value: 'Transgender' };
             }
             if (id.startsWith('p_class_')) {
                 const cls = id.substring('p_class_'.length);
                 if (cls === 'lkg') return { fieldName: 'enrollClass', value: 'LKG' };
                 if (cls === 'ukg') return { fieldName: 'enrollClass', value: 'UKG' };
-                const roman = { '1': 'Class I', '2': 'Class II', '3': 'Class III', '4': 'Class IV', '5': 'Class V', '6': 'Class VI', '7': 'Class VII', '8': 'Class VIII' };
-                return { fieldName: 'enrollClass', value: roman[cls] || '' };
+                return { fieldName: 'enrollClass', value: cls };
             }
             if (id.startsWith('p_rel_')) {
                 return { fieldName: 'religion', value: id.substring('p_rel_'.length).toUpperCase() };

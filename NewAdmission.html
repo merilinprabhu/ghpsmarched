@@ -675,12 +675,20 @@
           <div class="col-12 col-md-4">
             <label style="font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase;" class="mb-1">ದಾಖಲೆ ಪ್ರಕಾರ / Document Type</label>
             <select id="scanner-doc-type" class="form-select text-xs font-semibold" style="border-radius: 12px; font-size: 12px; padding: 10px;">
-              <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
               <option value="ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate">ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate</option>
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
               <option value="ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate">ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate</option>
               <option value="ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate">ವಿದ್ಯಾರ್ಥಿ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Student Income Certificate</option>
               <option value="ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)">ವರ್ಗಾವಣೆ ಪತ್ರ (TC) / Transfer Certificate (TC)</option>
+              <option value="ವಿದ್ಯಾರ್ಥಿ ಅಂಕಪಟ್ಟಿ / Student Marks Card">ವಿದ್ಯಾರ್ಥಿ ಅಂಕಪಟ್ಟಿ / Student Marks Card</option>
+              <option value="ಭಾಗ್ಯಲಕ್ಷ್ಮೀ ಬಾಂಡ್ / Student Bhagyalakshmi Bond">ಭಾಗ್ಯಲಕ್ಷ್ಮೀ ಬಾಂಡ್ / Student Bhagyalakshmi Bond</option>
               <option value="ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book">ಬ್ಯಾಂಕ್ ಪಾಸ್ ಬುಕ್ / Student Bank Pass Book</option>
+              <option value="ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Father Caste Certificate">ತಂದೆಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Father Caste Certificate</option>
+              <option value="ತಂದೆಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Father Income Certificate">ತಂದೆಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Father Income Certificate</option>
+              <option value="ತಂದೆಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Father Aadhaar Card">ತಂದೆಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Father Aadhaar Card</option>
+              <option value="ತಾಯಿಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Mother Caste Certificate">ತಾಯಿಯ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Mother Caste Certificate</option>
+              <option value="ತಾಯಿಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Mother Income Certificate">ತಾಯಿಯ ಆದಾಯ ಪ್ರಮಾಣಪತ್ರ / Mother Income Certificate</option>
+              <option value="ತಾಯಿಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Mother Aadhaar Card">ತಾಯಿಯ ಆಧಾರ್ ಕಾರ್ಡ್ / Mother Aadhaar Card</option>
             </select>
           </div>
           <div class="col-12 col-md-5">
@@ -4951,40 +4959,65 @@
     const cleanText = text.replace(/\s+/g, ' '); 
     console.log("Extracted OCR Text:", cleanText);
 
-    // 1. Aadhaar matches
-    const aadhaarMatch = cleanText.match(/\b\d{4}\s\d{4}\s\d{4}\b/) || cleanText.replace(/\s/g, '').match(/\b\d{12}\b/);
-    if (aadhaarMatch) {
-      let num = aadhaarMatch[0].replace(/\s/g, '');
-      data.aadhaar = num.substring(0,4) + ' ' + num.substring(4,8) + ' ' + num.substring(8,12);
-    }
-
-    // 2. Date of birth matches (DD/MM/YYYY or DD-MM-YYYY or YYYY-MM-DD)
-    const dateMatches = cleanText.match(/\b\d{2}[/\-]\d{2}[/\-]\d{4}\b/g) || cleanText.match(/\b\d{4}[/\-]\d{2}[/\-]\d{2}\b/g);
-    if (dateMatches && dateMatches.length > 0) {
-      const parseDate = (dStr) => {
-        const parts = dStr.split(/[/\-]/);
-        if (parts[0].length === 4) {
-          return new Date(parts[0], parts[1]-1, parts[2]);
+    // 1. Aadhaar matches (ensuring EXACTLY 12 digits via lookarounds, and requiring Aadhaar keywords for non-Aadhaar documents)
+    let aadhaar = null;
+    const formattedMatch = cleanText.match(/(?<!\d)\d{4}\s\d{4}\s\d{4}(?!\d)/) || 
+                           cleanText.match(/(?<!\d)\d{4}-\d{4}-\d{4}(?!\d)/);
+                           
+    if (formattedMatch) {
+      aadhaar = formattedMatch[0].replace(/[\s\-]/g, '');
+    } else {
+      const hasAadhaarLabel = /(aadhaar|aadhar|adhar|uid|ಆಧಾರ್|ಆದಾರ್)/i.test(cleanText);
+      const contiguousMatch = cleanText.match(/(?<!\d)\d{12}(?!\d)/) || 
+                              cleanText.replace(/[\s\-\:]/g, '').match(/(?<!\d)\d{12}(?!\d)/);
+                              
+      if (contiguousMatch) {
+        const potentialNo = contiguousMatch[0].replace(/[\s\-\:]/g, '');
+        if (docType.includes('Aadhaar') || hasAadhaarLabel) {
+          aadhaar = potentialNo;
         }
-        return new Date(parts[2], parts[1]-1, parts[0]);
-      };
-      dateMatches.sort((a, b) => parseDate(a) - parseDate(b));
-      
-      const oldestDateStr = dateMatches[0];
-      const parts = oldestDateStr.split(/[/\-]/);
-      if (parts[0].length === 4) {
-        data.dob_iso = oldestDateStr.replace(/\//g, '-');
-        data.dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
-      } else {
-        data.dob = oldestDateStr.replace(/\//g, '-');
-        data.dob_iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
       }
     }
 
-    // 3. RD Certificate numbers
+    if (aadhaar) {
+      data.aadhaar = aadhaar.substring(0,4) + ' ' + aadhaar.substring(4,8) + ' ' + aadhaar.substring(8,12);
+    }
+
+    // 2. Date of birth matches (DD/MM/YYYY or DD-MM-YYYY or YYYY-MM-DD, allowing optional spaces)
+    const dateMatches = cleanText.match(/\b\d{2}\s*[/\-]\s*\d{2}\s*[/\-]\s*\d{4}\b/g) || 
+                        cleanText.match(/\b\d{4}\s*[/\-]\s*\d{2}\s*[/\-]\s*\d{2}\b/g);
+    if (dateMatches && dateMatches.length > 0) {
+      const hasDobLabel = /(dob|date\s*of\s*birth|birth|born|ಹುಟ್ಟಿದ|ಜನನ|ಹುಟ್ಟು)/i.test(cleanText);
+      if (docType.includes('Birth') || docType.includes('Aadhaar') || hasDobLabel) {
+        const cleanedDateMatches = dateMatches.map(d => d.replace(/\s+/g, ''));
+        const parseDate = (dStr) => {
+          const parts = dStr.split(/[/\-]/);
+          if (parts[0].length === 4) {
+            return new Date(parts[0], parts[1]-1, parts[2]);
+          }
+          return new Date(parts[2], parts[1]-1, parts[0]);
+        };
+        cleanedDateMatches.sort((a, b) => parseDate(a) - parseDate(b));
+        
+        const oldestDateStr = cleanedDateMatches[0];
+        const parts = oldestDateStr.split(/[/\-]/);
+        if (parts[0].length === 4) {
+          data.dob_iso = oldestDateStr.replace(/\//g, '-');
+          data.dob = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        } else {
+          data.dob = oldestDateStr.replace(/\//g, '-');
+          data.dob_iso = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+      }
+    }
+
+    // 3. RD Certificate numbers (strictly check for RD prefix and verify caste/income context)
     const rdMatch = cleanText.match(/\bRD\d{10,15}\b/i);
     if (rdMatch) {
-      data.rdNumber = rdMatch[0].toUpperCase();
+      const hasRDLabel = /(caste|income|rd\s*number|certificate|ಜಾತಿ|ಆದಾಯ|ಪ್ರಮಾಣ|ಪತ್ರ)/i.test(cleanText);
+      if (docType.includes('Caste') || docType.includes('Income') || hasRDLabel) {
+        data.rdNumber = rdMatch[0].toUpperCase();
+      }
     }
 
     // 4. Specific parsing based on selected document type
@@ -5057,7 +5090,7 @@
       }
     }
 
-    if (parsed.dob_iso) {
+    if (parsed.dob_iso && !docType.includes('Father') && !docType.includes('Mother')) {
       const dobEl = document.getElementById('dob');
       if (dobEl) {
         if (dobEl._flatpickr) {
@@ -5072,7 +5105,7 @@
       }
     }
 
-    if (parsed.gender) {
+    if (parsed.gender && !docType.includes('Father') && !docType.includes('Mother')) {
       const genderSelect = document.getElementById('gender');
       if (genderSelect) {
         genderSelect.value = parsed.gender;
@@ -5084,13 +5117,25 @@
 
     if (parsed.rdNumber) {
       if (docType.includes('Caste')) {
-        setVal('studentCasteCert', parsed.rdNumber, 'Student Caste Cert No');
+        if (docType.includes('Father')) {
+          setVal('fatherCasteCert', parsed.rdNumber, 'Father Caste Cert No');
+        } else if (docType.includes('Mother')) {
+          setVal('motherCasteCert', parsed.rdNumber, 'Mother Caste Cert No');
+        } else {
+          setVal('studentCasteCert', parsed.rdNumber, 'Student Caste Cert No');
+        }
       } else if (docType.includes('Income')) {
-        setVal('studentIncomeCert', parsed.rdNumber, 'Student Income Cert No');
+        if (docType.includes('Father')) {
+          setVal('fatherIncomeCert', parsed.rdNumber, 'Father Income Cert No');
+        } else if (docType.includes('Mother')) {
+          setVal('motherIncomeCert', parsed.rdNumber, 'Mother Income Cert No');
+        } else {
+          setVal('studentIncomeCert', parsed.rdNumber, 'Student Income Cert No');
+        }
       }
     }
 
-    if (parsed.name) {
+    if (parsed.name && !docType.includes('Father') && !docType.includes('Mother')) {
       if (docType.includes('Aadhaar') || docType.includes('Birth')) {
         setVal('nameEnglish', parsed.name.toUpperCase(), 'Student Name (English)');
         autoTransliterateAdmission('nameEnglish', 'studentName');

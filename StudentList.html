@@ -443,6 +443,10 @@
             <button onclick="editSelectedStudent()" id="mass-edit-btn" class="bg-amber-500 hover:bg-amber-400 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-pen text-[10px]"></i> Edit / ತಿದ್ದುಪಡಿ
             </button>
+            <!-- Batch Promote -->
+            <button onclick="openBatchPromoteModal()" id="mass-promote-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-graduation-cap text-[10px]"></i> Promote / ತರಗತಿ ಬಡ್ತಿ
+            </button>
             <!-- Delete -->
             <button onclick="deleteSelectedStudents()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-trash text-[10px]"></i> Delete / ಅಳಿಸಿ
@@ -591,6 +595,40 @@
     </div>
   </div>
 
+  <!-- Batch Promotion Modal Overlay -->
+  <div id="batchPromoteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transition-all duration-300">
+      <h3 class="text-base font-bold text-slate-800 dark:text-slate-100 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-graduation-cap text-indigo-600"></i>
+        ಗುಂಪು ತರಗತಿ ಬಡ್ತಿ / Batch Class Promotion
+      </h3>
+      <p class="text-xs text-slate-500 mb-4">
+        ಆಯ್ಕೆಮಾಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಯಾವ ತರಗತಿಗೆ ಬಡ್ತಿ ನೀಡಬೇಕು ಎಂಬುದನ್ನು ಆರಿಸಿ. / Select the target class to promote the selected students to:
+      </p>
+      <div class="mb-4">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">ತರಗತಿ ಆರಿಸಿ / Target Class</label>
+        <select id="promote-target-class" class="w-full p-2.5 bg-white dark:bg-slate-950 border border-slate-350 dark:border-slate-700 rounded-xl text-xs text-slate-750 dark:text-slate-200">
+          <option value="LKG">LKG</option>
+          <option value="UKG">UKG</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-2 text-xs font-bold">
+        <button onclick="closeBatchPromoteModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-4 rounded-xl border-0 cursor-pointer transition">ರದ್ದುಮಾಡಿ / Cancel</button>
+        <button onclick="submitBatchPromotion()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded-xl border-0 cursor-pointer shadow transition">ಬಡ್ತಿ ನೀಡಿ / Promote</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Quick Student Profile Modal -->
   <div id="student-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
     <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden transition-all duration-300 modal-content">
@@ -627,6 +665,14 @@
 
       <!-- Modal Content (Scrollable) -->
       <div class="flex-grow overflow-y-auto p-6 bg-white dark:bg-slate-900 custom-scrollbar">
+        <!-- Student Photo & Header Card -->
+        <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-150 dark:border-slate-800 mb-4">
+          <div id="prev-photo-container"></div>
+          <div>
+            <h3 id="prev-header-name-en" class="text-sm font-extrabold text-slate-800 dark:text-white uppercase">-</h3>
+            <p id="prev-header-name-kn" class="text-xs text-slate-550 dark:text-slate-400 font-semibold mt-0.5">-</p>
+          </div>
+        </div>
         
         <!-- Personal Tab -->
         <div id="tab-content-personal" class="space-y-4">
@@ -918,8 +964,14 @@
 
       <!-- Modal Footer -->
       <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-850 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-        <button id="btn-manage-docs" onclick="openDocumentManagerFromPreview()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer flex items-center gap-1.5">
+        <button id="btn-manage-docs" onclick="openDocumentManagerFromPreview()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer flex items-center gap-1.5">
           <i class="fa-solid fa-folder-open"></i> ದಾಖಲೆಗಳ ನಿರ್ವಹಣೆ / Manage Documents
+        </button>
+        <button onclick="printSingleStudentFromModal()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> ಮುದ್ರಣ / Print Form
+        </button>
+        <button onclick="downloadSingleStudentPdfFromModal()" class="bg-teal-650 hover:bg-teal-600 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-file-pdf"></i> PDF / ಪಿಡಿಎಫ್
         </button>
         <button onclick="closeStudentPreviewModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow-md transition border-0 cursor-pointer">
           ಮುಚ್ಚಿ / Close
@@ -959,6 +1011,7 @@
             <div>
               <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">ದಾಖಲೆ ಪ್ರಕಾರ / Document Type</label>
               <select id="doc-type-select" class="w-full text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 focus:outline-none focus:border-sky-500">
+                <option value="ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ / Student Photo">ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ / Student Photo</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate">ವಿದ್ಯಾರ್ಥಿ ಜನನ ಪ್ರಮಾಣಪತ್ರ / Student Birth Certificate</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card">ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್ ಕಾರ್ಡ್ / Student Aadhaar Card</option>
                 <option value="ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate">ವಿದ್ಯಾರ್ಥಿ ಜಾತಿ ಪ್ರಮಾಣಪತ್ರ / Student Caste Certificate</option>
@@ -3764,6 +3817,25 @@
 
       const getVal = (v) => (v === undefined || v === null || v === '') ? '-' : v;
 
+      // Populate header summary card & photo
+      document.getElementById('prev-header-name-en').innerText = getVal(s.name_english).toUpperCase();
+      document.getElementById('prev-header-name-kn').innerText = getVal(s.student_name_kn);
+
+      const photoVal = s.student_photo || '';
+      const photoContainer = document.getElementById('prev-photo-container');
+      if (photoContainer) {
+        if (photoVal) {
+          photoContainer.innerHTML = `<img src="${photoVal}" class="w-14 h-14 rounded-full border-2 border-sky-500 object-cover shadow-md">`;
+        } else {
+          const firstLetter = (s.name_english || s.student_name_kn || 'S').charAt(0).toUpperCase();
+          photoContainer.innerHTML = `
+            <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-500 text-white flex items-center justify-center text-xl font-bold shadow-md">
+              ${firstLetter}
+            </div>
+          `;
+        }
+      }
+
       document.getElementById('modal-subtitle').innerText = `ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No: ${getVal(s.id || s.app_no)}`;
       
       document.getElementById('prev-name-kn').innerText = getVal(s.student_name_kn);
@@ -4025,6 +4097,31 @@
             }]);
             
           if (error) throw error;
+
+          // If the uploaded document is Student Photo, update the admissions table and local state
+          if (docType.includes("ವಿದ್ಯಾರ್ಥಿ ಭಾವಚಿತ್ರ") || docType.includes("Student Photo")) {
+            const { error: photoError } = await supabaseClient
+              .from('admissions')
+              .update({ student_photo: base64Data })
+              .eq('id', window.activeStudentId);
+
+            if (photoError) console.error("Error syncing student photo field:", photoError);
+
+            // Sync with local student state
+            const st = allStudentsData.find(s => s.realId === window.activeStudentId);
+            if (st) {
+              st.student_photo = base64Data;
+            }
+
+            // Sync with preview modal UI if visible
+            const photoContainer = document.getElementById('prev-photo-container');
+            if (photoContainer) {
+              photoContainer.innerHTML = `<img src="${base64Data}" class="w-14 h-14 rounded-full border-2 border-sky-500 object-cover shadow-md">`;
+            }
+
+            // Re-render table to display the new avatar row thumbnail
+            renderTable();
+          }
           
           fileInput.value = '';
           showToast("ಅಪ್‌ಲೋಡ್ ಯಶಸ್ವಿ / Upload Success", `${docType} ಯಶಸ್ವಿಯಾಗಿ ಅಪ್‌ಲೋಡ್ ಆಗಿದೆ.`, "success");
@@ -4146,6 +4243,7 @@
             <option value="HINDU" ${cleanRel === 'HINDU' || cleanRel === 'HINDŪ' || cleanRel === 'ಹಿಂದೂ' ? 'selected' : ''}>ಹಿಂದೂ / HINDU</option>
             <option value="ISLAM" ${cleanRel === 'ISLAM' || cleanRel === 'ಮುಸ್ಲಿಂ' ? 'selected' : ''}>ಮುಸ್ಲಿಂ / ISLAM</option>
             <option value="CHRISTIAN" ${cleanRel === 'CHRISTIAN' || cleanRel === 'ಕ್ರಿಶ್ಚಿಯನ್' ? 'selected' : ''}>ಕ್ರಿಶ್ಚಿಯನ್ / CHRISTIAN</option>
+            <option value="PARSI" ${cleanRel === 'PARSI' || cleanRel === 'ಪಾರ್ಸಿ' ? 'selected' : ''}>ಪಾರ್ಸಿ / PARSI</option>
             <option value="JAIN" ${cleanRel === 'JAIN' || cleanRel === 'ಜೈನ' ? 'selected' : ''}>ಜೈನ / JAIN</option>
             <option value="BUDDHIST" ${cleanRel === 'BUDDHIST' || cleanRel === 'ಬೌದ್ಧ' ? 'selected' : ''}>ಬೌದ್ಧ / BUDDHIST</option>
             <option value="SIKH" ${cleanRel === 'SIKH' || cleanRel === 'ಸಿಖ್' ? 'selected' : ''}>ಸಿಖ್ / SIKH</option>
@@ -4280,6 +4378,72 @@
         formatted += value[i];
       }
       input.value = formatted;
+    }
+
+    // --- BATCH PROMOTION INTEGRATION ---
+    function openBatchPromoteModal() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (checkedBoxes.length === 0) {
+        alert("ದಯವಿಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ! / Please select students first!");
+        return;
+      }
+      const modal = document.getElementById('batchPromoteModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeBatchPromoteModal() {
+      const modal = document.getElementById('batchPromoteModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function submitBatchPromotion() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      if (selectedIds.length === 0) return;
+
+      const targetClass = document.getElementById('promote-target-class').value;
+      
+      if (!confirm(`ನಿಜವಾಗಿಯೂ ಆಯ್ಕೆ ಮಾಡಲಾದ ${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು '${targetClass}' ತರಗತಿಗೆ ಬಡ್ತಿ ನೀಡಲು ಬಯಸುವಿರಾ?\nAre you sure you want to promote ${selectedIds.length} students to class '${targetClass}'?`)) {
+        return;
+      }
+
+      closeBatchPromoteModal();
+
+      // Show loader
+      const tbody = document.getElementById('students-table-body');
+      const colCount = document.querySelectorAll('thead th').length;
+      tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-2 text-lg"></i> ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗುತ್ತಿದೆ... / Promoting students...</td></tr>`;
+
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({ enroll_class: targetClass })
+          .in('id', selectedIds);
+
+        if (error) throw error;
+
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", `${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ '${targetClass}' ತರಗತಿಗೆ ಯಶಸ್ವಿಯಾಗಿ ಬಡ್ತಿ ನೀಡಲಾಗಿದೆ.`, "success");
+        
+        // Refresh roster
+        fetchStudentsDatabase();
+      } catch (err) {
+        console.error("Batch promotion error:", err);
+        alert("ಬಡ್ತಿ ನೀಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ / Promotion failed: " + err.message);
+        fetchStudentsDatabase();
+      }
+    }
+
+    // --- SINGLE MODAL PRINT/PDF INTEGRATION ---
+    function printSingleStudentFromModal() {
+      if (window.activeStudentId) {
+        window.open('Preview.html?id=' + encodeURIComponent(window.activeStudentId), '_blank');
+      }
+    }
+
+    function downloadSingleStudentPdfFromModal() {
+      if (window.activeStudentId) {
+        window.open('Preview.html?id=' + encodeURIComponent(window.activeStudentId) + '&autoDownloadPdf=true', '_blank');
+      }
     }
 </script>
   <script src="navbar.js"></script>
