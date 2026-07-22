@@ -2543,7 +2543,8 @@
                     }, 1000);
                 }
             }
-                
+            
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
                 supabaseClient.auth.getSession().then(({ data: { session } }) => {
                     const data = window.admissionData || {};
                     

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Database Diagnostics</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #0f172a; color: #f1f5f9; }
+    button { background: #0ea5e9; color: white; border: 0; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    pre { background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; overflow-x: auto; font-size: 13px; max-height: 500px; }
+  </style>
+</head>
+<body>
+  <h2>Supabase Diagnostics for school_settings</h2>
+  <button id="btn" onclick="runDiagnostics()">Run Diagnostics</button>
+  <pre id="out">Output will appear here...</pre>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function log(msg, obj = null) {
+      const out = document.getElementById("out");
+      let text = msg + "\n";
+      if (obj) {
+        text += JSON.stringify(obj, null, 2) + "\n";
+      }
+      out.textContent += text;
+      console.log(msg, obj);
+    }
+
+    async function runDiagnostics() {
+      document.getElementById("out").textContent = "";
+      log("--- Starting Diagnostics ---");
+
+      try {
+        // 1. Get Auth Session
+        const { data: { session }, error: sessionErr } = await supabaseClient.auth.getSession();
+        if (sessionErr) {
+          log("Auth Session Error:", sessionErr);
+        }
+        if (!session) {
+          log("No active Supabase auth session found. Please make sure you are logged in to admin panel first!");
+        } else {
+          log("Active session found for user: " + session.user.email);
+          log("User metadata:", session.user.user_metadata);
+        }
+
+        // 2. Resolve school ID
+        const schoolId = session?.user?.user_metadata?.school_id || localStorage.getItem("school_id");
+        log("Resolved School ID:", schoolId);
+
+        if (!schoolId) {
+          log("No School ID found. Cannot query school_settings!");
+          return;
+        }
+
+        // 3. Test SELECT
+        log("Testing SELECT query for key 'admission_config'...");
+        const { data: selectData, error: selectErr } = await supabaseClient
+          .from('school_settings')
+          .select('*')
+          .eq('school_id', schoolId)
+          .eq('settings_key', 'admission_config');
+
+        if (selectErr) {
+          log("SELECT Error:", selectErr);
+        } else {
+          log("SELECT Success! Rows found: " + selectData.length, selectData);
+        }
+
+        // 4. Test UPSERT
+        log("Testing UPSERT query for key 'admission_config'...");
+        const testValue = {
+          age_rules: [
+            { class: "LKG", min_age: "4.11", max_age: "5.11" }
+          ],
+          required_fields: { nameEnglish: true },
+          custom_structure: { sections: [], fields: [] }
+        };
+
+        const { data: upsertData, error: upsertErr } = await supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: schoolId,
+            settings_key: 'admission_config',
+            settings_value: testValue
+          });
+
+        if (upsertErr) {
+          log("UPSERT Error:", upsertErr);
+        } else {
+          log("UPSERT Success!", upsertData);
+        }
+
+        // 5. Test UPDATE
+        log("Testing check-then-UPDATE query for key 'admission_config'...");
+        if (selectData && selectData.length > 0) {
+          const { data: updateData, error: updateErr } = await supabaseClient
+            .from('school_settings')
+            .update({
+              settings_value: testValue
+            })
+            .eq('school_id', schoolId)
+            .eq('settings_key', 'admission_config');
+
+          if (updateErr) {
+            log("UPDATE Error:", updateErr);
+          } else {
+            log("UPDATE Success!", updateData);
+          }
+        } else {
+          log("Skipped UPDATE check (no existing row found).");
+        }
+
+      } catch (err) {
+        log("Unexpected Javascript Error:", { message: err.message, stack: err.stack });
+      }
+
+      log("--- Diagnostics Finished ---");
+    }
+  </script>
+</body>
+</html>

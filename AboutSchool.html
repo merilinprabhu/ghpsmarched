@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHPS Marched - About School & Complete Infrastructure / ಶಾಲಾ ಮಾಹಿತಿ ಮತ್ತು ಪೂರ್ಣ ಸೌಲಭ್ಯಗಳು</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Placeholder (Loaded via navbar.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Page Header & Actions Banner -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="p-3 bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 rounded-2xl border border-sky-200 dark:border-sky-900">
+            <i class="fa-solid fa-school"></i>
+          </span>
+          ಶಾಲಾ ಸೌಲಭ್ಯಗಳು ಮತ್ತು ಆಸ್ತಿ ವಿವರ / Complete School Facilities & Asset Management
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          ಶಾಲೆಯ ಸ್ಥಿತಿ, ಕೊಠಡಿಗಳು, ಗಂಡು/ಹೆಣ್ಣು ಮಕ್ಕಳ ಶೌಚಾಲಯಗಳು, ರಸ್ತೆ, ರಾಂಪ್, ಪೀಠೋಪಕರಣಗಳು (ಬೆಂಚ್, ಟೇಬಲ್, ಬೀರು), ಮತ್ತು ಎಲ್ಲಾ ಸೌಲಭ್ಯಗಳ ಪೂರ್ಣ ವಿವರ. KDP ಗೆ ಆಟೋ-ಲಿಂಕ್ ಆಗಿದೆ.
+        </p>
+      </div>
+
+      <button onclick="saveAllSchoolFacilities()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 px-5 rounded-xl shadow-md transition flex items-center gap-2 border-0 cursor-pointer">
+        <i class="fa-solid fa-floppy-disk text-sm"></i> ಸೌಲಭ್ಯಗಳ ವಿವರ ಸೇವಿಸು & KDP ಸಿಂಕ್ / Save & Sync KDP Header
+      </button>
+    </div>
+
+    <form id="aboutSchoolForm" onsubmit="event.preventDefault(); saveAllSchoolFacilities();" class="space-y-6">
+
+      <!-- Section 1: General School Metadata -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-building-columns text-sky-600"></i> ಸಾಮಾನ್ಯ ಶಾಲಾ ವಿವರಗಳು / General School Profile
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-semibold">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) / School Name (KN) *</label>
+            <input type="text" id="schNameKn" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold outline-none" value="ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಶಾಲೆಯ ಹೆಸರು (English) / School Name (EN) *</label>
+            <input type="text" id="schNameEn" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold outline-none" value="GHPS MARCHED">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">DISE ಕೋಡ್ / DISE Code</label>
+            <input type="text" id="schDiseCode" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-mono font-bold outline-none" value="29230605401">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs font-semibold">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಕ್ಲಸ್ಟರ್ / Cluster</label>
+            <input type="text" id="schCluster" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold outline-none" value="ಮರ್ಚೆಡ್ / MARCHED">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ತಾಲ್ಲೂಕು / Taluk</label>
+            <input type="text" id="schTaluk" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold outline-none" value="ರಾಯಚೂರು / RAICHUR">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಜಿಲ್ಲೆ / District</label>
+            <input type="text" id="schDistrict" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-bold outline-none" value="ರಾಯಚೂರು / RAICHUR">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಮಂಜೂರಾದ ಶಿಕ್ಷಕರ ಹುದ್ದೆಗಳು (KDP Sanctioned)</label>
+            <input type="number" id="schStaffSanctioned" min="0" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-indigo-600 font-black outline-none" value="11">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Classroom, Ramp & Road Accessibility Infrastructure -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-road text-emerald-600"></i> ಕೊಠಡಿಗಳು, ರಸ್ತೆ ಮತ್ತು ರಾಂಪ್ ಸೌಲಭ್ಯ / Classrooms, Ramp & Road Infrastructure
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-semibold">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಒಟ್ಟು ಕೊಠಡಿಗಳ ಸಂಖ್ಯೆ / Total Rooms (KDP)</label>
+            <input type="number" id="schRoomsTotal" min="0" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-black outline-none" value="10">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಸುಸ್ಥಿತಿಯಲ್ಲಿರುವ ಕೊಠಡಿಗಳು / Good Condition Rooms (KDP)</label>
+            <input type="number" id="schRoomsGood" min="0" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none" value="10">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಅವಶ್ಯವಿರುವ ಕೊಠಡಿಗಳ ಸಂಖ್ಯೆ / Needed Rooms (KDP)</label>
+            <input type="number" id="schRoomsNeeded" min="0" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-amber-600 font-black outline-none" value="5">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ವಿಶೇಷ ಚೇತನರಿಗೆ ರಾಂಪ್ ಸೌಲಭ್ಯ / Ramp & Handrails for Disabled</label>
+            <select id="schRampFacility" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಸಂಪರ್ಕ ರಸ್ತೆ ಸೌಲಭ್ಯ / Approach Road</label>
+            <select id="schApproachRoad" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Asphalt Road" selected>ಪಕ್ಕಾ ಸಿಸಿ/ಡಾಂಬರು ರಸ್ತೆ (Concrete/Asphalt)</option>
+              <option value="Mud Road">ಕಚ್ಚಾ ಮಣ್ಣಿನ ರಸ್ತೆ (Mud Road)</option>
+              <option value="No Road">ರಸ್ತೆ ಸೌಲಭ್ಯವಿಲ್ಲ (No Road)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಆಟದ ಮೈದಾನ / Playground Facility</label>
+            <select id="schPlayground" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Detailed Boys & Girls Toilet Breakdown -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-restroom text-rose-600"></i> ಬಾಲಕ & ಬಾಲಕಿಯರ ಶೌಚಾಲಯಗಳ ಪ್ರತ್ಯೇಕ ವಿವರ / Boys & Girls Toilet Breakdown
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Boys Toilets -->
+          <div class="bg-sky-50/50 dark:bg-sky-950/20 p-4 rounded-xl border border-sky-200 dark:border-sky-900/50 space-y-3">
+            <h3 class="text-xs font-black text-sky-800 dark:text-sky-300 uppercase flex items-center gap-2">
+              <i class="fa-solid fa-mars text-sky-600"></i> ಬಾಲಕರ ಶೌಚಾಲಯಗಳು / Boys Toilets
+            </h3>
+            <div class="grid grid-cols-3 gap-2 text-xs font-semibold">
+              <div>
+                <label class="block text-slate-500 mb-1">ಒಟ್ಟು / Total</label>
+                <input type="number" id="schBoysToiletsTotal" oninput="recalculateToiletTotals()" min="0" value="2" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 font-black">
+              </div>
+              <div>
+                <label class="block text-slate-500 mb-1">ಬಳಕೆಗೆ ಯೋಗ್ಯ / Usable</label>
+                <input type="number" id="schBoysToiletsUsable" oninput="recalculateToiletTotals()" min="0" value="2" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 text-emerald-600 font-black">
+              </div>
+              <div>
+                <label class="block text-slate-500 mb-1">ಹಾಳಾಗಿರುವ/ಅವಶ್ಯ / Damaged</label>
+                <input type="number" id="schBoysToiletsDamaged" min="0" value="2" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 text-amber-600 font-black">
+              </div>
+            </div>
+          </div>
+
+          <!-- Girls Toilets -->
+          <div class="bg-rose-50/50 dark:bg-rose-950/20 p-4 rounded-xl border border-rose-200 dark:border-rose-900/50 space-y-3">
+            <h3 class="text-xs font-black text-rose-800 dark:text-rose-300 uppercase flex items-center gap-2">
+              <i class="fa-solid fa-venus text-rose-600"></i> ಬಾಲಕಿಯರ ಶೌಚಾಲಯಗಳು / Girls Toilets
+            </h3>
+            <div class="grid grid-cols-3 gap-2 text-xs font-semibold">
+              <div>
+                <label class="block text-slate-500 mb-1">ಒಟ್ಟು / Total</label>
+                <input type="number" id="schGirlsToiletsTotal" oninput="recalculateToiletTotals()" min="0" value="2" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 font-black">
+              </div>
+              <div>
+                <label class="block text-slate-500 mb-1">ಬಳಸಲು ಯೋಗ್ಯ / Usable</label>
+                <input type="number" id="schGirlsToiletsUsable" oninput="recalculateToiletTotals()" min="0" value="2" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 text-emerald-600 font-black">
+              </div>
+              <div>
+                <label class="block text-slate-500 mb-1">ಹಾಳಾಗಿರುವ/ಅವಶ್ಯ / Damaged</label>
+                <input type="number" id="schGirlsToiletsDamaged" min="0" value="3" class="w-full bg-white dark:bg-slate-800 border border-slate-300 rounded-lg p-2 text-amber-600 font-black">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Combined KDP Toilet Totals Auto-Calculated Banner -->
+        <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-semibold">
+          <div>
+            <span class="text-slate-500 font-bold block">KDP ಒಟ್ಟು ಶೌಚಾಲಯಗಳು (Total):</span>
+            <input type="number" id="schToiletsTotal" readonly class="w-full bg-white dark:bg-slate-900 border border-slate-300 rounded-lg p-2 text-slate-900 dark:text-white font-black" value="4">
+          </div>
+          <div>
+            <span class="text-slate-500 font-bold block">KDP ಬಳಕೆಗೆ ಯೋಗ್ಯ (Usable):</span>
+            <input type="number" id="schToiletsGood" readonly class="w-full bg-white dark:bg-slate-900 border border-slate-300 rounded-lg p-2 text-emerald-600 font-black" value="4">
+          </div>
+          <div>
+            <span class="text-slate-500 font-bold block">KDP ಅವಶ್ಯವಿರುವ ಶೌಚಾಲಯಗಳು (Needed):</span>
+            <input type="number" id="schToiletsNeeded" class="w-full bg-white dark:bg-slate-900 border border-slate-300 rounded-lg p-2 text-amber-600 font-black" value="5">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold pt-2">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ವಿಶೇಷ ಚೇತನ ಮಕ್ಕಳ ಶೌಚಾಲಯ / CWSN Toilet</label>
+            <select id="schCwsnToilet" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಇನ್ಸಿನರೇಟರ್ / ಬಾಲಕಿಯರ ನೈರ್ಮಲ್ಯ ಘಟಕ (Incinerator)</label>
+            <select id="schIncinerator" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Furniture & Storage Inventory Table (Benches, Tables, Chairs, Almirahs) -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-chair text-purple-600"></i> ಪೀಠೋಪಕರಣಗಳು ಮತ್ತು ಆಸ್ತಿಗಳ ಪಟ್ಟಿ / Furniture & Asset Inventory
+        </h2>
+
+        <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+          <table class="w-full text-xs text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                <th class="p-3">ಸಾಮಗ್ರಿ ಹೆಸರು / Item Name</th>
+                <th class="p-3 text-center w-28">ಒಟ್ಟು ಲಭ್ಯತೆ / Total</th>
+                <th class="p-3 text-center w-32">ಸುಸ್ಥಿತಿಯಲ್ಲಿರುವ / Functional</th>
+                <th class="p-3 text-center w-32">ಹಾಳಾಗಿರುವ / Damaged</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-800 font-bold text-slate-800 dark:text-slate-200">
+              <!-- Student Benches & Desks -->
+              <tr>
+                <td class="p-3 flex items-center gap-2">
+                  <i class="fa-solid fa-chair text-indigo-500"></i> ವಿದ್ಯಾರ್ಥಿಗಳ ಡೆಸ್ಕ್ & ಬೆಂಚ್‌ಗಳು / Student Benches & Desks
+                </td>
+                <td class="p-2"><input type="number" id="furnBenchesTotal" oninput="calcFurnRow('furnBenches')" min="0" value="80" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center font-black"></td>
+                <td class="p-2"><input type="number" id="furnBenchesGood" oninput="calcFurnRow('furnBenches')" min="0" value="70" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center text-emerald-600 font-black"></td>
+                <td class="p-2"><input type="number" id="furnBenchesDamaged" readonly min="0" value="10" class="w-full bg-slate-100 dark:bg-slate-900 border rounded p-1.5 text-center text-rose-600 font-black"></td>
+              </tr>
+
+              <!-- Teacher Tables -->
+              <tr>
+                <td class="p-3 flex items-center gap-2">
+                  <i class="fa-solid fa-table text-sky-500"></i> ಶಿಕ್ಷಕರ ಟೇಬಲ್‌ಗಳು / Teacher Tables
+                </td>
+                <td class="p-2"><input type="number" id="furnTablesTotal" oninput="calcFurnRow('furnTables')" min="0" value="12" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center font-black"></td>
+                <td class="p-2"><input type="number" id="furnTablesGood" oninput="calcFurnRow('furnTables')" min="0" value="10" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center text-emerald-600 font-black"></td>
+                <td class="p-2"><input type="number" id="furnTablesDamaged" readonly min="0" value="2" class="w-full bg-slate-100 dark:bg-slate-900 border rounded p-1.5 text-center text-rose-600 font-black"></td>
+              </tr>
+
+              <!-- Chairs -->
+              <tr>
+                <td class="p-3 flex items-center gap-2">
+                  <i class="fa-solid fa-chair text-amber-500"></i> ಕುರ್ಚಿಗಳು / Chairs (Office & Classroom)
+                </td>
+                <td class="p-2"><input type="number" id="furnChairsTotal" oninput="calcFurnRow('furnChairs')" min="0" value="30" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center font-black"></td>
+                <td class="p-2"><input type="number" id="furnChairsGood" oninput="calcFurnRow('furnChairs')" min="0" value="25" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center text-emerald-600 font-black"></td>
+                <td class="p-2"><input type="number" id="furnChairsDamaged" readonly min="0" value="5" class="w-full bg-slate-100 dark:bg-slate-900 border rounded p-1.5 text-center text-rose-600 font-black"></td>
+              </tr>
+
+              <!-- Steel Almirahs & Cupboards -->
+              <tr>
+                <td class="p-3 flex items-center gap-2">
+                  <i class="fa-solid fa-box-archive text-emerald-500"></i> ಸ್ಟೀಲ್ ಬೀರು / ಅಲ್ಮೈರಾಗಳು / Steel Almirahs & Cupboards
+                </td>
+                <td class="p-2"><input type="number" id="furnAlmirahsTotal" oninput="calcFurnRow('furnAlmirahs')" min="0" value="10" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center font-black"></td>
+                <td class="p-2"><input type="number" id="furnAlmirahsGood" oninput="calcFurnRow('furnAlmirahs')" min="0" value="9" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center text-emerald-600 font-black"></td>
+                <td class="p-2"><input type="number" id="furnAlmirahsDamaged" readonly min="0" value="1" class="w-full bg-slate-100 dark:bg-slate-900 border rounded p-1.5 text-center text-rose-600 font-black"></td>
+              </tr>
+
+              <!-- Blackboards & Smart Interactive Displays -->
+              <tr>
+                <td class="p-3 flex items-center gap-2">
+                  <i class="fa-solid fa-tv text-purple-500"></i> ಬೋರ್ಡ್‌ಗಳು & ಸ್ಮಾರ್ಟ್ ಬೋರ್ಡ್ / Blackboards & Smart Displays
+                </td>
+                <td class="p-2"><input type="number" id="furnBoardsTotal" oninput="calcFurnRow('furnBoards')" min="0" value="12" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center font-black"></td>
+                <td class="p-2"><input type="number" id="furnBoardsGood" oninput="calcFurnRow('furnBoards')" min="0" value="11" class="w-full bg-slate-50 dark:bg-slate-800 border rounded p-1.5 text-center text-emerald-600 font-black"></td>
+                <td class="p-2"><input type="number" id="furnBoardsDamaged" readonly min="0" value="1" class="w-full bg-slate-100 dark:bg-slate-900 border rounded p-1.5 text-center text-rose-600 font-black"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 5: Digital, Library & Science Facilities -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-laptop-code text-indigo-600"></i> ಕಂಪ್ಯೂಟರ್, ಗ್ರಂಥಾಲಯ ಮತ್ತು ಲ್ಯಾಬ್ ಸೌಲಭ್ಯ / Digital & Learning Infrastructure
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-semibold">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಕಂಪ್ಯೂಟರ್ ಲ್ಯಾಬ್ / Computer Lab</label>
+            <select id="schComputerLab" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಒಟ್ಟು ಕಂಪ್ಯೂಟರ್‌ಗಳ ಸಂಖ್ಯೆ / Total Computers</label>
+            <input type="number" id="schComputersTotal" min="0" value="10" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-black outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಗ್ರಂಥಾಲಯ / Library Facility</label>
+            <select id="schLibraryFacility" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಒಟ್ಟು ಪುಸ್ತಕಗಳ ಸಂಖ್ಯೆ / Total Library Books</label>
+            <input type="number" id="schLibraryBooks" min="0" value="1250" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 font-black outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: Health, Safety & Midday Meal Amenities -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+        <h2 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <i class="fa-solid fa-fire-extinguisher text-amber-600"></i> ಅಡುಗೆ ಮನೆ, ಆರೋಗ್ಯ ಮತ್ತು ಭದ್ರತಾ ಸೌಲಭ್ಯಗಳು / Safety & Meal Amenities
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-semibold">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಬಿಸಿಊಟದ ಅಡುಗೆ ಮನೆ ಶೆಡ್ / Kitchen Shed</label>
+            <select id="schKitchenShed" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಅಗ್ನಿಶಾಮಕ ಉಪಕರಣ / Fire Extinguisher</label>
+            <select id="schFireSafety" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಪ್ರಥಮ ಚಿಕಿತ್ಸಾ ಪೆಟ್ಟಿಗೆ / First Aid Box</label>
+            <select id="schFirstAid" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಕುಡಿಯುವ ನೀರು / Water (KDP Sync)</label>
+            <select id="schWaterFacility" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-semibold pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ವಿದ್ಯುತ್ ವ್ಯವಸ್ಥೆ / Electricity Connection (KDP Sync)</label>
+            <select id="schElectricityFacility" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1 font-bold">ಶಾಲಾ ಕಂಪೌಂಡ್ / Compound Wall (KDP Sync)</label>
+            <select id="schCompoundFacility" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-emerald-600 font-black outline-none">
+              <option value="Yes" selected>Yes / ಇದೆ</option>
+              <option value="No">No / ಇಲ್ಲ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <script>
+    window.onload = function() {
+      loadSchoolFacilities();
+    };
+
+    function recalculateToiletTotals() {
+      const boysTotal = parseInt(document.getElementById('schBoysToiletsTotal').value || '0', 10);
+      const boysUsable = parseInt(document.getElementById('schBoysToiletsUsable').value || '0', 10);
+      const girlsTotal = parseInt(document.getElementById('schGirlsToiletsTotal').value || '0', 10);
+      const girlsUsable = parseInt(document.getElementById('schGirlsToiletsUsable').value || '0', 10);
+
+      const grandTotal = boysTotal + girlsTotal;
+      const grandUsable = boysUsable + girlsUsable;
+
+      document.getElementById('schToiletsTotal').value = grandTotal;
+      document.getElementById('schToiletsGood').value = grandUsable;
+    }
+
+    function calcFurnRow(prefix) {
+      const tot = parseInt(document.getElementById(prefix + 'Total')?.value || '0', 10);
+      const good = parseInt(document.getElementById(prefix + 'Good')?.value || '0', 10);
+      const damagedInput = document.getElementById(prefix + 'Damaged');
+      if (damagedInput) {
+        damagedInput.value = Math.max(0, tot - good);
+      }
+    }
+
+    function loadSchoolFacilities() {
+      document.getElementById('schNameKn').value = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+      document.getElementById('schNameEn').value = localStorage.getItem('kdp_school_name') || 'GHPS MARCHED';
+      document.getElementById('schCluster').value = localStorage.getItem('dbCluster') || 'ಮರ್ಚೆಡ್ / MARCHED';
+      document.getElementById('schTaluk').value = localStorage.getItem('dbTaluk') || 'ರಾಯಚೂರು / RAICHUR';
+      document.getElementById('schDistrict').value = localStorage.getItem('dbDistrict') || 'ರಾಯಚೂರು / RAICHUR';
+
+      document.getElementById('schStaffSanctioned').value = localStorage.getItem('kdp_staff_sanctioned') || '11';
+
+      document.getElementById('schRoomsTotal').value = localStorage.getItem('kdp_rooms_total') || '10';
+      document.getElementById('schRoomsGood').value = localStorage.getItem('kdp_rooms_good') || '10';
+      document.getElementById('schRoomsNeeded').value = localStorage.getItem('kdp_rooms_needed') || '5';
+
+      document.getElementById('schToiletsTotal').value = localStorage.getItem('kdp_toilets_total') || '4';
+      document.getElementById('schToiletsGood').value = localStorage.getItem('kdp_toilets_good') || '4';
+      document.getElementById('schToiletsNeeded').value = localStorage.getItem('kdp_toilets_needed') || '5';
+
+      document.getElementById('schWaterFacility').value = localStorage.getItem('kdp_water_facility') || 'Yes';
+      document.getElementById('schElectricityFacility').value = localStorage.getItem('kdp_electricity_facility') || 'Yes';
+      document.getElementById('schCompoundFacility').value = localStorage.getItem('kdp_compound_facility') || 'Yes';
+
+      // Load extended facility data
+      const extData = JSON.parse(localStorage.getItem('school_extended_facilities') || '{}');
+      if (extData.boysToiletsTotal !== undefined) document.getElementById('schBoysToiletsTotal').value = extData.boysToiletsTotal;
+      if (extData.boysToiletsUsable !== undefined) document.getElementById('schBoysToiletsUsable').value = extData.boysToiletsUsable;
+      if (extData.boysToiletsDamaged !== undefined) document.getElementById('schBoysToiletsDamaged').value = extData.boysToiletsDamaged;
+
+      if (extData.girlsToiletsTotal !== undefined) document.getElementById('schGirlsToiletsTotal').value = extData.girlsToiletsTotal;
+      if (extData.girlsToiletsUsable !== undefined) document.getElementById('schGirlsToiletsUsable').value = extData.girlsToiletsUsable;
+      if (extData.girlsToiletsDamaged !== undefined) document.getElementById('schGirlsToiletsDamaged').value = extData.girlsToiletsDamaged;
+
+      if (extData.rampFacility !== undefined) document.getElementById('schRampFacility').value = extData.rampFacility;
+      if (extData.approachRoad !== undefined) document.getElementById('schApproachRoad').value = extData.approachRoad;
+      if (extData.playground !== undefined) document.getElementById('schPlayground').value = extData.playground;
+
+      // Furniture
+      if (extData.furnBenchesTotal !== undefined) document.getElementById('furnBenchesTotal').value = extData.furnBenchesTotal;
+      if (extData.furnBenchesGood !== undefined) document.getElementById('furnBenchesGood').value = extData.furnBenchesGood;
+      calcFurnRow('furnBenches');
+
+      if (extData.furnTablesTotal !== undefined) document.getElementById('furnTablesTotal').value = extData.furnTablesTotal;
+      if (extData.furnTablesGood !== undefined) document.getElementById('furnTablesGood').value = extData.furnTablesGood;
+      calcFurnRow('furnTables');
+
+      if (extData.furnChairsTotal !== undefined) document.getElementById('furnChairsTotal').value = extData.furnChairsTotal;
+      if (extData.furnChairsGood !== undefined) document.getElementById('furnChairsGood').value = extData.furnChairsGood;
+      calcFurnRow('furnChairs');
+
+      if (extData.furnAlmirahsTotal !== undefined) document.getElementById('furnAlmirahsTotal').value = extData.furnAlmirahsTotal;
+      if (extData.furnAlmirahsGood !== undefined) document.getElementById('furnAlmirahsGood').value = extData.furnAlmirahsGood;
+      calcFurnRow('furnAlmirahs');
+
+      if (extData.furnBoardsTotal !== undefined) document.getElementById('furnBoardsTotal').value = extData.furnBoardsTotal;
+      if (extData.furnBoardsGood !== undefined) document.getElementById('furnBoardsGood').value = extData.furnBoardsGood;
+      calcFurnRow('furnBoards');
+    }
+
+    function saveAllSchoolFacilities() {
+      recalculateToiletTotals();
+
+      const schKn = document.getElementById('schNameKn').value.trim();
+      const schEn = document.getElementById('schNameEn').value.trim();
+
+      localStorage.setItem('school_name_kn', schKn);
+      localStorage.setItem('kdp_school_name', schEn);
+      localStorage.setItem('dbCluster', document.getElementById('schCluster').value.trim());
+      localStorage.setItem('dbTaluk', document.getElementById('schTaluk').value.trim());
+      localStorage.setItem('dbDistrict', document.getElementById('schDistrict').value.trim());
+
+      localStorage.setItem('kdp_staff_sanctioned', document.getElementById('schStaffSanctioned').value);
+
+      localStorage.setItem('kdp_rooms_total', document.getElementById('schRoomsTotal').value);
+      localStorage.setItem('kdp_rooms_good', document.getElementById('schRoomsGood').value);
+      localStorage.setItem('kdp_rooms_needed', document.getElementById('schRoomsNeeded').value);
+
+      localStorage.setItem('kdp_toilets_total', document.getElementById('schToiletsTotal').value);
+      localStorage.setItem('kdp_toilets_good', document.getElementById('schToiletsGood').value);
+      localStorage.setItem('kdp_toilets_needed', document.getElementById('schToiletsNeeded').value);
+
+      localStorage.setItem('kdp_water_facility', document.getElementById('schWaterFacility').value);
+      localStorage.setItem('kdp_electricity_facility', document.getElementById('schElectricityFacility').value);
+      localStorage.setItem('kdp_compound_facility', document.getElementById('schCompoundFacility').value);
+
+      // Save extended facility inventory
+      const extData = {
+        boysToiletsTotal: document.getElementById('schBoysToiletsTotal').value,
+        boysToiletsUsable: document.getElementById('schBoysToiletsUsable').value,
+        boysToiletsDamaged: document.getElementById('schBoysToiletsDamaged').value,
+
+        girlsToiletsTotal: document.getElementById('schGirlsToiletsTotal').value,
+        girlsToiletsUsable: document.getElementById('schGirlsToiletsUsable').value,
+        girlsToiletsDamaged: document.getElementById('schGirlsToiletsDamaged').value,
+
+        rampFacility: document.getElementById('schRampFacility').value,
+        approachRoad: document.getElementById('schApproachRoad').value,
+        playground: document.getElementById('schPlayground').value,
+
+        furnBenchesTotal: document.getElementById('furnBenchesTotal').value,
+        furnBenchesGood: document.getElementById('furnBenchesGood').value,
+
+        furnTablesTotal: document.getElementById('furnTablesTotal').value,
+        furnTablesGood: document.getElementById('furnTablesGood').value,
+
+        furnChairsTotal: document.getElementById('furnChairsTotal').value,
+        furnChairsGood: document.getElementById('furnChairsGood').value,
+
+        furnAlmirahsTotal: document.getElementById('furnAlmirahsTotal').value,
+        furnAlmirahsGood: document.getElementById('furnAlmirahsGood').value,
+
+        furnBoardsTotal: document.getElementById('furnBoardsTotal').value,
+        furnBoardsGood: document.getElementById('furnBoardsGood').value
+      };
+
+      localStorage.setItem('school_extended_facilities', JSON.stringify(extData));
+
+      alert("ಶಾಲಾ ಸೌಲಭ್ಯಗಳು, ರಸ್ತೆ, ರಾಂಪ್, ಬಾಲಕ/ಬಾಲಕಿಯರ ಶೌಚಾಲಯ ಮತ್ತು ಪೀಠೋಪಕರಣಗಳ ಪೂರ್ಣ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಉಳಿದಿದೆ ಹಾಗೂ KDP ಬ್ಯಾನರ್‌ಗೆ ಸಿಂಕ್ ಆಗಿದೆ!");
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

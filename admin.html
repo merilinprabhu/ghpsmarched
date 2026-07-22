@@ -147,6 +147,7 @@
     <button onclick="switchTab('allotment')" id="tab-allotment" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ತರಗತಿ ನಿಯೋಜನೆ / Class Allotment</button>
     <button onclick="switchTab('register')" id="tab-register" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಹೊಸ ಶಿಕ್ಷಕರ ನೋಂದಣಿ / Register Teacher</button>
     <button onclick="switchTab('permissions')" id="tab-permissions" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ಪುಟಗಳ ಪ್ರವೇಶ ನಿಯಂತ್ರಣ / Feature Permissions</button>
+    <button onclick="switchTab('admission')" id="tab-admission" class="tab-btn py-4 px-1 text-slate-500 hover:text-rose-600 transition font-semibold">ದಾಖಲಾತಿ ನಿಯಮಾವಳಿ / Admission Settings</button>
   </div>
 
   <!-- Main Outer Container -->
@@ -606,12 +607,115 @@
 
               </div>
 
+              <!-- Secret HM / Admin Security Controls for Deletion & Restoration -->
+              <div class="mt-6 p-4 border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 rounded-2xl space-y-4">
+                <h4 class="text-xs font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-2">
+                  <i class="fa-solid fa-user-shield text-rose-600"></i> HM & Admin ಡೆಲಿಟ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ ರಹಸ್ಯ ನಿಯಂತ್ರಣ / Delete & Restore Teacher Role Controls
+                </h4>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                  ಸಾಮಾನ್ಯ ಶಿಕ್ಷಕರಿಗೆ (Teacher Role) ಡೆಲಿಟ್ ಬಟನ್, ಮರುಸ್ಥಾಪನೆ ಬಟನ್ ಹಾಗೂ ಶಾಶ್ವತ ಡೆಲಿಟ್ ಬಟನ್‌ಗಳು ಕಾಣಿಸಬೇಕೇ ಅಥವಾ ಮರೆಯಾಗಬೇಕೇ ಎಂಬುದನ್ನು ಇಲ್ಲಿ ನಿಯಂತ್ರಿಸಿ. (HM, Admin, Developer ಗೆ ಸದಾ ಲಭ್ಯವಿರುತ್ತವೆ).
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold">
+                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <span>ಶಿಕ್ಷಕರಿಗೆ ಡೆಲಿಟ್ ಬಟನ್ ತೋರಿಸಿ (Show Delete to Teachers)</span>
+                    <input type="checkbox" id="adminAllowTeacherDelete" onchange="localStorage.setItem('admin_allow_teacher_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
+                  </div>
+                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <span>ಶಿಕ್ಷಕರಿಗೆ Restore ಬಟನ್ ತೋರಿಸಿ (Show Restore to Teachers)</span>
+                    <input type="checkbox" id="adminAllowTeacherRestore" onchange="localStorage.setItem('admin_allow_teacher_restore', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
+                  </div>
+                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
+                    <span>ಶಿಕ್ಷಕರಿಗೆ Permanent Delete ತೋರಿಸಿ</span>
+                    <input type="checkbox" id="adminAllowTeacherPermDelete" onchange="localStorage.setItem('admin_allow_teacher_perm_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
+                  </div>
+                </div>
+              </div>
+
               <div class="pt-2">
                 <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
                   <i class="fa-solid fa-floppy-disk"></i> ಪ್ರವೇಶ ಅನುಮತಿ ಉಳಿಸಿ / Save Permissions
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+
+        <!-- 6. Admission Rules & Settings Tab -->
+        <div id="view-admission" class="hidden space-y-6">
+          <!-- Card 1: Age to Class Rules -->
+          <div class="p-6 border border-slate-200 rounded-3xl bg-white shadow-xs space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-graduation-cap text-sky-500"></i> ವಯಸ್ಸಿನ ಆಧಾರದ ತರಗತಿ ಆಯ್ಕೆ ನಿಯಮಗಳು / Age to Class Auto-Selection Rules</h3>
+            <div class="w-12 h-[3px] bg-sky-500 rounded-full"></div>
+            
+            <p class="text-[11px] text-slate-400 font-semibold leading-relaxed">
+              ವಿದ್ಯಾರ್ಥಿಯ ಜನ್ಮದಿನಾಂಕದ ಆಧಾರದ ಮೇಲೆ ತರಗತಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಲು ಇಲ್ಲಿ ನಿಯಮಗಳನ್ನು ವ್ಯಾಖ್ಯಾನಿಸಿ. (Define age rules to automatically select class standard based on child's Date of Birth).
+            </p>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-slate-400 font-bold">
+                    <th class="py-2.5">ತರಗತಿ / Class</th>
+                    <th class="py-2.5">ಕನಿಷ್ಠ ವಯಸ್ಸು (Min Age)</th>
+                    <th class="py-2.5">ಗರಿಷ್ಠ ವಯಸ್ಸು (Max Age)</th>
+                  </tr>
+                </thead>
+                <tbody id="ageRulesTableBody">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pt-2">
+              <button type="button" onclick="saveAgeRules()" class="bg-gradient-to-tr from-sky-600 to-sky-500 hover:from-sky-700 hover:to-sky-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i> ವಯಸ್ಸಿನ ನಿಯಮ ಉಳಿಸಿ / Save Age Rules
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Compulsory Fields Selector -->
+          <div class="p-6 border border-slate-200 rounded-3xl bg-white shadow-xs space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-list-check text-emerald-500"></i> ಕಡ್ಡಾಯ ಕ್ಷೇತ್ರಗಳ ಕಾನ್ಫಿಗರೇಶನ್ / Required (Compulsory) Fields Configuration</h3>
+            <div class="w-12 h-[3px] bg-emerald-500 rounded-full"></div>
+
+            <p class="text-[11px] text-slate-400 font-semibold leading-relaxed">
+              ದಾಖಲಾತಿ ಅರ್ಜಿಯಲ್ಲಿ ಯಾವ ಕ್ಷೇತ್ರಗಳು ಕಡ್ಡಾಯವಾಗಿರಬೇಕು ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ. (Configure which form fields must be mandatory).
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="requiredFieldsGrid">
+              <!-- Dynamically populated checkboxes -->
+            </div>
+
+            <div class="pt-2">
+              <button type="button" onclick="saveRequiredFieldsConfig()" class="bg-gradient-to-tr from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-floppy-disk"></i> ಕಡ್ಡಾಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಉಳಿಸಿ / Save Required Fields
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Custom Sections & Custom Fields Builder -->
+          <div class="p-6 border border-slate-200 rounded-3xl bg-white shadow-xs space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-folder-plus text-indigo-500"></i> ಕಸ್ಟಮ್ ವಿಭಾಗಗಳು ಮತ್ತು ಕ್ಷೇತ್ರಗಳ ಸಂಯೋಜಕ / Custom Sections & Custom Fields Builder</h3>
+            <div class="w-12 h-[3px] bg-indigo-500 rounded-full"></div>
+
+            <p class="text-[11px] text-slate-400 font-semibold leading-relaxed">
+              ದಾಖಲಾತಿ ಅರ್ಜಿಗೆ ಹೊಸ ಕಸ್ಟಮ್ ವಿಭಾಗಗಳನ್ನು ಮತ್ತು ಹೊಸ ಕ್ಷೇತ್ರಗಳನ್ನು ಇಲ್ಲಿಂದಲೇ ಸೇರಿಸಿ. (Add new fields/sections to the admission form).
+            </p>
+
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button type="button" onclick="openAddSectionModal()" class="bg-indigo-600 hover:bg-indigo-750 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 transition border-0 cursor-pointer">
+                <i class="fa-solid fa-folder-plus"></i> ಹೊಸ ವಿಭಾಗ ಸೇರಿಸಿ / Add New Section
+              </button>
+              <button type="button" onclick="openAddFieldModal()" class="bg-sky-600 hover:bg-sky-750 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-1.5 transition border-0 cursor-pointer">
+                <i class="fa-solid fa-square-plus"></i> ಹೊಸ ಫೀಲ್ಡ್ ಸೇರಿಸಿ / Add Custom Field
+              </button>
+            </div>
+
+            <!-- Existing custom structure tree -->
+            <div id="customStructureTree" class="space-y-4 pt-2">
+              <!-- Rendered dynamically -->
+            </div>
           </div>
         </div>
 
@@ -627,6 +731,66 @@
     <div>
       <h4 class="text-xs font-bold" id="toast-title">Success!</h4>
       <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Saved successfully.</p>
+    </div>
+  </div>
+
+  <!-- Modal 1: Add Custom Section -->
+  <div id="addSectionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-200">
+      <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-folder-plus text-indigo-500"></i> ಹೊಸ ವಿಭಾಗ ಸೇರಿಸಿ / Add New Section</h4>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">ವಿಭಾಗದ ಹೆಸರು (ಕನ್ನಡ / Section Name Kannada) *</label>
+          <input type="text" id="newSectionNameKn" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">Section Name (English) *</label>
+          <input type="text" id="newSectionNameEn" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+        </div>
+      </div>
+      <div class="flex gap-2 justify-end pt-2">
+        <button type="button" onclick="closeSectionModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border-0 cursor-pointer">ರದ್ದು / Cancel</button>
+        <button type="button" onclick="addNewSectionSubmit()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl border-0 cursor-pointer">ಸೇರಿಸಿ / Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Custom Field -->
+  <div id="addFieldModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-200">
+      <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-square-plus text-sky-500"></i> ಹೊಸ ಫೀಲ್ಡ್ ಸೇರಿಸಿ / Add Custom Field</h4>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">ವಿಭಾಗವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ / Select Section *</label>
+          <select id="fieldTargetSection" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">ಫೀಲ್ಡ್ ಹೆಸರು (ಕನ್ನಡ / Field Label Kannada) *</label>
+          <input type="text" id="newFieldLabelKn" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">Field Label (English) *</label>
+          <input type="text" id="newFieldLabelEn" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-500 mb-1">ಮಾದರಿ / Input Type *</label>
+          <select id="newFieldType" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white">
+            <option value="text">ಪಠ್ಯ / Text Box</option>
+            <option value="number">ಸಂಖ್ಯೆ / Number Input</option>
+            <option value="date">ದಿನಾಂಕ / Date Picker</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="newFieldRequired" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500">
+          <label for="newFieldRequired" class="text-xs font-bold text-slate-650">ಕಡ್ಡಾಯ ಕ್ಷೇತ್ರವೇ? / Is Mandatory?</label>
+        </div>
+      </div>
+      <div class="flex gap-2 justify-end pt-2">
+        <button type="button" onclick="closeFieldModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border-0 cursor-pointer">ರದ್ದು / Cancel</button>
+        <button type="button" onclick="addNewFieldSubmit()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold rounded-xl border-0 cursor-pointer">ಸೇರಿಸಿ / Add</button>
+      </div>
     </div>
   </div>
 
@@ -673,7 +837,7 @@
     }
 
     function switchTab(tabId) {
-      const tabs = ['settings', 'approvals', 'allotment', 'register', 'permissions'];
+      const tabs = ['settings', 'approvals', 'allotment', 'register', 'permissions', 'admission'];
       tabs.forEach(t => {
         const btn = document.getElementById(`tab-${t}`);
         const view = document.getElementById(`view-${t}`);
@@ -737,6 +901,12 @@
 
       await loadSchoolSettings();
       await loadRegisteredProfiles();
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab');
+      if (tabParam) {
+        switchTab(tabParam);
+      }
     });
 
     window.previewLogoFile = function(input) {
@@ -849,6 +1019,7 @@
         console.error("Error loading school details:", err);
         showToast("Error", "ಶಾಲೆಯ ವಿವರ ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.", "error");
       }
+      await loadAdmissionConfig();
     }
 
     async function handlePermissionsUpdate(event) {
@@ -922,16 +1093,30 @@
 
         if (error) throw error;
 
-        // 2. Save web design navigation style & logo to school_settings
+        // 2. Save web design navigation style & logo to school_settings, preserving existing keys like admission_config
+        const { data: existingSettings } = await supabaseClient
+          .from('school_settings')
+          .select('settings_value')
+          .eq('school_id', currentSchoolId)
+          .eq('settings_key', 'web_design');
+
+        let mergedSettingsValue = {
+          nav_layout: navLayout,
+          logo_url: logoUrl
+        };
+        if (existingSettings && existingSettings.length > 0) {
+          mergedSettingsValue = {
+            ...existingSettings[existingSettings.length - 1].settings_value,
+            ...mergedSettingsValue
+          };
+        }
+
         const { error: settingsError } = await supabaseClient
           .from('school_settings')
           .upsert({
             school_id: currentSchoolId,
             settings_key: 'web_design',
-            settings_value: { 
-              nav_layout: navLayout,
-              logo_url: logoUrl
-            }
+            settings_value: mergedSettingsValue
           });
 
         if (settingsError) throw settingsError;
@@ -958,6 +1143,394 @@
         showToast("Error", "ಶಾಲಾ ಮಾಹಿತಿ ಅಪ್‌ಡೇಟ್ ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
       }
     }
+
+    let currentAdmissionConfig = {
+      age_rules: [
+        { class: "LKG", min_age: 4, max_age: 5 },
+        { class: "UKG", min_age: 5, max_age: 6 },
+        { class: "1", min_age: 6, max_age: 7 },
+        { class: "2", min_age: 7, max_age: 8 },
+        { class: "3", min_age: 8, max_age: 9 },
+        { class: "4", min_age: 9, max_age: 10 },
+        { class: "5", min_age: 10, max_age: 11 },
+        { class: "6", min_age: 11, max_age: 12 },
+        { class: "7", min_age: 12, max_age: 13 },
+        { class: "8", min_age: 13, max_age: 14 }
+      ],
+      required_fields: {
+        nameEnglish: true,
+        dob: true,
+        gender: true,
+        studentAadhaar: true,
+        studentSts: false,
+        mobileNumber: true,
+        religion: true,
+        caste: true,
+        socialClass: true,
+        fatherNameAz: true,
+        mobileNo1: true,
+        motherNameAz: true,
+        bankAccNo: false,
+        address: true,
+        pinCode: true
+      },
+      custom_structure: {
+        sections: [],
+        fields: []
+      }
+    };
+
+    const CORE_FIELDS = [
+      { id: "nameEnglish", labelKn: "ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಇಂಗ್ಲಿಷ್)", labelEn: "Student Name (English)" },
+      { id: "dob", labelKn: "ಹುಟ್ಟಿದ ದಿನಾಂಕ", labelEn: "Date of Birth" },
+      { id: "gender", labelKn: "ಲಿಂಗ", labelEn: "Gender" },
+      { id: "studentAadhaar", labelKn: "ವಿದ್ಯಾರ್ಥಿ ಆಧಾರ್", labelEn: "Student Aadhaar" },
+      { id: "studentSts", labelKn: "ವಿದ್ಯಾರ್ಥಿ STS ಸಂಖ್ಯೆ", labelEn: "Student STS Number" },
+      { id: "mobileNumber", labelKn: "ವಿದ್ಯಾರ್ಥಿ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ", labelEn: "Student Mobile Number" },
+      { id: "religion", labelKn: "ಧರ್ಮ", labelEn: "Religion" },
+      { id: "caste", labelKn: "ಜಾತಿ", labelEn: "Caste" },
+      { id: "subCaste", labelKn: "ಉಪಜಾತಿ", labelEn: "Sub-Caste" },
+      { id: "socialClass", labelKn: "ಸಾಮಾಜಿಕ ವರ್ಗ", labelEn: "Social Category" },
+      { id: "motherTongue", labelKn: "ಮಾತೃಭಾಷೆ", labelEn: "Mother Tongue" },
+      { id: "fatherNameAz", labelKn: "ತಂದೆಯ ಹೆಸರು (ಇಂಗ್ಲಿಷ್)", labelEn: "Father's Name (English)" },
+      { id: "fatherAadhaar", labelKn: "ತಂದೆಯ ಆಧಾರ್", labelEn: "Father Aadhaar" },
+      { id: "fatherOccupation", labelKn: "ತಂದೆಯ ವೃತ್ತಿ", labelEn: "Father Occupation" },
+      { id: "mobileNo1", labelKn: "ತಂದೆಯ ಮೊಬೈಲ್", labelEn: "Father Mobile" },
+      { id: "motherNameAz", labelKn: "ತಾಯಿಯ ಹೆಸರು (ಇಂಗ್ಲಿಷ್)", labelEn: "Mother's Name (English)" },
+      { id: "motherAadhaar", labelKn: "ತಾಯಿಯ ಆಧಾರ್", labelEn: "Mother Aadhaar" },
+      { id: "motherOccupation", labelKn: "ತಾಯಿಯ ವೃತ್ತಿ", labelEn: "Mother Occupation" },
+      { id: "mobileNo2", labelKn: "ತಾಯಿಯ ಮೊಬೈಲ್", labelEn: "Mother Mobile" },
+      { id: "bankAccNo", labelKn: "ಬ್ಯಾಂಕ್ ಖಾತೆ ಸಂಖ್ಯೆ", labelEn: "Bank Account No" },
+      { id: "bankName", labelKn: "ಬ್ಯಾಂಕ್ ಹೆಸರು", labelEn: "Bank Name" },
+      { id: "ifscCode", labelKn: "IFSC ಕೋಡ್", labelEn: "IFSC Code" },
+      { id: "address", labelKn: "ವಿಳಾಸ / ಗ್ರಾಮ", labelEn: "Address / Village" },
+      { id: "pinCode", labelKn: "ಪಿನ್ ಕೋಡ್", labelEn: "Pin Code" },
+      { id: "transferNo", labelKn: "TC ಸಂಖ್ಯೆ", labelEn: "TC Number" }
+    ];
+
+    async function loadAdmissionConfig() {
+      if (!currentSchoolId) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('school_settings')
+          .select('*')
+          .eq('school_id', currentSchoolId)
+          .eq('settings_key', 'web_design');
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const configRow = data[data.length - 1];
+          if (configRow && configRow.settings_value && configRow.settings_value.admission_config) {
+            const savedConfig = configRow.settings_value.admission_config;
+            currentAdmissionConfig = {
+              age_rules: savedConfig.age_rules || currentAdmissionConfig.age_rules,
+              required_fields: { ...currentAdmissionConfig.required_fields, ...savedConfig.required_fields },
+              custom_structure: {
+                sections: savedConfig.custom_structure?.sections || [],
+                fields: savedConfig.custom_structure?.fields || []
+              }
+            };
+          }
+        }
+        
+        renderAgeRulesTable();
+        renderRequiredFieldsGrid();
+        renderCustomStructureTree();
+      } catch (err) {
+        console.error("Error loading admission configuration:", err);
+      }
+    }
+
+    function renderAgeRulesTable() {
+      const tbody = document.getElementById("ageRulesTableBody");
+      if (!tbody) return;
+      
+      let html = "";
+      currentAdmissionConfig.age_rules.forEach((rule, index) => {
+        html += `
+          <tr class="border-b border-slate-100">
+            <td class="py-2.5 font-semibold text-slate-800">${rule.class}</td>
+            <td class="py-2.5">
+              <input type="text" placeholder="e.g. 4.11" id="minAge_${index}" value="${rule.min_age}" class="w-20 px-2 py-1 border border-slate-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-sky-500">
+            </td>
+            <td class="py-2.5">
+              <input type="text" placeholder="e.g. 5.11" id="maxAge_${index}" value="${rule.max_age}" class="w-20 px-2 py-1 border border-slate-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-1 focus:ring-sky-500">
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function renderRequiredFieldsGrid() {
+      const grid = document.getElementById("requiredFieldsGrid");
+      if (!grid) return;
+
+      let html = "";
+      CORE_FIELDS.forEach(field => {
+        const isChecked = currentAdmissionConfig.required_fields[field.id] === true;
+        html += `
+          <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl" style="padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <div style="font-size: 11px;">
+              <div class="font-bold text-slate-800">${field.labelKn}</div>
+              <div class="text-slate-450" style="font-size: 9px; color: #64748b;">${field.labelEn}</div>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="req_chk_${field.id}" ${isChecked ? 'checked' : ''} class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
+
+    function renderCustomStructureTree() {
+      const container = document.getElementById("customStructureTree");
+      if (!container) return;
+
+      const struct = currentAdmissionConfig.custom_structure;
+      
+      if (struct.sections.length === 0 && struct.fields.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-xs text-slate-400 font-semibold bg-slate-50 border border-slate-200 rounded-2xl">
+            ಯಾವುದೇ ಕಸ್ಟಮ್ ಕ್ಷೇತ್ರಗಳನ್ನು ಇನ್ನೂ ರಚಿಸಲಾಗಿಲ್ಲ. / No custom fields created yet.
+          </div>
+        `;
+        return;
+      }
+
+      const standardSections = [
+        { id: "student-details", titleKn: "ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳು", titleEn: "Student Details" },
+        { id: "banking-details", titleKn: "ಬ್ಯಾಂಕಿಂಗ್ ವಿವರಗಳು", titleEn: "Banking Details" },
+        { id: "parents-details", titleKn: "ಪೋಷಕರ ವಿವರಗಳು", titleEn: "Parents Details" },
+        { id: "school-details", titleKn: "ಹಳೆಯ ಶಾಲಾ ವಿವರಗಳು", titleEn: "Previous School Details" }
+      ];
+
+      let html = "";
+
+      standardSections.forEach(sec => {
+        const fields = struct.fields.filter(f => f.sectionId === sec.id);
+        if (fields.length > 0) {
+          html += `
+            <div class="p-4 border border-slate-200 rounded-2xl bg-slate-50/50 space-y-3">
+              <h4 class="text-xs font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-folder-open text-slate-400"></i> ${sec.titleKn} / ${sec.titleEn} (Standard Section)</h4>
+              <div class="space-y-2">
+          `;
+          
+          fields.forEach(f => {
+            html += `
+              <div class="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 11px;">
+                  <span class="font-bold text-slate-700">${f.labelKn} / ${f.labelEn}</span>
+                  <span class="text-slate-400 ml-2" style="font-size: 9px;">Type: ${f.type} ${f.required ? '(Required)' : '(Optional)'}</span>
+                </div>
+                <button type="button" onclick="deleteCustomField('${f.id}')" class="text-rose-500 hover:text-rose-700 bg-transparent border-0 cursor-pointer text-xs font-bold"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            `;
+          });
+
+          html += `
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      struct.sections.forEach(sec => {
+        const fields = struct.fields.filter(f => f.sectionId === sec.id);
+        
+        html += `
+          <div class="p-4 border border-indigo-200 rounded-2xl bg-indigo-50/10 space-y-3">
+            <div class="flex justify-between items-center">
+              <h4 class="text-xs font-bold text-indigo-900 flex items-center gap-1.5"><i class="fa-solid fa-folder-plus text-indigo-500"></i> ${sec.titleKn} / ${sec.titleEn} (Custom Section)</h4>
+              <button type="button" onclick="deleteCustomSection('${sec.id}')" class="text-rose-500 hover:text-rose-700 bg-transparent border-0 cursor-pointer text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-folder-minus"></i> ವಿಭಾಗ ಅಳಿಸಿ / Delete Section</button>
+            </div>
+            <div class="space-y-2">
+        `;
+
+        if (fields.length === 0) {
+          html += `<div class="text-[10px] text-slate-400 font-semibold py-2">ಈ ವಿಭಾಗದಲ್ಲಿ ಯಾವುದೇ ಫೀಲ್ಡ್ ಇಲ್ಲ. / No fields in this section.</div>`;
+        } else {
+          fields.forEach(f => {
+            html += `
+              <div class="flex items-center justify-between p-2 bg-white border border-slate-200 rounded-xl" style="padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 11px;">
+                  <span class="font-bold text-slate-700">${f.labelKn} / ${f.labelEn}</span>
+                  <span class="text-slate-400 ml-2" style="font-size: 9px;">Type: ${f.type} ${f.required ? '(Required)' : '(Optional)'}</span>
+                </div>
+                <button type="button" onclick="deleteCustomField('${f.id}')" class="text-rose-500 hover:text-rose-700 bg-transparent border-0 cursor-pointer text-xs font-bold"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            `;
+          });
+        }
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    async function saveAdmissionConfigDb() {
+      if (!currentSchoolId) return;
+      try {
+        const { data, error: checkError } = await supabaseClient
+          .from('school_settings')
+          .select('settings_value')
+          .eq('school_id', currentSchoolId)
+          .eq('settings_key', 'web_design');
+          
+        if (checkError) throw checkError;
+        
+        let mergedSettingsValue = {};
+        if (data && data.length > 0) {
+          mergedSettingsValue = data[data.length - 1].settings_value || {};
+        }
+        
+        // Merge admission settings inside the RLS-allowed web_design row
+        mergedSettingsValue.admission_config = currentAdmissionConfig;
+
+        const { error } = await supabaseClient
+          .from('school_settings')
+          .upsert({
+            school_id: currentSchoolId,
+            settings_key: 'web_design',
+            settings_value: mergedSettingsValue
+          });
+            
+        if (error) throw error;
+        showToast("ದಾಖಲಾತಿ ನಿಯಮ ಉಳಿಸಲಾಗಿದೆ", "ಕಾನ್ಫಿಗರೇಶನ್ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "success");
+      } catch (err) {
+        console.error("Error saving admission config:", err);
+        showToast("Error", "ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ: " + err.message, "error");
+      }
+    }
+
+    window.saveAgeRules = function() {
+      currentAdmissionConfig.age_rules.forEach((rule, index) => {
+        const minEl = document.getElementById(`minAge_${index}`);
+        const maxEl = document.getElementById(`maxAge_${index}`);
+        if (minEl && maxEl) {
+          rule.min_age = minEl.value.trim() || "0";
+          rule.max_age = maxEl.value.trim() || "0";
+        }
+      });
+      saveAdmissionConfigDb();
+    };
+
+    window.saveRequiredFieldsConfig = function() {
+      CORE_FIELDS.forEach(field => {
+        const el = document.getElementById(`req_chk_${field.id}`);
+        if (el) {
+          currentAdmissionConfig.required_fields[field.id] = el.checked;
+        }
+      });
+      saveAdmissionConfigDb();
+    };
+
+    window.openAddSectionModal = function() {
+      document.getElementById("newSectionNameKn").value = "";
+      document.getElementById("newSectionNameEn").value = "";
+      document.getElementById("addSectionModal").classList.remove("hidden");
+    };
+
+    window.closeSectionModal = function() {
+      document.getElementById("addSectionModal").classList.add("hidden");
+    };
+
+    window.addNewSectionSubmit = function() {
+      const kn = document.getElementById("newSectionNameKn").value.trim();
+      const en = document.getElementById("newSectionNameEn").value.trim();
+      if (!kn || !en) {
+        showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
+        return;
+      }
+
+      const newSec = {
+        id: "custom-sec-" + Date.now(),
+        titleKn: kn,
+        titleEn: en
+      };
+
+      currentAdmissionConfig.custom_structure.sections.push(newSec);
+      closeSectionModal();
+      renderCustomStructureTree();
+      saveAdmissionConfigDb();
+    };
+
+    window.openAddFieldModal = function() {
+      const select = document.getElementById("fieldTargetSection");
+      if (!select) return;
+
+      let html = `
+        <option value="student-details">ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳು / Student Details</option>
+        <option value="banking-details">ಬ್ಯಾಂಕಿಂಗ್ ವಿವರಗಳು / Banking Details</option>
+        <option value="parents-details">ಪೋಷಕರ ವಿವರಗಳು / Parents Details</option>
+        <option value="school-details">ಹಳೆಯ ಶಾಲಾ ವಿವರಗಳು / Previous School Details</option>
+      `;
+
+      currentAdmissionConfig.custom_structure.sections.forEach(sec => {
+        html += `<option value="${sec.id}">${sec.titleKn} / ${sec.titleEn} (Custom Section)</option>`;
+      });
+
+      select.innerHTML = html;
+      document.getElementById("newFieldLabelKn").value = "";
+      document.getElementById("newFieldLabelEn").value = "";
+      document.getElementById("newFieldType").value = "text";
+      document.getElementById("newFieldRequired").checked = false;
+      document.getElementById("addFieldModal").classList.remove("hidden");
+    };
+
+    window.closeFieldModal = function() {
+      document.getElementById("addFieldModal").classList.add("hidden");
+    };
+
+    window.addNewFieldSubmit = function() {
+      const sectionId = document.getElementById("fieldTargetSection").value;
+      const kn = document.getElementById("newFieldLabelKn").value.trim();
+      const en = document.getElementById("newFieldLabelEn").value.trim();
+      const type = document.getElementById("newFieldType").value;
+      const required = document.getElementById("newFieldRequired").checked;
+
+      if (!kn || !en) {
+        showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
+        return;
+      }
+
+      const newField = {
+        id: "cust_fld_" + Date.now(),
+        sectionId: sectionId,
+        labelKn: kn,
+        labelEn: en,
+        type: type,
+        required: required
+      };
+
+      currentAdmissionConfig.custom_structure.fields.push(newField);
+      closeFieldModal();
+      renderCustomStructureTree();
+      saveAdmissionConfigDb();
+    };
+
+    window.deleteCustomField = function(fieldId) {
+      if (confirm("ಈ ಕಸ್ಟಮ್ ಕ್ಷೇತ್ರವನ್ನು ಅಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? / Delete this custom field?")) {
+        currentAdmissionConfig.custom_structure.fields = currentAdmissionConfig.custom_structure.fields.filter(f => f.id !== fieldId);
+        renderCustomStructureTree();
+        saveAdmissionConfigDb();
+      }
+    };
+
+    window.deleteCustomSection = function(sectionId) {
+      if (confirm("ಈ ಕಸ್ಟಮ್ ವಿಭಾಗ ಮತ್ತು ಅದರಲ್ಲಿರುವ ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಅಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? / Delete this section and all its fields?")) {
+        currentAdmissionConfig.custom_structure.sections = currentAdmissionConfig.custom_structure.sections.filter(s => s.id !== sectionId);
+        currentAdmissionConfig.custom_structure.fields = currentAdmissionConfig.custom_structure.fields.filter(f => f.sectionId !== sectionId);
+        renderCustomStructureTree();
+        saveAdmissionConfigDb();
+      }
+    };
 
     async function loadRegisteredProfiles() {
       if (!currentSchoolId) return;
@@ -1513,6 +2086,19 @@
         showToast("Error", "ಸಿಬ್ಬಂದಿ ವಿವರ ಸೃಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
       }
     }
+
+    function initAdminDeletionControls() {
+      const delChk = document.getElementById('adminAllowTeacherDelete');
+      if (delChk) delChk.checked = localStorage.getItem('admin_allow_teacher_delete') === 'true';
+
+      const resChk = document.getElementById('adminAllowTeacherRestore');
+      if (resChk) resChk.checked = localStorage.getItem('admin_allow_teacher_restore') === 'true';
+
+      const permChk = document.getElementById('adminAllowTeacherPermDelete');
+      if (permChk) permChk.checked = localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
+    }
+
+    document.addEventListener('DOMContentLoaded', initAdminDeletionControls);
 
     async function handleLogout() {
       await supabaseClient.auth.signOut();

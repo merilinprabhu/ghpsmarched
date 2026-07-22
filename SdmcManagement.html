@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHPS Marched - SDMC Committee Management / SDMC ಸಮಿತಿ ನಿರ್ವಹಣೆ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Placeholder (Loaded via navbar.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Page Header & Actions Banner -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="p-3 bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 rounded-2xl border border-purple-200 dark:border-purple-900">
+            <i class="fa-solid fa-users-gear"></i>
+          </span>
+          SDMC ಸಮಿತಿ ನಿರ್ವಹಣೆ / SDMC Committee Portal
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ಮತ್ತು ಮೇಲ್ವಿಚಾರಣಾ ಸಮಿತಿಯ (SDMC) ಅಧ್ಯಕ್ಷರು, ಸದಸ್ಯರು ಮತ್ತು ವಿವರಗಳ ನಿರ್ವಹಣೆ. ಅಧ್ಯಕ್ಷರ ವಿವರಗಳು ನೇರವಾಗಿ <strong>KDP ಮಾಹಿತಿ</strong> ಗೆ ಲಿಂಕ್ ಆಗಿವೆ.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="openSdmcMemberModal()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-user-plus"></i> ಹೊಸ SDMC ಸದಸ್ಯರನ್ನು ಸೇರಿಸಿ / Add Member
+        </button>
+        <button onclick="exportSdmcExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        </button>
+      </div>
+    </div>
+
+    <!-- Featured SDMC President KDP Sync Card -->
+    <div class="bg-gradient-to-br from-purple-900 to-indigo-900 text-white rounded-2xl p-6 shadow-lg border border-purple-800 space-y-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-purple-700/60 pb-4">
+        <div>
+          <span class="bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">KDP Direct Sync</span>
+          <h2 class="text-lg font-black mt-1">SDMC ಅಧ್ಯಕ್ಷರ ವಿವರ / SDMC President Details</h2>
+        </div>
+        <button onclick="savePresidentKdpDetails()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer">
+          <i class="fa-solid fa-floppy-disk"></i> KDP ಗೆ ಕಳುಹಿಸಿ / Update KDP Sync
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+        <div>
+          <label class="block text-purple-200 mb-1 font-bold">ಅಧ್ಯಕ್ಷರ ಹೆಸರು / President Name *</label>
+          <input type="text" id="sdmcPresidentName" placeholder="YANKAPPA" class="w-full bg-purple-950/60 border border-purple-600 text-white rounded-xl p-3 font-bold outline-none">
+        </div>
+        <div>
+          <label class="block text-purple-200 mb-1 font-bold">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile Number *</label>
+          <input type="tel" id="sdmcPresidentMobile" placeholder="7259972833" class="w-full bg-purple-950/60 border border-purple-600 text-white rounded-xl p-3 font-bold outline-none">
+        </div>
+      </div>
+    </div>
+
+    <!-- SDMC Members List Table -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <i class="fa-solid fa-users text-purple-600"></i> SDMC ಸಮಿತಿಯ ಪದಾಧಿಕಾರಿಗಳು ಮತ್ತು ಸದಸ್ಯರು / Committee Directory
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
+              <th class="p-3">ಸದಸ್ಯರ ಹೆಸರು / Name</th>
+              <th class="p-3">ಹುದ್ದೆ / Designation</th>
+              <th class="p-3">ಪ್ರತಿನಿಧಿಸುವ ವರ್ಗ / Category</th>
+              <th class="p-3 text-center">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile</th>
+              <th class="p-3 text-center no-print w-24">ಕ್ರಿಯೆ / Action</th>
+            </tr>
+          </thead>
+          <tbody id="sdmcMembersTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+            <tr>
+              <td colspan="6" class="p-6 text-center text-slate-400">SDMC ಸದಸ್ಯರ ಪಟ್ಟಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add/Edit Member Modal -->
+  <div id="sdmcModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-6 space-y-4 relative">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 id="sdmcModalTitle" class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-plus text-purple-600"></i> SDMC ಸದಸ್ಯರ ವಿವರ
+        </h3>
+        <button onclick="closeSdmcModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">&times;</button>
+      </div>
+
+      <form onsubmit="saveSdmcMember(event)" class="space-y-3 text-xs font-semibold">
+        <input type="hidden" id="sdmcMemberId" value="">
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 mb-1">ಸದಸ್ಯರ ಹೆಸರು / Name *</label>
+          <input type="text" id="sdmcMemberName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-bold outline-none">
+        </div>
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 mb-1">ಹುದ್ದೆ / Designation *</label>
+          <select id="sdmcMemberDesignation" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-bold outline-none">
+            <option value="President / ಅಧ್ಯಕ್ಷರು">President / ಅಧ್ಯಕ್ಷರು (KDP Direct Sync)</option>
+            <option value="Vice President / ಉಪಾಧ್ಯಕ್ಷರು">Vice President / ಉಪಾಧ್ಯಕ್ಷರು</option>
+            <option value="Member / ಸದಸ್ಯರು">Member / ಸದಸ್ಯರು</option>
+            <option value="Ex-Officio Member / ಪದನಿಮಿತ್ತ ಕಾರ್ಯದರ್ಶಿ">Ex-Officio Member / ಪದನಿಮಿತ್ತ ಕಾರ್ಯದರ್ಶಿ (HM)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 mb-1">ಪ್ರತಿನಿಧಿಸುವ ವರ್ಗ / Representative Category</label>
+          <input type="text" id="sdmcMemberCategory" placeholder="Parent / Local Nominee" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-bold outline-none">
+        </div>
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 mb-1">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile *</label>
+          <input type="tel" id="sdmcMemberMobile" required pattern="[0-9]{10}" placeholder="10 Digits" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-bold outline-none">
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeSdmcModal()" class="bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold px-4 py-2 rounded-xl border-0 cursor-pointer">ರದ್ದು</button>
+          <button type="submit" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2 rounded-xl shadow border-0 cursor-pointer">ಸೇವ್ ಮಾಡಿ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let sdmcMembers = [];
+
+    window.onload = function() {
+      loadSdmcDetails();
+    };
+
+    function loadSdmcDetails() {
+      const storedSdmcStr = localStorage.getItem('kdp_sdmc_details') || 'YANKAPPA 7259972833';
+      const parts = storedSdmcStr.split(' ');
+      if (parts.length > 1 && !isNaN(parts[parts.length - 1])) {
+        document.getElementById('sdmcPresidentMobile').value = parts.pop();
+        document.getElementById('sdmcPresidentName').value = parts.join(' ');
+      } else {
+        document.getElementById('sdmcPresidentName').value = storedSdmcStr;
+      }
+
+      sdmcMembers = JSON.parse(localStorage.getItem('sdmc_members_list') || '[]');
+      if (sdmcMembers.length === 0) {
+        sdmcMembers = [
+          { id: '1', name: 'YANKAPPA', designation: 'President / ಅಧ್ಯಕ್ಷರು', category: 'Parent Representative', mobile: '7259972833' },
+          { id: '2', name: 'ಸರೋಜಮ್ಮ', designation: 'Vice President / ಉಪಾಧ್ಯಕ್ಷರು', category: 'Parent Representative', mobile: '9845001122' },
+          { id: '3', name: 'MALLAMMA', designation: 'Ex-Officio Member / ಪದನಿಮಿತ್ತ ಕಾರ್ಯದರ್ಶಿ', category: 'Headmaster (HM)', mobile: '9611562503' }
+        ];
+        localStorage.setItem('sdmc_members_list', JSON.stringify(sdmcMembers));
+      }
+
+      renderSdmcTable();
+    }
+
+    function renderSdmcTable() {
+      const tbody = document.getElementById('sdmcMembersTbody');
+      tbody.innerHTML = '';
+
+      sdmcMembers.forEach((m, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition border-b border-slate-100 dark:border-slate-800";
+        tr.innerHTML = `
+          <td class="p-3 text-center font-bold">${idx + 1}</td>
+          <td class="p-3 font-extrabold text-slate-900 dark:text-white">${m.name}</td>
+          <td class="p-3 font-bold text-purple-700">${m.designation}</td>
+          <td class="p-3">${m.category || '-'}</td>
+          <td class="p-3 text-center font-mono font-bold">${m.mobile}</td>
+          <td class="p-3 text-center no-print">
+            <button onclick="editSdmcMember('${m.id}')" class="text-indigo-600 font-bold px-2 py-1 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteSdmcMember('${m.id}')" class="text-rose-600 font-bold px-2 py-1 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function savePresidentKdpDetails() {
+      const name = document.getElementById('sdmcPresidentName').value.trim();
+      const mobile = document.getElementById('sdmcPresidentMobile').value.trim();
+      if (!name || !mobile) {
+        alert("ದಯವಿಟ್ಟು ಅಧ್ಯಕ್ಷರ ಹೆಸರು ಮತ್ತು ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ!");
+        return;
+      }
+      const combined = `${name} ${mobile}`;
+      localStorage.setItem('kdp_sdmc_details', combined);
+
+      // Update president in list as well
+      const pres = sdmcMembers.find(m => m.designation.includes('President'));
+      if (pres) {
+        pres.name = name;
+        pres.mobile = mobile;
+        localStorage.setItem('sdmc_members_list', JSON.stringify(sdmcMembers));
+        renderSdmcTable();
+      }
+
+      alert("SDMC ಅಧ್ಯಕ್ಷರ ವಿವರ KDP ಮಾಹಿತಿ ಬ್ಯಾನರ್‌ಗೆ ಯಶಸ್ವಿಯಾಗಿ ಆಟೋ-ಲಿಂಕ್ ಆಗಿದೆ!");
+    }
+
+    function openSdmcMemberModal() {
+      document.getElementById('sdmcMemberId').value = '';
+      document.getElementById('sdmcMemberName').value = '';
+      document.getElementById('sdmcMemberCategory').value = '';
+      document.getElementById('sdmcMemberMobile').value = '';
+      document.getElementById('sdmcModal').classList.remove('hidden');
+    }
+
+    function closeSdmcModal() {
+      document.getElementById('sdmcModal').classList.add('hidden');
+    }
+
+    function editSdmcMember(id) {
+      const m = sdmcMembers.find(item => item.id == id);
+      if (!m) return;
+
+      document.getElementById('sdmcMemberId').value = m.id;
+      document.getElementById('sdmcMemberName').value = m.name;
+      document.getElementById('sdmcMemberDesignation').value = m.designation;
+      document.getElementById('sdmcMemberCategory').value = m.category || '';
+      document.getElementById('sdmcMemberMobile').value = m.mobile;
+      document.getElementById('sdmcModal').classList.remove('hidden');
+    }
+
+    function saveSdmcMember(e) {
+      e.preventDefault();
+      const id = document.getElementById('sdmcMemberId').value;
+      const des = document.getElementById('sdmcMemberDesignation').value;
+      const name = document.getElementById('sdmcMemberName').value.trim();
+      const mobile = document.getElementById('sdmcMemberMobile').value.trim();
+
+      const newItem = {
+        id: id || Date.now().toString(),
+        name: name,
+        designation: des,
+        category: document.getElementById('sdmcMemberCategory').value.trim(),
+        mobile: mobile
+      };
+
+      if (id) {
+        const idx = sdmcMembers.findIndex(m => m.id == id);
+        if (idx > -1) sdmcMembers[idx] = newItem;
+      } else {
+        sdmcMembers.push(newItem);
+      }
+
+      if (des.includes('President')) {
+        localStorage.setItem('kdp_sdmc_details', `${name} ${mobile}`);
+        document.getElementById('sdmcPresidentName').value = name;
+        document.getElementById('sdmcPresidentMobile').value = mobile;
+      }
+
+      localStorage.setItem('sdmc_members_list', JSON.stringify(sdmcMembers));
+      renderSdmcTable();
+      closeSdmcModal();
+      alert("SDMC ಸದಸ್ಯರ ವಿವರ ಉಳಿಸಲಾಗಿದೆ!");
+    }
+
+    function deleteSdmcMember(id) {
+      if (!confirm("ಈ ಸದಸ್ಯರನ್ನು ಅಳಿಸಬೇಕೇ?")) return;
+      sdmcMembers = sdmcMembers.filter(m => m.id != id);
+      localStorage.setItem('sdmc_members_list', JSON.stringify(sdmcMembers));
+      renderSdmcTable();
+    }
+
+    function exportSdmcExcel() {
+      const rows = [["Sl No", "Member Name", "Designation", "Category", "Mobile Number"]];
+      sdmcMembers.forEach((m, i) => {
+        rows.push([i+1, m.name, m.designation, m.category, m.mobile]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "SDMC_Members");
+      XLSX.writeFile(wb, "SDMC_Committee_Members.xlsx");
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

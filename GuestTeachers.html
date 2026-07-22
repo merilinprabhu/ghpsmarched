@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHPS Marched - Guest Teachers Management / ಅತಿಥಿ ಶಿಕ್ಷಕರ ನಿರ್ವಹಣೆ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    @media print {
+      body * { visibility: hidden !important; }
+      #printArea, #printArea * { visibility: visible !important; }
+      #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Placeholder (Loaded via navbar.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Page Header & Actions Banner -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-2xl border border-amber-200 dark:border-amber-900">
+            <i class="fa-solid fa-user-graduate"></i>
+          </span>
+          ಅತಿಥಿ ಶಿಕ್ಷಕರ ನಿರ್ವಹಣೆ / Guest Teachers Portal
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          ಅತಿಥಿ ಶಿಕ್ಷಕರ ನೇಮಕಾತಿ ವಿವರಗಳು, ಅರ್ಹತೆ ಮತ್ತು ಗೌರವಧನ ನಿರ್ವಹಣೆ. ಇಲ್ಲಿನ ಸಕ್ರಿಯ ಸಂಖ್ಯೆಯು <strong>KDP ಮಾಹಿತಿ</strong> ಗೆ ಆಟೋ-ಲಿಂಕ್ ಆಗಿದೆ.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="openGuestTeacherModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-user-plus"></i> ಹೊಸ ಅತಿಥಿ ಶಿಕ್ಷಕರನ್ನು ಸೇರಿಸಿ / Add Guest Teacher
+        </button>
+        <button onclick="exportGuestTeachersExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick KDP Stats Counter -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-amber-100 text-amber-700 rounded-xl font-bold text-xl"><i class="fa-solid fa-users font-black"></i></div>
+        <div>
+          <p class="text-[10px] text-slate-400 font-bold uppercase">ಸಕ್ರಿಯ ಅತಿಥಿ ಶಿಕ್ಷಕರು (KDP Active)</p>
+          <h3 id="statActiveGuestCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl font-bold text-xl"><i class="fa-solid fa-book-bookmark"></i></div>
+        <div>
+          <p class="text-[10px] text-slate-400 font-bold uppercase">ಬೋಧಿಸುವ ಪ್ರಮುಖ ವಿಷಯಗಳು</p>
+          <h3 id="statGuestSubjectsCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4">
+        <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl font-bold text-xl"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <div>
+          <p class="text-[10px] text-slate-400 font-bold uppercase">ಒಟ್ಟು ಮಾಸಿಕ ಗೌರವಧನ</p>
+          <h3 id="statTotalHonorarium" class="text-xl font-black text-slate-900 dark:text-white">₹ --</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guest Teachers Table List Card -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-amber-600"></i> ಅತಿಥಿ ಶಿಕ್ಷಕರ ಪಟ್ಟಿ / Guest Faculty Directory
+        </h3>
+        <input type="text" id="guestSearchInput" onkeyup="filterGuestTeachers()" placeholder="ಹೆಸರು ಅಥವಾ ವಿಷಯದ ಮೂಲಕ ಹುಡುಕಿ..." class="w-full sm:w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold outline-none">
+      </div>
+
+      <div id="printArea" class="overflow-x-auto">
+        <table class="w-full text-xs text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
+              <th class="p-3">ಶಿಕ್ಷಕರ ಹೆಸರು / Name</th>
+              <th class="p-3">ಬೋಧಿಸುವ ವಿಷಯ / Subject</th>
+              <th class="p-3">ವಿದ್ಯಾಭ್ಯಾಸ / Qualification</th>
+              <th class="p-3 text-center">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile</th>
+              <th class="p-3 text-center">ಸೇರ್ಪಡೆ ದಿನಾಂಕ / Joining</th>
+              <th class="p-3 text-right">ಗೌರವಧನ / Honorarium</th>
+              <th class="p-3 text-center">ಸ್ಥಿತಿ / Status</th>
+              <th class="p-3 text-center no-print w-24">ಕ್ರಿಯೆ / Action</th>
+            </tr>
+          </thead>
+          <tbody id="guestTeachersTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+            <tr>
+              <td colspan="9" class="p-6 text-center text-slate-400">ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Add/Edit Guest Teacher Modal -->
+  <div id="guestTeacherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[99999] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full p-6 space-y-4 relative">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <h3 id="modalTitle" class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+          <i class="fa-solid fa-user-plus text-amber-600"></i> ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರ / Guest Faculty Form
+        </h3>
+        <button onclick="closeGuestTeacherModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">&times;</button>
+      </div>
+
+      <form id="guestTeacherForm" onsubmit="saveGuestTeacher(event)" class="space-y-3 text-xs font-semibold">
+        <input type="hidden" id="guestId" value="">
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 mb-1">ಶಿಕ್ಷಕರ ಹೆಸರು / Name *</label>
+          <input type="text" id="guestName" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 font-bold outline-none">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ಬೋಧಿಸುವ ವಿಷಯ / Subject *</label>
+            <input type="text" id="guestSubject" required placeholder="ಉದಾ: ಕನ್ನಡ / Maths" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ವಿದ್ಯಾಭ್ಯಾಸ / Qualification</label>
+            <input type="text" id="guestQualification" placeholder="BA B.Ed / BSc" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ಮೊಬೈಲ್ ಸಂಖ್ಯೆ / Mobile *</label>
+            <input type="tel" id="guestMobile" required pattern="[0-9]{10}" placeholder="10 Digits" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ಸೇರ್ಪಡೆ ದಿನಾಂಕ / Joining Date</label>
+            <input type="date" id="guestJoiningDate" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ಮಾಸಿಕ ಗೌರವಧನ / Honorarium (₹)</label>
+            <input type="number" id="guestHonorarium" min="0" placeholder="10000" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 mb-1">ಸ್ಥಿತಿ / Status</label>
+            <select id="guestStatus" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 outline-none font-bold">
+              <option value="Active">Active / ಸಕ್ರಿಯ (KDP Count)</option>
+              <option value="Relieved">Relieved / ಬಿಡುಗಡೆಗೊಂಡ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <button type="button" onclick="closeGuestTeacherModal()" class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold px-4 py-2 rounded-xl border-0 cursor-pointer">ರದ್ದು / Cancel</button>
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-xl shadow border-0 cursor-pointer">ಸೇವ್ ಮಾಡಿ / Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Script Logic -->
+  <script>
+    let guestList = [];
+    const SUPABASE_URL = 'https://wqlxydgysyoslkyvwsrh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHh5ZGd5c3lvc2xreXZ3c3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTkwNjAsImV4cCI6MjA1Njc5NTA2MH0.2lZ7S7V6c7J66PZ4g2H69j4B78J-wZ7y8g4x8-k8K8k';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    window.onload = async function() {
+      await loadGuestTeachers();
+    };
+
+    async function loadGuestTeachers() {
+      try {
+        const localData = JSON.parse(localStorage.getItem('guest_teachers_list') || '[]');
+        
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+
+        let dbData = [];
+        if (schoolId) {
+          const { data, error } = await supabaseClient
+            .from('teachers')
+            .select('*')
+            .eq('school_id', schoolId)
+            .ilike('designation', '%guest%');
+          if (!error && data) dbData = data;
+        }
+
+        guestList = dbData.length > 0 ? dbData : localData;
+        if (guestList.length === 0) {
+          guestList = [
+            { id: '1', teacher_name: 'ಕುಮಾರಸ್ವಾಮಿ S', subject: 'ಕನ್ನಡ / Kannada', qualification: 'MA B.Ed', mobile_number: '9845123456', joining_date: '2024-06-01', honorarium: '10000', status: 'Active' },
+            { id: '2', teacher_name: 'ಶರಣಬಸವ R', subject: 'ಗಣಿತ / Maths', qualification: 'BSc B.Ed', mobile_number: '9900112233', joining_date: '2024-06-15', honorarium: '10000', status: 'Active' }
+          ];
+          localStorage.setItem('guest_teachers_list', JSON.stringify(guestList));
+        }
+
+        renderGuestTeachersTable(guestList);
+        syncKdpGuestCount();
+      } catch (err) {
+        console.error("Error loading guest teachers:", err);
+      }
+    }
+
+    function renderGuestTeachersTable(list) {
+      const tbody = document.getElementById('guestTeachersTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-slate-400">ಯಾವುದೇ ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</td></tr>`;
+        return;
+      }
+
+      let activeCount = 0;
+      let subjects = new Set();
+      let totalSal = 0;
+
+      list.forEach((g, idx) => {
+        const isActive = (g.status || 'Active') === 'Active';
+        if (isActive) {
+          activeCount++;
+          if (g.subject) subjects.add(g.subject);
+          totalSal += parseInt(g.honorarium || '0', 10);
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
+        tr.innerHTML = `
+          <td class="p-3 text-center font-bold">${idx + 1}</td>
+          <td class="p-3 font-extrabold text-slate-900 dark:text-white">${g.teacher_name || g.name || '-'}</td>
+          <td class="p-3 text-indigo-600 dark:text-indigo-400 font-bold">${g.subject || '-'}</td>
+          <td class="p-3">${g.qualification || '-'}</td>
+          <td class="p-3 text-center font-mono font-bold">${g.mobile_number || g.phone || '-'}</td>
+          <td class="p-3 text-center font-mono">${g.joining_date || '-'}</td>
+          <td class="p-3 text-right font-black text-emerald-700">₹ ${parseInt(g.honorarium || '0').toLocaleString('en-IN')}</td>
+          <td class="p-3 text-center">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}">
+              ${isActive ? 'Active' : 'Relieved'}
+            </span>
+          </td>
+          <td class="p-3 text-center no-print">
+            <button onclick="editGuestTeacher('${g.id}')" class="text-indigo-600 hover:text-indigo-800 font-bold px-2 py-1 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteGuestTeacher('${g.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('statActiveGuestCount').innerText = activeCount;
+      document.getElementById('statGuestSubjectsCount').innerText = subjects.size;
+      document.getElementById('statTotalHonorarium').innerText = '₹ ' + totalSal.toLocaleString('en-IN');
+    }
+
+    function syncKdpGuestCount() {
+      const activeCount = guestList.filter(g => (g.status || 'Active') === 'Active').length;
+      localStorage.setItem('kdp_staff_guest', activeCount);
+    }
+
+    function openGuestTeacherModal() {
+      document.getElementById('guestTeacherForm').reset();
+      document.getElementById('guestId').value = '';
+      document.getElementById('modalTitle').innerText = 'ಹೊಸ ಅತಿಥಿ ಶಿಕ್ಷಕರ ಸೇರ್ಪಡೆ / Add Guest Teacher';
+      document.getElementById('guestTeacherModal').classList.remove('hidden');
+    }
+
+    function closeGuestTeacherModal() {
+      document.getElementById('guestTeacherModal').classList.add('hidden');
+    }
+
+    function editGuestTeacher(id) {
+      const g = guestList.find(item => item.id == id);
+      if (!g) return;
+
+      document.getElementById('guestId').value = g.id;
+      document.getElementById('guestName').value = g.teacher_name || g.name || '';
+      document.getElementById('guestSubject').value = g.subject || '';
+      document.getElementById('guestQualification').value = g.qualification || '';
+      document.getElementById('guestMobile').value = g.mobile_number || g.phone || '';
+      document.getElementById('guestJoiningDate').value = g.joining_date || '';
+      document.getElementById('guestHonorarium').value = g.honorarium || '';
+      document.getElementById('guestStatus').value = g.status || 'Active';
+
+      document.getElementById('modalTitle').innerText = 'ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರ ತಿದ್ದುಪಡಿ / Edit Guest Teacher';
+      document.getElementById('guestTeacherModal').classList.remove('hidden');
+    }
+
+    async function saveGuestTeacher(e) {
+      e.preventDefault();
+      const id = document.getElementById('guestId').value;
+      const newItem = {
+        id: id || Date.now().toString(),
+        teacher_name: document.getElementById('guestName').value.trim(),
+        designation: 'Guest Teacher / ಅತಿಥಿ ಶಿಕ್ಷಕರು',
+        subject: document.getElementById('guestSubject').value.trim(),
+        qualification: document.getElementById('guestQualification').value.trim(),
+        mobile_number: document.getElementById('guestMobile').value.trim(),
+        joining_date: document.getElementById('guestJoiningDate').value,
+        honorarium: document.getElementById('guestHonorarium').value,
+        status: document.getElementById('guestStatus').value
+      };
+
+      if (id) {
+        const idx = guestList.findIndex(g => g.id == id);
+        if (idx > -1) guestList[idx] = newItem;
+      } else {
+        guestList.push(newItem);
+      }
+
+      localStorage.setItem('guest_teachers_list', JSON.stringify(guestList));
+      renderGuestTeachersTable(guestList);
+      syncKdpGuestCount();
+      closeGuestTeacherModal();
+      alert("ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ ಮತ್ತು KDP ಗೆ ಲಿಂಕ್ ಆಗಿದೆ!");
+    }
+
+    function deleteGuestTeacher(id) {
+      if (!confirm("ನಿಜವಾಗಿಯೂ ಈ ಅತಿಥಿ ಶಿಕ್ಷಕರ ವಿವರವನ್ನು ಅಳಿಸಬೇಕೆ?")) return;
+      guestList = guestList.filter(g => g.id != id);
+      localStorage.setItem('guest_teachers_list', JSON.stringify(guestList));
+      renderGuestTeachersTable(guestList);
+      syncKdpGuestCount();
+    }
+
+    function filterGuestTeachers() {
+      const q = document.getElementById('guestSearchInput').value.toLowerCase();
+      const filtered = guestList.filter(g => 
+        (g.teacher_name || g.name || '').toLowerCase().includes(q) ||
+        (g.subject || '').toLowerCase().includes(q)
+      );
+      renderGuestTeachersTable(filtered);
+    }
+
+    function exportGuestTeachersExcel() {
+      const rows = [["Sl No", "Teacher Name", "Subject", "Qualification", "Mobile Number", "Joining Date", "Honorarium", "Status"]];
+      guestList.forEach((g, i) => {
+        rows.push([i+1, g.teacher_name || g.name, g.subject, g.qualification, g.mobile_number, g.joining_date, g.honorarium, g.status]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "GuestTeachers");
+      XLSX.writeFile(wb, "Guest_Teachers_List.xlsx");
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

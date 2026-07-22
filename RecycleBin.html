@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recycle Bin / ಮರುಬಳಕೆ ಬುಟ್ಟಿ - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Placeholder -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Header Banner -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="p-3 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-2xl border border-rose-200 dark:border-rose-900">
+            <i class="fa-solid fa-trash-arrow-up"></i>
+          </span>
+          ಮರುಬಳಕೆ ಬುಟ್ಟಿ / Recycle Bin Portal
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          ತಾತ್ಕಾಲಿಕವಾಗಿ ಡೆಲಿಟ್ ಮಾಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ. HM/Admin ಅನುಮತಿಯೊಂದಿಗೆ ಇವರನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪಿಸಬಹುದು (Restore).
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="exportRecycleBinExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <label class="text-xs font-bold text-slate-600 dark:text-slate-300">ತರಗತಿ ಫಿಲ್ಟರ್ / Class:</label>
+        <select id="recycleClassFilter" onchange="filterRecycleBin()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none cursor-pointer">
+          <option value="ALL">ಎಲ್ಲಾ ತರಗತಿಗಳು / All Classes</option>
+          <option value="LKG">LKG</option>
+          <option value="UKG">UKG</option>
+          <option value="1">1st Class</option>
+          <option value="2">2nd Class</option>
+          <option value="3">3rd Class</option>
+          <option value="4">4th Class</option>
+          <option value="5">5th Class</option>
+          <option value="6">6th Class</option>
+          <option value="7">7th Class</option>
+          <option value="8">8th Class</option>
+          <option value="9">9th Class</option>
+          <option value="10">10th Class</option>
+        </select>
+      </div>
+
+      <input type="text" id="recycleSearch" onkeyup="filterRecycleBin()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು ಅಥವಾ SATS ID ಹುಡುಕಿ..." class="w-full sm:w-72 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold outline-none">
+    </div>
+
+    <!-- Trashed Students Directory -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <i class="fa-solid fa-trash-can text-rose-600"></i> ಡೆಲಿಟ್ ಮಾಡಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / Trashed Student Directory
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
+              <th class="p-3">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
+              <th class="p-3 text-center">SATS ID</th>
+              <th class="p-3 text-center">ತರಗತಿ / Class</th>
+              <th class="p-3">ತಂದೆಯ ಹೆಸರು / Father Name</th>
+              <th class="p-3 text-center">ಮೊಬೈಲ್ / Mobile</th>
+              <th class="p-3 text-center">ಡೆಲಿಟ್ ದಿನಾಂಕ / Date</th>
+              <th class="p-3 text-center w-48">ಕ್ರಿಯೆ / Actions</th>
+            </tr>
+          </thead>
+          <tbody id="recycleBinTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+            <tr>
+              <td colspan="8" class="p-6 text-center text-slate-400">ಮರುಬಳಕೆ ಬುಟ್ಟಿಯ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let trashedStudents = [];
+    const SUPABASE_URL = 'https://wqlxydgysyoslkyvwsrh.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHh5ZGd5c3lvc2xreXZ3c3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTkwNjAsImV4cCI6MjA1Njc5NTA2MH0.2lZ7S7V6c7J66PZ4g2H69j4B78J-wZ7y8g4x8-k8K8k';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    window.onload = function() {
+      loadRecycleBin();
+    };
+
+    function isRoleAllowed(actionType) {
+      const userRole = localStorage.getItem('user_role') || 'teacher';
+      if (['admin', 'hm', 'headmaster', 'developer'].includes(userRole.toLowerCase())) {
+        return true;
+      }
+      if (actionType === 'restore') {
+        return localStorage.getItem('admin_allow_teacher_restore') === 'true';
+      }
+      if (actionType === 'permanent_delete') {
+        return localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
+      }
+      return false;
+    }
+
+    async function loadRecycleBin() {
+      const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+      trashedStudents = localTrashed;
+      renderRecycleBinTable(trashedStudents);
+    }
+
+    function renderRecycleBinTable(list) {
+      const tbody = document.getElementById('recycleBinTbody');
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">ಮರುಬಳಕೆ ಬುಟ್ಟಿಯಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳಿಲ್ಲ. (Recycle Bin is empty)</td></tr>`;
+        return;
+      }
+
+      const canRestore = isRoleAllowed('restore');
+      const canPermDelete = isRoleAllowed('permanent_delete');
+
+      list.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
+        tr.innerHTML = `
+          <td class="p-3 text-center font-bold">${idx + 1}</td>
+          <td class="p-3 font-extrabold text-slate-900 dark:text-white">${s.student_name || s.name || '-'}</td>
+          <td class="p-3 text-center font-mono font-bold text-indigo-600">${s.sats_number || s.sats_id || '-'}</td>
+          <td class="p-3 text-center font-bold">${s.class_name || s.standard || '-'}</td>
+          <td class="p-3">${s.father_name || '-'}</td>
+          <td class="p-3 text-center font-mono">${s.mobile_number || s.phone || '-'}</td>
+          <td class="p-3 text-center font-mono text-[10px] text-slate-400">${s.deleted_at || new Date().toLocaleDateString('kn-IN')}</td>
+          <td class="p-3 text-center space-x-2">
+            ${canRestore ? `<button onclick="restoreStudent('${s.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer"><i class="fa-solid fa-rotate-left"></i> Restore</button>` : `<span class="text-[10px] text-slate-400 font-bold" title="HM/Admin Only">No Access</span>`}
+            ${canPermDelete ? `<button onclick="permanentlyDeleteStudent('${s.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer"><i class="fa-solid fa-trash"></i> Delete</button>` : ''}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function restoreStudent(id) {
+      if (!isRoleAllowed('restore')) {
+        alert("ನಿಮಗೆ ಈ ಕಾರ್ಯ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
+        return;
+      }
+      const st = trashedStudents.find(s => s.id == id);
+      if (!st) return;
+
+      if (!confirm(`ನಿಜವಾಗಿಯೂ ${st.student_name || st.name} ಅವರನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪಿಸಬೇಕೆ?`)) return;
+
+      // Remove from trash
+      trashedStudents = trashedStudents.filter(s => s.id != id);
+      localStorage.setItem('trashed_students_list', JSON.stringify(trashedStudents));
+
+      // Add back to active student list
+      const activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
+      st.status = 'Active';
+      activeList.push(st);
+      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
+
+      renderRecycleBinTable(trashedStudents);
+      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪನೆಯಾಗಿದೆ!");
+    }
+
+    function permanentlyDeleteStudent(id) {
+      if (!isRoleAllowed('permanent_delete')) {
+        alert("ನಿಮಗೆ ಈ ಕಾರ್ಯ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
+        return;
+      }
+      const st = trashedStudents.find(s => s.id == id);
+      if (!st) return;
+
+      if (!confirm(`⚠️ ಎಚ್ಚರಿಕೆ! ${st.student_name || st.name} ಅವರ ವಿವರವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ! ಈ ಕಾರ್ಯವನ್ನು ಹಿಂತಿರುಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಮುಂದುವರಿಸಬೇಕೆ?`)) return;
+
+      trashedStudents = trashedStudents.filter(s => s.id != id);
+      localStorage.setItem('trashed_students_list', JSON.stringify(trashedStudents));
+      renderRecycleBinTable(trashedStudents);
+      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲ್ಪಟ್ಟಿದೆ.");
+    }
+
+    function filterRecycleBin() {
+      const cls = document.getElementById('recycleClassFilter').value;
+      const q = document.getElementById('recycleSearch').value.toLowerCase();
+
+      let filtered = trashedStudents.filter(s => {
+        const matchesClass = cls === 'ALL' || (s.class_name || s.standard || '').toString().toLowerCase() === cls.toLowerCase();
+        const matchesSearch = (s.student_name || s.name || '').toLowerCase().includes(q) || (s.sats_number || s.sats_id || '').toLowerCase().includes(q);
+        return matchesClass && matchesSearch;
+      });
+
+      renderRecycleBinTable(filtered);
+    }
+
+    function exportRecycleBinExcel() {
+      const rows = [["Sl No", "Student Name", "SATS ID", "Class", "Father Name", "Mobile", "Deleted Date"]];
+      trashedStudents.forEach((s, i) => {
+        rows.push([i+1, s.student_name || s.name, s.sats_number || s.sats_id, s.class_name || s.standard, s.father_name, s.mobile_number, s.deleted_at]);
+      });
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "RecycleBin");
+      XLSX.writeFile(wb, "Trashed_Students_List.xlsx");
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

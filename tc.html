@@ -87,47 +87,140 @@
     <!-- Outer Container -->
     <div class="max-w-[98%] lg:max-w-[1500px] mx-auto w-full p-6">
       
-      <!-- Top Title Row -->
-      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
+      <!-- Top Title Row & Main View Tabs -->
+      <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-4 no-print border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <i class="fa-solid fa-file-signature text-indigo-500"></i>
-            <span>ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ (TC) / Transfer Certificate (TC)</span>
+            <span>ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ (TC Hub) / Transfer Certificate Portal</span>
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳೊಂದಿಗೆ ಸ್ವಯಂಚಾಲಿತ ಅಥವಾ ಖಾಲಿ ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ (TC) ಮುದ್ರಿಸಿ.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ತರಗತಿವಾರು ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯಿಂದ "ISSUE TC" ಕ್ಲಿಕ್ ಮಾಡಿ ಟಿಸಿ ಪ್ರಿಂಟ್ ಮಾಡಿ ಅಥವಾ TC Out ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಮರು-ಸೇರ್ಪಡೆಗೊಳಿಸಿ.</p>
+        </div>
+
+        <!-- 2 Main View Switcher Tabs -->
+        <div class="flex items-center gap-2 bg-slate-200 dark:bg-slate-800 p-1.5 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700">
+          <button onclick="switchTcMainView('directory')" id="btnTcMainViewDirectory" class="bg-indigo-600 text-white font-black text-xs py-2 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+            <i class="fa-solid fa-users"></i> 📊 ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ & Hub
+          </button>
+          <button onclick="switchTcMainView('preview')" id="btnTcMainViewPreview" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 font-bold text-xs py-2 px-4 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer">
+            <i class="fa-solid fa-print"></i> 📜 TC ಪ್ರಿಂಟ್ ಪ್ರಮಾಣ ಪತ್ರ
+          </button>
         </div>
       </div>
 
-      <!-- Grid Split Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
-        <!-- Main Content Panel -->
-        <div class="lg:col-span-4 space-y-6">
-          
-          <!-- Options Block (no-print) -->
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 no-print">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div>
-                <h4 id="selectedDocTitle" class="text-sm font-bold text-slate-800 dark:text-white uppercase">Transfer Certificate (TC)</h4>
-                <p class="text-xs text-slate-400 mt-0.5">ತುಂಬುವ ವಿಧಾನ ಮತ್ತು ವಿದ್ಯಾರ್ಥಿಯ ವಿವರಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.</p>
-              </div>
-              <div class="flex flex-wrap items-center gap-3">
-                <!-- Checkbox for Duplicate TC -->
-                <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-750">
-                  <input type="checkbox" id="duplicateTcCheck" onchange="toggleDuplicateTc(this.checked)" class="rounded border-slate-300 dark:border-slate-700 accent-indigo-600 cursor-pointer">
-                  <span>Duplicate TC / ಡ್ಯೂಪ್ಲಿಕೇಟ್ ಟಿಸಿ</span>
-                </label>
+      <!-- VIEW 1: STUDENT DIRECTORY & TC HUB VIEW (no-print) -->
+      <div id="tcViewDirectorySection" class="space-y-6 no-print">
+        <!-- Quick TC Dashboard Counter Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-file-export"></i></div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">ಒಟ್ಟು ನೀಡಿದ TC ಗಳು</p>
+              <h3 id="statTotalTcIssued" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-users font-black"></i></div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳು (Active)</p>
+              <h3 id="statActiveStudentsCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-amber-100 text-amber-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-person-walking-luggage"></i></div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">TC ಪಡೆದು ಹೋದವರು (TC Out)</p>
+              <h3 id="statTcOutCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+            </div>
+          </div>
+          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
+            <div class="p-3 bg-rose-100 text-rose-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-trash-can"></i></div>
+            <div>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">ಮರುಬಳಕೆ ಬುಟ್ಟಿ (Recycle Bin)</p>
+              <h3 id="statRecycleBinCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
+            </div>
+          </div>
+        </div>
 
-                <button type="button" onclick="clearRosterSelection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
-                  ಫಾರ್ಮ್ ಕ್ಲಿಯರ್ / Clear Form
-                </button>
-                <button type="button" onclick="triggerPrintAndLog()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition border-0 cursor-pointer shadow-sm">
-                  <i class="fa-solid fa-print"></i> ಪ್ರಿಂಟ್ ಕೊಡಿ / Print
-                </button>
-              </div>
+        <!-- Interactive Student Directory Table Panel -->
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-4">
+              <button onclick="switchTcDirectoryTab('active')" id="tabTcActiveBtn" class="text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer">
+                <i class="fa-solid fa-users"></i> ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳು (Active Students)
+              </button>
+              <button onclick="switchTcDirectoryTab('tcout')" id="tabTcOutBtn" class="text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer">
+                <i class="fa-solid fa-person-walking-arrow-right"></i> TC ನೀಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳು (TC Out List)
+              </button>
             </div>
 
-            <div class="border-t border-slate-100 dark:border-slate-850"></div>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <select id="tcDirectoryClassFilter" onchange="renderTcStudentDirectory()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer">
+                <option value="ALL">-- All Classes --</option>
+                <option value="LKG">LKG/KG1</option>
+                <option value="UKG">UKG/KG2</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+              <input type="text" id="tcDirectorySearch" onkeyup="renderTcStudentDirectory()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು ಅಥವಾ SATS ID..." class="w-full sm:w-56 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
+            </div>
+          </div>
+
+          <div class="overflow-x-auto max-h-[420px] overflow-y-auto">
+            <table class="w-full text-xs text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0">
+                  <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
+                  <th class="p-3">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
+                  <th class="p-3 text-center">SATS ID</th>
+                  <th class="p-3 text-center">ತರಗತಿ / Class</th>
+                  <th class="p-3">ತಂದೆಯ ಹೆಸರು / Father Name</th>
+                  <th class="p-3 text-center w-36">ಕ್ರಿಯೆ / Action</th>
+                </tr>
+              </thead>
+              <tbody id="tcDirectoryTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+                <tr>
+                  <td colspan="6" class="p-6 text-center text-slate-400">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: PRINTABLE TC DOCUMENT SECTION (Hidden by default, shown when ISSUE TC is clicked) -->
+      <div id="tcPrintableSection" class="hidden space-y-6">
+        
+        <!-- Top Sticky Action Bar in Preview Mode -->
+        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3 no-print">
+          <button onclick="switchTcMainView('directory')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs py-2 px-4 rounded-xl border-0 cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> ⬅️ ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ / Back to Directory
+          </button>
+
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200">
+              <input type="checkbox" id="duplicateTcCheck" onchange="toggleDuplicateTc(this.checked)" class="accent-indigo-600 cursor-pointer">
+              <span>Duplicate TC / ಡ್ಯೂಪ್ಲಿಕೇಟ್ ಟಿಸಿ</span>
+            </label>
+            <button type="button" onclick="clearRosterSelection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
+              Clear Form
+            </button>
+            <button type="button" onclick="triggerPrintAndLog()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-black transition border-0 cursor-pointer shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-print"></i> 🖨️ ಪ್ರಿಂಟ್ ಕೊಡಿ / Print TC
+            </button>
+          </div>
+        </div>
+
+        <!-- Options Block (no-print) -->
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 no-print">
 
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <!-- Select Mode -->
@@ -501,8 +594,11 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
             
-            <script>
+    <script>
     let supabaseClient;
     let allStudentsData = [];
     let currentStudent = null;
@@ -699,6 +795,36 @@
         logs.unshift({ name, sts, tcNo, date: today });
         localStorage.setItem('tc_print_logs', JSON.stringify(logs));
         loadPrintLogs();
+      }
+
+      // Automatically move printed student from Active Students to TC Out List
+      if (currentStudent || sts) {
+        const targetId = currentStudent?.id || currentStudent?.sats_number || sts;
+        let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
+        if (activeList.length === 0 && allStudentsData.length > 0) {
+          activeList = [...allStudentsData];
+        }
+        
+        const idx = activeList.findIndex(s => {
+          const sId = getStudentAttr(s, 'id', 'sats_number', 'sats_no', 'sts_no', 'app_no');
+          return sId == targetId || sId == sts;
+        });
+
+        if (idx !== -1) {
+          const issuedStudent = activeList.splice(idx, 1)[0];
+          issuedStudent.status = 'TC_Issued';
+          issuedStudent.tc_date = today;
+          issuedStudent.tc_no = tcNo;
+
+          let tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
+          if (!tcOutList.some(o => getStudentAttr(o, 'id', 'sats_number', 'sts_no') == targetId)) {
+            tcOutList.unshift(issuedStudent);
+          }
+
+          localStorage.setItem('student_list_cache', JSON.stringify(activeList));
+          localStorage.setItem('tc_issued_list', JSON.stringify(tcOutList));
+          renderTcStudentDirectory();
+        }
       }
 
       let serial = localStorage.getItem('tc_next_serial') || '';
@@ -1061,7 +1187,24 @@
       updateCanvasSpans('canvasVal-date_of_issue', formatDateWordMonth(today));
     }
 
-    function clearRosterSelection() {function clearRosterSelection() {
+    function isRoleAllowed(actionType) {
+      const userRole = localStorage.getItem('user_role') || 'teacher';
+      if (['admin', 'hm', 'headmaster', 'developer'].includes(userRole.toLowerCase())) {
+        return true;
+      }
+      if (actionType === 'delete') {
+        return localStorage.getItem('admin_allow_teacher_delete') === 'true';
+      }
+      if (actionType === 'restore') {
+        return localStorage.getItem('admin_allow_teacher_restore') === 'true';
+      }
+      if (actionType === 'permanent_delete') {
+        return localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
+      }
+      return false;
+    }
+
+    function clearRosterSelection() {
       const duplicateCheckbox = document.getElementById('duplicateTcCheck');
       if (duplicateCheckbox) {
         duplicateCheckbox.checked = false;
@@ -1106,7 +1249,9 @@
       updateCanvasSpans('canvasVal-conduct', 'Good');
       updateCanvasSpans('canvasVal-date_of_entry', '');
       updateCanvasSpans('canvasVal-date_of_issue', '');
-    }function setFillMode(mode) {
+    }
+
+    function setFillMode(mode) {
       currentFillMode = mode;
       
       const btnAuto = document.getElementById('mode-btn-auto');
@@ -1144,11 +1289,223 @@
       }
     }
 
+    let tcCurrentMainView = 'directory'; // 'directory' or 'preview'
+    let tcCurrentDirectoryTab = 'active'; // 'active' or 'tcout'
+
+    function switchTcMainView(view) {
+      tcCurrentMainView = view;
+      const dirSection = document.getElementById('tcViewDirectorySection');
+      const prevSection = document.getElementById('tcPrintableSection');
+
+      const btnDir = document.getElementById('btnTcMainViewDirectory');
+      const btnPrev = document.getElementById('btnTcMainViewPreview');
+
+      const activeBtn = "bg-indigo-600 text-white font-black text-xs py-2 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer";
+      const inactiveBtn = "text-slate-600 dark:text-slate-400 hover:text-slate-900 font-bold text-xs py-2 px-4 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer";
+
+      if (view === 'directory') {
+        if (dirSection) dirSection.classList.remove('hidden');
+        if (prevSection) prevSection.classList.add('hidden');
+        if (btnDir) btnDir.className = activeBtn;
+        if (btnPrev) btnPrev.className = inactiveBtn;
+      } else {
+        if (dirSection) dirSection.classList.add('hidden');
+        if (prevSection) prevSection.classList.remove('hidden');
+        if (btnDir) btnDir.className = inactiveBtn;
+        if (btnPrev) btnPrev.className = activeBtn;
+      }
+    }
+
+    function switchTcDirectoryTab(tab) {
+      tcCurrentDirectoryTab = tab;
+      const btnActive = document.getElementById('tabTcActiveBtn');
+      const btnOut = document.getElementById('tabTcOutBtn');
+
+      if (tab === 'active') {
+        if (btnActive) btnActive.className = "text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer";
+        if (btnOut) btnOut.className = "text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer";
+      } else {
+        if (btnActive) btnActive.className = "text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer";
+        if (btnOut) btnOut.className = "text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer";
+      }
+      renderTcStudentDirectory();
+    }
+
+    function getStudentAttr(s, ...keys) {
+      if (!s) return '';
+      for (let k of keys) {
+        if (s[k] !== undefined && s[k] !== null && s[k] !== '') {
+          return s[k];
+        }
+      }
+      return '';
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      clean = clean.replace(/ನೇ/g, '').replace(/ನೆ/g, '').replace(/ನೇ ತರಗತಿ/g, '').replace(/ತರಗತಿ/g, '');
+      
+      const kanDigits = {'೧':'1', '೨':'2', '೩':'3', '೪':'4', '೫':'5', '೬':'6', '೭':'7', '೮':'8', '೯':'9', '೧೦':'10', '೦':'0'};
+      for (const key in kanDigits) {
+        clean = clean.replace(new RegExp(key, 'g'), kanDigits[key]);
+      }
+      
+      clean = clean.trim();
+
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("ಎಲ್.ಕೆ.ಜಿ") || clean.includes("ಎಲ್ಕೆಜಿ") || clean.includes("l.k.g")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2") || clean.includes("ಯು.ಕೆ.ಜಿ") || clean.includes("ಯುಕೆಜಿ") || clean.includes("u.k.g")) return "UKG";
+      
+      if (/\b10\b/.test(clean) || /\bx\b/.test(clean) || clean.includes("10th") || clean.includes("tenth")) return "10";
+      if (/\b9\b/.test(clean) || /\bix\b/.test(clean) || clean.includes("9th") || clean.includes("ninth")) return "9";
+      if (/\b8\b/.test(clean) || /\bviii\b/.test(clean) || clean.includes("8th") || clean.includes("eighth")) return "8";
+      if (/\b7\b/.test(clean) || /\bvii\b/.test(clean) || clean.includes("7th") || clean.includes("seventh")) return "7";
+      if (/\b6\b/.test(clean) || /\bvi\b/.test(clean) || clean.includes("6th") || clean.includes("sixth")) return "6";
+      if (/\b5\b/.test(clean) || /\bv\b/.test(clean) || clean.includes("5th") || clean.includes("fifth")) return "5";
+      if (/\b4\b/.test(clean) || /\biv\b/.test(clean) || clean.includes("4th") || clean.includes("fourth")) return "4";
+      if (/\b3\b/.test(clean) || /\biii\b/.test(clean) || clean.includes("3rd") || clean.includes("third")) return "3";
+      if (/\b2\b/.test(clean) || /\bii\b/.test(clean) || clean.includes("2nd") || clean.includes("second")) return "2";
+      if (/\b1\b/.test(clean) || /\bi\b/.test(clean) || clean.includes("1st") || clean.includes("first")) return "1";
+
+      const numMatch = clean.match(/\d+/);
+      if (numMatch) {
+        const num = parseInt(numMatch[0]);
+        if (num >= 1 && num <= 10) return num.toString();
+      }
+      return clean.toUpperCase();
+    }
+
+    function matchClassString(student, selectedClass) {
+      if (!selectedClass || selectedClass === 'ALL' || selectedClass === '') return true;
+      const rawCls = getStudentAttr(student, 'class_name', 'standard', 'class', 'grade', 'enroll_class', 'className', 'std');
+      const studentNorm = normalizeClass(rawCls);
+      const selectedNorm = normalizeClass(selectedClass);
+      return studentNorm === selectedNorm;
+    }
+
+    function renderTcStudentDirectory() {
+      const tbody = document.getElementById('tcDirectoryTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const clsFilter = document.getElementById('tcDirectoryClassFilter')?.value || 'ALL';
+      const query = (document.getElementById('tcDirectorySearch')?.value || '').toLowerCase().trim();
+
+      const activeList = (JSON.parse(localStorage.getItem('student_list_cache') || '[]')).length > 0 ? JSON.parse(localStorage.getItem('student_list_cache')) : allStudentsData;
+      const tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
+      const trashedList = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+
+      // Update counters
+      if (document.getElementById('statTotalTcIssued')) document.getElementById('statTotalTcIssued').innerText = tcOutList.length;
+      if (document.getElementById('statActiveStudentsCount')) document.getElementById('statActiveStudentsCount').innerText = activeList.length;
+      if (document.getElementById('statTcOutCount')) document.getElementById('statTcOutCount').innerText = tcOutList.length;
+      if (document.getElementById('statRecycleBinCount')) document.getElementById('statRecycleBinCount').innerText = trashedList.length;
+
+      let sourceList = tcCurrentDirectoryTab === 'active' ? activeList : tcOutList;
+
+      let filtered = sourceList.filter(s => {
+        const matchesCls = matchClassString(s, clsFilter);
+        const sName = getStudentAttr(s, 'student_name', 'name', 'student_name_kn', 'student_name_en').toLowerCase();
+        const satsId = getStudentAttr(s, 'sats_number', 'sats_no', 'sts_no', 'sats_id', 'id').toLowerCase();
+        const matchesQ = !query || sName.includes(query) || satsId.includes(query);
+        return matchesCls && matchesQ;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ. (No students found)</td></tr>`;
+        return;
+      }
+
+      const canDelete = isRoleAllowed('delete');
+
+      filtered.forEach((s, idx) => {
+        const sId = getStudentAttr(s, 'id', 'sats_number', 'sats_no', 'sts_no');
+        const sName = getStudentAttr(s, 'student_name', 'name', 'student_name_kn', 'student_name_en') || 'Unnamed';
+        const satsNo = getStudentAttr(s, 'sats_number', 'sats_no', 'sts_no', 'sats_id') || '-';
+        const clsName = getStudentAttr(s, 'class_name', 'standard', 'class', 'grade', 'std') || '-';
+        const fatherName = getStudentAttr(s, 'father_name', 'father_name_kn', 'father_name_en') || '-';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
+        
+        const actionHtml = tcCurrentDirectoryTab === 'active' ? `
+          <button onclick="issueTcForStudent('${sId}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-file-signature"></i> ISSUE TC</button>
+          ${canDelete ? `<button onclick="softDeleteStudent('${sId}')" class="text-rose-600 hover:text-rose-800 font-bold px-1.5 py-1 border-0 bg-transparent cursor-pointer ml-1" title="Move to Recycle Bin"><i class="fa-solid fa-trash-can"></i></button>` : ''}
+        ` : `
+          <button onclick="reAdmitStudent('${sId}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-user-plus"></i> ಮರು-ಸೇರ್ಪಡೆ</button>
+        `;
+
+        tr.innerHTML = `
+          <td class="p-2.5 text-center font-bold">${idx + 1}</td>
+          <td class="p-2.5 font-extrabold text-slate-900 dark:text-white">${sName}</td>
+          <td class="p-2.5 text-center font-mono font-bold text-indigo-600">${satsNo}</td>
+          <td class="p-2.5 text-center font-bold">${clsName}</td>
+          <td class="p-2.5">${fatherName}</td>
+          <td class="p-2.5 text-center">${actionHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function issueTcForStudent(studentId) {
+      const sel = document.getElementById('studentSelector');
+      if (sel) {
+        sel.value = studentId;
+        handleStudentSelect(studentId);
+      }
+      switchTcMainView('preview');
+    }
+
+    function reAdmitStudent(studentId) {
+      let tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
+      const idx = tcOutList.findIndex(s => (s.id || s.sats_number) == studentId);
+      if (idx === -1) return;
+
+      const student = tcOutList.splice(idx, 1)[0];
+      student.status = 'Active';
+
+      let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
+      activeList.push(student);
+
+      localStorage.setItem('tc_issued_list', JSON.stringify(tcOutList));
+      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
+
+      renderTcStudentDirectory();
+      alert(`${student.student_name || student.name} ಅವರನ್ನು ಯಶಸ್ವಿಯಾಗಿ ತರಗತಿಗೆ ಮರು-ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ!`);
+    }
+
+    function softDeleteStudent(studentId) {
+      if (!isRoleAllowed('delete')) {
+        alert("ನಿಮಗೆ ಡೆಲಿಟ್ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
+        return;
+      }
+      let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
+      const idx = activeList.findIndex(s => (s.id || s.sats_number) == studentId);
+      if (idx === -1) return;
+
+      if (!confirm("ನಿಜವಾಗಿಯೂ ಈ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಮರುಬಳಕೆ ಬುಟ್ಟಿಗೆ (Recycle Bin) ಸರಿಸಬೇಕೇ?")) return;
+
+      const deletedStudent = activeList.splice(idx, 1)[0];
+      deletedStudent.deleted_at = new Date().toLocaleDateString('kn-IN');
+      deletedStudent.status = 'Deleted';
+
+      let trashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+      trashed.push(deletedStudent);
+
+      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
+      localStorage.setItem('trashed_students_list', JSON.stringify(trashed));
+
+      renderTcStudentDirectory();
+      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಮರುಬಳಕೆ ಬುಟ್ಟಿಗೆ (Recycle Bin) ಸರಿಸಲಾಗಿದೆ!");
+    }
+
     window.onload = async function() {
       setupSupabase();
       await loadStudents();
       initNumberingSettings();
       loadPrintLogs();
+      renderTcStudentDirectory();
       
       // Inline edit listener to update QR code dynamically on manual correction
       document.addEventListener('keyup', (e) => {

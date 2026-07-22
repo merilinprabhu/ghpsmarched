@@ -36,7 +36,19 @@
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
     
+    @page {
+      size: A4 landscape;
+      margin: 4mm 6mm 4mm 6mm;
+    }
+
     @media print {
+      html, body {
+        height: 100% !important;
+        overflow: hidden !important;
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
       body * {
         visibility: hidden !important;
       }
@@ -54,6 +66,8 @@
         color: black !important;
         padding: 0 !important;
         margin: 0 !important;
+        transform: scale(0.98);
+        transform-origin: top center;
       }
       .no-print {
         display: none !important;
@@ -61,6 +75,16 @@
       .print-only {
         display: inline-block !important;
         visibility: visible !important;
+      }
+      #kdpHeaderBlock {
+        border: 1px solid #000000 !important;
+        border-radius: 0 !important;
+        margin-bottom: 4px !important;
+        box-shadow: none !important;
+      }
+      #kdpHeaderBlock * {
+        border-color: #000000 !important;
+        border-radius: 0 !important;
       }
       table {
         border-collapse: collapse !important;
@@ -70,25 +94,37 @@
       th, td {
         border: 1px solid #000000 !important;
         color: #000000 !important;
-        padding: 4px 2px !important;
+        padding: 3.5px 4px !important;
         font-size: 10px !important;
+        line-height: 1.2 !important;
       }
       th {
         background-color: #e2e8f0 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      /* Grayscale shading for subtotals and grand totals in B&W printing */
-      tr.bg-amber-100\/50, tr.bg-amber-100\/50 * {
+      /* Zebra striping for table rows */
+      #classTableBody tr:nth-child(even):not(.active-row) {
         background-color: #f1f5f9 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      tr.bg-orange-100, tr.bg-orange-100 * {
+      #classTableBody tr:nth-child(odd):not(.active-row) {
+        background-color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      tr.bg-amber-100\/50, tr.bg-amber-100\/50 * {
         background-color: #e2e8f0 !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
+      tr.bg-orange-100, tr.bg-orange-100 * {
+        background-color: #cbd5e1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
     }
 
     .rotate-90 {
@@ -396,23 +432,6 @@
 
         <!-- Main full-width summary table card -->
         <div class="w-full bg-white dark:bg-slate-900 p-6 border border-slate-200/60 dark:border-slate-800/80 space-y-5 shadow-sm" id="summary-table-card">
-          <!-- Print Only Elegant Header (visible only on print) -->
-          <div class="print-only hidden w-full text-center mb-6">
-            <div class="flex items-center justify-center gap-4 mb-3">
-              <img src="logo.png" alt="School Logo" class="w-14 h-14 object-contain" onerror="this.style.display='none'">
-              <div>
-                <h1 id="printHeaderSchoolName" class="text-xl font-black uppercase text-black"></h1>
-                <p class="text-[10px] font-bold text-slate-800">ತರಗತಿವಾರು, ಲಿಂಗಾವಾರು ಮತ್ತು ವರ್ಗಾವಾರು ದಾಖಲಾತಿ ಘೋಷ್ವಾರೆ / Classwise, Genderwise and Castewise Summary Report</p>
-              </div>
-            </div>
-            <div class="flex justify-center gap-6 text-[9px] font-bold text-slate-800">
-              <div>Academic Year / ಶೈಕ್ಷಣಿಕ ವರ್ಷ: <span id="printAcademicYear" class="font-black"></span></div>
-              <div>Cluster: <span id="printCluster" class="font-black"></span></div>
-              <div>Taluk: <span id="printTaluk" class="font-black"></span></div>
-              <div>District: <span id="printDistrict" class="font-black"></span></div>
-              <div>Created By: <span id="printCreator" class="font-black"></span></div>
-            </div>
-          </div>
 
           <!-- Card Header (no-print) -->
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-2 border-b border-slate-100 dark:border-slate-800 no-print">
@@ -485,42 +504,154 @@
             </button>
           </div>
 
-          <!-- School Information Header Block (no-print) -->
-          <div class="no-print border border-slate-200 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/50 space-y-3">
-            <div class="text-center font-bold text-base text-slate-800 dark:text-white pb-2 border-b border-dashed border-slate-200 dark:border-slate-700">
-              ತರಗತಿವಾರು ಮತ್ತು ಲಿಂಗಾವಾರು ಜಾತಿ ಘೋಷ್ವಾರೆ ವಿವರಗಳು / Classwise, Genderwise and Castewise Summary Report
+          <!-- Official KDP Government Header Info Block -->
+          <div id="kdpHeaderBlock" class="w-full border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 overflow-hidden shadow-sm mb-4">
+            <!-- Top Banner Header -->
+            <div class="bg-slate-100 dark:bg-slate-800 text-center py-2.5 px-4 border-b border-slate-200 dark:border-slate-800">
+              <h2 class="text-sm md:text-base font-black uppercase tracking-wider text-slate-900 dark:text-white" id="kdpTitleBeo">
+                ಕ್ಷೇತ್ರ ಶಿಕ್ಷಣಾಧಿಕಾರಿಗಳ ಕಾರ್ಯಾಲಯ ರಾಯಚೂರು
+              </h2>
+              <div class="flex items-center justify-center gap-2 mt-1">
+                <span class="text-xs font-black text-indigo-700 dark:text-indigo-400 uppercase tracking-wide">K D P ಮಾಹಿತಿ :-</span>
+                
+                <!-- Month Dropdown -->
+                <select id="kdpMonthSelect" onchange="saveKdpHeaderField('kdp_month', this.value); updatePrintSpans();" class="bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-700 font-bold text-indigo-700 dark:text-indigo-300 text-xs rounded-lg px-2 py-0.5 outline-none cursor-pointer no-print shadow-sm">
+                  <option value="JANUARY ತಿಂಗಳು">JANUARY ತಿಂಗಳು</option>
+                  <option value="FEBRUARY ತಿಂಗಳು">FEBRUARY ತಿಂಗಳು</option>
+                  <option value="MARCH ತಿಂಗಳು">MARCH ತಿಂಗಳು</option>
+                  <option value="APRIL ತಿಂಗಳು">APRIL ತಿಂಗಳು</option>
+                  <option value="MAY ತಿಂಗಳು">MAY ತಿಂಗಳು</option>
+                  <option value="JUNE ತಿಂಗಳು">JUNE ತಿಂಗಳು</option>
+                  <option value="JULY ತಿಂಗಳು" selected>JULY ತಿಂಗಳು</option>
+                  <option value="AUGUST ತಿಂಗಳು">AUGUST ತಿಂಗಳು</option>
+                  <option value="SEPTEMBER ತಿಂಗಳು">SEPTEMBER ತಿಂಗಳು</option>
+                  <option value="OCTOBER ತಿಂಗಳು">OCTOBER ತಿಂಗಳು</option>
+                  <option value="NOVEMBER ತಿಂಗಳು">NOVEMBER ತಿಂಗಳು</option>
+                  <option value="DECEMBER ತಿಂಗಳು">DECEMBER ತಿಂಗಳು</option>
+                </select>
+
+                <!-- Year Dropdown -->
+                <select id="kdpYearSelect" onchange="saveKdpHeaderField('kdp_year', this.value); updatePrintSpans();" class="bg-white dark:bg-slate-800 border border-indigo-300 dark:border-indigo-700 font-bold text-indigo-700 dark:text-indigo-300 text-xs rounded-lg px-2 py-0.5 outline-none cursor-pointer no-print shadow-sm">
+                  <option value="2024">2024</option>
+                  <option value="2025" selected>2025</option>
+                  <option value="2026">2026</option>
+                  <option value="2027">2027</option>
+                  <option value="2028">2028</option>
+                </select>
+
+                <span id="printKdpMonthYear" class="print-only hidden font-black text-indigo-700 dark:text-indigo-400 text-xs">JULY ತಿಂಗಳು 2025</span>
+              </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold text-slate-700 dark:text-slate-300">
-              <div class="flex items-center gap-2">
-                <span>ಶಾಲೆಯ ಹೆಸರು:</span>
-                <input type="text" id="dbSchoolNameKn" oninput="saveDbHeaderField('school_name_kn', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="GHPS Marched">
-                <span id="printSchoolNameKn" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+
+            <!-- Detailed Metadata Grid / Table -->
+            <div class="text-[11px] font-bold divide-y divide-slate-200 dark:divide-slate-800">
+              <!-- Row 1: School Name & HM Details -->
+              <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
+                <div class="p-2 flex items-center gap-2">
+                  <span class="whitespace-nowrap font-black text-slate-700 dark:text-slate-300">ಶಾಲೆಯ ಹೆಸರು:-</span>
+                  <input type="text" id="kdpSchoolName" oninput="saveKdpHeaderField('kdp_school_name', this.value); updatePrintSpans();" class="flex-1 bg-transparent font-bold outline-none no-print text-slate-900 dark:text-white" placeholder="GHPS MARCHED" value="GHPS MARCHED">
+                  <span id="printKdpSchoolName" class="print-only hidden font-bold">GHPS MARCHED</span>
+                </div>
+                <div class="p-2 flex items-center gap-2">
+                  <span class="whitespace-nowrap font-black text-slate-700 dark:text-slate-300">ಮು.ಗು. ಹೆಸರು & ಮೊ.ಸಂಖ್ಯೆ:-</span>
+                  <input type="text" id="kdpHmDetails" oninput="saveKdpHeaderField('kdp_hm_details', this.value); updatePrintSpans();" class="flex-1 bg-transparent font-bold outline-none no-print text-slate-900 dark:text-white" placeholder="MALLAMMA 9611562503" value="MALLAMMA 9611562503">
+                  <span id="printKdpHmDetails" class="print-only hidden font-bold">MALLAMMA 9611562503</span>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span>ಶೈಕ್ಷಣಿಕ ವರ್ಷ:</span>
-                <input type="text" id="dbAcademicYear" oninput="saveDbHeaderField('school_academic_year', this.value); updatePrintSpans();" class="w-28 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white text-center no-print" placeholder="2026-27">
-                <span id="printAcademicYear" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+
+              <!-- Row 2: Staff Post Metrics -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-slate-200 dark:divide-slate-800">
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಮಂಜೂರಾದ ಹುದ್ದೆಗಳು:</span>
+                  <input type="number" id="kdpStaffSanctioned" min="0" oninput="recalculateKdpStaffVacant(); saveKdpHeaderField('kdp_staff_sanctioned', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-indigo-700 dark:text-indigo-400" value="11">
+                  <span id="printKdpStaffSanctioned" class="print-only hidden font-black text-indigo-700">11</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಕಾರ್ಯ ನಿರ್ವಹಿಸುತ್ತಿರುವ:</span>
+                  <input type="number" id="kdpStaffWorking" min="0" oninput="recalculateKdpStaffVacant(); saveKdpHeaderField('kdp_staff_working', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-emerald-700 dark:text-emerald-400" value="09">
+                  <span id="printKdpStaffWorking" class="print-only hidden font-black text-emerald-700">09</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಖಾಲಿ ಹುದ್ದೆಗಳ ಸಂಖ್ಯೆ:</span>
+                  <input type="number" id="kdpStaffVacant" min="0" oninput="saveKdpHeaderField('kdp_staff_vacant', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-rose-700 dark:text-rose-400" value="02">
+                  <span id="printKdpStaffVacant" class="print-only hidden font-black text-rose-700">02</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಅತಿಥಿ ಶಿಕ್ಷಕರ ಸಂಖ್ಯೆ:</span>
+                  <input type="number" id="kdpStaffGuest" min="0" oninput="saveKdpHeaderField('kdp_staff_guest', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-amber-700 dark:text-amber-400" value="02">
+                  <span id="printKdpStaffGuest" class="print-only hidden font-black text-amber-700">02</span>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span>ಕ್ಲಸ್ಟರ್:</span>
-                <input type="text" id="dbCluster" oninput="saveDbHeaderField('school_cluster', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
-                <span id="printCluster" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+
+              <!-- Row 3: Classrooms, Toilets, Water, Compound -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-slate-200 dark:divide-slate-800">
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಶಾಲಾ ಕೊಠಡಿಗಳು:</span>
+                  <input type="number" id="kdpRoomsTotal" min="0" oninput="saveKdpHeaderField('kdp_rooms_total', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print" value="10">
+                  <span id="printKdpRoomsTotal" class="print-only hidden font-black">10</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಶೌಚಾಲಯಗಳ ಸಂಖ್ಯೆ:</span>
+                  <input type="number" id="kdpToiletsTotal" min="0" oninput="saveKdpHeaderField('kdp_toilets_total', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print" value="04">
+                  <span id="printKdpToiletsTotal" class="print-only hidden font-black">04</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಕುಡಿಯುವ ನೀರು:</span>
+                  <select id="kdpWaterFacility" onchange="saveKdpHeaderField('kdp_water_facility', this.value); updatePrintSpans();" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black text-emerald-700 dark:text-emerald-400 outline-none no-print cursor-pointer">
+                    <option value="Yes" selected>Yes / ಇದೆ</option>
+                    <option value="No">No / ಇಲ್ಲ</option>
+                  </select>
+                  <span id="printKdpWaterFacility" class="print-only hidden font-black text-emerald-700">Yes</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಶಾಲಾ ಕಂಪೌಂಡ್:</span>
+                  <select id="kdpCompoundFacility" onchange="saveKdpHeaderField('kdp_compound_facility', this.value); updatePrintSpans();" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black text-emerald-700 dark:text-emerald-400 outline-none no-print cursor-pointer">
+                    <option value="Yes" selected>Yes / ಇದೆ</option>
+                    <option value="No">No / ಇಲ್ಲ</option>
+                  </select>
+                  <span id="printKdpCompoundFacility" class="print-only hidden font-black text-emerald-700">Yes</span>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span>ತಾಲೂಕು:</span>
-                <input type="text" id="dbTaluk" oninput="saveDbHeaderField('school_taluk', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
-                <span id="printTaluk" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+
+              <!-- Row 4: Good Condition Rooms & Usable Toilets, Electricity -->
+              <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಸುಸ್ಥಿತಿಯಲ್ಲಿ ಇರುವ ಕೊಠಡಿಗಳು:</span>
+                  <input type="number" id="kdpRoomsGood" min="0" oninput="saveKdpHeaderField('kdp_rooms_good', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print" value="10">
+                  <span id="printKdpRoomsGood" class="print-only hidden font-black">10</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಬಳಸಲು ಯೋಗ್ಯ ಶೌಚಾಲಯಗಳು:</span>
+                  <input type="number" id="kdpToiletsGood" min="0" oninput="saveKdpHeaderField('kdp_toilets_good', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print" value="04">
+                  <span id="printKdpToiletsGood" class="print-only hidden font-black">04</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ವಿದ್ಯುತ್ ವ್ಯವಸ್ಥೆ:</span>
+                  <select id="kdpElectricityFacility" onchange="saveKdpHeaderField('kdp_electricity_facility', this.value); updatePrintSpans();" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black text-emerald-700 dark:text-emerald-400 outline-none no-print cursor-pointer">
+                    <option value="Yes" selected>Yes / ಇದೆ</option>
+                    <option value="No">No / ಇಲ್ಲ</option>
+                  </select>
+                  <span id="printKdpElectricityFacility" class="print-only hidden font-black text-emerald-700">Yes</span>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <span>ಜಿಲ್ಲೆ:</span>
-                <input type="text" id="dbDistrict" oninput="saveDbHeaderField('school_district', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white no-print" placeholder="ಟೈಪ್ ಮಾಡಿ">
-                <span id="printDistrict" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span>ರಚನೆ:</span>
-                <input type="text" id="dbCreator" oninput="saveDbHeaderField('school_creator', this.value); updatePrintSpans();" class="flex-1 p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-1 focus:ring-indigo-500 outline-none text-slate-850 dark:text-white font-bold no-print" placeholder="ರಚನೆಕಾರರು">
-                <span id="printCreator" class="print-only hidden font-black text-slate-900 dark:text-white"></span>
+
+              <!-- Row 5: Needed Rooms, Needed Toilets, SDMC Details -->
+              <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಅವಶ್ಯವಿರುವ ಕೊಠಡಿ ಸಂಖ್ಯೆ:</span>
+                  <input type="number" id="kdpRoomsNeeded" min="0" oninput="saveKdpHeaderField('kdp_rooms_needed', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-amber-700 dark:text-amber-400" value="5">
+                  <span id="printKdpRoomsNeeded" class="print-only hidden font-black text-amber-700">5</span>
+                </div>
+                <div class="p-2 flex items-center justify-between gap-1">
+                  <span class="text-slate-700 dark:text-slate-300">ಅವಶ್ಯವಿರುವ ಶೌಚಾಲಯ ಸಂಖ್ಯೆ:</span>
+                  <input type="number" id="kdpToiletsNeeded" min="0" oninput="saveKdpHeaderField('kdp_toilets_needed', this.value); updatePrintSpans();" class="w-14 text-center bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-1 font-black outline-none no-print text-amber-700 dark:text-amber-400" value="5">
+                  <span id="printKdpToiletsNeeded" class="print-only hidden font-black text-amber-700">5</span>
+                </div>
+                <div class="p-2 flex items-center gap-2">
+                  <span class="whitespace-nowrap font-black text-slate-700 dark:text-slate-300">SDMC ಅಧ್ಯಕ್ಷರ ಹೆಸರು & ಮೊ.ಸಂ:-</span>
+                  <input type="text" id="kdpSdmcDetails" oninput="saveKdpHeaderField('kdp_sdmc_details', this.value); updatePrintSpans();" class="flex-1 bg-transparent font-bold outline-none no-print text-slate-900 dark:text-white" placeholder="YANKAPPA 7259972833" value="YANKAPPA 7259972833">
+                  <span id="printKdpSdmcDetails" class="print-only hidden font-bold">YANKAPPA 7259972833</span>
+                </div>
               </div>
             </div>
           </div>
@@ -871,33 +1002,139 @@
       if (sDist) sDist.value = district;
       if (sCreat) sCreat.value = creator;
       
+      window.loadKdpHeaderFields();
       window.updatePrintSpans();
     }
 
-    window.updatePrintSpans = function() {
-      const fields = ['dbSchoolNameKn', 'dbAcademicYear', 'dbCluster', 'dbTaluk', 'dbDistrict', 'dbCreator'];
-      fields.forEach(id => {
-        const inp = document.getElementById(id);
-        const span = document.getElementById('print' + id.replace('db', ''));
-        if (inp && span) {
-          if (id === 'dbAcademicYear') {
-            const today = new Date();
-            const monthsKn = ["ಜನವರಿ", "ಫೆಬ್ರವರಿ", "ಮಾರ್ಚ್", "ಏಪ್ರಿಲ್", "ಮೇ", "ಜೂನ್", "ಜುಲೈ", "ಆಗಸ್ಟ್", "ಸೆಪ್ಟೆಂಬರ್", "ಅಕ್ಟೋಬರ್", "ನವೆಂಬರ್", "ಡಿಸೆಂಬರ್"];
-            const monthKn = monthsKn[today.getMonth()];
-            const day = today.getDate();
-            const knDigits = {'1':'೧', '2':'೨', '3':'೩', '4':'೪', '5':'೫', '6':'೬', '7':'೭', '8':'೮', '9':'೯', '0':'೦'};
-            let dayKn = day.toString().split('').map(d => knDigits[d] || d).join('');
-            
-            span.innerText = `${inp.value || ''} (${monthKn} ${dayKn})`;
-          } else {
-            span.innerText = inp.value || '';
+    const kdpHeaderFields = [
+      { id: 'kdpMonthSelect', key: 'kdp_month', def: 'JULY ತಿಂಗಳು' },
+      { id: 'kdpYearSelect', key: 'kdp_year', def: '2025' },
+      { id: 'kdpSchoolName', key: 'kdp_school_name', def: 'GHPS MARCHED' },
+      { id: 'kdpHmDetails', key: 'kdp_hm_details', def: 'MALLAMMA 9611562503' },
+      { id: 'kdpStaffSanctioned', key: 'kdp_staff_sanctioned', def: '11' },
+      { id: 'kdpStaffWorking', key: 'kdp_staff_working', def: '09' },
+      { id: 'kdpStaffVacant', key: 'kdp_staff_vacant', def: '02' },
+      { id: 'kdpStaffGuest', key: 'kdp_staff_guest', def: '02' },
+      { id: 'kdpRoomsTotal', key: 'kdp_rooms_total', def: '10' },
+      { id: 'kdpToiletsTotal', key: 'kdp_toilets_total', def: '04' },
+      { id: 'kdpWaterFacility', key: 'kdp_water_facility', def: 'Yes' },
+      { id: 'kdpCompoundFacility', key: 'kdp_compound_facility', def: 'Yes' },
+      { id: 'kdpRoomsGood', key: 'kdp_rooms_good', def: '10' },
+      { id: 'kdpToiletsGood', key: 'kdp_toilets_good', def: '04' },
+      { id: 'kdpElectricityFacility', key: 'kdp_electricity_facility', def: 'Yes' },
+      { id: 'kdpRoomsNeeded', key: 'kdp_rooms_needed', def: '5' },
+      { id: 'kdpToiletsNeeded', key: 'kdp_toilets_needed', def: '5' },
+      { id: 'kdpSdmcDetails', key: 'kdp_sdmc_details', def: 'YANKAPPA 7259972833' }
+    ];
+
+    window.saveKdpHeaderField = function(key, val) {
+      localStorage.setItem(key, val);
+      window.updatePrintSpans();
+    };
+
+    window.recalculateKdpStaffVacant = function() {
+      const sanc = parseInt(document.getElementById('kdpStaffSanctioned')?.value || '0', 10);
+      const work = parseInt(document.getElementById('kdpStaffWorking')?.value || '0', 10);
+      const vacInput = document.getElementById('kdpStaffVacant');
+      if (vacInput && !isNaN(sanc) && !isNaN(work)) {
+        const vac = Math.max(0, sanc - work);
+        vacInput.value = vac;
+        localStorage.setItem('kdp_staff_vacant', vac);
+      }
+      window.updatePrintSpans();
+    };
+
+    window.autoPullTeacherStats = async function() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        
+        const loggedInSchool = session?.user?.user_metadata?.school_name || localStorage.getItem("school_name") || localStorage.getItem("school_name_kn");
+        if (loggedInSchool) {
+          const schEl = document.getElementById('kdpSchoolName');
+          if (schEl && (!schEl.value || schEl.value === 'GHPS MARCHED')) {
+            schEl.value = loggedInSchool;
+            localStorage.setItem('kdp_school_name', loggedInSchool);
           }
         }
+
+        if (!schoolId) return;
+
+        const { data: teachersList, error } = await supabaseClient
+          .from('teachers')
+          .select('id, teacher_name, name, designation, mobile_number, status')
+          .eq('school_id', schoolId);
+
+        if (!error && teachersList && teachersList.length > 0) {
+          const workingTeachers = teachersList.filter(t => (t.status || '').toLowerCase() !== 'resigned' && (t.status || '').toLowerCase() !== 'inactive');
+          const workingCount = workingTeachers.length;
+
+          const workEl = document.getElementById('kdpStaffWorking');
+          if (workEl) {
+            workEl.value = workingCount;
+            localStorage.setItem('kdp_staff_working', workingCount);
+          }
+
+          const storedGuest = localStorage.getItem('kdp_staff_guest');
+          const guestCount = storedGuest !== null ? parseInt(storedGuest, 10) : workingTeachers.filter(t => (t.designation || '').toLowerCase().includes('guest') || (t.designation || '').includes('ಅತಿಥಿ')).length;
+          const guestEl = document.getElementById('kdpStaffGuest');
+          if (guestEl && !isNaN(guestCount)) {
+            guestEl.value = guestCount;
+            localStorage.setItem('kdp_staff_guest', guestCount);
+          }
+
+          const hm = workingTeachers.find(t => {
+            const des = (t.designation || '').toLowerCase();
+            return des.includes('head') || des.includes('hm') || des.includes('ಮುಖ್ಯೋಪಾಧ್ಯಾಯ');
+          });
+
+          if (hm) {
+            const hmName = hm.teacher_name || hm.name || '';
+            const hmPhone = hm.mobile_number || '';
+            const hmStr = `${hmName} ${hmPhone}`.trim();
+            const hmEl = document.getElementById('kdpHmDetails');
+            if (hmEl && (!hmEl.value || hmEl.value === 'MALLAMMA 9611562503')) {
+              hmEl.value = hmStr;
+              localStorage.setItem('kdp_hm_details', hmStr);
+            }
+          }
+
+          recalculateKdpStaffVacant();
+        }
+      } catch (e) {
+        console.warn("Auto pull teacher stats failed:", e);
+      }
+    };
+
+    window.loadKdpHeaderFields = function() {
+      kdpHeaderFields.forEach(f => {
+        const el = document.getElementById(f.id);
+        const val = localStorage.getItem(f.key) || f.def;
+        if (el) el.value = val;
       });
-      const sName = document.getElementById('dbSchoolNameKn');
+      window.autoPullTeacherStats();
+      window.updatePrintSpans();
+    };
+
+    window.updatePrintSpans = function() {
+      const monthVal = document.getElementById('kdpMonthSelect')?.value || 'JULY ತಿಂಗಳು';
+      const yearVal = document.getElementById('kdpYearSelect')?.value || '2025';
+      const printMonthYear = document.getElementById('printKdpMonthYear');
+      if (printMonthYear) printMonthYear.innerText = `${monthVal} ${yearVal}`;
+
+      kdpHeaderFields.forEach(f => {
+        if (f.id === 'kdpMonthSelect' || f.id === 'kdpYearSelect') return;
+        const el = document.getElementById(f.id);
+        const printEl = document.getElementById('print' + f.id.charAt(0).toUpperCase() + f.id.slice(1));
+        if (el && printEl) {
+          printEl.innerText = el.value || f.def;
+        }
+      });
+
+      const sName = document.getElementById('kdpSchoolName') || document.getElementById('dbSchoolNameKn');
       const hSchool = document.getElementById('printHeaderSchoolName');
       if (sName && hSchool) {
-        hSchool.innerText = sName.value || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+        hSchool.innerText = sName.value || 'GHPS MARCHED';
       }
     };
 
@@ -2281,7 +2518,7 @@
         const tdClass = document.createElement('td');
         tdClass.className = 'py-2 px-2 border border-slate-300 dark:border-slate-700 font-bold';
         if (isClassRow || row.group !== 'grand') {
-          tdClass.innerHTML = `<span class="text-indigo-650 dark:text-indigo-400 hover:text-indigo-800 hover:underline cursor-pointer flex items-center justify-center gap-1"><i class="fa-solid fa-chart-simple text-[9px] opacity-60"></i> ${isClassRow ? row.code : row.label}</span>`;
+          tdClass.innerHTML = `<span class="text-indigo-650 dark:text-indigo-400 hover:text-indigo-800 hover:underline cursor-pointer flex items-center justify-center gap-1"><i class="fa-solid fa-chart-simple text-[9px] opacity-60 no-print"></i> ${isClassRow ? row.code : row.label}</span>`;
         } else {
           tdClass.innerText = row.label;
         }
