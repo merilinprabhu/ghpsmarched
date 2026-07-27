@@ -607,31 +607,6 @@
 
               </div>
 
-              <!-- Secret HM / Admin Security Controls for Deletion & Restoration -->
-              <div class="mt-6 p-4 border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 rounded-2xl space-y-4">
-                <h4 class="text-xs font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-2">
-                  <i class="fa-solid fa-user-shield text-rose-600"></i> HM & Admin ಡೆಲಿಟ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ ರಹಸ್ಯ ನಿಯಂತ್ರಣ / Delete & Restore Teacher Role Controls
-                </h4>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                  ಸಾಮಾನ್ಯ ಶಿಕ್ಷಕರಿಗೆ (Teacher Role) ಡೆಲಿಟ್ ಬಟನ್, ಮರುಸ್ಥಾಪನೆ ಬಟನ್ ಹಾಗೂ ಶಾಶ್ವತ ಡೆಲಿಟ್ ಬಟನ್‌ಗಳು ಕಾಣಿಸಬೇಕೇ ಅಥವಾ ಮರೆಯಾಗಬೇಕೇ ಎಂಬುದನ್ನು ಇಲ್ಲಿ ನಿಯಂತ್ರಿಸಿ. (HM, Admin, Developer ಗೆ ಸದಾ ಲಭ್ಯವಿರುತ್ತವೆ).
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold">
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ ಡೆಲಿಟ್ ಬಟನ್ ತೋರಿಸಿ (Show Delete to Teachers)</span>
-                    <input type="checkbox" id="adminAllowTeacherDelete" onchange="localStorage.setItem('admin_allow_teacher_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ Restore ಬಟನ್ ತೋರಿಸಿ (Show Restore to Teachers)</span>
-                    <input type="checkbox" id="adminAllowTeacherRestore" onchange="localStorage.setItem('admin_allow_teacher_restore', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ Permanent Delete ತೋರಿಸಿ</span>
-                    <input type="checkbox" id="adminAllowTeacherPermDelete" onchange="localStorage.setItem('admin_allow_teacher_perm_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                </div>
-              </div>
-
               <div class="pt-2">
                 <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
                   <i class="fa-solid fa-floppy-disk"></i> ಪ್ರವೇಶ ಅನುಮತಿ ಉಳಿಸಿ / Save Permissions
@@ -2086,19 +2061,6 @@
         showToast("Error", "ಸಿಬ್ಬಂದಿ ವಿವರ ಸೃಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
       }
     }
-
-    function initAdminDeletionControls() {
-      const delChk = document.getElementById('adminAllowTeacherDelete');
-      if (delChk) delChk.checked = localStorage.getItem('admin_allow_teacher_delete') === 'true';
-
-      const resChk = document.getElementById('adminAllowTeacherRestore');
-      if (resChk) resChk.checked = localStorage.getItem('admin_allow_teacher_restore') === 'true';
-
-      const permChk = document.getElementById('adminAllowTeacherPermDelete');
-      if (permChk) permChk.checked = localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
-    }
-
-    document.addEventListener('DOMContentLoaded', initAdminDeletionControls);
 
     async function handleLogout() {
       await supabaseClient.auth.signOut();

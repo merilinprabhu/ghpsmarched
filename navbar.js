@@ -118,14 +118,14 @@
     { name: "Dashboard", href: "dashboard.html", icon: "fa-chart-pie", color: "text-indigo-400" },
     { name: "Admin Panel", href: "admin.html", icon: "fa-shield-halved", color: "text-rose-400" },
     {
-      name: "Teachers & School",
+      name: "Teacher & School",
       icon: "fa-chalkboard-user",
       color: "text-emerald-400",
       items: [
-        { name: "Regular Teachers / ಖಾಯಂ ಶಿಕ್ಷಕರು", href: "teachers.html" },
-        { name: "Guest Teachers / ಅತಿಥಿ ಶಿಕ್ಷಕರು (KDP)", href: "GuestTeachers.html" },
-        { name: "SDMC Committee / SDMC ಸಮಿತಿ (KDP)", href: "SdmcManagement.html" },
-        { name: "About School & Facilities / ಶಾಲಾ ಸೌಲಭ್ಯಗಳು (KDP)", href: "AboutSchool.html" }
+        { name: "Teacher", href: "teachers.html" },
+        { name: "Guest Teacher", href: "GuestTeachers.html" },
+        { name: "SDMC Management", href: "SdmcManagement.html" },
+        { name: "About School", href: "AboutSchool.html" }
       ]
     },
     {
@@ -138,10 +138,9 @@
         { name: "View Students", href: "StudentList.html" },
         { name: "Update Details", href: "StudentUpdate.html" },
         { name: "Aadhar Update", href: "ApaarModule.html" },
-        { name: "Certificates Dashboard / ಪ್ರಮಾಣ ಪತ್ರಗಳ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", href: "certificates.html" },
-        { name: "Transfer Certificate / ಟಿಸಿ", href: "tc.html" },
-        { name: "Recycle Bin / ಮರುಬಳಕೆ ಬುಟ್ಟಿ 🗑️", href: "RecycleBin.html" },
-        { name: "Marks Card / ಅಂಕಪಟ್ಟಿ", href: "marks_card.html" }
+        { name: "Certificates / ಪ್ರಮಾಣ ಪತ್ರಗಳು (10 Types)", href: "certificates.html" },
+        { name: "Bin & TC Out Register / ಮರುಬಳಕೆ ಬುಟ್ಟಿ", href: "RecycleBin.html" },
+        { name: "SATS & Portal Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" }
       ]
     },
     {
@@ -627,6 +626,9 @@
       'TextbookDistribution.html': 'incentives',
       'UniformDistribution.html': 'incentives',
       'teachers.html': 'teachers_directory',
+      'GuestTeachers.html': 'teachers_directory',
+      'SdmcManagement.html': 'teachers_directory',
+      'AboutSchool.html': 'teachers_directory',
       'certificates.html': 'student_list',
       'tc.html': 'student_list',
       'marks_card.html': 'student_list'
@@ -1040,6 +1042,9 @@
               'TextbookDistribution.html': 'incentives',
               'UniformDistribution.html': 'incentives',
               'teachers.html': 'teachers_directory',
+              'GuestTeachers.html': 'teachers_directory',
+              'SdmcManagement.html': 'teachers_directory',
+              'AboutSchool.html': 'teachers_directory',
               'certificates.html': 'student_list',
               'tc.html': 'student_list',
               'marks_card.html': 'student_list'
@@ -1380,10 +1385,9 @@
     if (developerInput) {
       developerInput.value = localStorage.getItem('developer_name') || 'Antigravity AI';
     }
-
+    
     // Toggle student-specific UI sections
     const isTeachers = config.type === 'teachers';
-    const isWebpageOnly = config.useWebpageColumnsOnly === true || config.type === 'student_list';
     
     const studentNameModeCont = document.getElementById('pdStudentNameModeContainer');
     const parentsNameModeCont = document.getElementById('pdParentsNameModeContainer');
@@ -1392,12 +1396,12 @@
     const columnsTitle = document.getElementById('pdColumnsTitle');
     const sigTeacherLabel = document.getElementById('pdSigTeacherLabel');
     
-    if (studentNameModeCont) studentNameModeCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'flex';
-    if (parentsNameModeCont) parentsNameModeCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'grid';
-    if (genderCheckboxCont) genderCheckboxCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'flex';
-    if (otherCheckboxesCont) otherCheckboxesCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'grid';
+    if (studentNameModeCont) studentNameModeCont.style.display = isTeachers ? 'none' : 'flex';
+    if (parentsNameModeCont) parentsNameModeCont.style.display = isTeachers ? 'none' : 'grid';
+    if (genderCheckboxCont) genderCheckboxCont.style.display = isTeachers ? 'none' : 'flex';
+    if (otherCheckboxesCont) otherCheckboxesCont.style.display = isTeachers ? 'none' : 'grid';
     if (columnsTitle) {
-      columnsTitle.innerText = (isTeachers || isWebpageOnly) ? 'ವರದಿ ಬಣ್ಣ ಮತ್ತು ಕಾಲಮ್‌ಗಳು / Theme & Columns' : 'ವರದಿ ಬಣ್ಣ ಮತ್ತು ಕಾಲಮ್‌ಗಳು / Theme & Student Columns';
+      columnsTitle.innerText = isTeachers ? '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3 / Report Theme' : '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3\u0020\u0CAE\u0CA4\u0CCD\u0CA4\u0CC1\u0020\u0C95\u0CBE\u0CB2\u0CAE\u0CCD\u0C97\u0CB3\u0CC1 / Theme & Student Columns';
     }
     if (sigTeacherLabel) {
       sigTeacherLabel.innerText = isTeachers ? 'Teacher Signature' : 'Class Teacher';
@@ -1407,27 +1411,49 @@
     const table = document.getElementById(config.tableId);
     if (table) {
       const leaves = getTableLeafHeaders(table);
+      const skipKeywords = isTeachers 
+        ? ['sl.no', 'sl no', 'teacher id', 'teacher name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 't. id', 'teacher']
+        : ['sl.no', 'sl no', 'sts', 'student name', 'father name', 'mother name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0C82\u0CA6\u0CC6\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0CBE\u0CAF\u0CBF\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 'name', 'sex', 'gender', 'caste', '\u0CB2\u0CBF\u0C82\u0C97', '\u0C9C\u0CBE\u0CA4\u0CBF'];
+      
+      const grid = getTableHeadersGrid(table);
       const reportColsHtml = [];
-
+      
       leaves.forEach((th, cIdx) => {
-        if (th.classList.contains('no-print')) return;
-        const text = th.innerText.replace(/[\n\r]+/g, ' ').trim();
-        if (text) {
+        if (isTeachers && cIdx === 0) return;
+        // Find label path
+        const path = [];
+        for (let r = 0; r < grid.length; r++) {
+          const cell = grid[r][cIdx];
+          if (cell) {
+            const text = cell.innerText.trim();
+            if (text && !path.includes(text)) {
+              path.push(text);
+            }
+          }
+        }
+        const fullLabel = path.join(' - ');
+        const cleanText = fullLabel.toLowerCase();
+        
+        // Skip standard columns
+        const shouldSkip = skipKeywords.some(k => cleanText.includes(k));
+        
+        if (!shouldSkip) {
+          const displayName = path[path.length - 1]; // Just show the leaf name
+          const categoryName = path.slice(0, -1).join(' - ');
+          const displayLabel = categoryName ? `${categoryName} (${displayName})` : displayName;
+          
           reportColsHtml.push(`
             <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer hover:text-slate-900">
               <input type="checkbox" class="print-col-checkbox rounded border-slate-350 text-indigo-600 focus:ring-indigo-500" value="${cIdx}" checked>
-              <span class="truncate" title="${text}">${text}</span>
+              <span class="truncate" title="${displayLabel}">${displayLabel}</span>
             </label>
           `);
         }
       });
       
-      const container = document.getElementById('printDrawerReportColsContainer');
-      if (container) {
-        container.innerHTML = reportColsHtml.join('') || '<p class="text-[10px] text-slate-500 col-span-full text-center">No columns</p>';
-      }
+      document.getElementById('printDrawerReportColsContainer').innerHTML = reportColsHtml.join('') || '<p class="text-[10px] text-slate-500 col-span-full text-center">No other columns</p>';
     }
-
+    
     const drawer = document.getElementById('globalPrintSettingsDrawer');
     if (drawer) {
       drawer.classList.remove('hidden');
@@ -1612,354 +1638,262 @@
       }
       
       const printThead = document.createElement('thead');
-      const isWebpageOnly = config.useWebpageColumnsOnly === true || config.type === 'student_list';
-
-      if (isWebpageOnly) {
-        // 1:1 Webpage Column Mode: Print EXACTLY visible webpage table columns in 1:1 order
-        const theadTr = document.createElement('tr');
-        theadTr.style.cssText = gridStyle === 'classic' 
+      
+      // Columns configuration map
+      const printColIndices = [];
+      printColIndices.push({ type: 'sl' });
+      printColIndices.push({ type: 'sts' });
+      printColIndices.push({ type: 'name' });
+      
+      const isTeachers = config.type === 'teachers';
+      if (!isTeachers) {
+        if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
+        if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
+        if (printGender) printColIndices.push({ type: 'gender' });
+        if (printCaste) printColIndices.push({ type: 'caste' });
+        if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+      }
+      
+      checkedReportColIndices.forEach(idx => {
+        printColIndices.push({ type: 'report', idx: idx });
+      });
+      if (printRemarks) printColIndices.push({ type: 'remarks' });
+      
+      const numHeaderRows = originalTheadRows.length;
+      const originalHeaderGrid = getTableHeadersGrid(originalTable);
+      
+      const printHeadRows = [];
+      for (let r = 0; r < numHeaderRows; r++) {
+        const tr = document.createElement('tr');
+        tr.style.cssText = gridStyle === 'classic' 
           ? 'background-color: #f1f5f9; font-weight: bold; border-bottom: 1.5px solid #000000;'
           : 'background-color: #f8fafc; font-weight: bold;';
-
-        const originalThs = getTableLeafHeaders(originalTable);
-
-        checkedReportColIndices.forEach(cIdx => {
-          const originalTh = originalThs[cIdx];
-          if (originalTh && !originalTh.classList.contains('no-print')) {
+        printHeadRows.push(tr);
+      }
+      
+      const addedOriginalThs = new Set();
+      
+      printColIndices.forEach(col => {
+        if (col.type !== 'report') {
+          // Standard metadata column
+          const th = document.createElement('th');
+          th.style.cssText = getGridCellStyle(true);
+          th.setAttribute('rowspan', numHeaderRows);
+          
+          if (col.type === 'sl') {
+            th.innerText = 'Sl.No';
+          } else if (col.type === 'sts') {
+            th.innerText = isTeachers ? 'T. ID / Teacher ID' : 'SATS / STS No';
+            th.style.width = '80px';
+            th.style.minWidth = '80px';
+            th.style.maxWidth = '80px';
+          } else if (col.type === 'name') {
+            th.innerText = isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB9\u0CB5\u0CB8\u0CB0\u0CC1 / Teacher Name' : '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Student Name';
+            th.style.width = '125px';
+            th.style.minWidth = '125px';
+            th.style.maxWidth = '125px';
+          } else if (col.type === 'father') {
+            th.innerText = 'ತಂದೆಯ ಹೆಸರು / Father Name';
+            th.style.width = '100px';
+            th.style.minWidth = '100px';
+            th.style.maxWidth = '100px';
+          } else if (col.type === 'mother') {
+            th.innerText = 'ತಾಯಿಯ ಹೆಸರು / Mother Name';
+            th.style.width = '100px';
+            th.style.minWidth = '100px';
+            th.style.maxWidth = '100px';
+          } else if (col.type === 'gender') {
+            th.innerText = 'ಲಿಂಗ / Sex';
+          } else if (col.type === 'caste') {
+            th.innerText = 'ಜಾತಿ / Caste';
+          } else if (col.type === 'aadhaar') {
+            th.innerText = 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar No';
+          } else if (col.type === 'remarks') {
+            th.innerText = 'ಷರಾ / Remarks';
+          }
+          
+          printHeadRows[0].appendChild(th);
+        } else {
+          // Report column mapping from grid
+          for (let r = 0; r < numHeaderRows; r++) {
+            const originalTh = originalHeaderGrid[r] ? originalHeaderGrid[r][col.idx] : null;
+            if (!originalTh) continue;
+            if (addedOriginalThs.has(originalTh)) continue;
+            
+            addedOriginalThs.add(originalTh);
+            
             const thClone = originalTh.cloneNode(true);
             thClone.classList.remove('hidden');
-            const cleanText = originalTh.innerText.replace(/[\n\r]+/g, ' ').trim();
-            thClone.innerText = cleanText;
             thClone.style.cssText = getGridCellStyle(true);
-            theadTr.appendChild(thClone);
-          }
-        });
-        printThead.appendChild(theadTr);
-        printTable.appendChild(printThead);
-
-        // Build 1:1 Body
-        const printTbody = document.createElement('tbody');
-        const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
-
-        originalRows.forEach((origRow, rIdx) => {
-          const origCells = Array.from(origRow.children);
-          const tr = document.createElement('tr');
-          if (gridStyle === 'zebra') {
-            tr.style.backgroundColor = rIdx % 2 === 1 ? '#f8fafc' : '#ffffff';
-          }
-          tr.style.cssText += gridStyle === 'classic' ? 'border-bottom: 1px solid #000000;' : 'border-bottom: 1px solid #e2e8f0;';
-
-          checkedReportColIndices.forEach(cIdx => {
-            if (origCells[cIdx] && !origCells[cIdx].classList.contains('no-print')) {
-              const cellClone = origCells[cIdx].cloneNode(true);
-              cellClone.classList.remove('hidden');
-              cellClone.style.cssText = getGridCellStyle(false);
-
-              cellClone.querySelectorAll('input, select, button').forEach(el => {
-                const span = document.createElement('span');
-                span.style.fontWeight = 'bold';
-                if (el.tagName === 'SELECT') {
-                  span.innerText = el.value || '-';
-                } else if (el.type === 'checkbox') {
-                  span.innerText = el.checked ? '✓' : '✗';
-                } else {
-                  span.innerText = el.value !== undefined ? el.value : el.innerText;
-                }
-                if (el.parentNode) el.parentNode.replaceChild(span, el);
-              });
-
-              tr.appendChild(cellClone);
+            
+            const originalColspan = parseInt(originalTh.getAttribute('colspan')) || 1;
+            
+            // Find start column offset of this TH
+            let startC = col.idx;
+            while (startC > 0 && originalHeaderGrid[r][startC - 1] === originalTh) {
+              startC--;
             }
-          });
-
-          if (pageBreakFreq !== 'auto') {
-            const limit = parseInt(pageBreakFreq);
-            if (rIdx > 0 && rIdx % limit === 0) {
-              tr.style.pageBreakBefore = 'always';
-              tr.style.breakBefore = 'always';
+            
+            // Count how many checked column indices are within range of this header cell
+            let spanCount = 0;
+            checkedReportColIndices.forEach(idx => {
+              if (idx >= startC && idx < startC + originalColspan) {
+                spanCount++;
+              }
+            });
+            
+            if (spanCount > 0) {
+              thClone.setAttribute('colspan', spanCount);
+              printHeadRows[r].appendChild(thClone);
             }
           }
-
-          printTbody.appendChild(tr);
-        });
-        printTable.appendChild(printTbody);
-      } else {
-        // Columns configuration map (Legacy/Standard mode)
-        const printColIndices = [];
-        printColIndices.push({ type: 'sl' });
-        printColIndices.push({ type: 'sts' });
-        printColIndices.push({ type: 'name' });
+        }
+      });
+      
+      printHeadRows.forEach(row => printThead.appendChild(row));
+      printTable.appendChild(printThead);
+      
+      // Build Body
+      const printTbody = document.createElement('tbody');
+      const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
+      
+      originalRows.forEach((origRow, rIdx) => {
+        const sId = origRow.getAttribute('data-student-id');
+        const student = config.students ? config.students.find(s => s.id === sId) : null;
+        const origCells = Array.from(origRow.children);
         
-        const isTeachers = config.type === 'teachers';
-        if (!isTeachers) {
-          if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
-          if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
-          if (printGender) printColIndices.push({ type: 'gender' });
-          if (printCaste) printColIndices.push({ type: 'caste' });
-          if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+        const tr = document.createElement('tr');
+        if (gridStyle === 'zebra') {
+          if (rIdx % 2 === 1) {
+            tr.style.backgroundColor = '#f8fafc';
+          } else {
+            tr.style.backgroundColor = '#ffffff';
+          }
+        }
+        if (gridStyle === 'classic') {
+          tr.style.cssText = 'border-bottom: 1px solid #000000;';
+        } else {
+          tr.style.cssText = 'border-bottom: 1px solid #e2e8f0;';
         }
         
+        // Sl No
+        const tdSl = document.createElement('td');
+        tdSl.innerText = rIdx + 1;
+        tdSl.style.cssText = getGridCellStyle(false);
+        tr.appendChild(tdSl);
+        
+        // STS No (Mandatory)
+        const tdSts = document.createElement('td');
+        const stsVal = isTeachers ? (origCells[2] ? origCells[2].innerText.trim() : '-') : (student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-'));
+        tdSts.innerText = stsVal;
+        tdSts.style.cssText = getGridCellStyle(false) + ' font-family: monospace; font-weight: bold; width: 80px; min-width: 80px; max-width: 80px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+        tr.appendChild(tdSts);
+        
+        // Student Name
+        const tdName = document.createElement('td');
+        tdName.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 125px; min-width: 125px; max-width: 125px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+        if (isTeachers) {
+          tdName.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
+        } else {
+          if (student) {
+            const nameEn = (student.name_english || '').trim().toUpperCase();
+            const nameKn = (student.student_name || student.student_name_kn || '').trim();
+            if (printNameMode === 'both' && nameEn && nameKn) {
+              tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
+            } else if (printNameMode === 'kn') {
+              tdName.innerText = nameKn || nameEn || '-';
+            } else {
+              tdName.innerText = nameEn || nameKn || '-';
+            }
+          } else {
+            tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
+          }
+        }
+        tr.appendChild(tdName);
+        
+        // Father Name
+        if (!isTeachers && printFatherMode !== 'none') {
+          const tdFather = document.createElement('td');
+          tdFather.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+          if (student) {
+            const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+            const fatherKn = (student.father_name_kn || '').trim();
+            if (printFatherMode === 'both' && fatherEn && fatherKn) {
+              tdFather.innerHTML = `<div style="font-weight: bold;">${fatherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${fatherKn}</div>`;
+            } else if (printFatherMode === 'kn') {
+              tdFather.innerText = fatherKn || fatherEn || '-';
+            } else {
+              tdFather.innerText = fatherEn || fatherKn || '-';
+            }
+          } else {
+            tdFather.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
+          }
+          tr.appendChild(tdFather);
+        }
+        
+        // Mother Name
+        if (!isTeachers && printMotherMode !== 'none') {
+          const tdMother = document.createElement('td');
+          tdMother.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+          if (student) {
+            const motherEn = (student.mother_name_az || '').trim().toUpperCase();
+            const motherKn = (student.mother_name_kn || '').trim();
+            if (printMotherMode === 'both' && motherEn && motherKn) {
+              tdMother.innerHTML = `<div style="font-weight: bold;">${motherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${motherKn}</div>`;
+            } else if (printMotherMode === 'kn') {
+              tdMother.innerText = motherKn || motherEn || '-';
+            } else {
+              tdMother.innerText = motherEn || motherKn || '-';
+            }
+          } else {
+            tdMother.innerText = '-';
+          }
+          tr.appendChild(tdMother);
+        }
+        
+        // Gender
+        if (!isTeachers && printGender) {
+          const tdGen = document.createElement('td');
+          tdGen.innerText = student ? (student.gender || '-') : '-';
+          tdGen.style.cssText = getGridCellStyle(false);
+          tr.appendChild(tdGen);
+        }
+        
+        // Caste
+        if (!isTeachers && printCaste) {
+          const tdCaste = document.createElement('td');
+          tdCaste.innerText = student ? (student.caste || '-') : '-';
+          tdCaste.style.cssText = getGridCellStyle(false);
+          tr.appendChild(tdCaste);
+        }
+        
+        // Aadhaar
+        if (!isTeachers && printAadhaar) {
+          const tdAadhaar = document.createElement('td');
+          tdAadhaar.innerText = student ? (student.aadhaar || student.student_aadhaar || '-') : '-';
+          tdAadhaar.style.cssText = getGridCellStyle(false) + ' font-family: monospace;';
+          tr.appendChild(tdAadhaar);
+        }
+        
+        // Report Columns Cells
         checkedReportColIndices.forEach(idx => {
-          printColIndices.push({ type: 'report', idx: idx });
-        });
-        if (printRemarks) printColIndices.push({ type: 'remarks' });
-        
-        const numHeaderRows = originalTheadRows.length;
-        const originalHeaderGrid = getTableHeadersGrid(originalTable);
-        
-        const printHeadRows = [];
-        for (let r = 0; r < numHeaderRows; r++) {
-          const tr = document.createElement('tr');
-          tr.style.cssText = gridStyle === 'classic' 
-            ? 'background-color: #f1f5f9; font-weight: bold; border-bottom: 1.5px solid #000000;'
-            : 'background-color: #f8fafc; font-weight: bold;';
-          printHeadRows.push(tr);
-        }
-        
-        const addedOriginalThs = new Set();
-        
-        printColIndices.forEach(col => {
-          if (col.type !== 'report') {
-            const th = document.createElement('th');
-            th.style.cssText = getGridCellStyle(true);
-            th.setAttribute('rowspan', numHeaderRows);
+          if (origCells[idx]) {
+            const cellClone = origCells[idx].cloneNode(true);
+            cellClone.classList.remove('hidden');
+            cellClone.style.cssText = getGridCellStyle(false);
             
-            if (col.type === 'sl') {
-              th.innerText = 'Sl.No';
-            } else if (col.type === 'sts') {
-              th.innerText = isTeachers ? 'T. ID / Teacher ID' : 'SATS / STS No';
-              th.style.width = '80px';
-              th.style.minWidth = '80px';
-              th.style.maxWidth = '80px';
-            } else if (col.type === 'name') {
-              th.innerText = isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB9\u0CB5\u0CB8\u0CB0\u0CC1 / Teacher Name' : '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Student Name';
-              th.style.width = '125px';
-              th.style.minWidth = '125px';
-              th.style.maxWidth = '125px';
-            } else if (col.type === 'father') {
-              th.innerText = 'ತಂದೆಯ ಹೆಸರು / Father Name';
-              th.style.width = '100px';
-              th.style.minWidth = '100px';
-              th.style.maxWidth = '100px';
-            } else if (col.type === 'mother') {
-              th.innerText = 'ತಾಯಿಯ ಹೆಸರು / Mother Name';
-              th.style.width = '100px';
-              th.style.minWidth = '100px';
-              th.style.maxWidth = '100px';
-            } else if (col.type === 'gender') {
-              th.innerText = 'ಲಿಂಗ / Sex';
-            } else if (col.type === 'caste') {
-              th.innerText = 'ಜಾತಿ / Caste';
-            } else if (col.type === 'aadhaar') {
-              th.innerText = 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar No';
-            } else if (col.type === 'remarks') {
-              th.innerText = 'ಷರಾ / Remarks';
-            }
-            
-            printHeadRows[0].appendChild(th);
-          } else {
-            for (let r = 0; r < numHeaderRows; r++) {
-              const originalTh = originalHeaderGrid[r] ? originalHeaderGrid[r][col.idx] : null;
-              if (!originalTh) continue;
-              if (addedOriginalThs.has(originalTh)) continue;
-              
-              addedOriginalThs.add(originalTh);
-              
-              const thClone = originalTh.cloneNode(true);
-              thClone.classList.remove('hidden');
-              thClone.style.cssText = getGridCellStyle(true);
-              
-              const originalColspan = parseInt(originalTh.getAttribute('colspan')) || 1;
-              
-              let startC = col.idx;
-              while (startC > 0 && originalHeaderGrid[r][startC - 1] === originalTh) {
-                startC--;
-              }
-              
-              let spanCount = 0;
-              checkedReportColIndices.forEach(idx => {
-                if (idx >= startC && idx < startC + originalColspan) {
-                  spanCount++;
-                }
-              });
-              
-              if (spanCount > 0) {
-                thClone.setAttribute('colspan', spanCount);
-                printHeadRows[r].appendChild(thClone);
-              }
-            }
-          }
-        });
-        
-        printHeadRows.forEach(row => printThead.appendChild(row));
-        printTable.appendChild(printThead);
-        
-        // Build Body
-        const printTbody = document.createElement('tbody');
-        const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
-        
-        originalRows.forEach((origRow, rIdx) => {
-          const sId = origRow.getAttribute('data-student-id');
-          const student = config.students ? config.students.find(s => s.id === sId) : null;
-          const origCells = Array.from(origRow.children);
-          
-          const tr = document.createElement('tr');
-          if (gridStyle === 'zebra') {
-            if (rIdx % 2 === 1) {
-              tr.style.backgroundColor = '#f8fafc';
-            } else {
-              tr.style.backgroundColor = '#ffffff';
-            }
-          }
-          if (gridStyle === 'classic') {
-            tr.style.cssText = 'border-bottom: 1px solid #000000;';
-          } else {
-            tr.style.cssText = 'border-bottom: 1px solid #e2e8f0;';
-          }
-          
-          // Sl No
-          const tdSl = document.createElement('td');
-          tdSl.innerText = rIdx + 1;
-          tdSl.style.cssText = getGridCellStyle(false);
-          tr.appendChild(tdSl);
-          
-          // STS No (Mandatory)
-          const tdSts = document.createElement('td');
-          const stsVal = isTeachers ? (origCells[2] ? origCells[2].innerText.trim() : '-') : (student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-'));
-          tdSts.innerText = stsVal;
-          tdSts.style.cssText = getGridCellStyle(false) + ' font-family: monospace; font-weight: bold; width: 80px; min-width: 80px; max-width: 80px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-          tr.appendChild(tdSts);
-          
-          // Student Name
-          const tdName = document.createElement('td');
-          tdName.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 125px; min-width: 125px; max-width: 125px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-          if (isTeachers) {
-            tdName.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
-          } else {
-            if (student) {
-              const nameEn = (student.name_english || '').trim().toUpperCase();
-              const nameKn = (student.student_name || student.student_name_kn || '').trim();
-              if (printNameMode === 'both' && nameEn && nameKn) {
-                tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
-              } else if (printNameMode === 'kn') {
-                tdName.innerText = nameKn || nameEn || '-';
+            // Replace inputs/selects in cloned cells
+            cellClone.querySelectorAll('input, select, button').forEach(el => {
+              const span = document.createElement('span');
+              span.style.fontWeight = 'bold';
+              if (el.tagName === 'SELECT') {
+                span.innerText = el.value || '-';
+              } else if (el.type === 'checkbox') {
+                span.innerText = el.checked ? '✓' : '✗';
               } else {
-                tdName.innerText = nameEn || nameKn || '-';
+                span.innerText = el.value !== undefined ? el.value : el.innerText;
               }
-            } else {
-              tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
-            }
-          }
-          tr.appendChild(tdName);
-          
-          // Father Name
-          if (!isTeachers && printFatherMode !== 'none') {
-            const tdFather = document.createElement('td');
-            tdFather.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-            if (student) {
-              const fatherEn = (student.father_name_az || '').trim().toUpperCase();
-              const fatherKn = (student.father_name_kn || '').trim();
-              if (printFatherMode === 'both' && fatherEn && fatherKn) {
-                tdFather.innerHTML = `<div style="font-weight: bold;">${fatherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${fatherKn}</div>`;
-              } else if (printFatherMode === 'kn') {
-                tdFather.innerText = fatherKn || fatherEn || '-';
-              } else {
-                tdFather.innerText = fatherEn || fatherKn || '-';
-              }
-            } else {
-              tdFather.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
-            }
-            tr.appendChild(tdFather);
-          }
-          
-          // Mother Name
-          if (!isTeachers && printMotherMode !== 'none') {
-            const tdMother = document.createElement('td');
-            tdMother.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-            if (student) {
-              const motherEn = (student.mother_name_az || '').trim().toUpperCase();
-              const motherKn = (student.mother_name_kn || '').trim();
-              if (printMotherMode === 'both' && motherEn && motherKn) {
-                tdMother.innerHTML = `<div style="font-weight: bold;">${motherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${motherKn}</div>`;
-              } else if (printMotherMode === 'kn') {
-                tdMother.innerText = motherKn || motherEn || '-';
-              } else {
-                tdMother.innerText = motherEn || motherKn || '-';
-              }
-            } else {
-              tdMother.innerText = '-';
-            }
-            tr.appendChild(tdMother);
-          }
-          
-          // Gender
-          if (!isTeachers && printGender) {
-            const tdGen = document.createElement('td');
-            tdGen.innerText = student ? (student.gender || '-') : '-';
-            tdGen.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdGen);
-          }
-          
-          // Caste
-          if (!isTeachers && printCaste) {
-            const tdCaste = document.createElement('td');
-            tdCaste.innerText = student ? (student.caste || '-') : '-';
-            tdCaste.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdCaste);
-          }
-          
-          // Aadhaar
-          if (!isTeachers && printAadhaar) {
-            const tdAadhaar = document.createElement('td');
-            tdAadhaar.innerText = student ? (student.aadhaar || student.student_aadhaar || '-') : '-';
-            tdAadhaar.style.cssText = getGridCellStyle(false) + ' font-family: monospace;';
-            tr.appendChild(tdAadhaar);
-          }
-          
-          // Report Columns Cells
-          checkedReportColIndices.forEach(idx => {
-            if (origCells[idx]) {
-              const cellClone = origCells[idx].cloneNode(true);
-              cellClone.classList.remove('hidden');
-              cellClone.style.cssText = getGridCellStyle(false);
-              
-              // Replace inputs/selects in cloned cells
-              cellClone.querySelectorAll('input, select, button').forEach(el => {
-                const span = document.createElement('span');
-                span.style.fontWeight = 'bold';
-                if (el.tagName === 'SELECT') {
-                  span.innerText = el.value || '-';
-                } else if (el.type === 'checkbox') {
-                  span.innerText = el.checked ? '✓' : '✗';
-                } else {
-                  span.innerText = el.value !== undefined ? el.value : el.innerText;
-                }
-                el.parentNode.replaceChild(span, el);
-              });
-              
-              tr.appendChild(cellClone);
-            }
-          });
-          
-          // Remarks
-          if (printRemarks) {
-            const tdRem = document.createElement('td');
-            tdRem.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdRem);
-          }
-          
-          if (pageBreakFreq !== 'auto') {
-            const limit = parseInt(pageBreakFreq);
-            if (rIdx > 0 && rIdx % limit === 0) {
-              tr.style.pageBreakBefore = 'always';
-              tr.style.breakBefore = 'always';
-            }
-          }
-          
-          printTbody.appendChild(tr);
-        });
-        printTable.appendChild(printTbody);
-      }ld(span, el);
+              el.parentNode.replaceChild(span, el);
             });
             
             tr.appendChild(cellClone);
@@ -1984,7 +1918,6 @@
         printTbody.appendChild(tr);
       });
       printTable.appendChild(printTbody);
-    }
       
       // Update printable Area
       const printArea = document.getElementById('printArea');

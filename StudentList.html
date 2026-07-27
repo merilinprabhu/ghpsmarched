@@ -38,13 +38,17 @@
 
 
     @media print {
-      body > *:not(#printArea) { display: none !important; }
-      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
-      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
-      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
-      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+      body { background: white !important; color: black !important; }
+      #standalone-header, aside, footer, #toast-notif, #toast, .no-print, button { display: none !important; }
+      main { display: block !important; padding: 0 !important; margin: 0 !important; }
+      table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; color: black !important; border: 1px solid black !important; }
+      th, td { border: 1px solid black !important; padding: 6px 4px !important; color: black !important; }
+      th { background-color: #000000 !important; color: white !important; font-weight: bold !important; }
+      .header { text-align: center !important; margin-bottom: 25px !important; border-bottom: 2px solid black !important; padding-bottom: 10px !important; }
+      .header h1 { font-size: 16px !important; font-weight: bold !important; margin: 0 !important; }
+      .header h2 { font-size: 12px !important; margin: 5px 0 0 0 !important; }
+      .meta { display: flex !important; justify-content: space-between !important; font-size: 10px !important; font-weight: bold !important; margin-top: 10px !important; }
+      .footer-signature { display: flex !important; justify-content: space-between !important; margin-top: 50px !important; font-weight: bold !important; font-size: 10px !important; }
     }
   
         
@@ -186,22 +190,13 @@
       <main class="flex-grow bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit space-y-5 min-w-0">
         
         <!-- Section Title Row -->
-        <div class="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="mb-2 flex items-center justify-between no-print">
           <div>
             <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
               <i class="fa-solid fa-graduation-cap text-sky-500"></i>
               <span>ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / List of All Admitted Students</span>
             </h2>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ಶಾಲೆಯ ಅಧಿಕೃತ ತರಗತಿವಾರು ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಪಟ್ಟಿ.</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <!-- DB Clean Up Button (only visible to admin/developer) -->
-            <button id="btn-db-cleanup" onclick="runDatabaseCleanUp()" class="hidden inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-750 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm border-0 cursor-pointer">
-              <i class="fa-solid fa-wand-magic-sparkles"></i> ಡೇಟಾಬೇಸ್ ಸರಿಪಡಿಸಿ / Fix DB Data
-            </button>
-            <a href="NewAdmission.html" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm">
-              <i class="fa-solid fa-user-plus"></i> ಹೊಸ ಪ್ರವೇಶಾತಿ ಅರ್ಜಿ / New Admission Form
-            </a>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">ಶಾಲೆಯ ಅಧಿಕೃತ ತರಗತಿವಾರು ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಪಟ್ಟಿ.</p>
           </div>
         </div>
 
@@ -227,191 +222,211 @@
           </button>
         </div>
 
-        <!-- Search, Filter & Actions Row -->
-        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 no-print">
-          <!-- Left: Search & Filter Panel -->
-          <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            <!-- Text Search -->
-            <div class="relative w-full sm:w-60">
-              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-              </span>
-              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, STS, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-900 text-slate-750 dark:text-slate-200 font-semibold shadow-sm">
+        <!-- Compact Mini Statistics Cards (SC, ST, OBC, OTH, etc.) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-4 no-print">
+          <!-- Total -->
+          <div class="bg-gradient-to-r from-sky-50 to-sky-100/60 dark:from-slate-800 dark:to-slate-850 border border-sky-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-sky-600 dark:text-sky-400 uppercase tracking-wider">ಒಟ್ಟು / Total</p>
+              <h4 id="total-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
             </div>
-
-            <!-- Class Filter -->
-            <div class="w-full sm:w-32">
-              <select id="class-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- All Classes --</option>
-                <option value="LKG">LKG/KG1</option>
-                <option value="UKG">UKG/KG2</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-              </select>
-            </div>
-
-            <!-- Gender Filter -->
-            <div class="w-full sm:w-32">
-              <select id="gender-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- All Genders --</option>
-                <option value="Boy">Boy / ಗಂಡು</option>
-                <option value="Girl">Girl / ಹೆಣ್ಣು</option>
-              </select>
-            </div>
-
-            <!-- Religion Filter -->
-            <div class="w-full sm:w-32">
-              <select id="religion-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- Religions --</option>
-              </select>
-            </div>
-
-            <!-- Caste Filter -->
-            <div class="w-full sm:w-32">
-              <select id="caste-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- Castes --</option>
-              </select>
-            </div>
-
-            <!-- Medium Filter -->
-            <div class="w-full sm:w-36">
-              <select id="medium-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- All Mediums --</option>
-                <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
-                <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
-              </select>
-            </div>
-
-            <!-- Category Filter -->
-            <div class="w-full sm:w-40">
-              <select id="category-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="">-- All Categories --</option>
-                <option value="SC">SC</option>
-                <option value="ST">ST</option>
-                <option value="C1">Category-1</option>
-                <option value="2A">2A</option>
-                <option value="2B">2B</option>
-                <option value="3A">3A</option>
-                <option value="3B">3B</option>
-                <option value="MINORITY">Minority / ಅಲ್ಪಸಂಖ್ಯಾತರು</option>
-                <option value="OBC_GENERAL">OBC General</option>
-                <option value="OTHERS">General/Others</option>
-              </select>
-            </div>
-
-            <!-- Status Filter -->
-            <div class="w-full sm:w-40">
-              <select id="status-filter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-                <option value="Admitted">Admitted / ದಾಖಲಾದ</option>
-                <option value="Pending">Pending / ಬಾಕಿ</option>
-                <option value="All">-- All Statuses --</option>
-              </select>
+            <div class="w-6 h-6 bg-sky-500 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-users"></i>
             </div>
           </div>
 
-          <!-- Right: Action Panel -->
-          <div class="flex flex-wrap items-center gap-1.5 w-full xl:w-auto xl:justify-end border-t xl:border-t-0 pt-3 xl:pt-0 border-slate-200 dark:border-slate-700/60">
-            <!-- Download CSV Template -->
-            <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-805 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-arrow-down text-indigo-650 dark:text-indigo-400 text-base md:text-lg"></i>
-            </button>
-            <!-- Import CSV -->
-            <input type="file" id="csv-file-input" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleCSVFileSelect(this)">
-            <button onclick="triggerCSVImport()" title="ಎಕ್ಸೆಲ್/ಸಿಎಸ್ವಿ ಆಮದು / Import Excel & CSV" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-import text-amber-600 dark:text-amber-500 text-base md:text-lg"></i>
-            </button>
-            <!-- Export CSV -->
-            <button onclick="exportToCSV()" title="ಸಿಎಸ್ವಿ ರಫ್ತು / Export CSV" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-csv text-teal-600 dark:text-teal-500 text-base md:text-lg"></i>
-            </button>
-            <!-- Manage Columns -->
-            <button onclick="openManageColumnsModal()" title="ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400 text-base md:text-lg"></i>
-            </button>
-            
-            <!-- Inline Edit Toggle -->
-            <button id="btn-toggle-inline-edit" onclick="toggleInlineEditMode()" title="ಇನ್-ಲೈನ್ ಎಡಿಟಿಂಗ್ / Inline Edit Mode" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-pen-to-square text-slate-550 dark:text-slate-400 text-base md:text-lg"></i>
-            </button>
-            
-            <!-- Visual Divider -->
-            <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+          <!-- Boys -->
+          <div class="bg-gradient-to-r from-indigo-50 to-indigo-100/60 dark:from-slate-800 dark:to-slate-850 border border-indigo-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">ಗಂಡು / Boys</p>
+              <h4 id="boys-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-mars"></i>
+            </div>
+          </div>
 
-            <!-- Excel Export -->
-            <button onclick="exportToExcel()" title="ಎಕ್ಸೆಲ್ ರಫ್ತು / Export Excel" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-file-excel text-emerald-600 dark:text-emerald-500 text-base md:text-lg"></i>
-            </button>
+          <!-- Girls -->
+          <div class="bg-gradient-to-r from-pink-50 to-pink-100/60 dark:from-slate-800 dark:to-slate-850 border border-pink-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-pink-600 dark:text-pink-400 uppercase tracking-wider">ಹೆಣ್ಣು / Girls</p>
+              <h4 id="girls-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-pink-500 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-venus"></i>
+            </div>
+          </div>
 
-            <!-- Print -->
-            <button onclick="printStudentList()" title="ಪ್ರಿಂಟ್ / Print" class="bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-750 p-2 rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 cursor-pointer flex items-center justify-center">
-              <i class="fa-solid fa-print text-slate-600 dark:text-slate-400 text-base md:text-lg"></i>
-            </button>
+          <!-- SC -->
+          <div class="bg-gradient-to-r from-purple-50 to-purple-100/60 dark:from-slate-800 dark:to-slate-850 border border-purple-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-purple-600 dark:text-purple-400 uppercase tracking-wider">SC (ಪ.ಜಾ)</p>
+              <h4 id="sc-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-purple-600 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+          </div>
+
+          <!-- ST -->
+          <div class="bg-gradient-to-r from-emerald-50 to-emerald-100/60 dark:from-slate-800 dark:to-slate-850 border border-emerald-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">ST (ಪ.ಪಂ)</p>
+              <h4 id="st-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-emerald-600 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-people-group"></i>
+            </div>
+          </div>
+
+          <!-- OBC -->
+          <div class="bg-gradient-to-r from-amber-50 to-amber-100/60 dark:from-slate-800 dark:to-slate-850 border border-amber-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">OBC/C1</p>
+              <h4 id="obc-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-amber-500 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+          </div>
+
+          <!-- OTH / Minority -->
+          <div class="bg-gradient-to-r from-teal-50 to-teal-100/60 dark:from-slate-800 dark:to-slate-850 border border-teal-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-teal-600 dark:text-teal-400 uppercase tracking-wider">OTH / Min</p>
+              <h4 id="oth-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-teal-600 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-circle-nodes"></i>
+            </div>
+          </div>
+
+          <!-- CWSN -->
+          <div class="bg-gradient-to-r from-rose-50 to-rose-100/60 dark:from-slate-800 dark:to-slate-850 border border-rose-200/60 dark:border-slate-700/60 px-3 py-2 rounded-xl flex items-center justify-between shadow-sm hover:shadow transition">
+            <div>
+              <p class="text-[9px] font-extrabold text-rose-600 dark:text-rose-400 uppercase tracking-wider">CWSN</p>
+              <h4 id="cwsn-count" class="text-sm font-black text-slate-800 dark:text-slate-100">0</h4>
+            </div>
+            <div class="w-6 h-6 bg-rose-500 text-white rounded-lg flex items-center justify-center text-[10px] shadow-sm">
+              <i class="fa-solid fa-wheelchair"></i>
+            </div>
           </div>
         </div>
 
-        <!-- 4 Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 no-print">
-          <!-- Card 1 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
-              <i class="fa-solid fa-file-invoice"></i>
+        <!-- Search, Filter & Actions Bar (Spacious Layout) -->
+        <div class="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 space-y-3 no-print mb-4">
+          <!-- Row 1: Search and Primary Filters -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <!-- Text Search -->
+            <div class="relative flex-1 min-w-[220px]">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+              </span>
+              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="ಹುಡುಕಿ / Search Name, STS, Father, Aadhaar..." class="w-full pl-9 pr-8 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white dark:bg-slate-900 text-slate-750 dark:text-slate-200 font-semibold shadow-sm">
+              <button type="button" onclick="clearRosterSearch()" id="clear-search-btn" class="hidden absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-0 bg-transparent cursor-pointer">
+                <i class="fa-solid fa-xmark text-xs"></i>
+              </button>
             </div>
-            <div class="w-12 h-12 bg-gradient-to-tr from-sky-500 to-sky-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-sky-200 dark:shadow-none z-10">
-              <i class="fa-solid fa-file-invoice"></i>
-            </div>
-            <div class="z-10">
-              <p class="text-[10px] font-bold text-sky-600 dark:text-sky-400 uppercase tracking-wider">ಒಟ್ಟು ಬಾಕಿ ಅರ್ಜಿಗಳು / Total Pending</p>
-              <h3 id="total-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
-            </div>
+
+            <!-- Class Filter -->
+            <select id="class-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- All Classes --</option>
+              <option value="LKG">LKG/KG1</option>
+              <option value="UKG">UKG/KG2</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+
+            <!-- Gender Filter -->
+            <select id="gender-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- All Genders --</option>
+              <option value="Boy">Boy / ಗಂಡು</option>
+              <option value="Girl">Girl / ಹೆಣ್ಣು</option>
+            </select>
+
+            <!-- Status Filter -->
+            <select id="status-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="All" selected>All / ಎಲ್ಲ ವಿದ್ಯಾರ್ಥಿಗಳು</option>
+              <option value="Admitted">Admitted / ದಾಖಲಾದ</option>
+              <option value="Pending">Pending / ಬಾಕಿ</option>
+            </select>
+
+            <!-- Category Filter -->
+            <select id="category-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- All Categories --</option>
+              <option value="SC">SC</option>
+              <option value="ST">ST</option>
+              <option value="C1">Category-1</option>
+              <option value="2A">2A</option>
+              <option value="2B">2B</option>
+              <option value="3A">3A</option>
+              <option value="3B">3B</option>
+              <option value="MINORITY">Minority / ಅಲ್ಪಸಂಖ್ಯಾತರು</option>
+              <option value="OBC_GENERAL">OBC General</option>
+              <option value="OTHERS">General/Others</option>
+            </select>
+
+            <!-- Religion Filter -->
+            <select id="religion-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- Religions --</option>
+            </select>
+
+            <!-- Caste Filter -->
+            <select id="caste-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- Castes --</option>
+            </select>
+
+            <!-- Medium Filter -->
+            <select id="medium-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
+              <option value="">-- Mediums --</option>
+              <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
+              <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
+            </select>
           </div>
-          
-          <!-- Card 2 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-indigo-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="absolute -right-4 -bottom-4 text-indigo-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
-              <i class="fa-solid fa-mars"></i>
+
+          <!-- Row 2: Tool Action Buttons (Spacious & Distinct) -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 dark:border-slate-700/60 pt-3">
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Manage Columns -->
+              <button onclick="openManageColumnsModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders text-xs"></i> ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns
+              </button>
+
+              <!-- Excel Export -->
+              <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-file-excel text-xs"></i> Export Excel
+              </button>
+
+              <!-- Import CSV -->
+              <input type="file" id="csv-file-input" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleCSVFileSelect(this)">
+              <button onclick="triggerCSVImport()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-file-import text-xs"></i> Import Data
+              </button>
+
+              <!-- CSV Template -->
+              <button onclick="downloadCSVTemplate()" title="Download Template" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold text-xs py-2 px-3 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-file-arrow-down text-xs"></i> Template
+              </button>
             </div>
-            <div class="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-indigo-200 dark:shadow-none z-10">
-              <i class="fa-solid fa-mars"></i>
-            </div>
-            <div class="z-10">
-              <p class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">ಗಂಡು ಮಕ್ಕಳ ಅರ್ಜಿ / Boys Applications</p>
-              <h3 id="boys-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
-            </div>
-          </div>
-          
-          <!-- Card 3 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-pink-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-pink-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="absolute -right-4 -bottom-4 text-pink-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
-              <i class="fa-solid fa-venus"></i>
-            </div>
-            <div class="w-12 h-12 bg-gradient-to-tr from-pink-600 to-pink-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-pink-200 dark:shadow-none z-10">
-              <i class="fa-solid fa-venus"></i>
-            </div>
-            <div class="z-10">
-              <p class="text-[10px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider">ಹೆಣ್ಣು ಮಕ್ಕಳ ಅರ್ಜಿ / Girls Applications</p>
-              <h3 id="girls-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
-            </div>
-          </div>
-          
-          <!-- Card 4 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-amber-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-amber-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="absolute -right-4 -bottom-4 text-amber-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
-              <i class="fa-solid fa-wheelchair"></i>
-            </div>
-            <div class="w-12 h-12 bg-gradient-to-tr from-amber-600 to-amber-400 text-white rounded-xl flex items-center justify-center text-xl shadow-md shadow-amber-200 dark:shadow-none z-10">
-              <i class="fa-solid fa-wheelchair"></i>
-            </div>
-            <div class="z-10">
-              <p class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">ವಿಶೇಷ ಅಗತ್ಯವುಳ್ಳ ಮಕ್ಕಳು / CWSN</p>
-              <h3 id="cwsn-count" class="text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight mt-1">0</h3>
+
+            <div class="flex items-center gap-2">
+              <!-- Inline Edit Toggle -->
+              <button id="btn-toggle-inline-edit" onclick="toggleInlineEditMode()" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs py-2 px-3.5 rounded-xl shadow-sm transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-pen-to-square text-sky-500 text-xs"></i> Inline Edit
+              </button>
+
+              <!-- Print Roster -->
+              <button onclick="printStudentList()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-print text-xs"></i> Print List
+              </button>
             </div>
           </div>
         </div>
@@ -453,7 +468,7 @@
         <!-- Scrollable Table Container -->
         <div class="max-h-[600px] overflow-auto custom-scrollbar border border-slate-100 rounded-xl shadow-sm" id="table-container">
           <table id="student-table" class="w-full text-left border-collapse text-xs whitespace-nowrap">
-            <thead>
+            <thead class="sticky top-0 z-20 bg-slate-800 shadow-sm">
               <tr class="bg-slate-800 text-slate-200 font-semibold uppercase tracking-wider text-center">
                 <th class="p-3 text-center w-10 no-print">
                   <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
@@ -540,8 +555,23 @@
           <!-- Checkbox items will be rendered dynamically -->
         </div>
       </div>
-      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
-        <button onclick="closeManageColumnsModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">Close</button>
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap justify-between items-center text-xs font-bold gap-2 no-print">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="selectAllColumns(true)" class="text-indigo-600 hover:text-indigo-800 bg-transparent border-0 cursor-pointer font-bold p-0">
+            ಎಲ್ಲಾ ಆರಿಸಿ / Select All
+          </button>
+          <span class="text-slate-300">|</span>
+          <button type="button" onclick="selectAllColumns(false)" class="text-rose-600 hover:text-rose-800 bg-transparent border-0 cursor-pointer font-bold p-0">
+            ಎಲ್ಲಾ ರದ್ದುಮಾಡಿ / Hide All
+          </button>
+          <span class="text-slate-300">|</span>
+          <button type="button" onclick="resetDefaultColumns()" class="text-slate-500 hover:text-slate-700 bg-transparent border-0 cursor-pointer font-bold p-0">
+            ಮರುಹೊಂದಿಸಿ / Reset
+          </button>
+        </div>
+        <button type="button" onclick="saveAndCloseManageColumnsModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save & Close
+        </button>
       </div>
     </div>
   </div>
@@ -1407,7 +1437,10 @@
       const stored = localStorage.getItem('visible_student_columns');
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          if (parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+            return parsed;
+          }
         } catch (e) {}
       }
       const defVisible = ['app_no', 'enrolment_no', 'student_name', 'enroll_class', 'gender', 'dob', 'father_name_kn', 'mother_name_kn', 'student_aadhaar', 'apaar', 'pen', 'mobile_number'];
@@ -1415,11 +1448,48 @@
       standardColumns.forEach(col => {
         def[col.id] = defVisible.includes(col.id);
       });
+      localStorage.setItem('visible_student_columns', JSON.stringify(def));
       return def;
     }
 
     function saveColumnVisibility(settings) {
       localStorage.setItem('visible_student_columns', JSON.stringify(settings));
+    }
+
+    function selectAllColumns(selectState) {
+      const visibility = {};
+      standardColumns.forEach(col => {
+        visibility[col.id] = selectState;
+      });
+      saveColumnVisibility(visibility);
+      renderColumnSettingsList();
+      buildTableHeader();
+      applyFilters();
+    }
+
+    function resetDefaultColumns() {
+      const defVisible = ['app_no', 'enrolment_no', 'student_name', 'enroll_class', 'gender', 'dob', 'father_name_kn', 'mother_name_kn', 'student_aadhaar', 'apaar', 'pen', 'mobile_number'];
+      const def = {};
+      standardColumns.forEach(col => {
+        def[col.id] = defVisible.includes(col.id);
+      });
+      saveColumnVisibility(def);
+      localStorage.removeItem('student_columns_order');
+      loadColumnOrder();
+      renderColumnSettingsList();
+      buildTableHeader();
+      applyFilters();
+      showToast("ಮರುಹೊಂದಿಸಲಾಗಿದೆ / Reset", "ಕಾಲಮ್‌ಗಳನ್ನು ಪೂರ್ವನಿಯೋಜಿತ ಸ್ಥಿತಿಗೆ ಮರುಹೊಂದಿಸಲಾಗಿದೆ.", "info");
+    }
+
+    function saveAndCloseManageColumnsModal() {
+      const visibility = getColumnVisibility();
+      saveColumnVisibility(visibility);
+      const orderIds = standardColumns.map(c => c.id);
+      localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
+      
+      closeManageColumnsModal();
+      showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", "ನಿಮ್ಮ ಆಯ್ಕೆಯ ಕಾಲಮ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಉಳಿಸಲಾಗಿದೆ! / Column preferences saved permanently!", "success");
     }
 
     function updateClock() {
@@ -1512,32 +1582,30 @@
     let allStudentsData = [];
     let parsedCSVStudents = [];
 
-    document.addEventListener("DOMContentLoaded", async function() {
-      await initUserAndTheme();
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "index.html";
-        return;
+    async function initApp() {
+      try {
+        if (typeof initUserAndTheme === 'function') {
+          await initUserAndTheme();
+        }
+      } catch (e) {
+        console.error("Navbar/theme init warning:", e);
       }
       
-      // Ensure school_id is resolved and stored in localStorage to prevent race conditions
-      let sId = session.user.user_metadata?.school_id || localStorage.getItem('school_id');
-      if (!sId) {
-        const { data: profile } = await supabaseClient
-          .from('profiles')
-          .select('school_id')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (profile?.school_id) {
-          sId = profile.school_id;
-          localStorage.setItem('school_id', sId);
-        }
+      try {
+        if (typeof initSidebar === 'function') initSidebar();
+        buildTableHeader();
+      } catch (e) {
+        console.error("Header build warning:", e);
       }
-
-      initSidebar();
-      buildTableHeader();
+      
       fetchStudentsDatabase();
-    });
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initApp);
+    } else {
+      initApp();
+    }
 
     function getStudentCasteGroup(student) {
       const mappings = JSON.parse(localStorage.getItem('school_category_mappings') || '{}');
@@ -1775,20 +1843,28 @@
     async function fetchStudentsDatabase() {
       const tbody = document.getElementById('students-table-body');
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        let session = null;
+        try {
+          const sessionPromise = supabaseClient.auth.getSession();
+          const timeoutPromise = new Promise(res => setTimeout(() => res(null), 800));
+          const result = await Promise.race([sessionPromise, timeoutPromise]);
+          if (result && result.data) session = result.data.session;
+        } catch (e) {}
+
+        const schoolId = session?.user?.user_metadata?.school_id || localStorage.getItem("school_id");
 
         if (schoolId) {
           try {
-            const { data: mappingData } = await supabaseClient
+            const mappingPromise = supabaseClient
               .from('school_settings')
               .select('settings_value')
               .eq('school_id', schoolId)
               .eq('settings_key', 'category_mappings')
               .maybeSingle();
-
-            if (mappingData && mappingData.settings_value) {
-              let dbMappings = mappingData.settings_value;
+            const timeoutPromise = new Promise(res => setTimeout(() => res(null), 800));
+            const mappingRes = await Promise.race([mappingPromise, timeoutPromise]);
+            if (mappingRes && mappingRes.data && mappingRes.data.settings_value) {
+              let dbMappings = mappingRes.data.settings_value;
               if (typeof dbMappings === 'string') {
                 try { dbMappings = JSON.parse(dbMappings); } catch (e) {}
               }
@@ -1799,14 +1875,26 @@
           }
         }
 
-        let query = supabaseClient.from('admissions').select('*');
+        let data = null;
         if (schoolId) {
-          query = query.eq('school_id', schoolId);
+          try {
+            const { data: res1, error: err1 } = await supabaseClient.from('admissions').select('*').eq('school_id', schoolId);
+            if (!err1 && res1 && res1.length > 0) {
+              data = res1;
+            }
+          } catch (e) {}
         }
 
-        const { data, error } = await query;
+        if (!data || data.length === 0) {
+          try {
+            const { data: res2, error: err2 } = await supabaseClient.from('admissions').select('*');
+            if (!err2 && res2) {
+              data = res2;
+            }
+          } catch (e) {}
+        }
 
-        if (error) throw error;
+        if (!data) data = [];
 
         allStudentsData = (data || []).map(s => {
           const normalized = normalizeStudentRow(s);
@@ -1834,7 +1922,17 @@
         });
 
         const activeYear = localStorage.getItem('school_academic_year') || '2026-27';
-        allStudentsData = allStudentsData.filter(s => s.academic_year === activeYear || !s.academic_year);
+        const yearFiltered = allStudentsData.filter(s => s.academic_year === activeYear || !s.academic_year);
+        if (yearFiltered.length > 0) {
+          allStudentsData = yearFiltered;
+        }
+
+        // Default sort students alphabetically by Student Name (A to Z)
+        allStudentsData.sort((a, b) => {
+          const nameA = (a.name || a.student_name_kn || '').toString().trim();
+          const nameB = (b.name || b.student_name_kn || '').toString().trim();
+          return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+        });
 
         function normalizeReligion(relStr) {
           if (!relStr) return "";
@@ -1893,10 +1991,39 @@
         applyUrlParameters();
         applyFilters();
       } catch (err) {
+        console.error("Error loading database:", err);
         const visibility = getColumnVisibility();
         let colCount = 2; // Sl.No + Actions
         standardColumns.forEach(c => { if (visibility[c.id] !== false) colCount++; });
         tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-8 text-center text-red-500 font-bold"><i class="fa-solid fa-circle-xmark mr-1.5"></i> Error loading database: ${err.message}</td></tr>`;
+      }
+    }
+
+    function populateFilterDropdowns() {
+      try {
+        const casteSelect = document.getElementById('caste-filter');
+        if (casteSelect && allStudentsData.length > 0) {
+          const castes = Array.from(new Set(allStudentsData.map(s => (s.student_caste || s.caste || '').trim()))).filter(Boolean).sort();
+          let currentVal = casteSelect.value;
+          let html = '<option value="">-- Castes --</option>';
+          castes.forEach(c => {
+            html += `<option value="${c}" ${c === currentVal ? 'selected' : ''}>${c}</option>`;
+          });
+          casteSelect.innerHTML = html;
+        }
+
+        const religionSelect = document.getElementById('religion-filter');
+        if (religionSelect && allStudentsData.length > 0) {
+          const religions = Array.from(new Set(allStudentsData.map(s => (s.religion || '').trim()))).filter(Boolean).sort();
+          let currentVal = religionSelect.value;
+          let html = '<option value="">-- Religions --</option>';
+          religions.forEach(r => {
+            html += `<option value="${r}" ${r === currentVal ? 'selected' : ''}>${r}</option>`;
+          });
+          religionSelect.innerHTML = html;
+        }
+      } catch (e) {
+        console.warn("populateFilterDropdowns warning:", e);
       }
     }
 
@@ -1966,15 +2093,31 @@
       return val.toString().toUpperCase().trim();
     }
 
+    function clearRosterSearch() {
+      const searchInput = document.getElementById('roster-search');
+      if (searchInput) {
+        searchInput.value = '';
+        applyFilters();
+      }
+    }
+
     function applyFilters() {
-      const q = document.getElementById('roster-search').value.trim().toUpperCase();
-      const selectedClass = document.getElementById('class-filter').value;
-      const selectedGender = document.getElementById('gender-filter').value;
-      const selectedReligion = document.getElementById('religion-filter').value;
-      const selectedCaste = document.getElementById('caste-filter').value;
-      const selectedMedium = document.getElementById('medium-filter').value;
-      const selectedCategory = document.getElementById('category-filter').value;
-      const selectedStatus = document.getElementById('status-filter').value;
+      try {
+        const searchInput = document.getElementById('roster-search');
+        const clearBtn = document.getElementById('clear-search-btn');
+        if (clearBtn && searchInput) {
+          if (searchInput.value.trim().length > 0) clearBtn.classList.remove('hidden');
+          else clearBtn.classList.add('hidden');
+        }
+
+        const q = searchInput ? searchInput.value.trim().toUpperCase() : '';
+        const selectedClass = document.getElementById('class-filter')?.value || '';
+        const selectedGender = document.getElementById('gender-filter')?.value || '';
+        const selectedReligion = document.getElementById('religion-filter')?.value || '';
+        const selectedCaste = document.getElementById('caste-filter')?.value || '';
+        const selectedMedium = document.getElementById('medium-filter')?.value || '';
+        const selectedCategory = document.getElementById('category-filter')?.value || '';
+        const selectedStatus = document.getElementById('status-filter')?.value || '';
 
       const filtered = allStudentsData.filter(student => {
         const searchMatch = !q || 
@@ -2085,10 +2228,16 @@
           invalidInfoMatch = !hasValidClass || !hasValidGender;
         }
 
-        return searchMatch && classMatch && genderMatch && religionMatch && casteMatch && mediumMatch && categoryMatch && statusMatch && excelFiltersMatch && unassignedMatch && invalidInfoMatch;
+        const isStudentActive = student.status !== 'TC_OUT' && student.status !== 'DELETED' && student.status !== 'REMOVED';
+
+        return isStudentActive && searchMatch && classMatch && genderMatch && religionMatch && casteMatch && mediumMatch && categoryMatch && statusMatch && excelFiltersMatch && unassignedMatch && invalidInfoMatch;
       });
 
       renderTable(filtered);
+      } catch (err) {
+        console.error("applyFilters error:", err);
+        renderTable(allStudentsData);
+      }
     }
 
     let currentSortColumn = '';
@@ -2193,9 +2342,11 @@
       return str.replace(regex, '<mark class="bg-yellow-250 text-slate-950 font-bold px-[2px] py-[1px] rounded shadow-sm">$1</mark>');
     }
 
-    function renderTable(students) {
+    function renderTable(students = allStudentsData) {
       const tbody = document.getElementById('students-table-body');
-      const q = document.getElementById('roster-search').value.trim();
+      if (!tbody) return;
+      const searchEl = document.getElementById('roster-search');
+      const q = (searchEl ? searchEl.value : '').trim();
       
       // Reset Select All checkbox and hide mass action bar on re-render
       const selectAll = document.getElementById('select-all-checkbox');
@@ -2206,21 +2357,32 @@
         bar.classList.add('translate-y-28', 'opacity-0', 'pointer-events-none');
       }
       
-      let boys = 0, girls = 0, cwsn = 0;
+      let boys = 0, girls = 0, sc = 0, st = 0, obc = 0, oth = 0, cwsn = 0;
       students.forEach(s => {
         if (s.gender === 'Boy') boys++;
         else if (s.gender === 'Girl') girls++;
         if (s.specialNeed && s.specialNeed !== 'NONE' && s.specialNeed !== 'ಯಾವುದೂ ಇಲ್ಲ') cwsn++;
+        
+        const grp = getStudentCasteGroup(s);
+        if (grp === 'SC') sc++;
+        else if (grp === 'ST') st++;
+        else if (grp === 'OBC' || grp === 'C1') obc++;
+        else oth++;
       });
-      document.getElementById('total-count').textContent = students.length;
-      document.getElementById('boys-count').textContent = boys;
-      document.getElementById('girls-count').textContent = girls;
-      document.getElementById('cwsn-count').textContent = cwsn;
+      
+      const totalEl = document.getElementById('total-count'); if (totalEl) totalEl.textContent = students.length;
+      const boysEl = document.getElementById('boys-count'); if (boysEl) boysEl.textContent = boys;
+      const girlsEl = document.getElementById('girls-count'); if (girlsEl) girlsEl.textContent = girls;
+      const scEl = document.getElementById('sc-count'); if (scEl) scEl.textContent = sc;
+      const stEl = document.getElementById('st-count'); if (stEl) stEl.textContent = st;
+      const obcEl = document.getElementById('obc-count'); if (obcEl) obcEl.textContent = obc;
+      const othEl = document.getElementById('oth-count'); if (othEl) othEl.textContent = oth;
+      const cwsnEl = document.getElementById('cwsn-count'); if (cwsnEl) cwsnEl.textContent = cwsn;
 
       const visibility = getColumnVisibility();
       let colCount = 2; // Checkbox + Sl.No
       standardColumns.forEach(c => {
-        if (visibility[c.id]) colCount++;
+        if (visibility[c.id] !== false) colCount++;
       });
 
       if (!students || students.length === 0) {
@@ -2455,6 +2617,7 @@
       const printBtn = document.getElementById('mass-print-btn');
       const pdfBtn = document.getElementById('mass-pdf-btn');
       const editBtn = document.getElementById('mass-edit-btn');
+      const promoteBtn = document.getElementById('mass-promote-btn');
 
       if (count > 0) {
         if (badge) badge.textContent = `${count} selected`;
@@ -2463,16 +2626,12 @@
           bar.classList.add('translate-y-0', 'opacity-100');
         }
         
-        // Single selection features
-        if (count === 1) {
-          if (viewBtn) viewBtn.classList.remove('hidden');
-          if (editBtn) editBtn.classList.remove('hidden');
-        } else {
-          if (viewBtn) viewBtn.classList.add('hidden');
-          if (editBtn) editBtn.classList.add('hidden');
-        }
+        // Show View, Edit, Print, PDF, and Promote for both 1 and multiple selections!
+        if (viewBtn) viewBtn.classList.remove('hidden');
+        if (editBtn) editBtn.classList.remove('hidden');
         if (printBtn) printBtn.classList.remove('hidden');
         if (pdfBtn) pdfBtn.classList.remove('hidden');
+        if (promoteBtn) promoteBtn.classList.remove('hidden');
       } else {
         if (bar) {
           bar.classList.remove('translate-y-0', 'opacity-100');
@@ -2491,6 +2650,9 @@
       if (checkedBoxes.length === 1) {
         const studentId = checkedBoxes[0].getAttribute('data-id');
         openStudentPreviewModal(studentId);
+      } else if (checkedBoxes.length > 1) {
+        const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+        window.open('Preview.html?id=' + encodeURIComponent(selectedIds.join(',')), '_blank');
       }
     }
 
@@ -2618,6 +2780,8 @@
         }
         localStorage.setItem("editReferrer", "StudentList.html");
         window.location.href = `NewAdmission.html?id=${studentId}`;
+      } else if (checkedBoxes.length > 1) {
+        openBatchPromoteModal();
       }
     }
 
@@ -3073,411 +3237,403 @@
             <i class="fa-solid fa-grip-vertical text-slate-400 dark:text-slate-500 cursor-grab mr-1 drag-handle"></i>
             <input type="number" min="1" max="${standardColumns.length}" value="${idx + 1}" onchange="changeColumnPosition('${col.id}', this.value)" class="w-12 text-center text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-1 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none" onclick="event.stopPropagation();" onmousedown="event.stopPropagation();">
             <div class="flex flex-col gap-0.5 no-print">
-              <button onclick="event.stopPropagation(); moveColumn('${col.id}', -1)" ${isFirst ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''} class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[10px] p-0.5 border-0 bg-transparent cursor-pointer transition-all" title="Move Up"><i class="fa-solid fa-chevron-up"></i></button>
-              <button onclick="event.stopPropagation(); moveColumn('${col.id}', 1)" ${isLast ? 'disabled style="opacity:0.25; cursor:not-allowed;"' : ''} class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 text-[10px] p-0.5 border-0 bg-transparent cursor-pointer transition-all" title="Move Down"><i class="fa-solid fa-chevron-down"></i></button>
+              <button onclick="event.stopPropagation(); moveColumn('${col.id}', -1)" ${isFirst ? 'disabled style="opacity:0.3;"' : ''} class="text-[10px] text-slate-400 hover:text-sky-600 p-0.5 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-chevron-up"></i></button>
+              <button onclick="event.stopPropagation(); moveColumn('${col.id}', 1)" ${isLast ? 'disabled style="opacity:0.3;"' : ''} class="text-[10px] text-slate-400 hover:text-sky-600 p-0.5 border-0 bg-transparent cursor-pointer"><i class="fa-solid fa-chevron-down"></i></button>
             </div>
-            <span class="text-xs font-bold text-slate-700 dark:text-slate-200">${col.labelEn}</span>
+            <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 select-none">${col.labelEn}</span>
           </div>
-          <label class="relative inline-flex items-center cursor-pointer" onclick="event.stopPropagation();">
-            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleColumnVisibility('${col.id}', this.checked)" class="sr-only peer">
-            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
-          </label>
+          <input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleSingleColumnVisibility('${col.id}', this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 dark:border-slate-600 cursor-pointer" onclick="event.stopPropagation();">
         `;
-
-        // Add drag & drop event listeners
-        div.addEventListener("dragstart", (e) => handleDragStart(e, idx));
-        div.addEventListener("dragover", (e) => handleDragOver(e, idx));
-        div.addEventListener("dragleave", (e) => handleDragLeave(e, idx));
-        div.addEventListener("drop", (e) => handleDrop(e, idx));
-        div.addEventListener("dragend", (e) => handleDragEnd(e));
+        
+        div.addEventListener('dragstart', (e) => handleDragStart(e, idx));
+        div.addEventListener('dragover', (e) => handleDragOver(e, idx));
+        div.addEventListener('dragleave', (e) => handleDragLeave(e, idx));
+        div.addEventListener('drop', (e) => handleDrop(e, idx));
+        div.addEventListener('dragend', handleDragEnd);
 
         container.appendChild(div);
       });
     }
 
-    function changeColumnPosition(colId, newPositionVal) {
-      let newPosition = parseInt(newPositionVal, 10);
-      if (isNaN(newPosition)) return;
-      
-      if (newPosition < 1) newPosition = 1;
-      if (newPosition > standardColumns.length) newPosition = standardColumns.length;
-      
-      const currentIdx = standardColumns.findIndex(col => col.id === colId);
-      if (currentIdx === -1) return;
-      
-      const newIdx = newPosition - 1;
-      if (currentIdx === newIdx) return;
-      
-      const col = standardColumns[currentIdx];
-      standardColumns.splice(currentIdx, 1);
-      standardColumns.splice(newIdx, 0, col);
-      
-      const orderIds = standardColumns.map(c => c.id);
-      localStorage.setItem("student_columns_order", JSON.stringify(orderIds));
-      
-      renderColumnSettingsList();
-      buildTableHeader();
-      applyFilters();
-    }
-
     function moveColumn(colId, direction) {
-      const idx = standardColumns.findIndex(col => col.id === colId);
+      const idx = standardColumns.findIndex(c => c.id === colId);
       if (idx === -1) return;
       const targetIdx = idx + direction;
       if (targetIdx < 0 || targetIdx >= standardColumns.length) return;
-
-      const temp = standardColumns[idx];
-      standardColumns[idx] = standardColumns[targetIdx];
-      standardColumns[targetIdx] = temp;
-
-      const orderIds = standardColumns.map(col => col.id);
-      localStorage.setItem("student_columns_order", JSON.stringify(orderIds));
-
+      
+      const col = standardColumns.splice(idx, 1)[0];
+      standardColumns.splice(targetIdx, 0, col);
+      
+      const orderIds = standardColumns.map(c => c.id);
+      localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
+      
       renderColumnSettingsList();
       buildTableHeader();
       applyFilters();
     }
 
-    function parseDateValue(val) {
-      if (!val) return '';
-      val = val.trim();
-      if (!val) return '';
+    function changeColumnPosition(colId, newPos) {
+      const targetIdx = parseInt(newPos) - 1;
+      if (isNaN(targetIdx) || targetIdx < 0 || targetIdx >= standardColumns.length) return;
       
-      // If it's a numeric string (Excel serial date number like 43589)
-      if (/^\d+(\.\d+)?$/.test(val)) {
-        const num = Number(val);
-        if (num > 0 && num < 100000) {
-          // Excel epoch starts at December 30, 1899 due to 1900 leap year bug
-          const date = new Date((num - 25569) * 86400 * 1000);
-          if (!isNaN(date.getTime())) {
-            const yyyy = date.getUTCFullYear();
-            let mm = date.getUTCMonth() + 1;
-            let dd = date.getUTCDate();
-            if (mm < 10) mm = '0' + mm;
-            if (dd < 10) dd = '0' + dd;
-            return `${yyyy}-${mm}-${dd}`;
-          }
-        }
-      }
+      const idx = standardColumns.findIndex(c => c.id === colId);
+      if (idx === -1 || idx === targetIdx) return;
       
-      // If in format DD/MM/YYYY or DD-MM-YYYY
-      const dmy = val.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-      if (dmy) {
-        let dd = dmy[1];
-        let mm = dmy[2];
-        const yyyy = dmy[3];
-        if (dd.length < 2) dd = '0' + dd;
-        if (mm.length < 2) mm = '0' + mm;
-        return `${yyyy}-${mm}-${dd}`;
-      }
-
-      // If in format YYYY-MM-DD or YYYY/MM/DD
-      const ymd = val.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
-      if (ymd) {
-        const yyyy = ymd[1];
-        let mm = ymd[2];
-        let dd = ymd[3];
-        if (mm.length < 2) mm = '0' + mm;
-        if (dd.length < 2) dd = '0' + dd;
-        return `${yyyy}-${mm}-${dd}`;
-      }
-
-      return val;
-    }
-
-    function parseAndValidateCSV(text) {
-      const lines = text.split(/\r?\n/).map(line => line.trim()).filter(Boolean);
-      if (lines.length < 2) {
-        showToast("ದೋಷ: CSV ಫೈಲ್‌ನಲ್ಲಿ ಡೇಟಾ ಇಲ್ಲ.", "error");
-        return;
-      }
-
-      const headers = parseCsvLine(lines[0]);
+      const col = standardColumns.splice(idx, 1)[0];
+      standardColumns.splice(targetIdx, 0, col);
       
-      const colIndices = {};
-      csvColumns.forEach(col => {
-        const idx = headers.findIndex(h => h.trim().toLowerCase() === col.label.toLowerCase() || h.trim().toLowerCase() === col.id.toLowerCase());
-        colIndices[col.id] = idx;
-      });
-
-      const required = ['academic_year', 'medium', 'enroll_class', 'app_no', 'student_name', 'dob', 'gender', 'student_aadhaar', 'father_name_kn', 'mother_name_kn'];
-      const missingRequired = required.filter(field => colIndices[field] === -1);
+      const orderIds = standardColumns.map(c => c.id);
+      localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
       
-      if (missingRequired.length > 0) {
-        const missingLabels = missingRequired.map(field => {
-          const col = csvColumns.find(c => c.id === field);
-          return col ? col.label : field;
-        });
-        alert("ಡೇಟಾಬೇಸ್ ಹೊಂದಾಣಿಕೆ ದೋಷ:\nಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ನಲ್ಲಿ ಹೆಡರ್‌ಗಳು ತಪ್ಪಾಗಿವೆ. ದಯವಿಟ್ಟು 'Template CSV' ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ ಅದರಲ್ಲಿ ಡೇಟಾ ಭರ್ತಿ ಮಾಡಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.\n\nಕಾಣೆಯಾದ ಅಗತ್ಯ ಹೆಡರ್‌ಗಳು: " + missingLabels.join(", "));
-        return;
-      }
-
-      parsedCSVStudents = [];
-      for (let i = 1; i < lines.length; i++) {
-        const cells = parseCsvLine(lines[i]);
-        if (cells.length < headers.length) continue;
-
-        const testAppNo = (cells[colIndices['app_no']] || '').trim();
-        const testName = (cells[colIndices['student_name']] || '').trim();
-        if (testAppNo === 'APP2026001' && testName === 'ಚೈತ್ರ ಜಿ') {
-          continue; 
-        }
-
-        const row = {};
-        csvColumns.forEach(col => {
-          const cellIdx = colIndices[col.id];
-          let val = cellIdx !== -1 && cells[cellIdx] ? cells[cellIdx].trim() : '';
-          row[col.id] = val;
-        });
-
-        row.enroll_class = normalizeClass(row.enroll_class) || "1";
-        row.dob = parseDateValue(row.dob) || "2019-06-01";
-        row.gender = (row.gender && row.gender.toLowerCase().includes('girl')) ? 'Girl' : 'Boy';
-        row.is_admitted = true; 
-
-        row.transfer_date = parseDateValue(row.transfer_date);
-        if (row.transfer_date === '') row.transfer_date = null;
-
-        parsedCSVStudents.push(row);
-      }
-
-      if (parsedCSVStudents.length === 0) {
-        showToast("ದೋಷ: ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ವಿವರ ಸಿಕ್ಕಿಲ್ಲ.", "error");
-        return;
-      }
-
-      document.getElementById('csv-preview-count').innerText = `ಒಟ್ಟು ${parsedCSVStudents.length} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳು ದಾಖಲಾತಿಗೆ ಸಿದ್ಧವಾಗಿವೆ.`;
-      document.getElementById('csv-preview-modal').classList.remove('hidden');
-    }
-
-    function closeCSVPreviewModal() {
-      document.getElementById('csv-preview-modal').classList.add('hidden');
-    }
-
-    async function saveImportedCSVStudents() {
-      if (parsedCSVStudents.length === 0) return;
-      document.getElementById('csv-preview-modal').classList.add('hidden');
-      
-      const tbody = document.getElementById('students-table-body');
-      
-      const visibility = getColumnVisibility();
-      let colCount = 1;
-      standardColumns.forEach(c => {
-        if (visibility[c.id]) colCount++;
-      });
-      colCount++; // Actions
-      
-      tbody.innerHTML = `<tr><td colspan="${colCount}" class="p-12 text-center text-slate-500 font-medium"><i class="fa-solid fa-circle-notch animate-spin text-sky-600 mr-2 text-lg"></i> ಡೇಟಾಬೇಸ್‌ಗೆ ಸೇರಿಸಲಾಗುತ್ತಿದೆ...</td></tr>`;
-
-      try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
-        const createdBy = session?.user?.id || null;
-
-        const dbRows = parsedCSVStudents.map(s => {
-          const clone = { ...s };
-          clone.is_admitted = true;
-          if (schoolId) clone.school_id = schoolId;
-          if (createdBy) clone.created_by = createdBy;
-          return clone;
-        });
-
-        const { data, error } = await supabaseClient
-          .from('admissions')
-          .insert(dbRows);
-
-        if (error) throw error;
-
-        showToast("ಖಾತ್ರಿ / Success!", "ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ.", "success");
-        fetchStudentsDatabase();
-      } catch (err) {
-        showToast("ದೋಷ: ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
-        fetchStudentsDatabase();
-      }
-    }
-
-    // Column Modal Config
-    function openManageColumnsModal() {
       renderColumnSettingsList();
-      document.getElementById('manage-columns-modal').classList.remove('hidden');
+      buildTableHeader();
+      applyFilters();
     }
 
-    function closeManageColumnsModal() {
-      document.getElementById('manage-columns-modal').classList.add('hidden');
-    }
-
-    function populateFilterDropdowns() {
-      const religionFilter = document.getElementById('religion-filter');
-      const casteFilter = document.getElementById('caste-filter');
-      if (!religionFilter || !casteFilter) return;
-
-      const religions = new Set();
-      const castes = new Set();
-
-      allStudentsData.forEach(s => {
-        if (s.religion && s.religion.trim()) religions.add(s.religion.trim());
-        if (s.student_caste && s.student_caste.trim()) castes.add(s.student_caste.trim());
-      });
-
-      let religionHtml = '<option value="">-- Religions --</option>';
-      Array.from(religions).sort().forEach(r => {
-        religionHtml += `<option value="${r}">${r}</option>`;
-      });
-      religionFilter.innerHTML = religionHtml;
-
-      let casteHtml = '<option value="">-- Castes --</option>';
-      Array.from(castes).sort().forEach(c => {
-        casteHtml += `<option value="${c}">${c}</option>`;
-      });
-      casteFilter.innerHTML = casteHtml;
-    }
-
-    function toggleColumnVisibility(colId, isChecked) {
+    function toggleSingleColumnVisibility(colId, isVisible) {
       const visibility = getColumnVisibility();
-      visibility[colId] = isChecked;
+      visibility[colId] = isVisible;
       saveColumnVisibility(visibility);
       buildTableHeader();
       applyFilters();
     }
 
-    function printStudentList() {
-      const origTable = document.getElementById('student-table');
-      const printArea = document.getElementById('printArea');
-      if (!origTable || !printArea) {
-        window.print();
-        return;
-      }
+    function generatePrintBarcode(codeText) {
+      return `
+        <div style="font-family: 'Courier New', monospace; text-align: right; display: inline-block;">
+          <svg viewBox="0 0 160 38" style="width: 150px; height: 36px; display: block; margin-left: auto;">
+            <rect width="160" height="38" fill="#ffffff" />
+            <g fill="#000000">
+              <rect x="5" y="4" width="3" height="24" />
+              <rect x="10" y="4" width="1" height="24" />
+              <rect x="13" y="4" width="2" height="24" />
+              <rect x="17" y="4" width="4" height="24" />
+              <rect x="23" y="4" width="1" height="24" />
+              <rect x="26" y="4" width="3" height="24" />
+              <rect x="31" y="4" width="2" height="24" />
+              <rect x="35" y="4" width="1" height="24" />
+              <rect x="38" y="4" width="4" height="24" />
+              <rect x="44" y="4" width="2" height="24" />
+              <rect x="48" y="4" width="1" height="24" />
+              <rect x="51" y="4" width="3" height="24" />
+              <rect x="56" y="4" width="2" height="24" />
+              <rect x="60" y="4" width="4" height="24" />
+              <rect x="66" y="4" width="1" height="24" />
+              <rect x="69" y="4" width="3" height="24" />
+              <rect x="74" y="4" width="2" height="24" />
+              <rect x="78" y="4" width="1" height="24" />
+              <rect x="81" y="4" width="4" height="24" />
+              <rect x="87" y="4" width="2" height="24" />
+              <rect x="91" y="4" width="1" height="24" />
+              <rect x="94" y="4" width="3" height="24" />
+              <rect x="99" y="4" width="2" height="24" />
+              <rect x="103" y="4" width="4" height="24" />
+              <rect x="109" y="4" width="1" height="24" />
+              <rect x="112" y="4" width="3" height="24" />
+              <rect x="117" y="4" width="2" height="24" />
+              <rect x="121" y="4" width="1" height="24" />
+              <rect x="124" y="4" width="4" height="24" />
+              <rect x="130" y="4" width="2" height="24" />
+              <rect x="134" y="4" width="1" height="24" />
+              <rect x="137" y="4" width="3" height="24" />
+              <rect x="142" y="4" width="2" height="24" />
+              <rect x="146" y="4" width="4" height="24" />
+              <rect x="152" y="4" width="3" height="24" />
+            </g>
+          </svg>
+          <div style="font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #000; text-align: center; margin-top: -3px;">${codeText}</div>
+        </div>
+      `;
+    }
+    // Official Print Roster Generator (Dynamic Logo, Teachers, Signatures & Barcode)
+    async function printStudentList() {
+      const visibility = getColumnVisibility();
+      const visibleCols = standardColumns.filter(col => visibility[col.id] !== false);
 
-      // 1. Gather Metadata
-      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
-      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮಾರ್ಚೆಡ್";
-      const selectedClass = document.getElementById('class-filter')?.value || "All Classes";
-      const selectedGender = document.getElementById('gender-filter')?.value || "All";
-      const boysCount = document.getElementById('boys-count')?.textContent || "0";
-      const girlsCount = document.getElementById('girls-count')?.textContent || "0";
-      const todayDate = new Date().toLocaleDateString('en-GB');
-      const todayTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const searchInput = (document.getElementById('roster-search')?.value || '').trim().toUpperCase();
+      const selectedClass = document.getElementById('class-filter')?.value || '';
+      const selectedGender = document.getElementById('gender-filter')?.value || '';
+      const selectedReligion = document.getElementById('religion-filter')?.value || '';
+      const selectedCaste = document.getElementById('caste-filter')?.value || '';
+      const selectedMedium = document.getElementById('medium-filter')?.value || '';
+      const selectedCategory = document.getElementById('category-filter')?.value || '';
+      const selectedStatus = document.getElementById('status-filter')?.value || '';
 
-      // 2. Gather Visible Leaf Headers (excluding .no-print)
-      const headerRow = origTable.querySelector('thead tr');
-      if (!headerRow) {
-        window.print();
-        return;
-      }
-      
-      const allThs = Array.from(headerRow.querySelectorAll('th'));
-      const visibleColsInfo = [];
+      const filtered = allStudentsData.filter(student => {
+        const searchMatch = !searchInput || 
+          (student.name || '').toUpperCase().includes(searchInput) || 
+          (student.name_english || '').toUpperCase().includes(searchInput) || 
+          (student.id || '').toUpperCase().includes(searchInput) || 
+          (student.father || '').toUpperCase().includes(searchInput) ||
+          (student.mother || '').toUpperCase().includes(searchInput) ||
+          (student.aadhaar || '').toUpperCase().includes(searchInput) ||
+          (student.mobile || '').toUpperCase().includes(searchInput);
 
-      allThs.forEach((th, index) => {
-        if (!th.classList.contains('no-print') && getComputedStyle(th).display !== 'none') {
-          let label = th.innerText.replace(/[\n\r]+/g, ' ').trim();
-          label = label.replace(/\s+/g, ' ');
-          visibleColsInfo.push({ index: index, label: label });
+        let classMatch = !selectedClass || selectedClass === 'ALL';
+        if (!classMatch) {
+          const selectedClasses = selectedClass.split(',').map(c => normalizeClass(c.trim()));
+          classMatch = selectedClasses.includes(normalizeClass(student.className));
         }
+
+        let genderMatch = !selectedGender || selectedGender === 'ALL';
+        if (!genderMatch) {
+          const selectedGendersList = selectedGender.split(',').map(g => {
+            let clean = g.trim().toLowerCase();
+            if (clean === 'boy' || clean === 'boys' || clean === 'male') return 'Boy';
+            if (clean === 'girl' || clean === 'girls' || clean === 'female') return 'Girl';
+            return g.trim();
+          });
+          genderMatch = selectedGendersList.includes(student.gender);
+        }
+
+        const studentRel = student.religion ? student.religion.trim() : '';
+        const religionMatch = !selectedReligion || studentRel === selectedReligion;
+
+        const studentCaste = student.student_caste ? student.student_caste.trim() : '';
+        const casteMatch = !selectedCaste || studentCaste === selectedCaste;
+
+        let normMed = (student.medium || '').trim();
+        if (normMed.toUpperCase() === 'KANNADA' || normMed === 'ಕನ್ನಡ' || normMed === 'KN') normMed = 'ಕನ್ನಡ';
+        else if (normMed.toUpperCase() === 'ENGLISH' || normMed.toLowerCase() === 'english' || normMed === 'EN') normMed = 'English';
+        const mediumMatch = !selectedMedium || normMed === selectedMedium;
+
+        let categoryMatch = !selectedCategory || selectedCategory === 'ALL';
+        if (!categoryMatch) {
+          const selectedCategoriesList = selectedCategory.split(',').map(c => c.trim().toUpperCase());
+          const rel = (student.religion || '').toUpperCase().trim();
+          const isMinorityReligion = ['ISLAM', 'MUSLIM', 'CHRISTIAN', 'PARSI', 'JAIN', 'BUDDHIST', 'SIKH'].includes(rel) || rel.includes('MUSLIM') || rel.includes('ISLAM') || rel.includes('CHRISTIAN');
+          const scVal = (student.social_class || '').toUpperCase().trim();
+          const isSC = scVal === 'SC' || scVal.includes('SCHEDULED CASTE') || scVal === 'ಪ.ಜಾತಿ' || scVal === 'ಪ.ಜಾ';
+          const isST = scVal === 'ST' || scVal.includes('SCHEDULED TRIBE') || scVal === 'ಪ.ಪಂಗಡ' || scVal === 'ಪ.ಪಂ';
+          const isC1 = ['C1', 'CATEGORY-1', 'CAT-1', 'C-1', 'CATEGORY 1', 'ಪ್ರವರ್ಗ-1', 'ಪ್ರವರ್ಗ 1'].includes(scVal);
+
+          categoryMatch = selectedCategoriesList.some(cat => {
+            if (cat === 'MINORITY') return !isSC && !isST && !isC1 && isMinorityReligion;
+            if (cat === 'OBC_GENERAL' || cat === 'OBC GENERAL' || cat === 'OBC' || cat === 'OTHERS') {
+              const isMin = !isSC && !isST && !isC1 && isMinorityReligion;
+              return !isSC && !isST && !isC1 && !isMin;
+            }
+            return cat === scVal;
+          });
+        }
+
+        let statusMatch = true;
+        if (selectedStatus === 'Pending') statusMatch = (student.isAdmitted === false || student.isAdmitted === 'false');
+        else if (selectedStatus === 'Admitted') statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
+
+        let unassignedMatch = true;
+        if (window.unassignedFilterActive) unassignedMatch = (getStudentCasteGroup(student) === 'Unassigned');
+
+        let invalidInfoMatch = true;
+        if (window.invalidInfoFilterActive) {
+          const cls = normalizeClass(student.enroll_class);
+          const hasValidClass = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].includes(cls);
+          const hasValidGender = student.gender === 'Boy' || student.gender === 'Girl';
+          invalidInfoMatch = !hasValidClass || !hasValidGender;
+        }
+
+        return searchMatch && classMatch && genderMatch && religionMatch && casteMatch && mediumMatch && categoryMatch && statusMatch && unassignedMatch && invalidInfoMatch;
       });
 
-      // 3. Gather Visible Data Rows
-      const bodyRows = Array.from(origTable.querySelectorAll('tbody tr'));
-      const printableRowsData = [];
+      // Ensure Alphabetical Sort A-Z for print roster
+      filtered.sort((a, b) => {
+        const nameA = (a.name || a.student_name_kn || '').toString().trim();
+        const nameB = (b.name || b.student_name_kn || '').toString().trim();
+        return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+      });
 
-      bodyRows.forEach(tr => {
-        if (getComputedStyle(tr).display !== 'none') {
-          const cells = Array.from(tr.querySelectorAll('td'));
-          if (cells.length > 1) {
-            const rowValues = visibleColsInfo.map(col => {
-              const cell = cells[col.index];
-              if (!cell) return '-';
-              
-              let cellText = '';
-              const selectEl = cell.querySelector('select');
-              const inputEl = cell.querySelector('input');
-              
-              if (selectEl) {
-                cellText = selectEl.options[selectEl.selectedIndex]?.text || selectEl.value || '-';
-              } else if (inputEl) {
-                cellText = inputEl.value || '-';
-              } else {
-                cellText = cell.innerText.replace(/[\n\r]+/g, ' ').trim();
-              }
-              
-              return cellText || '-';
-            });
-            printableRowsData.push(rowValues);
+      // Fetch School Logo, Current Logged In User, and Teachers (Headmaster & Nodal Teacher)
+      let schoolLogoUrl = localStorage.getItem('school_logo_url') || localStorage.getItem('school_logo') || '';
+      let currentUserName = '';
+      let headmasterName = '';
+      let nodalTeacherName = '';
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const schoolId = session?.user?.user_metadata?.school_id || localStorage.getItem("school_id");
+
+        // Get logged in user name
+        const userMeta = session?.user?.user_metadata;
+        currentUserName = userMeta?.full_name || userMeta?.name || userMeta?.username || (session?.user?.email ? session.user.email.split('@')[0] : '');
+
+        // Fetch School Logo if not in localStorage
+        if (!schoolLogoUrl && schoolId) {
+          const { data: schoolData } = await supabaseClient
+            .from('schools')
+            .select('logo_url, school_logo')
+            .eq('id', schoolId)
+            .maybeSingle();
+          if (schoolData) {
+            schoolLogoUrl = schoolData.logo_url || schoolData.school_logo || '';
           }
         }
+
+        // Fetch Teachers list from DB for HM and Nodal Teacher
+        let teachersQuery = supabaseClient.from('teachers').select('*');
+        if (schoolId) teachersQuery = teachersQuery.eq('school_id', schoolId);
+        const { data: teachersData } = await teachersQuery;
+
+        if (teachersData && teachersData.length > 0) {
+          // Find Headmaster
+          const hm = teachersData.find(t => {
+            const des = ((t.designation_en || '') + ' ' + (t.designation_kn || '') + ' ' + (t.role || '')).toLowerCase();
+            return des.includes('head') || des.includes('hm') || des.includes('ಮುಖ್ಯ');
+          });
+          if (hm) headmasterName = hm.name_kn || hm.name_en || hm.teacher_name || '';
+
+          // Find Nodal / Assistant Teacher
+          const nodal = teachersData.find(t => {
+            const des = ((t.designation_en || '') + ' ' + (t.designation_kn || '') + ' ' + (t.role || '')).toLowerCase();
+            return (des.includes('nodal') || des.includes('ನೋಡಲ್') || des.includes('assistant') || des.includes('ಸಹ')) && t !== hm;
+          }) || teachersData.find(t => t !== hm);
+          if (nodal) nodalTeacherName = nodal.name_kn || nodal.name_en || nodal.teacher_name || '';
+        }
+      } catch(e) {
+        console.error("Error fetching print metadata:", e);
+      }
+
+      if (!currentUserName) currentUserName = localStorage.getItem('user_name') || localStorage.getItem('school_user_name') || '';
+      if (!headmasterName) headmasterName = localStorage.getItem('school_hm_name') || '';
+      if (!nodalTeacherName) nodalTeacherName = localStorage.getItem('school_nodal_teacher') || '';
+      if (!schoolLogoUrl) schoolLogoUrl = 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Emblem_of_Karnataka.svg';
+
+      const schoolNameEn = localStorage.getItem('school_name_en') || 'GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED';
+      const schoolNameKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+      let boys = 0, girls = 0, sc = 0, st = 0, obc = 0, oth = 0, cwsn = 0;
+      filtered.forEach(s => {
+        if (s.gender === 'Boy') boys++;
+        else if (s.gender === 'Girl') girls++;
+        if (s.specialNeed && s.specialNeed !== 'NONE' && s.specialNeed !== 'ಯಾವುದೂ ಇಲ್ಲ') cwsn++;
+        const grp = getStudentCasteGroup(s);
+        if (grp === 'SC') sc++;
+        else if (grp === 'ST') st++;
+        else if (grp === 'OBC' || grp === 'C1') obc++;
+        else oth++;
       });
 
-      // 4. Construct Professional Printable HTML
-      let html = `
-        <div style="font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #000000; width: 100%; padding: 0; background: #ffffff;">
-          <!-- Top Header Strip -->
-          <div style="text-align: center; border-bottom: 2px solid #000000; padding-bottom: 10px; margin-bottom: 12px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-              <div style="font-size: 10px; font-weight: bold; text-align: left;">
-                <div>GHPS MARCHED</div>
-                <div style="color: #475569;">DISE CODE: 29030613801</div>
-              </div>
-              <div style="text-align: center;">
-                <h1 style="font-size: 15px; font-weight: 800; margin: 0; text-transform: uppercase;">${schoolNameEn}</h1>
-                <h2 style="font-size: 12px; font-weight: 700; margin: 2px 0 0 0;">${schoolNameKn}</h2>
-              </div>
-              <div style="font-size: 10px; font-weight: bold; text-align: right;">
-                <div>ದಿನಾಂಕ: ${todayDate}</div>
-                <div>ಸಮಯ: ${todayTime}</div>
-              </div>
-            </div>
+      let headersHtml = `<th style="padding: 6px 8px; border: 1.2px solid #000; background-color: #f1f5f9; font-size: 10px; font-weight: 800; text-align: center;">Sl.No</th>`;
+      visibleCols.forEach(col => {
+        headersHtml += `<th style="padding: 6px 8px; border: 1.2px solid #000; background-color: #f1f5f9; font-size: 10px; font-weight: 800; text-align: center;">${col.labelEn}</th>`;
+      });
 
-            <div style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10px; font-weight: bold;">
-              <span>📜 ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ವಿವರಗಳ ವರದಿ / STUDENT ROSTER REPORT</span>
-              <span>ತರಗತಿ: ${selectedClass} | ಲಿಂಗ: ${selectedGender} | ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು: ${printableRowsData.length} (ಗಂಡು: ${boysCount}, ಹೆಣ್ಣು: ${girlsCount})</span>
-            </div>
+      let rowsHtml = '';
+      filtered.forEach((s, idx) => {
+        rowsHtml += `<tr><td style="padding: 5px 6px; border: 1.2px solid #000; font-size: 10px; font-weight: 700; text-align: center;">${idx + 1}</td>`;
+        visibleCols.forEach(col => {
+          let val = getStudentColumnValueRaw(s, col.id);
+          rowsHtml += `<td style="padding: 5px 6px; border: 1.2px solid #000; font-size: 10px; text-align: center;">${val || '-'}</td>`;
+        });
+        rowsHtml += `</tr>`;
+      });
+
+      const barcodeHtml = generatePrintBarcode(`*STUDENTS-${filtered.length}-${dateStr.replace(/\//g,'')}*`);
+
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Student Roster Report - ${schoolNameEn}</title>
+          <style>
+            @page { size: A4 landscape; margin: 8mm; }
+            body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; color: #000; background: #fff; }
+            .header-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; border-bottom: 2px solid #000; padding-bottom: 6px; }
+            .header-table td { vertical-align: middle; }
+            .logo-cell { width: 75px; text-align: left; }
+            .logo-img { width: 60px; height: 60px; object-fit: contain; }
+            .title-cell { text-align: center; }
+            .title-kn { font-size: 15px; font-weight: 800; margin: 0; }
+            .sub-title { font-size: 12px; font-weight: 800; margin: 1px 0; color: #1e293b; }
+            .report-name { font-size: 11px; font-weight: 700; text-decoration: underline; margin: 3px 0 0 0; }
+            .barcode-cell { width: 150px; text-align: right; }
+            .summary-bar { font-size: 10px; font-weight: 800; background: #f8fafc; border: 1.2px solid #000; padding: 5px 10px; margin-bottom: 10px; flex-wrap: wrap; display: flex; justify-content: space-between; }
+            .roster-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+            .roster-table th, .roster-table td { border: 1.2px solid #000; word-break: break-word; }
+            .signature-block { width: 100%; margin-top: 35px; page-break-inside: avoid; border-collapse: collapse; }
+            .signature-block td { text-align: center; font-size: 11px; font-weight: 800; vertical-align: bottom; height: 55px; }
+          </style>
+        </head>
+        <body>
+          <table class="header-table">
+            <tr>
+              <td class="logo-cell">
+                <img src="${schoolLogoUrl}" class="logo-img" alt="School Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/e4/Emblem_of_Karnataka.svg'">
+              </td>
+              <td class="title-cell">
+                <div style="font-size: 10px; font-weight: 800; text-transform: uppercase;">ಕ್ಷೇತ್ರ ಶಿಕ್ಷಣಾಧಿಕಾರಿಗಳ ಕಾರ್ಯಾಲಯ ರಾಯಚೂರು</div>
+                <h1 class="title-kn">${schoolNameKn}</h1>
+                <div class="sub-title">${schoolNameEn}</div>
+                <div class="report-name">ತರಗತಿವಾರು ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಘೋಷ್ವಾರೆ ವರದಿ / ADMITTED STUDENTS SUMMARY ROSTER</div>
+              </td>
+              <td class="barcode-cell">
+                ${barcodeHtml}
+              </td>
+            </tr>
+          </table>
+
+          <div class="summary-bar">
+            <span>ಒಟ್ಟು / Total: <b>${filtered.length}</b></span>
+            <span>ಗಂಡು / Boys: <b>${boys}</b></span>
+            <span>ಹೆಣ್ಣು / Girls: <b>${girls}</b></span>
+            <span>SC: <b>${sc}</b></span>
+            <span>ST: <b>${st}</b></span>
+            <span>OBC: <b>${obc}</b></span>
+            <span>OTH/Min: <b>${oth}</b></span>
+            <span>CWSN: <b>${cwsn}</b></span>
           </div>
 
-          <!-- Professional Data Table -->
-          <table style="width: 100%; border-collapse: collapse; font-size: 9px; border: 1.5px solid #000000; table-layout: auto;">
+          <table class="roster-table">
             <thead>
-              <tr style="background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
-      `;
-
-      visibleColsInfo.forEach(col => {
-        html += `<th style="border: 1px solid #000000 !important; padding: 6px 4px !important; font-weight: bold !important; text-align: center !important; background-color: #000000 !important; color: #ffffff !important; font-size: 9px !important; text-transform: uppercase;">${col.label}</th>`;
-      });
-
-      html += `</tr></thead><tbody>`;
-
-      printableRowsData.forEach((row, rIdx) => {
-        const bg = rIdx % 2 === 1 ? 'background-color: #f8fafc;' : 'background-color: #ffffff;';
-        html += `<tr style="${bg} border-bottom: 1px solid #000000;">`;
-        row.forEach(val => {
-          html += `<td style="border: 1px solid #000000 !important; padding: 5px 4px !important; text-align: center !important; font-size: 9px !important; color: #000000 !important; word-wrap: break-word;">${val}</td>`;
-        });
-        html += `</tr>`;
-      });
-
-      html += `
+              <tr>${headersHtml}</tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
             </tbody>
           </table>
 
-          <!-- Footer Signatures Row -->
-          <div style="margin-top: 45px; display: flex; justify-content: space-between; align-items: flex-end; font-size: 11px; font-weight: bold; color: #000000; page-break-inside: avoid; break-inside: avoid;">
-            <div style="text-align: center; width: 30%;">
-              <div style="border-bottom: 1px dashed #000000; margin-bottom: 6px; height: 30px;"></div>
-              <div>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ<br><span style="font-size: 9px; font-weight: normal; color: #334155;">Class Teacher Signature</span></div>
-            </div>
-            <div style="text-align: center; width: 30%;">
-              <div style="border-bottom: 1px dashed #000000; margin-bottom: 6px; height: 30px;"></div>
-              <div>ಶಾಲಾ ಮೊಹರು<br><span style="font-size: 9px; font-weight: normal; color: #334155;">School Seal</span></div>
-            </div>
-            <div style="text-align: center; width: 30%;">
-              <div style="border-bottom: 1px dashed #000000; margin-bottom: 6px; height: 30px;"></div>
-              <div>ಮುಖ್ಯ ಶಿಕ್ಷಕರ ಸಹಿ<br><span style="font-size: 9px; font-weight: normal; color: #334155;">Headmaster Signature</span></div>
-            </div>
-          </div>
-        </div>
-      `;
+          <table class="signature-block">
+            <tr>
+              <td style="width: 33%;">
+                <div style="border-top: 1.2px dashed #000; width: 85%; margin: 0 auto; padding-top: 4px;">
+                  ${currentUserName ? `<div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">${currentUserName}</div>` : ''}
+                  <span style="font-size: 9px; font-weight: bold; color: #475569;">ತಯಾರಿಸಿದವರು / Prepared By</span>
+                </div>
+              </td>
+              <td style="width: 33%;">
+                <div style="border-top: 1.2px dashed #000; width: 85%; margin: 0 auto; padding-top: 4px;">
+                  ${nodalTeacherName ? `<div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">${nodalTeacherName}</div>` : ''}
+                  <span style="font-size: 9px; font-weight: bold; color: #475569;">ಪರಿಶೀಲಿಸಿದವರು / Verified By</span>
+                </div>
+              </td>
+              <td style="width: 34%;">
+                <div style="border-top: 1.2px dashed #000; width: 85%; margin: 0 auto; padding-top: 4px;">
+                  ${headmasterName ? `<div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">${headmasterName}</div>` : ''}
+                  <span style="font-size: 9px; font-weight: bold; color: #475569;">ಮುಖ್ಯಗುರುಗಳ ಸಹಿ ಮತ್ತು ಮೊಹರು / Signature & Seal of Headmaster</span>
+                </div>
+              </td>
+            </tr>
+          </table>
 
-      printArea.innerHTML = html;
-      window.print();
+          <div style="margin-top: 15px; font-size: 9px; color: #334155; display: flex; justify-content: space-between; border-top: 1px solid #cbd5e1; padding-top: 4px;">
+            <span>Report Generated On: ${dateStr} ${timeStr}</span>
+            <span>System: GHPS School Management Portal</span>
+          </div>
+
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+              }, 500);
+            };
+          </` + `script>
+        </body>
+        </html>
+      `);
+      win.document.close();
     }
 
     function exportToExcel() {
@@ -3863,43 +4019,40 @@
           }
 
           if (schoolNameEn) {
-            // Replace hardcoded English school name in text nodes
-            const walkerEn = document.createTreeWalker(
+            // Replace hardcoded English and Kannada school names in a single fast TreeWalker pass
+            const walker = document.createTreeWalker(
               document.body,
               NodeFilter.SHOW_TEXT,
               null,
               false
             );
-            let nodeEn;
-            while (nodeEn = walkerEn.nextNode()) {
-              const val = nodeEn.nodeValue;
+            let node;
+            while (node = walker.nextNode()) {
+              let val = node.nodeValue;
+              if (!val || val.length < 5) continue;
+              
               if (val.includes("Government Higher Primary School, Marched")) {
-                nodeEn.nodeValue = val.replace(/Government Higher Primary School, Marched/g, schoolNameEn);
-              } else if (val.includes("GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED")) {
-                nodeEn.nodeValue = val.replace(/GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED/g, schoolNameEn.toUpperCase());
-              } else if (val.includes("GHPS MARCHED")) {
-                nodeEn.nodeValue = val.replace(/GHPS MARCHED/g, schoolNameEn.toUpperCase());
-              } else if (val.includes("GHPS Marched")) {
-                nodeEn.nodeValue = val.replace(/GHPS Marched/g, schoolNameEn);
+                val = val.replace(/Government Higher Primary School, Marched/g, schoolNameEn);
               }
-            }
-
-            if (schoolNameKn) {
-              // Replace hardcoded Kannada school name in text nodes
-              const walkerKn = document.createTreeWalker(
-                document.body,
-                NodeFilter.SHOW_TEXT,
-                null,
-                false
-              );
-              let nodeKn;
-              while (nodeKn = walkerKn.nextNode()) {
-                const val = nodeKn.nodeValue;
+              if (val.includes("GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED")) {
+                val = val.replace(/GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED/g, schoolNameEn.toUpperCase());
+              }
+              if (val.includes("GHPS MARCHED")) {
+                val = val.replace(/GHPS MARCHED/g, schoolNameEn.toUpperCase());
+              }
+              if (val.includes("GHPS Marched")) {
+                val = val.replace(/GHPS Marched/g, schoolNameEn);
+              }
+              if (schoolNameKn) {
                 if (val.includes("ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್")) {
-                  nodeKn.nodeValue = val.replace(/ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್/g, schoolNameKn);
-                } else if (val.includes("ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್")) {
-                  nodeKn.nodeValue = val.replace(/ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್/g, schoolNameKn);
+                  val = val.replace(/ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್/g, schoolNameKn);
                 }
+                if (val.includes("ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್")) {
+                  val = val.replace(/ಜಿ.ಹೆಚ್.ಪಿ.ಎಸ್. ಮರ್ಚೆಡ್/g, schoolNameKn);
+                }
+              }
+              if (val !== node.nodeValue) {
+                node.nodeValue = val;
               }
             }
           }
@@ -4571,8 +4724,6 @@
     }
 </script>
   <script src="navbar.js"></script>
-
-  <div id="printArea" class="hidden"></div>
 </body>
 </html>
 

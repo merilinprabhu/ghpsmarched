@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SATS Advanced Dashboard & Multi-Column Sync Studio - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+    .dark .glass-card { background: rgba(15, 23, 42, 0.9); border-color: rgba(30, 41, 59, 0.8); }
+    .mismatch-cell { background-color: rgba(254, 243, 199, 0.7); color: #92400e; font-weight: 800; border: 1px solid #f59e0b; }
+    .match-cell { color: #047857; font-weight: 700; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+
+  <!-- Shared Top Navigation Bar -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Studio Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Header Banner -->
+    <div class="glass-card rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <span class="p-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-2xl border border-amber-200 dark:border-amber-900">
+            <i class="fa-solid fa-gauge-high text-xl"></i>
+          </span>
+          SATS ಅಡ್ವಾನ್ಸ್‌ಡ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ & 15+ ಅಂಕಣ ಸೈಂಕ್ ತಂತ್ರಾಂಶ / SATS Advanced Dashboard & Multi-Column Sync Studio
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          SATS Excel ಫೈಲ್‌ಗಳಿಂದ <b>ಪ್ರತಿಯೊಂದು ಅಂಕಣವನ್ನು (All Columns Auto-Matched)</b> ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮ್ಯಾಪ್ ಮಾಡಿ, ಪೋರ್ಟಲ್ ಡೇಟಾಬೇಸ್‌ಗೆ 1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ Auto-Sync ಮಾಡಿ.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button onclick="exportAuditExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> 📊 ಆಡಿಟ್ ವರದಿ ರಫ್ತು (Export Audit)
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Dropzone Area -->
+    <div class="glass-card p-6 rounded-2xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 hover:border-indigo-500 transition text-center space-y-3 relative group" id="dropzoneContainer" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+      <input type="file" id="satsFileInput" accept=".xlsx, .xls, .csv" onchange="handleFileSelect(this)" class="hidden">
+      
+      <div class="w-14 h-14 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-extrabold text-slate-800 dark:text-white">
+          SATS Enrolled Students Excel ಫೈಲ್ ಇಲ್ಲೇ ಎಳೆಯಿರಿ (Drag & Drop SATS Export File)
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          ಅಥವಾ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಆಯ್ಕೆ ಮಾಡಲು <button type="button" onclick="document.getElementById('satsFileInput').click()" class="text-indigo-600 dark:text-indigo-400 font-bold underline border-0 bg-transparent cursor-pointer">ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ</button> (.xlsx, .xls, .csv)
+        </p>
+      </div>
+    </div>
+
+    <!-- Progress Indicator Bar (Initially Hidden) -->
+    <div id="syncProgressContainer" class="glass-card p-4 rounded-2xl space-y-2 hidden">
+      <div class="flex justify-between items-center text-xs font-bold">
+        <span id="syncProgressLabel" class="text-indigo-600">ಡೇಟಾಬೇಸ್ ಸೈಂಕ್ ಆಗುತ್ತಿದೆ... (Syncing to Database)</span>
+        <span id="syncProgressPercent" class="text-slate-800 dark:text-white font-mono">0%</span>
+      </div>
+      <div class="w-full bg-slate-200 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+        <div id="syncProgressBar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+
+    <!-- Analytics Dashboard Header (Initially Hidden) -->
+    <div id="analyticsDashboard" class="space-y-4 hidden">
+      <!-- 5 Summary Stat Cards + Match Rate Gauge -->
+      <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1">
+          <div class="text-[11px] font-bold text-slate-500">ಒಟ್ಟು SATS ವಿದ್ಯಾರ್ಥಿಗಳು</div>
+          <div id="statTotalSats" class="text-xl font-black text-slate-900 dark:text-white">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-emerald-300">
+          <div class="text-[11px] font-bold text-emerald-600">🟢 ಪೂರ್ಣ ಹೊಂದಿಕೆ</div>
+          <div id="statMatched" class="text-xl font-black text-emerald-600">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-amber-300">
+          <div class="text-[11px] font-bold text-amber-600">🟡 ವಿವರ ವ್ಯತ್ಯಾಸ</div>
+          <div id="statMismatch" class="text-xl font-black text-amber-600">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-sky-300">
+          <div class="text-[11px] font-bold text-sky-600">🔵 ಪೋರ್ಟಲ್‌ನಲ್ಲಿಲ್ಲದವರು</div>
+          <div id="statMissingPortal" class="text-xl font-black text-sky-600">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-rose-300">
+          <div class="text-[11px] font-bold text-rose-600">🔴 SATS ನಲ್ಲಿಲ್ಲದವರು</div>
+          <div id="statMissingSats" class="text-xl font-black text-rose-600">0</div>
+        </div>
+        <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-indigo-300 bg-indigo-50/40 dark:bg-indigo-950/20">
+          <div class="text-[11px] font-bold text-indigo-600">🎯 Match Rate</div>
+          <div id="statMatchRate" class="text-xl font-black text-indigo-700 dark:text-indigo-400">0%</div>
+        </div>
+      </div>
+
+      <!-- Class-Wise Discrepancy Breakdown Bar -->
+      <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+        <div class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-filter text-indigo-500"></i> ತರಗತಿವಾರು ವ್ಯತ್ಯಾಸಗಳ ಪಟ್ಟಿ (Class Discrepancies):
+        </div>
+        <div id="classBreakdownPills" class="flex flex-wrap items-center gap-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-Column View Selector & Mass Action Bar (Initially Hidden) -->
+    <div id="massActionToolbar" class="glass-card p-4 rounded-2xl shadow-sm space-y-3 hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <!-- Category Filter Tabs -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="filterComparisonTab('ALL')" id="tab-btn-ALL" class="px-3 py-1.5 rounded-xl text-xs font-black bg-indigo-600 text-white border-0 cursor-pointer">ಎಲ್ಲಾ (All)</button>
+          <button onclick="filterComparisonTab('MISMATCH')" id="tab-btn-MISMATCH" class="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 cursor-pointer">🟡 ವ್ಯತ್ಯಾಸಗಳು (Mismatches)</button>
+          <button onclick="filterComparisonTab('MISSING_PORTAL')" id="tab-btn-MISSING_PORTAL" class="px-3 py-1.5 rounded-xl text-xs font-bold text-sky-700 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 cursor-pointer">🔵 ಪೋರ್ಟಲ್‌ಗೆ ಆಮದು ಮಾಡಬೇಕಾದವರು</button>
+          <button onclick="filterComparisonTab('MISSING_SATS')" id="tab-btn-MISSING_SATS" class="px-3 py-1.5 rounded-xl text-xs font-bold text-rose-700 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 cursor-pointer">🔴 SATS ತಪಾಸಣೆ</button>
+          <button onclick="filterComparisonTab('MATCHED')" id="tab-btn-MATCHED" class="px-3 py-1.5 rounded-xl text-xs font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 cursor-pointer">🟢 ಹೊಂದಿಕೆಯಾದವರು</button>
+        </div>
+
+        <!-- Mass Database Sync Controls -->
+        <div class="flex items-center gap-2">
+          <button onclick="bulkSyncMismatches('ALL')" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-xs py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt"></i> ⚡ ಎಲ್ಲಾ ವ್ಯತ್ಯಾಸ Auto-Sync (Database)
+          </button>
+          <button onclick="bulkImportMissingSats()" class="bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-xs py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-user-plus"></i> 📥 ಹೊಸಬರನ್ನು ಆಮದು ಮಾಡಿ (Import All)
+          </button>
+        </div>
+      </div>
+
+      <!-- Granular Field Sync & Column Visibility Toggles -->
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="font-bold text-slate-500">ವಿಶೇಷ ಕ್ಷೇತ್ರ ಸೈಂಕ್ (Granular Sync):</span>
+          <button onclick="bulkSyncMismatches('CLASS')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer">Class Only</button>
+          <button onclick="bulkSyncMismatches('DOB')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer">DOB Only</button>
+          <button onclick="bulkSyncMismatches('GENDER')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer">Gender Only</button>
+          <button onclick="bulkSyncMismatches('NAMES')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 cursor-pointer">Names & Parents</button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-slate-500">ಅಂಕಣಗಳ ನೋಟ (Columns):</span>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" checked onchange="toggleGridCol('class', this.checked)" class="accent-indigo-600"> Class</label>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" checked onchange="toggleGridCol('dob', this.checked)" class="accent-indigo-600"> DOB</label>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" checked onchange="toggleGridCol('gender', this.checked)" class="accent-indigo-600"> Gender</label>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" onchange="toggleGridCol('father', this.checked)" class="accent-indigo-600"> Father</label>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" onchange="toggleGridCol('mother', this.checked)" class="accent-indigo-600"> Mother</label>
+          <label class="inline-flex items-center gap-1 font-semibold cursor-pointer"><input type="checkbox" onchange="toggleGridCol('caste', this.checked)" class="accent-indigo-600"> Religion/Caste</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic 15+ Multi-Column Comparison Table Grid -->
+    <div class="glass-card rounded-2xl p-6 shadow-sm space-y-4">
+      <h3 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <i class="fa-solid fa-table-cells text-indigo-600"></i> STS ಸಂಖ್ಯೆ ಸ್ವಯಂಚಾಲಿತ ಮ್ಯಾಪಿಂಗ್ ಮತ್ತು ಪಕ್ಕಪಕ್ಕದ ಹೋಲಿಕೆ ವಿವರ (Multi-Column Grid)
+      </h3>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <th class="p-3 text-center w-8">#</th>
+              <th class="p-3">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು & STS / Student Name & STS</th>
+              <th class="p-3 text-center col-class">ತರಗತಿ / Class</th>
+              <th class="p-3 text-center col-dob">ಜನ್ಮ ದಿನಾಂಕ / DOB</th>
+              <th class="p-3 text-center col-gender">ಲಿಂಗ / Gender</th>
+              <th class="p-3 col-father hidden">ತಂದೆಯ ಹೆಸರು / Father Name</th>
+              <th class="p-3 col-mother hidden">ತಾಯಿಯ ಹೆಸರು / Mother Name</th>
+              <th class="p-3 col-caste hidden">ಧರ್ಮ / ಜಾತಿ / Religion & Caste</th>
+              <th class="p-3 text-center">ಸ್ಥಿತಿ / Status</th>
+              <th class="p-3 text-center w-36">ಕ್ರಿಯೆ / Decision Action</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+            <tr>
+              <td colspan="10" class="p-8 text-center text-slate-400 font-bold">
+                <i class="fa-solid fa-cloud-arrow-up text-3xl mb-2 text-indigo-400 block"></i>
+                ಹೋಲಿಕೆ ಮತ್ತು Auto-Sync ಪ್ರಾರಂಭಿಸಲು ದಯವಿಟ್ಟು SATS Excel ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ. (Please upload SATS file)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let supabaseClient = null;
+    let portalStudentsMap = new Map(); // STS -> Student Object
+    let comparisonResults = [];
+    let activeFilterTab = 'ALL';
+
+    window.onload = async function() {
+      setupSupabase();
+      await fetchPortalStudents();
+    };
+
+    function setupSupabase() {
+      if (window.supabase) {
+        const url = localStorage.getItem('supabase_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+        const key = localStorage.getItem('supabase_key') || "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+        supabaseClient = window.supabase.createClient(url, key);
+      }
+    }
+
+    async function fetchPortalStudents() {
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('*');
+        if (schoolId) query = query.eq('school_id', schoolId);
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        portalStudentsMap.clear();
+        (data || []).forEach(s => {
+          if (s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED') {
+            const sts = String(s.app_no || s.sts_no || s.sats_no || '').trim().replace(/\s/g, '');
+            if (sts) portalStudentsMap.set(sts, s);
+          }
+        });
+      } catch (e) {
+        console.error("Error fetching portal students:", e);
+      }
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropzoneContainer').classList.add('bg-indigo-50/50', 'dark:bg-indigo-950/30');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropzoneContainer').classList.remove('bg-indigo-50/50', 'dark:bg-indigo-950/30');
+    }
+
+    function handleFileDrop(e) {
+      e.preventDefault();
+      handleDragLeave(e);
+      const files = e.dataTransfer.files;
+      if (files.length > 0) processSatsFile(files[0]);
+    }
+
+    function handleFileSelect(input) {
+      if (input.files.length > 0) processSatsFile(input.files[0]);
+      input.value = '';
+    }
+
+    function processSatsFile(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          parseAndCompareSats(jsonRows);
+        } catch (err) {
+          console.error("Excel parse error:", err);
+          alert("SATS ಫೈಲ್ ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. (Failed to parse SATS Excel file)");
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // --- INTELLIGENT DYNAMIC HEADER AUTO-MAPPING ENGINE ---
+    function parseAndCompareSats(jsonRows) {
+      let headerRowIdx = -1;
+      for (let r = 0; r < Math.min(jsonRows.length, 15); r++) {
+        const row = jsonRows[r];
+        if (row && row.some(cell => {
+          const cStr = String(cell || '').toLowerCase();
+          return cStr.includes('enrollment no') || cStr.includes('student name') || cStr.includes('sts');
+        })) {
+          headerRowIdx = r;
+          break;
+        }
+      }
+
+      if (headerRowIdx === -1) {
+        alert("ಅಮಾನ್ಯವಾದ SATS ಫೈಲ್ ನಮೂನೆ! Header ನಲ್ಲಿ 'Enrollment No' ಅಥವಾ 'Student Name' ಕಂಡುಬಂದಿಲ್ಲ.");
+        return;
+      }
+
+      const headers = jsonRows[headerRowIdx].map(h => String(h || '').trim());
+      
+      const findHeaderIndex = (keywords) => {
+        return headers.findIndex(h => {
+          const cleanH = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return keywords.some(kw => cleanH.includes(kw.replace(/[^a-z0-9]/g, '')));
+        });
+      };
+
+      const idxSts = findHeaderIndex(['enrollmentno', 'stsno', 'satsid', 'cumulativerecordno', 'sts']);
+      const idxName = findHeaderIndex(['studentname', 'name', 'candidatename']);
+      const idxDob = findHeaderIndex(['dateofbirth', 'dob', 'birthdate']);
+      const idxGender = findHeaderIndex(['gender', 'sex']);
+      const idxClass = findHeaderIndex(['standard', 'class', 'grade', 'enrollmentclass']);
+      const idxMother = findHeaderIndex(['mothername', 'mother']);
+      const idxFather = findHeaderIndex(['fathername', 'father']);
+      const idxReligion = findHeaderIndex(['religion', 'dharm']);
+      const idxCaste = findHeaderIndex(['caste', 'jaati']);
+
+      comparisonResults = [];
+      const processedPortalSts = new Set();
+
+      for (let r = headerRowIdx + 1; r < jsonRows.length; r++) {
+        const row = jsonRows[r];
+        if (!row || !row[idxSts]) continue;
+
+        const sts = String(row[idxSts]).trim().replace(/\s/g, '');
+        const name = String(row[idxName] || '').trim().toUpperCase();
+        if (!sts || !name) continue;
+
+        let rawCls = String(row[idxClass] || '').trim().toUpperCase();
+        let clsMatch = rawCls.match(/\d+/);
+        let satsClass = clsMatch ? clsMatch[0] : (rawCls.includes('LKG') ? 'LKG' : (rawCls.includes('UKG') ? 'UKG' : rawCls));
+
+        let rawGen = String(row[idxGender] || '').trim().toUpperCase();
+        let satsGender = (rawGen.includes('GIRL') || rawGen.includes('FEMALE') || rawGen === 'F') ? 'Girl' : 'Boy';
+
+        let satsDob = parseDobString(row[idxDob]);
+        let satsFather = String(row[idxFather] || '').trim();
+        let satsMother = String(row[idxMother] || '').trim();
+        let satsReligion = String(row[idxReligion] || '').trim();
+        let satsCaste = String(row[idxCaste] || '').trim();
+
+        const satsRecord = { sts, name, class: satsClass, gender: satsGender, dob: satsDob, father: satsFather, mother: satsMother, religion: satsReligion, caste: satsCaste };
+
+        const portalRecord = portalStudentsMap.get(sts);
+
+        if (portalRecord) {
+          processedPortalSts.add(sts);
+          const portalClass = String(portalRecord.enroll_class || portalRecord.className || '').trim();
+          const portalGender = String(portalRecord.gender || '').trim();
+          const portalDob = String(portalRecord.dob || '').trim();
+
+          const mismatches = [];
+          if (portalClass !== satsClass) mismatches.push('CLASS');
+          if (portalGender && portalGender !== satsGender) mismatches.push('GENDER');
+          if (portalDob && satsDob && portalDob !== satsDob) mismatches.push('DOB');
+          if (portalRecord.father_name_az && satsFather && portalRecord.father_name_az.toUpperCase() !== satsFather.toUpperCase()) mismatches.push('FATHER');
+
+          if (mismatches.length > 0) {
+            comparisonResults.push({ status: 'MISMATCH', sts, sats: satsRecord, portal: portalRecord, mismatches });
+          } else {
+            comparisonResults.push({ status: 'MATCHED', sts, sats: satsRecord, portal: portalRecord, mismatches: [] });
+          }
+        } else {
+          comparisonResults.push({ status: 'MISSING_PORTAL', sts, sats: satsRecord, portal: null, mismatches: [] });
+        }
+      }
+
+      // Portal students missing in SATS Excel
+      portalStudentsMap.forEach((portalRecord, sts) => {
+        if (!processedPortalSts.has(sts)) {
+          comparisonResults.push({ status: 'MISSING_SATS', sts, sats: null, portal: portalRecord, mismatches: [] });
+        }
+      });
+
+      renderSummaryAndTable();
+    }
+
+    function parseDobString(dobRaw) {
+      if (!dobRaw) return '';
+      if (dobRaw instanceof Date) {
+        const yyyy = dobRaw.getFullYear();
+        const mm = String(dobRaw.getMonth() + 1).padStart(2, '0');
+        const dd = String(dobRaw.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      const strVal = String(dobRaw).trim();
+      const parts = strVal.split(/[-/]/);
+      if (parts.length === 3) {
+        if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+      }
+      return strVal;
+    }
+
+    function renderSummaryAndTable() {
+      document.getElementById('analyticsDashboard').classList.remove('hidden');
+      document.getElementById('massActionToolbar').classList.remove('hidden');
+
+      const matched = comparisonResults.filter(r => r.status === 'MATCHED').length;
+      const mismatch = comparisonResults.filter(r => r.status === 'MISMATCH').length;
+      const missingPortal = comparisonResults.filter(r => r.status === 'MISSING_PORTAL').length;
+      const missingSats = comparisonResults.filter(r => r.status === 'MISSING_SATS').length;
+
+      const total = comparisonResults.length;
+      const matchRate = total > 0 ? Math.round((matched / total) * 100) : 0;
+
+      document.getElementById('statTotalSats').innerText = total;
+      document.getElementById('statMatched').innerText = matched;
+      document.getElementById('statMismatch').innerText = mismatch;
+      document.getElementById('statMissingPortal').innerText = missingPortal;
+      document.getElementById('statMissingSats').innerText = missingSats;
+      document.getElementById('statMatchRate').innerText = `${matchRate}%`;
+
+      // Render Class Breakdown Pills
+      const classMap = new Map();
+      comparisonResults.filter(r => r.status === 'MISMATCH').forEach(r => {
+        const cls = r.sats ? r.sats.class : (r.portal ? r.portal.enroll_class : 'Other');
+        classMap.set(cls, (classMap.get(cls) || 0) + 1);
+      });
+
+      const pillsContainer = document.getElementById('classBreakdownPills');
+      pillsContainer.innerHTML = '';
+      if (classMap.size === 0) {
+        pillsContainer.innerHTML = `<span class="text-emerald-600 font-extrabold text-xs"><i class="fa-solid fa-circle-check"></i> 100% ಪೂರ್ಣ ಸಾಂಗತ್ಯ (Zero Discrepancies)</span>`;
+      } else {
+        classMap.forEach((count, cls) => {
+          const pill = document.createElement('span');
+          pill.className = "px-2.5 py-1 bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-xl font-black text-xs";
+          pill.innerText = `Class ${cls}: ${count} Mismatches`;
+          pillsContainer.appendChild(pill);
+        });
+      }
+
+      renderComparisonTable();
+    }
+
+    function filterComparisonTab(tab) {
+      activeFilterTab = tab;
+      const tabs = ['ALL', 'MISMATCH', 'MISSING_PORTAL', 'MISSING_SATS', 'MATCHED'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (btn) {
+          if (t === tab) btn.className = "px-3 py-1.5 rounded-xl text-xs font-black bg-indigo-600 text-white border-0 cursor-pointer shadow-sm";
+          else btn.className = "px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border-0 cursor-pointer";
+        }
+      });
+      renderComparisonTable();
+    }
+
+    function toggleGridCol(colId, isVisible) {
+      document.querySelectorAll(`.col-${colId}`).forEach(el => {
+        if (isVisible) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+    }
+
+    function renderComparisonTable() {
+      const tbody = document.getElementById('comparisonTbody');
+      tbody.innerHTML = '';
+
+      const filtered = comparisonResults.filter(r => activeFilterTab === 'ALL' || r.status === activeFilterTab);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400 font-bold">ಈ ವಿಭಾಗದಲ್ಲಿ ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ. (No records in this category)</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((r, idx) => {
+        let badgeHtml = '';
+        let actionBtnHtml = '';
+
+        if (r.status === 'MATCHED') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">🟢 MATCHED</span>`;
+          actionBtnHtml = `<span class="text-[10px] text-slate-400 font-bold"><i class="fa-solid fa-check text-emerald-500"></i> Synced</span>`;
+        } else if (r.status === 'MISMATCH') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200">🟡 MISMATCH</span>`;
+          actionBtnHtml = `<button onclick="syncSingleStudent('${r.sts}')" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-bolt"></i> Auto-Sync</button>`;
+        } else if (r.status === 'MISSING_PORTAL') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-sky-50 text-sky-700 border border-sky-200">🔵 NOT IN PORTAL</span>`;
+          actionBtnHtml = `<button onclick="importSingleStudent('${r.sts}')" class="bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-user-plus"></i> Import</button>`;
+        } else if (r.status === 'MISSING_SATS') {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-50 text-rose-700 border border-rose-200">🔴 NOT IN SATS</span>`;
+          actionBtnHtml = `<span class="text-[10px] text-rose-500 font-bold"><i class="fa-solid fa-flag"></i> Verify</span>`;
+        }
+
+        const studentName = r.sats ? r.sats.name : (r.portal ? (r.portal.name_english || r.portal.student_name || r.portal.name) : 'N/A');
+
+        // Multi-column side-by-side cell renderings with mismatch highlights
+        const isClassDiff = r.mismatches.includes('CLASS');
+        const isDobDiff = r.mismatches.includes('DOB');
+        const isGenderDiff = r.mismatches.includes('GENDER');
+
+        const portalClass = r.portal ? (r.portal.enroll_class || r.portal.className || '-') : '-';
+        const satsClass = r.sats ? r.sats.class : '-';
+
+        const portalDob = r.portal ? (r.portal.dob || '-') : '-';
+        const satsDob = r.sats ? (r.sats.dob || '-') : '-';
+
+        const portalGender = r.portal ? (r.portal.gender || '-') : '-';
+        const satsGender = r.sats ? r.sats.gender : '-';
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800">
+            <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
+            <td class="p-3 font-extrabold text-slate-900 dark:text-white">
+              <div>${studentName}</div>
+              <div class="text-[11px] text-indigo-600 font-mono font-bold mt-0.5">🔑 STS: ${r.sts}</div>
+            </td>
+            
+            <td class="p-3 text-center col-class ${isClassDiff ? 'mismatch-cell' : 'match-cell'}">
+              <div class="text-[10px] text-slate-400">Portal: <b>${portalClass}</b></div>
+              <div>SATS: <b>${satsClass}</b></div>
+            </td>
+
+            <td class="p-3 text-center col-dob ${isDobDiff ? 'mismatch-cell' : 'match-cell'}">
+              <div class="text-[10px] text-slate-400">Portal: <b>${portalDob}</b></div>
+              <div>SATS: <b>${satsDob}</b></div>
+            </td>
+
+            <td class="p-3 text-center col-gender ${isGenderDiff ? 'mismatch-cell' : 'match-cell'}">
+              <div class="text-[10px] text-slate-400">Portal: <b>${portalGender}</b></div>
+              <div>SATS: <b>${satsGender}</b></div>
+            </td>
+
+            <td class="p-3 col-father hidden">
+              <div>Portal: ${r.portal ? (r.portal.father_name_az || r.portal.father || '-') : '-'}</div>
+              <div>SATS: ${r.sats ? (r.sats.father || '-') : '-'}</div>
+            </td>
+
+            <td class="p-3 col-mother hidden">
+              <div>Portal: ${r.portal ? (r.portal.mother_name_az || r.portal.mother || '-') : '-'}</div>
+              <div>SATS: ${r.sats ? (r.sats.mother || '-') : '-'}</div>
+            </td>
+
+            <td class="p-3 col-caste hidden">
+              <div>Portal: ${r.portal ? (r.portal.religion || '-') : '-'} / ${r.portal ? (r.portal.student_caste || '-') : '-'}</div>
+              <div>SATS: ${r.sats ? (r.sats.religion || '-') : '-'} / ${r.sats ? (r.sats.caste || '-') : '-'}</div>
+            </td>
+
+            <td class="p-3 text-center">${badgeHtml}</td>
+            <td class="p-3 text-center">${actionBtnHtml}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function syncSingleStudent(sts, fieldType = 'ALL') {
+      const item = comparisonResults.find(r => r.sts === sts && r.status === 'MISMATCH');
+      if (!item) return;
+
+      try {
+        const updatePayload = {};
+        if (fieldType === 'ALL' || fieldType === 'CLASS') updatePayload.enroll_class = item.sats.class;
+        if (fieldType === 'ALL' || fieldType === 'GENDER') updatePayload.gender = item.sats.gender;
+        if (fieldType === 'ALL' || fieldType === 'DOB') {
+          if (item.sats.dob) updatePayload.dob = item.sats.dob;
+        }
+        if (fieldType === 'ALL' || fieldType === 'NAMES') {
+          if (item.sats.father) updatePayload.father_name_az = item.sats.father;
+          if (item.sats.mother) updatePayload.mother_name_az = item.sats.mother;
+        }
+
+        if (supabaseClient && Object.keys(updatePayload).length > 0) {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update(updatePayload)
+            .eq('id', item.portal.id);
+
+          if (error) throw error;
+        }
+
+        item.status = 'MATCHED';
+        renderSummaryAndTable();
+      } catch (err) {
+        console.error("Sync error:", err);
+      }
+    }
+
+    async function importSingleStudent(sts) {
+      const item = comparisonResults.find(r => r.sts === sts && r.status === 'MISSING_PORTAL');
+      if (!item) return;
+
+      try {
+        const schoolId = localStorage.getItem('school_id') || '1';
+        const newRecord = {
+          school_id: schoolId,
+          app_no: item.sats.sts,
+          name_english: item.sats.name,
+          student_name: item.sats.name,
+          enroll_class: item.sats.class,
+          gender: item.sats.gender,
+          dob: item.sats.dob || '2015-01-01',
+          father_name_az: item.sats.father,
+          mother_name_az: item.sats.mother,
+          religion: item.sats.religion,
+          student_caste: item.sats.caste,
+          status: 'ACTIVE'
+        };
+
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('admissions').insert([newRecord]).select();
+          if (error) throw error;
+          if (data && data[0]) item.portal = data[0];
+        }
+
+        item.status = 'MATCHED';
+        renderSummaryAndTable();
+      } catch (err) {
+        console.error("Import error:", err);
+      }
+    }
+
+    async function bulkSyncMismatches(fieldType = 'ALL') {
+      const mismatches = comparisonResults.filter(r => r.status === 'MISMATCH');
+      if (mismatches.length === 0) {
+        alert("ಸೈಂಕ್ ಮಾಡಲು ಯಾವುದೇ ವ್ಯತ್ಯಾಸಗಳಿಲ್ಲ.");
+        return;
+      }
+
+      if (!confirm(`ನಿಜವಾಗಿಯೂ ${mismatches.length} ವಿದ್ಯಾರ್ಥಿಗಳ ವ್ಯತ್ಯಾಸಗಳನ್ನು ಸೈಂಕ್ ಮಾಡಬೇಕೇ?`)) return;
+
+      const progressContainer = document.getElementById('syncProgressContainer');
+      const progressBar = document.getElementById('syncProgressBar');
+      const progressPercent = document.getElementById('syncProgressPercent');
+      
+      progressContainer.classList.remove('hidden');
+
+      let completed = 0;
+      for (const item of mismatches) {
+        await syncSingleStudent(item.sts, fieldType);
+        completed++;
+        const pct = Math.round((completed / mismatches.length) * 100);
+        progressBar.style.width = `${pct}%`;
+        progressPercent.innerText = `${pct}%`;
+      }
+
+      setTimeout(() => {
+        progressContainer.classList.add('hidden');
+        alert("ಎಲ್ಲಾ ವ್ಯತ್ಯಾಸಗಳು ಯಶಸ್ವಿಯಾಗಿ ಸೈಂಕ್ ಆಗಿವೆ! (Batch Auto-Sync Complete)");
+      }, 500);
+    }
+
+    async function bulkImportMissingSats() {
+      const missing = comparisonResults.filter(r => r.status === 'MISSING_PORTAL');
+      if (missing.length === 0) {
+        alert("ಆಮದು ಮಾಡಲು ಯಾವುದೇ ಹೊಸ SATS ವಿದ್ಯಾರ್ಥಿಗಳಿಲ್ಲ.");
+        return;
+      }
+
+      if (!confirm(`ನಿಜವಾಗಿಯೂ ${missing.length} ಹೊಸ SATS ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಪೋರ್ಟಲ್‌ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಬೇಕೇ?`)) return;
+
+      for (const item of missing) {
+        await importSingleStudent(item.sts);
+      }
+      alert(`${missing.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಪೋರ್ಟಲ್‌ಗೆ ಆಮದು ಮಾಡಲಾಗಿದೆ!`);
+    }
+
+    function exportAuditExcel() {
+      if (comparisonResults.length === 0) {
+        alert("ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಯಾವುದೇ ಹೋಲಿಕೆ ಡೇಟಾ ಇಲ್ಲ.");
+        return;
+      }
+
+      const exportData = comparisonResults.map((r, idx) => ({
+        "SL NO": idx + 1,
+        "STS NUMBER": r.sts,
+        "STUDENT NAME": r.sats ? r.sats.name : (r.portal ? r.portal.name_english : ''),
+        "STATUS": r.status,
+        "SATS CLASS": r.sats ? r.sats.class : '',
+        "PORTAL CLASS": r.portal ? (r.portal.enroll_class || r.portal.className) : '',
+        "SATS GENDER": r.sats ? r.sats.gender : '',
+        "PORTAL GENDER": r.portal ? r.portal.gender : '',
+        "SATS DOB": r.sats ? r.sats.dob : '',
+        "PORTAL DOB": r.portal ? r.portal.dob : ''
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "SATS Full Audit Report");
+      XLSX.writeFile(wb, `SATS_FULL_AUDIT_${new Date().toISOString().slice(0,10)}.xlsx`);
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

@@ -179,45 +179,66 @@
   <!-- App Script Logic -->
   <script>
     let guestList = [];
-    const SUPABASE_URL = 'https://wqlxydgysyoslkyvwsrh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHh5ZGd5c3lvc2xreXZ3c3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTkwNjAsImV4cCI6MjA1Njc5NTA2MH0.2lZ7S7V6c7J66PZ4g2H69j4B78J-wZ7y8g4x8-k8K8k';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    window.onload = async function() {
-      await loadGuestTeachers();
-    };
+    function getSupabaseClient() {
+      if (window.supabaseClient) return window.supabaseClient;
+      if (window.supabase) {
+        window.supabaseClient = window.supabase.createClient(
+          "https://gsayvnnnfrrkwdfwocbu.supabase.co",
+          "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS"
+        );
+        return window.supabaseClient;
+      }
+      return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadGuestTeachers();
+    });
+
+    window.addEventListener('load', function() {
+      if (!guestList || guestList.length === 0) {
+        loadGuestTeachers();
+      }
+    });
 
     async function loadGuestTeachers() {
+      const localData = JSON.parse(localStorage.getItem('guest_teachers_list') || '[]');
+      let dbData = [];
+
       try {
-        const localData = JSON.parse(localStorage.getItem('guest_teachers_list') || '[]');
-        
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        const client = getSupabaseClient();
+        if (client) {
+          const { data: sessionData } = await client.auth.getSession().catch(() => ({ data: { session: null } }));
+          const session = sessionData?.session;
+          const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let dbData = [];
-        if (schoolId) {
-          const { data, error } = await supabaseClient
-            .from('teachers')
-            .select('*')
-            .eq('school_id', schoolId)
-            .ilike('designation', '%guest%');
-          if (!error && data) dbData = data;
+          if (schoolId) {
+            const { data, error } = await client
+              .from('teachers')
+              .select('*')
+              .eq('school_id', schoolId)
+              .ilike('designation', '%guest%');
+            if (!error && data && data.length > 0) {
+              dbData = data;
+            }
+          }
         }
-
-        guestList = dbData.length > 0 ? dbData : localData;
-        if (guestList.length === 0) {
-          guestList = [
-            { id: '1', teacher_name: 'ಕುಮಾರಸ್ವಾಮಿ S', subject: 'ಕನ್ನಡ / Kannada', qualification: 'MA B.Ed', mobile_number: '9845123456', joining_date: '2024-06-01', honorarium: '10000', status: 'Active' },
-            { id: '2', teacher_name: 'ಶರಣಬಸವ R', subject: 'ಗಣಿತ / Maths', qualification: 'BSc B.Ed', mobile_number: '9900112233', joining_date: '2024-06-15', honorarium: '10000', status: 'Active' }
-          ];
-          localStorage.setItem('guest_teachers_list', JSON.stringify(guestList));
-        }
-
-        renderGuestTeachersTable(guestList);
-        syncKdpGuestCount();
       } catch (err) {
-        console.error("Error loading guest teachers:", err);
+        console.warn("Supabase load fallback to local:", err);
       }
+
+      guestList = dbData.length > 0 ? dbData : localData;
+      if (guestList.length === 0) {
+        guestList = [
+          { id: '1', teacher_name: 'ಕುಮಾರಸ್ವಾಮಿ S', subject: 'ಕನ್ನಡ / Kannada', qualification: 'MA B.Ed', mobile_number: '9845123456', joining_date: '2024-06-01', honorarium: '10000', status: 'Active' },
+          { id: '2', teacher_name: 'ಶರಣಬಸವ R', subject: 'ಗಣಿತ / Maths', qualification: 'BSc B.Ed', mobile_number: '9900112233', joining_date: '2024-06-15', honorarium: '10000', status: 'Active' }
+        ];
+        localStorage.setItem('guest_teachers_list', JSON.stringify(guestList));
+      }
+
+      renderGuestTeachersTable(guestList);
+      syncKdpGuestCount();
     }
 
     function renderGuestTeachersTable(list) {
