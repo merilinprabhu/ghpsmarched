@@ -1,22 +1,135 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Transfer Certificate (TC) - GHPS MARCHED</title>
+  <title>Transfer Certificate Studio - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
-    .rotate-90 { transform: rotate(90deg); }
     
-    /* Print Custom Styles */
+    .certificate-box {
+      border: 2px solid #000;
+      padding: 16px;
+      position: relative;
+      background: #fff;
+    }
+
+    /* Embedded Interactive Inputs Inside Certificate Canvas - Clean & Borderless */
+    .cert-input {
+      background-color: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 1px 3px !important;
+      font-weight: 700;
+      color: #000000 !important;
+      font-size: 11px;
+      line-height: 1.3;
+      font-family: inherit;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    .cert-input:focus, .cert-input:hover {
+      background-color: #f0fdf4 !important;
+      border-bottom: 1px dashed #16a34a !important;
+    }
+    .cert-input::placeholder {
+      color: #a1a1aa;
+      font-weight: 500;
+    }
+
+    select.cert-input {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: none !important;
+      background-color: transparent !important;
+      border: none !important;
+      padding: 1px 3px !important;
+      cursor: pointer !important;
+      color: #000000 !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+    }
+
+    /* Blank Lines Under Inputs for Blank/Pen Writing */
+    .write-space-line {
+      border-bottom: 1px dotted #000;
+      display: inline-block;
+      width: 100%;
+      min-height: 16px;
+    }
+
+    /* 📄 BLANK MODE ON SCREEN & ALL PRINT MODES: 100% CLEAN WHITE, ZERO UI CLUTTER */
+    body.blank-mode-active .cert-input {
+      background-color: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: none !important;
+      color: transparent !important;
+    }
+
+    body.blank-mode-active select.cert-input {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: none !important;
+      background-color: transparent !important;
+      border: none !important;
+      color: transparent !important;
+    }
+
+    body.blank-mode-active input[type="date"].cert-input::-webkit-calendar-picker-indicator,
+    body.blank-mode-active input[type="date"].cert-input::-webkit-inner-spin-button,
+    body.blank-mode-active input[type="date"].cert-input::-webkit-clear-button {
+      display: none !important;
+      -webkit-appearance: none !important;
+      opacity: 0 !important;
+    }
+
+    /* Hide native browser date picker placeholder 'dd-mm-yyyy' when empty or in blank mode */
+    input[type="date"].date-empty::-webkit-datetime-edit,
+    input[type="date"].date-empty::-webkit-datetime-edit-fields-wrapper,
+    input[type="date"].date-empty::-webkit-datetime-edit-text,
+    input[type="date"].date-empty::-webkit-datetime-edit-month-field,
+    input[type="date"].date-empty::-webkit-datetime-edit-day-field,
+    input[type="date"].date-empty::-webkit-datetime-edit-year-field,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit-text,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit-month-field,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit-day-field,
+    body.blank-mode-active input[type="date"]::-webkit-datetime-edit-year-field {
+      color: transparent !important;
+    }
+
+    body.blank-mode-active .cert-input::placeholder {
+      color: transparent !important;
+      opacity: 0 !important;
+    }
+
+    .green-text {
+      color: #008000;
+    }
+
+    .dotted-line {
+      display: inline-block;
+      min-width: 160px;
+      border-bottom: 1px dotted #000;
+    }
+
+    /* 🖨️ PRINT CUSTOM STYLES - GUARANTEED 1-PAGE FIT WITH SOLID BLACK BORDER */
     @media print {
       @page {
         size: A4 portrait;
-        margin: 5mm;
+        margin: 4mm 6mm;
       }
       body { 
         background: white !important; 
@@ -26,14 +139,39 @@
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
-        height: 100% !important;
       }
-      #standalone-header, aside, footer, .no-print, button, #toast, #navbar-placeholder, input, select, .settings-panel { 
+      .no-print, button, #navbar-placeholder, .settings-panel, header, aside, footer { 
         display: none !important; 
       }
-      
-      /* Make main container span full page without padding */
-      main, .max-w-\[98\%\], .lg\:col-span-4, .bg-white, .p-6, .shadow-lg, .shadow-sm {
+
+      .cert-input, input, select {
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        color: #000000 !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        background-image: none !important;
+        font-weight: 700 !important;
+      }
+
+      select::-ms-expand {
+        display: none !important;
+      }
+
+      input[type="date"]::-webkit-calendar-picker-indicator,
+      input[type="date"]::-webkit-inner-spin-button,
+      input[type="date"]::-webkit-clear-button {
+        display: none !important;
+        -webkit-appearance: none !important;
+        opacity: 0 !important;
+      }
+
+      main, .max-w-\[98\%\], .lg\:col-span-4, .shadow-lg, .shadow-sm {
         padding: 0 !important;
         margin: 0 !important;
         border: none !important;
@@ -43,660 +181,677 @@
         background: transparent !important;
       }
 
-      /* Force Canvas to fill page width and prevent page-break overflow */
-      #canvas-TC {
-        display: block !important;
-        width: 100% !important;
+      /* Force 1-Page A4 Container & Solid 2px Black Outer Border */
+      .page-container {
+        max-width: 100% !important;
         padding: 0 !important;
         margin: 0 !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
       }
 
-      .print-certificate-container {
-        position: relative !important;
-        border: 1px solid #000000 !important;
-        padding: 6px 10px !important;
-        margin: 10mm auto 0 auto !important;
-        width: 90% !important; /* Reduced width to match official government print margins */
-        max-height: 285mm !important;
+      .certificate-box {
+        border: 2px solid #000000 !important;
+        padding: 8px 10px !important;
+        margin: 0 auto !important;
+        width: 100% !important;
         box-sizing: border-box !important;
-        background: white !important;
-        color: black !important;
-        page-break-after: avoid !important;
+        background: #ffffff !important;
         page-break-inside: avoid !important;
+        page-break-after: avoid !important;
       }
-      .print-card-border-none {
-        border: none !important;
-        box-shadow: none !important;
-        background: white !important;
-        padding: 0 !important;
-        margin: 0 !important;
+
+      .school-header {
+        margin-bottom: 6px !important;
       }
-      
-      /* Keep standard SATS color codes in printed version */
-      .text-rose-700 { color: #b91c1c !important; }
-      .text-emerald-700 { color: #047857 !important; }
+      .school-header .school-name-primary {
+        font-size: 13px !important;
+      }
+      .school-header .main-title {
+        font-size: 14px !important;
+        margin-top: 3px !important;
+      }
+
+      .details-table {
+        margin-bottom: 8px !important;
+      }
+      .details-table td {
+        padding: 3px 5px !important;
+        font-size: 9.5px !important;
+        line-height: 1.2 !important;
+        border: 1.5px solid #000000 !important;
+      }
+
+      .footer-dates {
+        margin-bottom: 10px !important;
+        font-size: 10.5px !important;
+      }
+
+      .seal-container {
+        margin-top: 4px !important;
+        margin-bottom: 4px !important;
+      }
+
+      .school-seal {
+        width: 75px !important;
+        height: 75px !important;
+        font-size: 10px !important;
+        border: 2px solid #000000 !important;
+      }
+
+      .footer-signatures {
+        margin-top: 6px !important;
+        font-size: 10px !important;
+      }
     }
   </style>
 </head>
 <body class="text-slate-700 bg-[#f8fafc] min-h-screen flex flex-col justify-between">
 
+  <!-- Top Shared Navigation Component -->
   <div class="no-print">
     <div id="navbar-placeholder"></div>
   </div>
-    
-    <!-- Outer Container -->
-    <div class="max-w-[98%] lg:max-w-[1500px] mx-auto w-full p-6">
+
+  <!-- Main App Container -->
+  <main class="flex-grow">
+    <div class="max-w-[98%] lg:max-w-[1500px] mx-auto w-full p-4 lg:p-6">
       
-      <!-- Top Title Row & Main View Tabs -->
-      <div class="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-4 no-print border-b border-slate-200 dark:border-slate-800 pb-4">
+      <!-- Top Title Bar with History Log & Settings -->
+      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 no-print">
         <div>
           <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-            <i class="fa-solid fa-file-signature text-indigo-500"></i>
-            <span>ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ (TC Hub) / Transfer Certificate Portal</span>
+            <i class="fa-solid fa-file-contract text-indigo-600"></i>
+            <span>ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ ಸ್ಟುಡಿಯೋ / Transfer Certificate (TC) Studio</span>
           </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ತರಗತಿವಾರು ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯಿಂದ "ISSUE TC" ಕ್ಲಿಕ್ ಮಾಡಿ ಟಿಸಿ ಪ್ರಿಂಟ್ ಮಾಡಿ ಅಥವಾ TC Out ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಮರು-ಸೇರ್ಪಡೆಗೊಳಿಸಿ.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">ವಿದ್ಯಾರ್ಥಿಗಳ ಅಧಿಕೃತ STS ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರವನ್ನು ಸ್ವಯಂಚಾಲಿತ, ಮ್ಯಾನುವಲ್ ಅಥವಾ ಖಾಲಿ ನಮೂನೆಯಲ್ಲಿ ಮುದ್ರಿಸಿ.</p>
         </div>
 
-        <!-- 2 Main View Switcher Tabs -->
-        <div class="flex items-center gap-2 bg-slate-200 dark:bg-slate-800 p-1.5 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700">
-          <button onclick="switchTcMainView('directory')" id="btnTcMainViewDirectory" class="bg-indigo-600 text-white font-black text-xs py-2 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
-            <i class="fa-solid fa-users"></i> 📊 ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ & Hub
-          </button>
-          <button onclick="switchTcMainView('preview')" id="btnTcMainViewPreview" class="text-slate-600 dark:text-slate-400 hover:text-slate-900 font-bold text-xs py-2 px-4 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer">
-            <i class="fa-solid fa-print"></i> 📜 TC ಪ್ರಿಂಟ್ ಪ್ರಮಾಣ ಪತ್ರ
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openHistoryModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm flex items-center gap-2 border-0 cursor-pointer">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>TC ಮುದ್ರಿತ ಇತಿಹಾಸ / TC Out Logs</span>
           </button>
         </div>
       </div>
 
-      <!-- VIEW 1: STUDENT DIRECTORY & TC HUB VIEW (no-print) -->
-      <div id="tcViewDirectorySection" class="space-y-6 no-print">
-        <!-- Quick TC Dashboard Counter Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
-            <div class="p-3 bg-indigo-100 text-indigo-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-file-export"></i></div>
-            <div>
-              <p class="text-[10px] text-slate-400 font-bold uppercase">ಒಟ್ಟು ನೀಡಿದ TC ಗಳು</p>
-              <h3 id="statTotalTcIssued" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
-            <div class="p-3 bg-emerald-100 text-emerald-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-users font-black"></i></div>
-            <div>
-              <p class="text-[10px] text-slate-400 font-bold uppercase">ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳು (Active)</p>
-              <h3 id="statActiveStudentsCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
-            <div class="p-3 bg-amber-100 text-amber-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-person-walking-luggage"></i></div>
-            <div>
-              <p class="text-[10px] text-slate-400 font-bold uppercase">TC ಪಡೆದು ಹೋದವರು (TC Out)</p>
-              <h3 id="statTcOutCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
-            </div>
-          </div>
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-3">
-            <div class="p-3 bg-rose-100 text-rose-700 rounded-xl font-bold text-lg"><i class="fa-solid fa-trash-can"></i></div>
-            <div>
-              <p class="text-[10px] text-slate-400 font-bold uppercase">ಮರುಬಳಕೆ ಬುಟ್ಟಿ (Recycle Bin)</p>
-              <h3 id="statRecycleBinCount" class="text-xl font-black text-slate-900 dark:text-white">--</h3>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive Student Directory Table Panel -->
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-            <div class="flex items-center gap-4">
-              <button onclick="switchTcDirectoryTab('active')" id="tabTcActiveBtn" class="text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer">
-                <i class="fa-solid fa-users"></i> ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳು (Active Students)
-              </button>
-              <button onclick="switchTcDirectoryTab('tcout')" id="tabTcOutBtn" class="text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer">
-                <i class="fa-solid fa-person-walking-arrow-right"></i> TC ನೀಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳು (TC Out List)
-              </button>
+      <!-- Main Layout Grid: Left Sidebar Control Panel (1 col) + Right A4 Certificate Canvas (3 cols) -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- LEFT CONTROL PANEL (no-print) -->
+        <div id="left-sidebar-panel" class="lg:col-span-1 space-y-4 no-print sticky top-20 self-start">
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            
+            <div class="border-b border-slate-100 dark:border-slate-800 pb-3 flex justify-between items-center">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 text-[10px] font-extrabold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 rounded-full mb-1">
+                  <i class="fa-solid fa-sliders"></i> ನಿಯಂತ್ರಣ ಪಟ್ಟಿ / CONTROLS
+                </span>
+                <h4 class="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">STS TRANSFER CERTIFICATE</h4>
+              </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-              <select id="tcDirectoryClassFilter" onchange="renderTcStudentDirectory()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-bold outline-none cursor-pointer">
-                <option value="ALL">-- All Classes --</option>
+            <!-- 1. THREE PROMINENT MODE TOGGLE BUTTONS -->
+            <div class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i class="fa-solid fa-toggle-on text-indigo-500"></i>
+                <span>ಆಯ್ಕೆ ವಿಧಾನಗಳು / Select Mode (3 Types):</span>
+              </label>
+              <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                <button type="button" onclick="setFillMode('auto')" id="mode-btn-auto" class="text-center py-2 rounded-lg font-bold text-[11px] border-0 cursor-pointer transition bg-white text-indigo-700 shadow-sm">
+                  ⚡ 1. ಆಟೋ
+                </button>
+                <button type="button" onclick="setFillMode('manual')" id="mode-btn-manual" class="text-center py-2 rounded-lg font-bold text-[11px] border-0 cursor-pointer transition text-slate-500 hover:text-slate-800 dark:text-slate-400">
+                  ✍️ 2. ಮ್ಯಾನುವಲ್
+                </button>
+                <button type="button" onclick="setFillMode('blank')" id="mode-btn-blank" class="text-center py-2 rounded-lg font-bold text-[11px] border-0 cursor-pointer transition text-slate-500 hover:text-slate-800 dark:text-slate-400">
+                  📄 3. ಖಾಲಿ ಟಿಸಿ
+                </button>
+              </div>
+              <p id="mode-description" class="text-[10px] text-indigo-600 font-semibold pt-1">
+                ⚡ <b>ಆಟೋ ಮೋಡ್:</b> ಡೇಟಾಬೇಸ್‌ನಿಂದ ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಆಯ್ಕೆ ಮಾಡಿ, ವಿವರ ಸ್ವಯಂಚಾಲಿತ ತುಂಬಲ್ಪಡುತ್ತದೆ.
+              </p>
+            </div>
+
+            <!-- 2. Medium Filter Dropdown -->
+            <div id="medium-selector-container" class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i class="fa-solid fa-language text-indigo-500"></i>
+                <span>ಮಾಧ್ಯಮ / Medium Filter:</span>
+              </label>
+              <select id="mediumSelector" onchange="filterStudentsList()" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
+                <option value="">ಎಲ್ಲಾ ಮಾಧ್ಯಮ / All Mediums</option>
+                <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
+                <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
+              </select>
+            </div>
+
+            <!-- 3. Class Filter Dropdown -->
+            <div id="class-selector-container" class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i class="fa-solid fa-school text-indigo-500"></i>
+                <span>ತರಗತಿ / Class Filter:</span>
+              </label>
+              <select id="classSelector" onchange="filterStudentsList()" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
+                <option value="">ಎಲ್ಲಾ ತರಗತಿ / All Classes</option>
                 <option value="LKG">LKG/KG1</option>
                 <option value="UKG">UKG/KG2</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
               </select>
-              <input type="text" id="tcDirectorySearch" onkeyup="renderTcStudentDirectory()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು ಅಥವಾ SATS ID..." class="w-full sm:w-56 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none">
             </div>
-          </div>
 
-          <div class="overflow-x-auto max-h-[420px] overflow-y-auto">
-            <table class="w-full text-xs text-left border-collapse">
-              <thead>
-                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0">
-                  <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
-                  <th class="p-3">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
-                  <th class="p-3 text-center">SATS ID</th>
-                  <th class="p-3 text-center">ತರಗತಿ / Class</th>
-                  <th class="p-3">ತಂದೆಯ ಹೆಸರು / Father Name</th>
-                  <th class="p-3 text-center w-36">ಕ್ರಿಯೆ / Action</th>
-                </tr>
-              </thead>
-              <tbody id="tcDirectoryTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
-                <tr>
-                  <td colspan="6" class="p-6 text-center text-slate-400">ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIEW 2: PRINTABLE TC DOCUMENT SECTION (Hidden by default, shown when ISSUE TC is clicked) -->
-      <div id="tcPrintableSection" class="hidden space-y-6">
-        
-        <!-- Top Sticky Action Bar in Preview Mode -->
-        <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-3 no-print">
-          <button onclick="switchTcMainView('directory')" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs py-2 px-4 rounded-xl border-0 cursor-pointer flex items-center gap-2">
-            <i class="fa-solid fa-arrow-left"></i> ⬅️ ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿಗೆ ಹಿಂತಿರುಗಿ / Back to Directory
-          </button>
-
-          <div class="flex items-center gap-3">
-            <label class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200">
-              <input type="checkbox" id="duplicateTcCheck" onchange="toggleDuplicateTc(this.checked)" class="accent-indigo-600 cursor-pointer">
-              <span>Duplicate TC / ಡ್ಯೂಪ್ಲಿಕೇಟ್ ಟಿಸಿ</span>
-            </label>
-            <button type="button" onclick="clearRosterSelection()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
-              Clear Form
-            </button>
-            <button type="button" onclick="triggerPrintAndLog()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-xs font-black transition border-0 cursor-pointer shadow-md flex items-center gap-2">
-              <i class="fa-solid fa-print"></i> 🖨️ ಪ್ರಿಂಟ್ ಕೊಡಿ / Print TC
-            </button>
-          </div>
-        </div>
-
-        <!-- Options Block (no-print) -->
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 no-print">
-
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <!-- Select Mode -->
-              <div class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">ತುಂಬುವ ವಿಧಾನ / Selection Mode:</label>
-                <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-                  <button onclick="setFillMode('auto')" id="mode-btn-auto" class="flex-1 text-center py-1.5 rounded-lg font-bold text-xs border-0 cursor-pointer transition bg-white text-indigo-700 shadow-sm">
-                    Auto Fetch (ಆಟೋ-ಫೆಚ್)
-                  </button>
-                  <button onclick="setFillMode('manual')" id="mode-btn-manual" class="flex-1 text-center py-1.5 rounded-lg font-bold text-xs border-0 cursor-pointer transition text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
-                    Manual (ಖಾಲಿ / ಮ್ಯಾನುವಲ್)
-                  </button>
-                </div>
-              </div>
-
-              <!-- Medium Dropdown -->
-              <div id="medium-selector-container" class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">ಮಾಧ್ಯಮ / Medium:</label>
-                <select id="mediumSelector" onchange="filterStudentsList()" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-750 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
-                  <option value="">ಎಲ್ಲಾ ಮಾಧ್ಯಮ / All Mediums</option>
-                  <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
-                  <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
+            <!-- 4. Student Search & Select Dropdown (Auto Mode) -->
+            <div id="student-selector-container" class="space-y-1.5">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i class="fa-solid fa-user-graduate text-indigo-500"></i>
+                <span>ವಿದ್ಯಾರ್ಥಿ ಆಯ್ಕೆ / Select Student:</span>
+              </label>
+              <div class="space-y-1">
+                <input type="text" id="studentSearchInput" oninput="filterStudentSelector(this.value)" placeholder="ಹೆಸರು ಅಥವಾ STS ನಂಬರ್ ಹುಡುಕಿ..." class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white">
+                <select id="studentSelector" onchange="handleStudentSelect(this.value)" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
+                  <option value="">-- ಲೋಡ್ ಆಗುತ್ತಿದೆ / Loading --</option>
                 </select>
               </div>
+            </div>
 
-              <!-- Class Dropdown -->
-              <div id="class-selector-container" class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">ತರಗತಿ / Class:</label>
-                <select id="classSelector" onchange="filterStudentsList()" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-750 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
-                  <option value="">ಎಲ್ಲಾ ತರಗತಿ / All Classes</option>
-                  <option value="LKG">LKG/KG1</option>
-                  <option value="UKG">UKG/KG2</option>
-                  <option value="1">Class 1</option>
-                  <option value="2">Class 2</option>
-                  <option value="3">Class 3</option>
-                  <option value="4">Class 4</option>
-                  <option value="5">Class 5</option>
-                  <option value="6">Class 6</option>
-                  <option value="7">Class 7</option>
-                  <option value="8">Class 8</option>
-                  <option value="9">Class 9</option>
-                  <option value="10">Class 10</option>
-                </select>
-              </div>
+            <!-- 5. Subject Preset Preset Switcher (Manual Mode) -->
+            <div id="manual-subject-preset-container" class="space-y-1.5 hidden">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i class="fa-solid fa-book-open text-indigo-500"></i>
+                <span>विषಯಗಳ ಮಾದರಿ (Subjects Preset):</span>
+              </label>
+              <select id="subjectPresetSelector" onchange="applySubjectPreset(this.value)" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white cursor-pointer">
+                <option value="auto">Class 1-5 (KANNADA, ENG | MATHS, EVS)</option>
+                <option value="upper" selected>Class 6-10 (KANNADA, ENG, HINDI | MATHS, SS, SCI)</option>
+              </select>
+            </div>
 
-              <!-- Student Search select with Autocomplete -->
-              <div id="student-selector-container" class="space-y-1.5">
-                <label class="text-xs font-bold text-slate-600 dark:text-slate-400">ವಿದ್ಯಾರ್ಥಿ ಹುಡುಕಿ / Search Student:</label>
-                <div class="relative">
-                  <input type="text" id="studentSearchInput" oninput="filterStudentSelector(this.value)" placeholder="ಹೆಸರು ಅಥವಾ STS ನಂಬರ್ ಮೂಲಕ ಹುಡುಕಿ..." class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-750 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white mb-1.5">
-                  <select id="studentSelector" onchange="handleStudentSelect(this.value)" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-750 rounded-xl text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-800 dark:text-white cursor-pointer">
-                    <option value="">-- ಲೋಡ್ ಆಗುತ್ತಿದೆ / Loading Students --</option>
-                  </select>
-                </div>
+            <!-- Action Buttons Block -->
+            <div class="pt-2 space-y-2">
+              <button type="button" onclick="triggerPrintAndLog()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs transition border-0 cursor-pointer shadow-md flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-export text-sm"></i>
+                <span>GENERATE & PRINT TC / ವರ್ಗಾವಣೆ ಪತ್ರ ಮುದ್ರಿಸಿ</span>
+              </button>
+
+              <button type="button" onclick="printBlankTcForm()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 px-4 rounded-xl text-xs transition border-0 cursor-pointer shadow-sm flex items-center justify-center gap-2">
+                <i class="fa-solid fa-print text-sm"></i>
+                <span>PRINT BLANK TC / ಖಾಲಿ ಟಿಸಿ ಮುದ್ರಿಸಿ</span>
+              </button>
+
+              <div class="flex items-center justify-between gap-2 pt-1">
+                <label class="flex items-center gap-1.5 text-[11px] font-bold text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input type="checkbox" id="duplicateTcCheck" onchange="toggleDuplicateTc(this.checked)" class="rounded border-slate-300 dark:border-slate-700 accent-indigo-600 cursor-pointer">
+                  <span>Duplicate TC Header</span>
+                </label>
+
+                <button type="button" onclick="clearRosterSelection()" class="text-slate-500 hover:text-slate-800 dark:text-slate-400 text-[11px] font-bold underline border-0 bg-transparent cursor-pointer">
+                  Clear Form
+                </button>
               </div>
             </div>
-            
-            <!-- Collapsible Settings & History Logs Section (no-print) -->
-            <div class="border-t border-slate-100 dark:border-slate-850 pt-3">
+
+            <!-- Collapsible Settings Panel -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-3">
               <details class="group">
-                <summary class="flex justify-between items-center font-bold text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer list-none select-none">
-                  <span class="flex items-center gap-2">
+                <summary class="flex justify-between items-center font-bold text-[11px] text-slate-500 hover:text-slate-800 dark:text-slate-400 cursor-pointer list-none select-none">
+                  <span class="flex items-center gap-1.5">
                     <i class="fa-solid fa-gears text-indigo-500"></i>
-                    <span>ಟಿಸಿ ಸಂಖ್ಯೆ ಸಂಯೋಜನೆ ಮತ್ತು ಇತಿಹಾಸ / Settings & Print History Log</span>
+                    <span>TC ಸಂಖ್ಯೆ ಸರಣಿ ಸಂಯೋಜನೆ / Settings</span>
                   </span>
                   <span class="transition group-open:rotate-180">
-                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    <i class="fa-solid fa-chevron-down text-[9px]"></i>
                   </span>
                 </summary>
                 
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-                  <!-- Left: Numbering sequence configuration -->
-                  <div class="bg-slate-50 dark:bg-slate-850 p-4 rounded-xl border border-slate-200 dark:border-slate-750 space-y-3">
-                    <h5 class="font-bold text-slate-700 dark:text-slate-350 flex items-center gap-1.5 border-b border-slate-200/50 pb-1.5">
-                      <i class="fa-solid fa-hashtag text-indigo-500"></i>
-                      <span>ಟಿಸಿ ಸಂಖ್ಯೆ ಸರಣಿ ಸಂಯೋಜನೆ / Auto TC Number Settings</span>
-                    </h5>
-                    <div class="space-y-2">
-                      <div>
-                        <label class="block font-semibold text-[10px] text-slate-500 mb-0.5">Prefix (ಪೂರ್ವಪ್ರತ್ಯಯ):</label>
-                        <input type="text" id="settingsPrefix" placeholder="eg. GHPS/M/2025-26/" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                      </div>
-                      <div>
-                        <label class="block font-semibold text-[10px] text-slate-500 mb-0.5">Next Serial No (ಮುಂದಿನ ಸರಣಿ ಸಂಖ್ಯೆ):</label>
-                        <input type="text" id="settingsSerial" placeholder="eg. 001" class="w-full p-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                      </div>
-                      <button type="button" onclick="saveNumberingSettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-lg text-[11px] transition border-0 cursor-pointer shadow-sm">
-                        ಸೇವ್ ಮಾಡಿ / Save Sequence Settings
-                      </button>
-                    </div>
+                <div class="mt-3 space-y-2.5 text-[11px]">
+                  <div>
+                    <label class="block font-semibold text-[10px] text-slate-500 mb-0.5">Prefix / ಆರಂಭಿಕ ಅಕ್ಷರ:</label>
+                    <input type="text" id="settingsPrefix" placeholder="ಉದಾ. GHPS/M/2025-26/" class="w-full p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold focus:outline-none">
                   </div>
-
-                  <!-- Middle & Right: Issue history table -->
-                  <div class="bg-slate-50 dark:bg-slate-850 p-4 rounded-xl border border-slate-200 dark:border-slate-750 space-y-3 md:col-span-2">
-                    <div class="flex justify-between items-center border-b border-slate-200/50 pb-1.5">
-                      <h5 class="font-bold text-slate-700 dark:text-slate-350 flex items-center gap-1.5">
-                        <i class="fa-solid fa-history text-indigo-500"></i>
-                        <span>ಮುದ್ರಿತ ಇತಿಹಾಸ ವರದಿ / Printed TCs Log History</span>
-                      </h5>
-                      <div class="flex items-center gap-2">
-                        <input type="text" id="logSearchInput" oninput="filterPrintLogs(this.value)" placeholder="ಹುಡುಕಿ..." class="p-1 px-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-750 rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-indigo-500 w-32 font-semibold">
-                        <button type="button" onclick="clearPrintLogs()" class="bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 p-1 px-2 rounded-lg text-[10px] font-bold border-0 cursor-pointer">
-                          Clear Logs
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div class="overflow-y-auto max-h-32 border border-slate-200 dark:border-slate-750 rounded-lg bg-white dark:bg-slate-800">
-                      <table class="w-full text-[10px] text-left border-collapse">
-                        <thead>
-                          <tr class="bg-slate-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-750 text-slate-600 dark:text-slate-400 font-bold sticky top-0">
-                            <th class="p-1.5 px-2">Student Name</th>
-                            <th class="p-1.5 px-2">STS No.</th>
-                            <th class="p-1.5 px-2">TC Number</th>
-                            <th class="p-1.5 px-2">Printed Date</th>
-                          </tr>
-                        </thead>
-                        <tbody id="print-log-tbody" class="divide-y divide-slate-100 dark:divide-slate-750 font-semibold text-slate-700 dark:text-slate-300">
-                          <!-- Filled dynamically -->
-                        </tbody>
-                      </table>
-                    </div>
+                  <div>
+                    <label class="block font-semibold text-[10px] text-slate-500 mb-0.5">Next Serial No / ಮುಂದಿನ ನಂಬರ್:</label>
+                    <input type="text" id="settingsSerial" placeholder="ಉದಾ. 001" class="w-full p-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-semibold focus:outline-none">
                   </div>
+                  <button type="button" onclick="saveNumberingSettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1.5 rounded-lg text-[10px] transition border-0 cursor-pointer shadow-sm">
+                    ಸೇವ್ ಮಾಡಿ / Save Settings
+                  </button>
                 </div>
               </details>
             </div>
+
           </div>
+        </div>
 
-          
-          <!-- Document Canvas Preview Panel -->
-          <div class="bg-white p-6 border border-slate-300 shadow-lg text-black rounded-none print-card-border-none relative">
-            
-            <!-- DOCUMENT 2: TRANSFER CERTIFICATE (TC) -->
+        <!-- RIGHT MAIN STAGE: Live A4 Document Canvas Preview Panel (3 cols) -->
+        <div id="right-canvas-panel" class="lg:col-span-3">
+          <div class="bg-white p-6 border border-slate-300 shadow-xl text-black rounded-2xl print-card-border-none relative min-h-[842px]">
+
+            <!-- OFFICIAL STS TRANSFER CERTIFICATE DOCUMENT CANVAS -->
             <div id="canvas-TC" class="space-y-4 text-xs text-black select-text">
-              <div class="print-certificate-container p-3 border border-black bg-white text-black font-sans w-full max-w-[740px] mx-auto box-sizing">
+              <div class="page-container p-0 mx-auto w-full max-w-[800px] bg-white">
                 
-
-                <!-- SATS Document Header -->
-                <div class="flex flex-col font-bold pb-0.5 text-[8.2px] leading-tight text-left">
-                  <span contenteditable="true" id="tc-type-header" class="canvasVal-tc_type uppercase tracking-wide hidden">DUPLICATE TRANSFER CERTIFICATE</span>
-                  <span class="text-emerald-700 mt-0.5">TC No. : <b contenteditable="true" class="canvasVal-tc_no">26071027759954</b></span>
-                  <span class="text-emerald-700 mt-0.5">Academic year : <b contenteditable="true" class="canvasVal-academic_year">2025-2026</b></span>
+                <!-- Outer Top Header Bar -->
+                <div class="top-bar flex justify-between text-[11px] mb-3 text-slate-700 font-sans">
+                  <div id="tc-current-timestamp">6/18/26, 8:22 PM</div>
+                  <div>STS | Education</div>
                 </div>
 
-                <!-- School Header Details -->
-                <div class="text-center space-y-0.5 font-bold pt-0.5 pb-1">
-                  <h2 class="text-[10.5px] font-black text-rose-700 tracking-wide">GOVT.HIGHER PRIMARY SCHOOL MARCHED</h2>
-                  <h3 class="text-[8.2px] text-slate-800 font-bold">Government Higher Primary School Marched ,Marched</h3>
-                  <p class="text-[7.5px] uppercase tracking-tight text-slate-800">MARCHED / , RAICHUR / , RAICHUR / ರಾಯಚೂರು, KARNATAKA- 584134</p>
-                  <h1 class="text-[10.5px] font-black text-rose-700 underline tracking-widest py-0.5">SCHOOL TRANSFER CERTIFICATE</h1>
-                </div>
-
-                <!-- Main SATS TC Table -->
-                <table class="w-full border-collapse text-[8.2px] leading-tight border border-black font-sans table-fixed">
-                  <tbody>
-                    <!-- Row 1 -->
-                    <tr>
-                      <td class="w-1/2 border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">1. Admission No./ಪ್ರವೇಶ ದಾಖಲಾತಿ ಸಂಖ್ಯೆ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-admission_no"></span>
-                        </div>
-                      </td>
-                      <td class="w-1/2 border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">14. Standard in which the student is studying at the time of leaving the School / ಶಾಲೆ ಬಿಡುವಾಗ ವಿದ್ಯಾರ್ಥಿ ಓದುತ್ತಿದ್ದ ತರಗತಿ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-enroll_class">Class 7</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 2 -->
-                    <tr>
-                      <td class="w-1/2 border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">2. Cumulative Record No. / Enrollment No. / ಸಂಚಿತ ದಾಖಲಾತಿ ಸಂಖ್ಯೆ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-app_no"></span>
-                        </div>
-                      </td>
-                      <td class="w-1/2 border border-black py-2.5 px-1.5 align-top text-left" rowspan="2">
-                        <div class="text-black font-bold">15.Student opted Subject's / ಹೈಯರ್ ಗುಣಮಟ್ಟವನ್ನು ಶಿಷ್ಯ ಸಂದರ್ಭದಲ್ಲಿ ಬಡ್ತಿ</div>
-                        <div class="pl-4 pt-0.5 text-[8px] text-black text-left leading-normal">
-                          <div>a) Languages Studied / ಎ) ಅಧ್ಯಯನ ಮಾಡಿದ ಭಾಷೆ: <span contenteditable="true" class="canvasVal-languages font-bold">KANNADA, ENGLISH, HINDI</span></div>
-                          <div class="mt-0.5">b) Elective Studied / ಬಿ) ಅಧ್ಯಯನ ಮಾಡಿದ ಐಚ್ಛಿಕ ವಿಷಯಗಳು: <span contenteditable="true" class="canvasVal-electives font-bold">MATHEMATICS ,SOCIAL SCIENCE ,SCIENCE</span></div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 3 -->
-                    <tr>
-                      <td class="w-1/2 border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">3. Date of Admission to School / ಶಾಲೆಗೆ ದಾಖಲಾದ ದಿನಾಂಕ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-date_of_admission"></span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 4 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">4. Name of the Student in full / ವಿದ್ಯಾರ್ಥಿಯ ಪೂರ್ಣ ಹೆಸರು</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-student_name_en"></span> / <span contenteditable="true" class="canvasVal-student_name_kn"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">16. Medium of Instructions / ಬೋಧನ ಮಾಧ್ಯಮ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-medium">Kannada / ಕನ್ನಡ</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 5 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">5. Sex / ಲಿಂಗ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-gender"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">17. Whether the Student has paid all the fees due to School ? / ಶಾಲೆಗೆ ಬಾಕಿ ಇರುವ ಎಲ್ಲಾ ಶುಲ್ಕಗಳನ್ನು ವಿದ್ಯಾರ್ಥಿಯು ಪಾವತಿ ಮಾಡಿದ್ದಾನೆಯೇ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <select class="canvasVal-fees_paid bg-transparent font-bold text-black border-0 outline-none p-0 cursor-pointer appearance-none -webkit-appearance-none"><option value="YES">YES</option><option value="NO">NO</option></select>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 6 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">6. Nationality / ರಾಷ್ಟ್ರೀಯತೆ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-nationality">Indian/ಭಾರತೀಯ</span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">18. Fee Concession, if any (Nature and period to be specified) / ಶುಲ್ಕ ವಿನಾಯಿತಿ ಯಾವುದಾದರು ಇದ್ದಲ್ಲಿ (ಸ್ವರೂಪ ಮತ್ತು ಅವಧಿಯನ್ನು ನಿರ್ಧಿಷ್ಟಪಡಿಸತಕ್ಕದ್ದು)</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-fee_concession"></span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 7 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">7. Religion / ಧರ್ಮ Caste / Caste_Kannada</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-religion">Hindu / ಹಿಂದು</span> &nbsp;&nbsp; <span contenteditable="true" class="canvasVal-caste">Madiga</span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">19. Scholarship if any (Nature and period to be specified) / ವಿದ್ಯಾರ್ಥಿ ವೇತನ ಯಾವುದಾದರು ಇದ್ದಲ್ಲಿ (ಸ್ವರೂಪ ಮತ್ತು ಅವಧಿಯನ್ನು ನಿರ್ಧಿಷ್ಠಪಡಿಸತಕ್ಕದ್ದು)</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-scholarship"></span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 8 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">8. Name of the Father / ತಂದೆಯ ಹೆಸರು</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-father_name_en"></span> / <span contenteditable="true" class="canvasVal-father_name_kn"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">20. Whether Medically Examined or not / ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆ ಮಾಡಲಾಗಿದೆಯೇ / ಇಲ್ಲವೇ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <select class="canvasVal-medical bg-transparent font-bold text-black border-0 outline-none p-0 cursor-pointer appearance-none -webkit-appearance-none"><option value="YES">YES</option><option value="NO">NO</option></select>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 9 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">9. Name of the Mother / ತಾಯಿಯ ಹೆಸರು</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-mother_name_en"></span> / <span contenteditable="true" class="canvasVal-mother_name_kn"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">21. Month of student last attendance at the School / ಶಾಲೆಗೆ ವಿದ್ಯಾರ್ಥಿಯು ಕಡೆಯ ಬಾರಿ ಹಾಜರಾಗಿದ್ದ ದಿನಾಂಕ/ ತಿಂಗಳು</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-last_attendance"></span><input type="date" class="no-print opacity-0 w-0 h-0 p-0 m-0 border-0 absolute pointer-events-none" onchange="updateDateFromPicker(this, 'canvasVal-last_attendance')"><i class="fa-solid fa-calendar-days text-indigo-500 hover:text-indigo-700 cursor-pointer no-print text-[10px]" onclick="this.previousElementSibling.showPicker()"></i>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 10 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">10. Whether the candidate belongs to Schedule Caste or Schedule Tribe ? / ವಿದ್ಯಾರ್ಥಿಯು ಪರಿಶಿಷ್ಠ ಜಾತಿ ಅಥವಾ ಪರಿಶಿಷ್ಠ ವರ್ಗಕ್ಕೆ ಸೇರಿದವನಾಗಿದ್ದಾನೆಯೇ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-social_class"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">22. Date on which the application for the Transfer Certificate was received / ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರಕ್ಕಾಗಿ ಅರ್ಜಿಯನ್ನು ಸ್ವೀಕರಿಸಿದ ದಿನಾಂಕ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-tc_received_date"></span><input type="date" class="no-print opacity-0 w-0 h-0 p-0 m-0 border-0 absolute pointer-events-none" onchange="updateDateFromPicker(this, 'canvasVal-tc_received_date')"><i class="fa-solid fa-calendar-days text-indigo-500 hover:text-indigo-700 cursor-pointer no-print text-[10px]" onclick="this.previousElementSibling.showPicker()"></i>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 11 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">11. Whether qualified for promotion to a Higher Standard ? / ಉನ್ನತ ಶಿಕ್ಷಣಕ್ಕಾಗಿ ಬಡ್ತಿ ಪಡೆಯಲು ಅರ್ಹತೆ ಇದೆಯೇ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-promotion">YES</span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">23. Number of School Days up to the date of leaving in academic year / ಶಾಲೆ ಬಿಟ್ಟ ದಿನಾಂಕದವರೆಗಿನ ದಿನಗಳ ಸಂಖ್ಯೆ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-working_days">240</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 12 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold flex flex-col">
-                          <span>12. Student Date of Birth / ವಿದ್ಯಾರ್ಥಿಯ ಹುಟ್ಟಿದ ದಿನಾಂಕ (ಅಕ್ಷರಗಳಲ್ಲಿ)</span>
-                          <span contenteditable="true" class="canvasVal-dob_words text-[7px] font-semibold text-slate-800"></span>
-                        </div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-dob"></span>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">24. Number of School Days the student attended in academic year / ವಿದ್ಯಾರ್ಥಿಯು ಹಾಜರಾಗಿದ್ದ ಶಾಲೆಗಳ ದಿನಗಳ ಸಂಖ್ಯೆ</div>
-                        <div class="pl-4 pt-0.5 font-bold text-left text-black uppercase">
-                          <span contenteditable="true" class="canvasVal-days_attended">145</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Row 13 -->
-                    <tr>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold flex flex-col gap-0.5">
-                          <div>13. District / ಜಿಲ್ಲೆ : <span contenteditable="true" class="canvasVal-district font-bold">RAICHUR</span></div>
-                          <div>&nbsp;&nbsp;&nbsp;&nbsp;Taluka / ತಾಲ್ಲೂಕು : <span contenteditable="true" class="canvasVal-taluka font-bold">Raichur</span></div>
-                          <div>&nbsp;&nbsp;&nbsp;&nbsp;Village / ಗ್ರಾಮ : <span contenteditable="true" class="canvasVal-village font-bold">Merched</span></div>
-                        </div>
-                      </td>
-                      <td class="border border-black py-2.5 px-1.5 align-top text-left">
-                        <div class="text-black font-bold">25. Character and Conduct / ನಡತೆ ಮತ್ತು ಚಾರಿತ್ರ್ಯ</div>
-                        <div class="pl-4 pt-1 font-bold text-left text-black uppercase">
-                          <select class="canvasVal-conduct bg-transparent font-bold text-black border-0 outline-none p-0 cursor-pointer appearance-none -webkit-appearance-none"><option value="Good">Good</option><option value="Better">Better</option><option value="Satisfaction">Satisfaction</option></select>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <!-- SATS Footer Signature Lines -->
-                <div class="flex justify-between items-center text-[8px] font-bold pt-3">
-                  <span>Date of Entry : <span contenteditable="true" class="canvasVal-date_of_entry">____________________</span></span>
-                  <span>Date of Issue : <span contenteditable="true" class="canvasVal-date_of_issue">____________________</span></span>
-                </div>
-
-                <div class="flex justify-between items-end pt-3 font-bold text-[8px]">
-                  <div class="flex flex-col text-left">
-                    <span>Data Entry operator Sign : ____________________</span>
+                <!-- Certificate Box -->
+                <div class="certificate-box border-2 border-black p-3.5 relative bg-white">
+                  
+                  <!-- Duplicate TC Banner (Optional) -->
+                  <div class="doc-title font-bold text-[13px] uppercase tracking-wide">
+                    <span id="tc-type-header" class="canvasVal-tc_type hidden underline text-rose-700">DUPLICATE TRANSFER CERTIFICATE</span>
                   </div>
-                  <div class="flex flex-col items-center justify-center">
-                    <div class="w-12 h-12 border border-black rounded-full flex items-center justify-center text-center text-[7px] font-bold aspect-square">
-                      School Seal
+                  
+                  <!-- Top Details Row: TC No / Academic Year on left, School Code on right (Exact Official STS Header) -->
+                  <div class="flex items-start justify-between mb-2">
+                    <div class="space-y-0.5 text-left font-bold text-[#008000] text-[11.5px]">
+                      <div class="flex items-center gap-1">
+                        <span>TC No. :</span>
+                        <input type="text" id="tc_no_input" oninput="syncInputsToCanvas()" class="cert-input green-text font-extrabold text-[11.5px] w-48 uppercase" placeholder="26061028553724">
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span>Academic year :</span>
+                        <input type="text" id="tc_year_input" oninput="syncInputsToCanvas()" class="cert-input green-text font-extrabold text-[11.5px] w-28 uppercase" placeholder="2026-2027">
+                      </div>
+                    </div>
+                    
+                    <div class="font-extrabold text-[#008000] text-[11.5px] tracking-tight">
+                      <span>School Code : </span>
+                      <span id="tc_school_code_display">2909709801</span>
                     </div>
                   </div>
-                  <div class="flex flex-col text-right">
-                    <span>Headmaster Sign : ____________________</span>
+
+                  <!-- Red Official School Header -->
+                  <div class="school-header text-center text-[#d32f2f] font-bold mb-3">
+                    <div class="school-name-primary text-[14px] font-extrabold uppercase">GOVT.HIGHER PRIMARY SCHOOL MARCHED</div>
+                    <div class="school-name-secondary text-[13px] mt-0.5 font-bold">Government Higher Primary School Marched ,Marched</div>
+                    <div class="school-location text-[12px] mt-1 font-bold">MARCHED / , RAICHUR / , RAICHUR / ರಾಯಚೂರು, KARNATAKA- 584134</div>
+                    <div class="main-title text-[15px] mt-2 font-black tracking-wide uppercase">SCHOOL TRANSFER CERTIFICATE</div>
                   </div>
+
+                  <!-- Details Grid Table (25 STS Items) -->
+                  <table class="details-table w-full border-collapse mb-6 text-[10.5px]">
+                    <tbody>
+                      <tr>
+                        <td class="w-1/2 border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">1. Admission No.</span> / <span class="label-kn">ಪ್ರವೇಶ ದಾಖಲಾತಿ ಸಂಖ್ಯೆ</span><br>
+                          <input type="text" id="tc_adm_no" oninput="syncInputsToCanvas()" class="cert-input font-extrabold w-full mt-1" placeholder="ಉದಾ. 189558038">
+                        </td>
+                        <td class="w-1/2 border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">14. Standard in which the student is studying at the time of leaving the School /</span><br>
+                          <span class="label-kn">ಶಾಲೆ ಬಿಡುವಾಗ ವಿದ್ಯಾರ್ಥಿ ಓದುತ್ತಿದ್ದ ತರಗತಿ</span><br>
+                          <select id="tc_class" onchange="handleClassChange(this.value)" class="cert-input font-bold w-full mt-1">
+                            <option value=""></option>
+                            <option value="Class 1">Class 1 / 1 ನೇ ತರಗತಿ</option>
+                            <option value="Class 2">Class 2 / 2 ನೇ ತರಗತಿ</option>
+                            <option value="Class 3">Class 3 / 3 ನೇ ತರಗತಿ</option>
+                            <option value="Class 4">Class 4 / 4 ನೇ ತರಗತಿ</option>
+                            <option value="Class 5">Class 5 / 5 ನೇ ತರಗತಿ</option>
+                            <option value="Class 6">Class 6 / 6 ನೇ ತರಗತಿ</option>
+                            <option value="Class 7">Class 7 / 7 ನೇ ತರಗತಿ</option>
+                            <option value="Class 8">Class 8 / 8 ನೇ ತರಗತಿ</option>
+                            <option value="Class 9">Class 9 / 9 ನೇ ತರಗತಿ</option>
+                            <option value="Class 10">Class 10 / 10 ನೇ ತರಗತಿ</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="w-1/2 border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">2. Cumulative Record No. / Enrollment No./</span><br>
+                          <span class="label-kn">ಸಂಚಿತ ದಾಖಲಾತಿ ಸಂಖ್ಯೆ</span><br>
+                          <input type="text" id="tc_app_no" oninput="syncInputsToCanvas()" class="cert-input font-extrabold w-full mt-1" placeholder="ಉದಾ. 189558038">
+                        </td>
+                        <td class="w-1/2 border-[1.5px] border-black p-1.5 align-top" rowspan="2">
+                          <span class="label-en">15.Student opted Subject's / ಹೈಯರ್ ಗುಣಮಟ್ಟವನ್ನು ಶಿಷ್ಯ ಸಂದರ್ಭದಲ್ಲಿ ಬಡ್ತಿ</span><br>
+                          <div class="pt-0.5">a) Languages Studied / ಎ) ಅಭ್ಯಾಸ ಮಾಡಿದ ಭಾಷೆ</div>
+                          <input type="text" id="tc_languages" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-0.5 uppercase" value="KANNADA, ENGLISH, HINDI">
+                          <div class="pt-1">b) Elective Studied / ಬಿ) ಅಧ್ಯಯನ ಮಾಡಿದ ಐಚ್ಛಿಕ ವಿಷಯಗಳು</div>
+                          <input type="text" id="tc_electives" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-0.5 uppercase" value="MATHEMATICS ,SOCIAL SCIENCE ,SCIENCE">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="w-1/2 border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">3. Date of Admission to School / ಶಾಲೆಗೆ ದಾಖಲಾದ ದಿನಾಂಕ</span><br>
+                          <input type="date" id="tc_date_of_admission" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1 cursor-pointer">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">4. Name of the Student in full / ವಿದ್ಯಾರ್ಥಿಯ ಪೂರ್ಣ ಹೆಸರು</span><br>
+                          <input type="text" id="tc_student_name" oninput="syncInputsToCanvas()" class="cert-input font-extrabold w-full mt-1 uppercase" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು">
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">16. Medium of Instructions / ಬೋಧನಾ ಮಾಧ್ಯಮ</span><br>
+                          <select id="tc_medium" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="Kannada / ಕನ್ನಡ" selected>Kannada / ಕನ್ನಡ</option>
+                            <option value="English / ಇಂಗ್ಲಿಷ್">English / ಇಂಗ್ಲಿಷ್</option>
+                            <option value="Urdu / ಉರ್ದು">Urdu / ಉರ್ದು</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">5. Sex / ಲಿಂಗ</span><br>
+                          <select id="tc_gender" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="Girl / ಸ್ತ್ರೀ">Girl / ಸ್ತ್ರೀ</option>
+                            <option value="Boy / ಹುಡುಗ">Boy / ಹುಡುಗ</option>
+                          </select>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">17. Whether the Student has paid all the fees due to School ? / ಶಾಲೆಗೆ ಬಾಕಿ ಇರುವ ಎಲ್ಲಾ ಶುಲ್ಕಗಳನ್ನು ವಿದ್ಯಾರ್ಥಿಯು ಪಾವತಿ ಮಾಡಿದ್ದಾನೆಯೇ</span><br>
+                          <select id="tc_fees_paid" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="YES" selected>YES / ಹೌದು</option>
+                            <option value="NO">NO / ಇಲ್ಲ</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">6. Nationality / ರಾಷ್ಟ್ರೀಯತೆ</span><br>
+                          <input type="text" id="tc_nationality" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1" value="Indian / ಭಾರತೀಯ">
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">18. Fee Concession, if any (Nature and period to be specified) / ಶುಲ್ಕ ರಿಯಾಯಿತಿ ಯಾವುದಾದರೂ ಇದ್ದಲ್ಲಿ (ಸ್ವರೂಪ ಮತ್ತು ಅವಧಿಯನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸತಕ್ಕದ್ದು)</span><br>
+                          <input type="text" id="tc_fee_concession" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1" value="NIL">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">7. Religion / ಧರ್ಮ</span><br>
+                          <select id="tc_religion" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="Hindu / ಹಿಂದೂ" selected>Hindu / ಹಿಂದೂ</option>
+                            <option value="Muslim / ಮುಸ್ಲಿಂ">Muslim / ಮುಸ್ಲಿಂ</option>
+                            <option value="Christian / ಕ್ರಿಶ್ಚಿಯನ್">Christian / ಕ್ರಿಶ್ಚಿಯನ್</option>
+                            <option value="Jain / ಜೈನ">Jain / ಜೈನ</option>
+                            <option value="Other">Other / ಇತರೆ</option>
+                          </select>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">19. Scholarship if any (Nature and period to be specified) / ವಿದ್ಯಾರ್ಥಿ ವೇತನ ಯಾವುದಾದರೂ ಇದ್ದಲ್ಲಿ (ಸ್ವರೂಪ ಮತ್ತು ಅವಧಿಯನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸತಕ್ಕದ್ದು)</span><br>
+                          <input type="text" id="tc_scholarship" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1" value="NIL">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">8. Name of the Father / ತಂದೆಯ ಹೆಸರು</span><br>
+                          <input type="text" id="tc_father_name" oninput="syncInputsToCanvas()" class="cert-input font-extrabold w-full mt-1 uppercase" placeholder="ತಂದೆಯ ಹೆಸರು">
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">20. Whether Medically Examined or not / ವೈದ್ಯಕೀಯ ಪರೀಕ್ಷೆ ಮಾಡಲಾಗಿದೆಯೇ / ಇಲ್ಲವೇ</span><br>
+                          <select id="tc_medically_examined" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value=""></option>
+                            <option value="YES">YES / ಹೌದು</option>
+                            <option value="NO">NO / ಇಲ್ಲ</option>
+                          </select>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">9. Name of the Mother / ತಾಯಿಯ ಹೆಸರು</span><br>
+                          <input type="text" id="tc_mother_name" oninput="syncInputsToCanvas()" class="cert-input font-extrabold w-full mt-1 uppercase" placeholder="ತಾಯಿಯ ಹೆಸರು">
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">21. Month of student last attendance at the School / ಶಾಲೆಗೆ ವಿದ್ಯಾರ್ಥಿಯು ಕಡೆಯ ಬಾರಿ ಹಾಜರಾಗಿದ್ದ ದಿನಾಂಕ / ತಿಂಗಳು</span><br>
+                          <input type="date" id="tc_last_att_date" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1 cursor-pointer">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">10. Whether the candidate belongs to Schedule Caste or Schedule Tribe ? /</span><br>
+                          <span class="label-kn">ವಿದ್ಯಾರ್ಥಿಯು ಪರಿಶಿಷ್ಟ ಜಾತಿ ಅಥವಾ ಪರಿಶಿಷ್ಟ ಪಂಗಡಕ್ಕೆ ಸೇರಿದವನಾಗಿದ್ದಾನೆಯೇ</span><br>
+                          <div class="flex items-center gap-1 mt-1">
+                            <select id="tc_social_class" onchange="syncInputsToCanvas()" class="cert-input font-bold w-1/2">
+                              <option value="SC / ಎಸ್ಸಿ /">SC / ಎಸ್ಸಿ</option>
+                              <option value="ST / ಎಸ್ಟಿ /">ST / ಎಸ್ಟಿ</option>
+                              <option value="Cat-1">Cat-1</option>
+                              <option value="2A">2A</option>
+                              <option value="2B">2B</option>
+                              <option value="3A">3A</option>
+                              <option value="3B">3B</option>
+                              <option value="General">General / ಸಾಮಾನ್ಯ</option>
+                            </select>
+                            <input type="text" id="tc_caste" oninput="syncInputsToCanvas()" class="cert-input font-bold w-1/2" placeholder="ಜಾತಿ ಉದಾ. VALMIKI / NAYAKA">
+                          </div>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">22. Date on which the application for the Transfer Certificate was received /</span><br>
+                          <span class="label-kn">ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರಕ್ಕಾಗಿ ಅರ್ಜಿಯನ್ನು ಸ್ವೀಕರಿಸಿದ ದಿನಾಂಕ</span><br>
+                          <input type="date" id="tc_app_date" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1 cursor-pointer">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">11. Whether qualified for promotion to a Higher Standard ? / ಉನ್ನತ ಶಿಕ್ಷಣಕ್ಕಾಗಿ ಬಡ್ತಿ ಪಡೆಯಲು ಅರ್ಹತೆ ಇದೆಯೇ</span><br>
+                          <select id="tc_promotion" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="YES">YES / ಹೌದು</option>
+                            <option value="NO" selected>NO / ಇಲ್ಲ</option>
+                          </select>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">23. Number of School Days up to the date of leaving in academic year / ಶಾಲೆ ಬಿಟ್ಟ ದಿನಾಂಕದವರೆಗಿನ ದಿನಗಳ ಸಂಖ್ಯೆ</span><br>
+                          <input type="number" id="tc_working_days" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1" value="240">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">12. Student Date of Birth / ವಿದ್ಯಾರ್ಥಿಯ ಹುಟ್ಟಿದ ದಿನಾಂಕ (ಅಕ್ಷರಗಳಲ್ಲಿ)</span><br>
+                          <input type="date" id="tc_dob" onchange="handleTcDobChange(this.value)" class="cert-input font-bold w-full mt-1 cursor-pointer">
+                          <div id="tc_dob_words_display" class="font-bold text-[8.5px] text-black uppercase pt-1 min-h-[14px]"></div>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">24. Number of Total Days the student attended in academic year / ವಿದ್ಯಾರ್ಥಿಯು ಹಾಜರಾಗಿದ್ದ ಶಾಲೆಗಳ ದಿನಗಳ ಸಂಖ್ಯೆ</span><br>
+                          <input type="number" id="tc_days_attended" oninput="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1" value="145">
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <div class="space-y-1 text-[10.5px]">
+                            <div class="flex items-center gap-1">
+                              <span class="label-en font-bold whitespace-nowrap">13. District / ಜಿಲ್ಲೆ :</span>
+                              <select id="tc_district" onchange="handleDistrictChange(this.value)" class="cert-input font-bold flex-1">
+                                <option value="RAICHUR" selected>RAICHUR / ರಾಯಚೂರು</option>
+                                <option value="KALABURAGI">KALABURAGI / ಕಲಬುರಗಿ</option>
+                                <option value="YADGIR">YADGIR / ಯಾದಗಿರಿ</option>
+                                <option value="KOPPAL">KOPPAL / ಕೊಪ್ಪಳ</option>
+                                <option value="BALLARI">BALLARI / ಬಳ್ಳಾರಿ</option>
+                                <option value="VIJAYANAGARA">VIJAYANAGARA / ವಿಜಯನಗರ</option>
+                              </select>
+                            </div>
+                            
+                            <div class="flex items-center gap-1">
+                              <span class="label-en font-bold whitespace-nowrap">Taluka / ತಾಲೂಕು :</span>
+                              <select id="tc_taluka" onchange="syncInputsToCanvas()" class="cert-input font-bold flex-1">
+                                <option value="Raichur" selected>Raichur</option>
+                                <option value="Manvi">Manvi</option>
+                                <option value="Devadurga">Devadurga</option>
+                                <option value="Sindhanur">Sindhanur</option>
+                                <option value="Maski">Maski</option>
+                                <option value="Sirwar">Sirwar</option>
+                              </select>
+                            </div>
+                            
+                            <div class="flex items-center gap-1">
+                              <span class="label-en font-bold whitespace-nowrap">Village / ಗ್ರಾಮ :</span>
+                              <input type="text" id="tc_village" oninput="syncInputsToCanvas()" class="cert-input font-bold flex-1 uppercase" value="Merched">
+                            </div>
+                          </div>
+                        </td>
+                        <td class="border-[1.5px] border-black p-1.5 align-top">
+                          <span class="label-en">25. Character and Conduct / ನಡತೆ ಮತ್ತು ಚಾರಿತ್ರ್ಯ</span><br>
+                          <select id="tc_conduct" onchange="syncInputsToCanvas()" class="cert-input font-bold w-full mt-1">
+                            <option value="Good" selected>Good / ಉತ್ತಮವಾಗಿದೆ</option>
+                            <option value="Very Good">Very Good / ಅತ್ಯಂತ ಉತ್ತಮವಾಗಿದೆ</option>
+                            <option value="Excellent">Excellent / ಅತ್ಯುತ್ತಮವಾಗಿದೆ</option>
+                            <option value="Satisfactory">Satisfactory / ತೃಪ್ತಿಕರವಾಗಿದೆ</option>
+                            <option value="Exemplary">Exemplary / ಮಾದರಿಯಾಗಿದೆ</option>
+                          </select>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <!-- Footer Signatures & Seals (Exact Match to Image 2) -->
+                  <div class="footer-dates flex flex-wrap justify-between text-[11px] mb-8 font-bold text-black gap-4 items-center">
+                    <div class="flex items-center gap-1">
+                      <span>Date of Entry :</span>
+                      <input type="date" id="tc_date_entry" onchange="syncInputsToCanvas()" class="cert-input font-bold cursor-pointer border-b border-dotted border-black min-w-[180px]">
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <span>Date of Issue :</span>
+                      <input type="date" id="tc_date_issue" onchange="syncInputsToCanvas()" class="cert-input font-bold cursor-pointer border-b border-dotted border-black min-w-[180px]">
+                    </div>
+                  </div>
+
+                  <div class="seal-container flex justify-center my-4">
+                    <div class="school-seal w-[90px] h-[90px] border-2 border-black rounded-full flex items-center justify-center text-center text-[11px] font-bold">School Seal</div>
+                  </div>
+
+                  <div class="footer-signatures flex flex-wrap justify-between text-[11px] mt-4 font-bold text-black gap-2">
+                    <div>Data Entry operator Sign : <span class="dotted-line border-b border-dotted border-black min-w-[140px] inline-block"></span></div>
+                    <div>Headmaster Sign : <span class="dotted-line border-b border-dotted border-black min-w-[140px] inline-block"></span></div>
+                  </div>
+
                 </div>
               </div>
             </div>
+
           </div>
         </div>
+
       </div>
-            
-    <script>
-    let supabaseClient;
-    let allStudentsData = [];
-    let currentStudent = null;
-    let currentFillMode = 'auto'; // auto or manual
-    let currentDocType = 'TC';
+    </div>
+  </main>
 
-
-    function evaluatePromotion(dateStr) {
-      let promotionValue = 'NO';
-      if (dateStr) {
-        const dateObj = new Date(dateStr);
-        if (!isNaN(dateObj.getTime())) {
-          const month = dateObj.getMonth(); // 3 = April, 4 = May
-          if (month === 3 || month === 4) {
-            promotionValue = 'YES';
-          }
-        }
-      }
-      updateCanvasSpans('canvasVal-promotion', promotionValue);
-    }
-
-    function updateDateFromPicker(inputEl, spanClass) {
-      if (!inputEl.value) return;
-      const formatted = formatDateWordMonth(inputEl.value);
-      updateCanvasSpans(spanClass, formatted);
+  <!-- HISTORY & LOGS MODAL (no-print) -->
+  <div id="historyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       
-      // If updating last attendance, re-evaluate promotion
-      if (spanClass === 'canvasVal-last_attendance') {
-        evaluatePromotion(inputEl.value);
-        // Also update date of transfer received format
-        const slashFormatted = formatDateSlash(inputEl.value);
-        updateCanvasSpans('canvasVal-tc_received_date', slashFormatted);
-      }
-    }
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-950">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-600/10 text-indigo-600 flex items-center justify-center text-lg font-bold">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-800 dark:text-white">ಮುದ್ರಿತ TC ಇತಿಹಾಸ / Printed TC Register</h3>
+            <p id="modal-summary-text" class="text-xs text-slate-500 dark:text-slate-400 font-medium">ಒಟ್ಟು ಮುದ್ರಿತ TC ದಾಖಲೆಗಳು</p>
+          </div>
+        </div>
+        <button onclick="closeHistoryModal()" class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-white flex items-center justify-center transition border-0 cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
 
-    async function setupSupabase() {
-      if (window.supabase) {
-        const url = localStorage.getItem('supabase_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co";
-        const key = localStorage.getItem('supabase_key') || "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
-        supabaseClient = window.supabase.createClient(url, key);
-        
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (!session) {
-            window.location.href = "index.html";
-            return;
-          }
-          const sId = session.user.user_metadata?.school_id || localStorage.getItem('school_id');
-          if (sId) {
-            localStorage.setItem('school_id', sId);
-          }
-        } catch (e) {
-          console.error("Auth check failed:", e);
-        }
-      }
-    }
+      <!-- Modal Search Controls -->
+      <div class="p-4 bg-slate-50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full sm:w-72">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+          <input type="text" id="modalSearchInput" oninput="applyModalFilter()" placeholder="ಹೆಸರು ಅಥವಾ STS ಶೋಧಿಸಿ..." class="w-full pl-9 pr-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none text-slate-800 dark:text-white">
+        </div>
 
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <button onclick="exportLogsCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition border-0 cursor-pointer shadow-sm flex items-center gap-1.5">
+            <i class="fa-solid fa-file-csv"></i> Excel/CSV ಡೌನ್‌ಲೋಡ್
+          </button>
+        </div>
+      </div>
 
-    // Cache for quick search filtering
+      <!-- Modal Table Body -->
+      <div class="p-4 overflow-y-auto flex-grow">
+        <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-extrabold uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="p-3 px-4">#</th>
+                <th class="p-3 px-4">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು</th>
+                <th class="p-3 px-4">STS ನಂಬರ್</th>
+                <th class="p-3 px-4">ತರಗತಿ</th>
+                <th class="p-3 px-4">TC ನಂಬರ್</th>
+                <th class="p-3 px-4">ದಿನಾಂಕ</th>
+                <th class="p-3 px-4 text-center">ಕ್ರಿಯೆ</th>
+              </tr>
+            </thead>
+            <tbody id="modal-tcout-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end bg-slate-50 dark:bg-slate-950">
+        <button onclick="closeHistoryModal()" class="px-5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 font-bold rounded-xl text-xs transition border-0 cursor-pointer">
+          ಮುಚ್ಚಿ / Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    let allStudentsData = [];
     let filteredStudentsListCache = [];
+    let currentStudent = null;
+    let currentFillMode = 'auto'; // 'auto', 'manual', 'blank'
 
+    let supabaseClient = null;
 
-    // Filter selector list based on autocomplete search
-    function filterStudentSelector(query) {
-      const selector = document.getElementById('studentSelector');
-      if (!selector) return;
-
-      selector.innerHTML = '<option value="">-- ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆರಿಸಿ / Choose Student --</option>';
-      const val = query.toLowerCase().trim();
-
-      const matched = filteredStudentsListCache.filter(s => {
-        const nameEn = (s.name_english || '').toLowerCase();
-        const nameKn = (s.student_name || '').toLowerCase();
-        const sts = (s.app_no || '').toLowerCase();
-        return nameEn.includes(val) || nameKn.includes(val) || sts.includes(val);
-      });
-
-      matched.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.innerText = `${s.student_name || s.name_english} (${s.app_no || 'No STS'}) - Cls ${s.enroll_class || ''}`;
-        selector.appendChild(opt);
-      });
-
-      if (selector.options.length > 1) {
-        if (currentFillMode === 'auto') {
-          selector.selectedIndex = 1;
-          handleStudentSelect(selector.value);
+    function setupSupabase() {
+      if (typeof window.supabase !== 'undefined' && typeof window.SUPABASE_URL !== 'undefined' && typeof window.SUPABASE_ANON_KEY !== 'undefined') {
+        try {
+          supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+        } catch (e) {
+          console.warn("Supabase init fallback:", e);
         }
-      } else {
-        clearRosterSelection();
       }
     }
 
-    // Settings for auto numbering prefix and starting serial
+    // Initialize Page
+    async function initTcPage() {
+      setupSupabase();
+      if (window.loadAndApplySchoolConfig) await window.loadAndApplySchoolConfig();
+      updateTimestamp();
+      initNumberingSettings();
+      await loadStudents();
+      setFillMode('auto');
+    }
+
+    function updateTimestamp() {
+      const now = new Date();
+      const options = { year: '2-digit', month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+      const formatted = now.toLocaleString('en-US', options);
+      const tsEl = document.getElementById('tc-current-timestamp');
+      if (tsEl) tsEl.innerText = formatted;
+    }
+
+    // Numbering Settings
     function initNumberingSettings() {
       const prefix = localStorage.getItem('tc_prefix') || '';
-      const serial = localStorage.getItem('tc_next_serial') || '';
+      const serial = localStorage.getItem('tc_next_serial') || '001';
       const prefixInput = document.getElementById('settingsPrefix');
       const serialInput = document.getElementById('settingsSerial');
       
@@ -710,178 +865,147 @@
       
       localStorage.setItem('tc_prefix', prefix);
       localStorage.setItem('tc_next_serial', serial);
-      
       alert("ಟಿಸಿ ಸಂಖ್ಯೆ ಸರಣಿ ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!\nTC numbering settings saved successfully!");
-      
       if (currentStudent && currentFillMode === 'auto') {
         fillFormFields(currentStudent);
       }
     }
 
-    // Print Log issue history
-    function loadPrintLogs() {
-      const tbody = document.getElementById('print-log-tbody');
-      if (!tbody) return;
+    // Three Mode Switcher
+    function setFillMode(mode) {
+      currentFillMode = mode;
+      const btnAuto = document.getElementById('mode-btn-auto');
+      const btnManual = document.getElementById('mode-btn-manual');
+      const btnBlank = document.getElementById('mode-btn-blank');
+      const medContainer = document.getElementById('medium-selector-container');
+      const clsContainer = document.getElementById('class-selector-container');
+      const selectorContainer = document.getElementById('student-selector-container');
+      const presetContainer = document.getElementById('manual-subject-preset-container');
+      const modeDesc = document.getElementById('mode-description');
       
-      tbody.innerHTML = '';
-      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+      const activeBtnClass = "text-center py-2 rounded-lg font-bold text-[11px] border-0 cursor-pointer transition bg-white text-indigo-700 shadow-sm ring-2 ring-indigo-500/20";
+      const inactiveBtnClass = "text-center py-2 rounded-lg font-bold text-[11px] border-0 cursor-pointer transition text-slate-500 hover:text-slate-800 dark:text-slate-400";
       
-      if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">ಯಾವುದೇ ಇತಿಹಾಸವಿಲ್ಲ / No print history found.</td></tr>';
-        return;
-      }
-      
-      logs.forEach(log => {
-        const tr = document.createElement('tr');
-        tr.className = "border-b border-slate-100 dark:border-slate-750 hover:bg-slate-50 dark:hover:bg-slate-800/50";
-        tr.innerHTML = `
-          <td class="p-1.5 px-2">${log.name}</td>
-          <td class="p-1.5 px-2">${log.sts}</td>
-          <td class="p-1.5 px-2 text-rose-600 dark:text-rose-400 font-bold">${log.tcNo}</td>
-          <td class="p-1.5 px-2 text-slate-405">${log.date}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function filterPrintLogs(query) {
-      const tbody = document.getElementById('print-log-tbody');
-      if (!tbody) return;
-      
-      const val = query.toLowerCase().trim();
-      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
-      const filtered = logs.filter(log => 
-        (log.name || '').toLowerCase().includes(val) || 
-        (log.sts || '').toLowerCase().includes(val) || 
-        (log.tcNo || '').toLowerCase().includes(val)
-      );
-      
-      tbody.innerHTML = '';
-      if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">ಹೊಂದಾಣಿಕೆಯಿಲ್ಲ / No matching logs.</td></tr>';
-        return;
-      }
-      
-      filtered.forEach(log => {
-        const tr = document.createElement('tr');
-        tr.className = "border-b border-slate-100 dark:border-slate-750 hover:bg-slate-50 dark:hover:bg-slate-800/50";
-        tr.innerHTML = `
-          <td class="p-1.5 px-2">${log.name}</td>
-          <td class="p-1.5 px-2">${log.sts}</td>
-          <td class="p-1.5 px-2 text-rose-600 dark:text-rose-400 font-bold">${log.tcNo}</td>
-          <td class="p-1.5 px-2 text-slate-405">${log.date}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function clearPrintLogs() {
-      if (confirm("ನಿಜವಾಗಿಯೂ ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಬೇಕೇ?\nAre you sure you want to clear all print history?")) {
-        localStorage.removeItem('tc_print_logs');
-        loadPrintLogs();
-      }
-    }
-
-    function triggerPrintAndLog() {
-      const name = document.querySelector('.canvasVal-student_name_en')?.innerText || '';
-      const sts = document.querySelector('.canvasVal-app_no')?.innerText || '';
-      const tcNo = document.querySelector('.canvasVal-tc_no')?.innerText || '';
-      const today = new Date().toLocaleString();
-      
-      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
-      
-      const exists = logs.some(l => l.sts === sts && l.tcNo === tcNo && (new Date() - new Date(l.date)) < 5000);
-      if (!exists && name !== '') {
-        logs.unshift({ name, sts, tcNo, date: today });
-        localStorage.setItem('tc_print_logs', JSON.stringify(logs));
-        loadPrintLogs();
-      }
-
-      // Automatically move printed student from Active Students to TC Out List
-      if (currentStudent || sts) {
-        const targetId = currentStudent?.id || currentStudent?.sats_number || sts;
-        let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
-        if (activeList.length === 0 && allStudentsData.length > 0) {
-          activeList = [...allStudentsData];
-        }
+      if (mode === 'auto') {
+        document.body.classList.remove('blank-mode-active');
+        if (btnAuto) btnAuto.className = activeBtnClass;
+        if (btnManual) btnManual.className = inactiveBtnClass;
+        if (btnBlank) btnBlank.className = inactiveBtnClass;
+        if (medContainer) medContainer.classList.remove('hidden');
+        if (clsContainer) clsContainer.classList.remove('hidden');
+        if (selectorContainer) selectorContainer.classList.remove('hidden');
+        if (presetContainer) presetContainer.classList.add('hidden');
+        if (modeDesc) modeDesc.innerHTML = '⚡ <b>ಆಟೋ ಮೋಡ್:</b> ಡೇಟಾಬೇಸ್‌ನಿಂದ ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಆಯ್ಕೆ ಮಾಡಿ, ವಿವರ ಸ್ವಯಂಚಾಲಿತ ತುಂಬಲ್ಪಡುತ್ತದೆ.';
         
-        const idx = activeList.findIndex(s => {
-          const sId = getStudentAttr(s, 'id', 'sats_number', 'sats_no', 'sts_no', 'app_no');
-          return sId == targetId || sId == sts;
-        });
-
-        if (idx !== -1) {
-          const issuedStudent = activeList.splice(idx, 1)[0];
-          issuedStudent.status = 'TC_Issued';
-          issuedStudent.tc_date = today;
-          issuedStudent.tc_no = tcNo;
-
-          let tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
-          if (!tcOutList.some(o => getStudentAttr(o, 'id', 'sats_number', 'sts_no') == targetId)) {
-            tcOutList.unshift(issuedStudent);
-          }
-
-          localStorage.setItem('student_list_cache', JSON.stringify(activeList));
-          localStorage.setItem('tc_issued_list', JSON.stringify(tcOutList));
-          renderTcStudentDirectory();
-        }
+        const val = document.getElementById('studentSelector')?.value;
+        if (val) handleStudentSelect(val);
+      } else if (mode === 'manual') {
+        document.body.classList.remove('blank-mode-active');
+        if (btnAuto) btnAuto.className = inactiveBtnClass;
+        if (btnManual) btnManual.className = activeBtnClass;
+        if (btnBlank) btnBlank.className = inactiveBtnClass;
+        if (medContainer) medContainer.classList.add('hidden');
+        if (clsContainer) clsContainer.classList.add('hidden');
+        if (selectorContainer) selectorContainer.classList.add('hidden');
+        if (presetContainer) presetContainer.classList.remove('hidden');
+        if (modeDesc) modeDesc.innerHTML = '✍️ <b>ಮ್ಯಾನುವಲ್ ಮೋಡ್:</b> ಫಾರ್ಮ್‌ನಲ್ಲಿರುವ ಎಲ್ಲಾ 25 ಡ್ರಾಪ್‌ಡೌನ್, ದಿನಾಂಕ ಮತ್ತು ವಿಷಯಗಳನ್ನು ನೇರವಾಗಿ ಬರೆಯಬಹುದು.';
+        
+        const firstInput = document.getElementById('tc_student_name');
+        if (firstInput) firstInput.focus();
+      } else { // Blank Mode
+        document.body.classList.add('blank-mode-active');
+        if (btnAuto) btnAuto.className = inactiveBtnClass;
+        if (btnManual) btnManual.className = inactiveBtnClass;
+        if (btnBlank) btnBlank.className = activeBtnClass;
+        if (medContainer) medContainer.classList.add('hidden');
+        if (clsContainer) clsContainer.classList.add('hidden');
+        if (selectorContainer) selectorContainer.classList.add('hidden');
+        if (presetContainer) presetContainer.classList.add('hidden');
+        if (modeDesc) modeDesc.innerHTML = '📄 <b>ಖಾಲಿ ಟಿಸಿ ಮೋಡ್:</b> ಎಲ್ಲಾ ಮಾಹಿತಿಯನ್ನು ತೆರವುಗೊಳಿಸಿ, ಪೆನ್‌ನಿಂದ ಬರೆಯಲು 100% ಶುದ್ಧ ಖಾಲಿ ಪ್ರಿಂಟ್‌ಔಟ್ ನೀಡುತ್ತದೆ.';
+        
+        clearRosterSelection();
       }
-
-      let serial = localStorage.getItem('tc_next_serial') || '';
-      if (serial && !isNaN(serial)) {
-        let length = serial.length;
-        let nextNum = parseInt(serial, 10) + 1;
-        let nextSerial = String(nextNum).padStart(length, '0');
-        localStorage.setItem('tc_next_serial', nextSerial);
-        initNumberingSettings();
-      }
-
-      window.print();
     }
 
+    // Load Students from Database (IndexedDB / Supabase)
     async function loadStudents() {
       try {
-        const schoolId = localStorage.getItem('school_id');
-        let query = supabaseClient.from('admissions').select('*');
-        if (schoolId) {
-          query = query.eq('school_id', schoolId);
+        let session = null;
+        try {
+          if (supabaseClient && supabaseClient.auth) {
+            const { data } = await supabaseClient.auth.getSession();
+            if (data && data.session) session = data.session;
+          }
+        } catch (e) {}
+
+        const schoolId = session?.user?.user_metadata?.school_id || localStorage.getItem('school_id');
+        let data = null;
+
+        if (schoolId && supabaseClient) {
+          try {
+            const { data: res1, error: err1 } = await supabaseClient.from('admissions').select('*').eq('school_id', schoolId);
+            if (!err1 && res1 && res1.length > 0) data = res1;
+          } catch (e) {}
         }
-        
-        const { data, error } = await query;
-        if (error) throw error;
 
-        allStudentsData = data || [];
-        
+        if ((!data || data.length === 0) && supabaseClient) {
+          try {
+            const { data: res2, error: err2 } = await supabaseClient.from('admissions').select('*');
+            if (!err2 && res2) data = res2;
+          } catch (e) {}
+        }
+
+        if (!data) data = [];
+
+        // Check IndexedDB fallback if available
+        if (data.length === 0 && window.indexedDB) {
+          data = await getStudentsFromIndexedDB();
+        }
+
+        const trashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedStsList = trashed.map(t => String(t.app_no || t.student_sts || t.sts_no || t.id || '').replace(/\s+/g, '').toLowerCase());
+
+        const tcLogs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]').filter(l => (l.type || '').toLowerCase() === 'tc');
+        const tcLogsStsList = tcLogs.map(l => String(l.sts || '').replace(/\s+/g, '').toLowerCase());
+
+        allStudentsData = (data || []).filter(s => {
+          const isDbOut = s.status === 'TC_OUT' || s.status === 'DELETED' || s.status === 'REMOVED';
+          const sIdClean = String(s.id || '').toLowerCase();
+          const sStsClean = String(s.app_no || s.student_sts || s.sts_no || '').replace(/\s+/g, '').toLowerCase();
+
+          const isLocalOut = (sIdClean && (trashedStsList.includes(sIdClean) || tcLogsStsList.includes(sIdClean))) ||
+                             (sStsClean && (trashedStsList.includes(sStsClean) || tcLogsStsList.includes(sStsClean)));
+
+          return !isDbOut && !isLocalOut;
+        });
+
         filterStudentsList();
-
       } catch (err) {
-        console.error("Failed to load students for selector:", err);
+        console.error("Failed to load students:", err);
       }
     }
 
-    function normalizeClass(classStr) {
-      if (!classStr) return "";
-      let clean = classStr.toString().trim().toLowerCase();
-      
-      if (!clean.includes("lkg")) {
-        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
-      }
-      
-      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
-      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
-      
-      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
-      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
-      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
-      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
-      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
-      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
-      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
-      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
-      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
-      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
-      
-      return classStr.toString().trim();
+    function getStudentsFromIndexedDB() {
+      return new Promise((resolve) => {
+        try {
+          const req = indexedDB.open("SchoolDB", 1);
+          req.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains("students")) {
+              resolve([]);
+              return;
+            }
+            const tx = db.transaction("students", "readonly");
+            const store = tx.objectStore("students");
+            const getAll = store.getAll();
+            getAll.onsuccess = () => resolve(getAll.result || []);
+            getAll.onerror = () => resolve([]);
+          };
+          req.onerror = () => resolve([]);
+        } catch (e) {
+          resolve([]);
+        }
+      });
     }
 
     function filterStudentsList() {
@@ -895,7 +1019,6 @@
       const filtered = allStudentsData.filter(s => {
         let matchMed = true;
         let matchCls = true;
-        
         if (selectedMedium) {
           let normMed = (s.medium || '').trim();
           if (normMed.toUpperCase() === 'KANNADA' || normMed === 'ಕನ್ನಡ' || normMed === 'KN') {
@@ -906,102 +1029,284 @@
           matchMed = normMed === selectedMedium;
         }
         if (selectedClass) {
-          matchCls = normalizeClass(s.enroll_class) === selectedClass;
+          matchCls = normalizeClass(s.enroll_class || s.className) === selectedClass;
         }
-        
         return matchMed && matchCls;
       });
       
-      filtered.sort((a, b) => (a.student_name || '').localeCompare(b.student_name || ''));
+      filtered.sort((a, b) => (a.student_name || a.name_english || '').localeCompare(b.student_name || b.name_english || ''));
       filteredStudentsListCache = filtered;
       
+      const printLogs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+
       filtered.forEach(s => {
         const opt = document.createElement('option');
-        opt.value = s.id;
-        opt.innerText = `${s.student_name || s.name_english} (${s.app_no || 'No STS'}) - Cls ${s.enroll_class || ''}`;
+        opt.value = s.id || s.app_no;
+        const stsNum = s.app_no || s.sts_no || '';
+        const existingTc = printLogs.find(l => (l.sts && l.sts === stsNum) && (l.type === 'tc' || !l.type));
+        const tcBadge = existingTc ? ` [🚩 TC ISSUED: ${existingTc.tcNo || 'YES'}]` : '';
+        
+        opt.innerText = `${s.student_name || s.name_english || 'No Name'} (${stsNum || 'No STS'}) - Cls ${s.enroll_class || s.className || ''}${tcBadge}`;
+        if (existingTc) {
+          opt.style.color = '#e11d48';
+          opt.style.fontWeight = 'bold';
+        }
         selector.appendChild(opt);
       });
 
-      if (selector.options.length > 1) {
-        // If we filtered down to matching students, let's select the first one by default if it's auto mode
-        if (currentFillMode === 'auto') {
-          selector.selectedIndex = 1;
-          handleStudentSelect(selector.value);
-        }
-      } else {
-        clearRosterSelection();
+      if (selector.options.length > 1 && currentFillMode === 'auto') {
+        selector.selectedIndex = 1;
+        handleStudentSelect(selector.value);
       }
     }
 
-    function toggleDuplicateTc(isChecked) {
-      const tcHeader = document.getElementById('tc-type-header');
-      if (tcHeader) {
-        if (isChecked) {
-          tcHeader.classList.remove('hidden');
-        } else {
-          tcHeader.classList.add('hidden');
-        }
+    function filterStudentSelector(query) {
+      const q = (query || '').toLowerCase().trim();
+      const selector = document.getElementById('studentSelector');
+      if (!selector) return;
+
+      selector.innerHTML = '<option value="">-- ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆರಿಸಿ / Choose Student --</option>';
+      const matched = filteredStudentsListCache.filter(s => 
+        (s.student_name || '').toLowerCase().includes(q) ||
+        (s.name_english || '').toLowerCase().includes(q) ||
+        (s.app_no || '').toLowerCase().includes(q) ||
+        (s.sts_no || '').toLowerCase().includes(q)
+      );
+
+      matched.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id || s.app_no;
+        const stsNum = s.app_no || s.sts_no || '';
+        opt.innerText = `${s.student_name || s.name_english || 'No Name'} (${stsNum || 'No STS'}) - Cls ${s.enroll_class || ''}`;
+        selector.appendChild(opt);
+      });
+
+      if (matched.length > 0 && currentFillMode === 'auto') {
+        selector.selectedIndex = 1;
+        handleStudentSelect(selector.value);
       }
     }
 
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      if (clean.includes("lkg") || clean.includes("kg1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2")) return "UKG";
+      if (clean === "1" || clean === "1st" || clean.includes("class 1")) return "1";
+      if (clean === "2" || clean === "2nd" || clean.includes("class 2")) return "2";
+      if (clean === "3" || clean === "3rd" || clean.includes("class 3")) return "3";
+      if (clean === "4" || clean === "4th" || clean.includes("class 4")) return "4";
+      if (clean === "5" || clean === "5th" || clean.includes("class 5")) return "5";
+      if (clean === "6" || clean === "6th" || clean.includes("class 6")) return "6";
+      if (clean === "7" || clean === "7th" || clean.includes("class 7")) return "7";
+      if (clean === "8" || clean === "8th" || clean.includes("class 8")) return "8";
+      if (clean === "9" || clean === "9th" || clean.includes("class 9")) return "9";
+      if (clean === "10" || clean === "10th" || clean.includes("class 10")) return "10";
+      return classStr.toString().trim();
+    }
 
     function handleStudentSelect(id) {
       if (!id) {
         clearRosterSelection();
         return;
       }
-      currentStudent = allStudentsData.find(s => String(s.id) === String(id));
+      currentStudent = allStudentsData.find(s => String(s.id) === String(id) || String(s.app_no) === String(id));
       if (currentStudent && currentFillMode === 'auto') {
         fillFormFields(currentStudent);
       }
     }
 
-    function formatDateWordMonth(dateStr) {
+    // Auto Fill Student Data
+    async function fillFormFields(s) {
+      const tcPrefix = localStorage.getItem('tc_prefix') || '';
+      const tcSerial = localStorage.getItem('tc_next_serial') || '001';
+      
+      let academicYear = s.academic_year || '2025-2026';
+      const parts = academicYear.split('-');
+      if (parts.length === 2 && parts[1].length === 4) {
+        academicYear = parts[0] + '-' + parts[1].substring(2);
+      }
+      
+      let generatedTcNo = tcPrefix ? `${tcPrefix}${tcSerial}` : `260710277599${tcSerial}`;
+
+      setInputValue('tc_no_input', s.transfer_no || generatedTcNo);
+      setInputValue('tc_year_input', academicYear);
+      setInputValue('tc_adm_no', s.enrolment_no || s.admission_no || '189558038');
+      setInputValue('tc_app_no', s.app_no || s.sts_no || '189558038');
+      
+      let admDate = s.enrolment_date || s.admission_date || '2019-06-12';
+      setInputValue('tc_date_of_admission', formatDateForPicker(admDate));
+
+      setInputValue('tc_student_name', (s.name_english || s.student_name || 'BHOOMIKA').toUpperCase());
+
+      let gen = s.gender || '';
+      let genLabel = 'Girl / ಸ್ತ್ರೀ';
+      if (gen.toLowerCase() === 'boy' || gen.toLowerCase() === 'male' || gen.toLowerCase() === 'ಪುರುಷ') {
+        genLabel = 'Boy / ಹುಡುಗ';
+      }
+      setInputValue('tc_gender', genLabel);
+
+      setInputValue('tc_nationality', 'Indian / ಭಾರತೀಯ');
+      setInputValue('tc_religion', s.religion || 'Hindu / ಹಿಂದೂ');
+      setInputValue('tc_father_name', (s.father_name_az || s.father_name || 'YALLAPPA').toUpperCase());
+      setInputValue('tc_mother_name', (s.mother_name_az || s.mother_name || 'NARASAMMA').toUpperCase());
+
+      // 10th Caste & Category
+      let sc = (s.social_class || s.category || '').toUpperCase();
+      let socialClassVal = 'SC / ಎಸ್ಸಿ /';
+      if (sc.includes('ST')) socialClassVal = 'ST / ಎಸ್ಟಿ /';
+      else if (sc.includes('1') || sc.includes('CAT-1')) socialClassVal = 'Cat-1';
+      else if (sc.includes('2A')) socialClassVal = '2A';
+      else if (sc.includes('2B')) socialClassVal = '2B';
+      else if (sc.includes('3A')) socialClassVal = '3A';
+      else if (sc.includes('3B')) socialClassVal = '3B';
+      else if (sc.includes('GENERAL') || sc.includes('GM')) socialClassVal = 'General';
+      setInputValue('tc_social_class', socialClassVal);
+      setInputValue('tc_caste', s.caste || s.student_caste || 'VALMIKI');
+
+      let dobVal = s.dob || '2012-10-14';
+      setInputValue('tc_dob', formatDateForPicker(dobVal));
+      handleTcDobChange(dobVal);
+
+      let clsStr = s.enroll_class ? ('Class ' + s.enroll_class) : 'Class 7';
+      setInputValue('tc_class', clsStr);
+      
+      // Update Subjects dynamically according to Class (1-5 vs 6-10)
+      updateSubjectsByClass(clsStr);
+
+      let med = s.medium || 'Kannada';
+      const normMed = String(med).trim().toLowerCase();
+      if (normMed.includes('english') || normMed.includes('ಇಂಗ್ಲಿಷ್')) {
+        setInputValue('tc_medium', 'English / ಇಂಗ್ಲಿಷ್');
+      } else if (normMed.includes('urdu') || normMed.includes('ಉರ್ದು')) {
+        setInputValue('tc_medium', 'Urdu / ಉರ್ದು');
+      } else {
+        setInputValue('tc_medium', 'Kannada / ಕನ್ನಡ');
+      }
+
+      setInputValue('tc_fees_paid', s.fees_paid || 'YES');
+      setInputValue('tc_fee_concession', s.fee_concession || 'NIL');
+      setInputValue('tc_scholarship', s.scholarship || 'NIL');
+      setInputValue('tc_medically_examined', s.medically_examined || 'YES');
+
+      let todayStr = new Date().toISOString().split('T')[0];
+      setInputValue('tc_last_att_date', formatDateForPicker(s.last_att_date || todayStr));
+      setInputValue('tc_app_date', formatDateForPicker(s.tc_app_date || todayStr));
+      setInputValue('tc_date_entry', todayStr);
+      setInputValue('tc_date_issue', todayStr);
+
+      // Fetch Attendance days (Item 23 & 24) from Attendance record
+      const attData = await fetchStudentAttendance(s.id || s.app_no, s.app_no || s.sts_no);
+      setInputValue('tc_working_days', s.working_days || attData.workingDays);
+      setInputValue('tc_days_attended', s.days_attended || s.present_days || attData.presentDays);
+      setInputValue('tc_conduct', s.conduct || 'Good');
+
+      evaluatePromotion(s.transfer_date || todayStr);
+
+      // 13th Item: District / Taluka / Village from Database
+      setInputValue('tc_district', (s.district || 'RAICHUR').toUpperCase());
+      handleDistrictChange(s.district || 'RAICHUR');
+      setInputValue('tc_taluka', s.taluk || s.taluka || 'Raichur');
+      setInputValue('tc_village', s.address || s.village || 'Merched');
+    }
+
+    // Dynamic Subject Selector based on Class (1-5 vs 6-10)
+    function handleClassChange(clsVal) {
+      updateSubjectsByClass(clsVal);
+      syncInputsToCanvas();
+    }
+
+    function updateSubjectsByClass(classVal) {
+      const normCls = normalizeClass(classVal);
+      const isLower = ["1", "2", "3", "4", "5", "LKG", "UKG"].includes(normCls);
+      
+      const langInput = document.getElementById('tc_languages');
+      const elecInput = document.getElementById('tc_electives');
+      
+      if (isLower) {
+        if (langInput) langInput.value = "Kannada, English";
+        if (elecInput) elecInput.value = "EVS, Maths";
+      } else {
+        if (langInput) langInput.value = "Kannada, English, Hindi";
+        if (elecInput) elecInput.value = "Mathematics, Social Science, Science";
+      }
+    }
+
+    function applySubjectPreset(preset) {
+      const langInput = document.getElementById('tc_languages');
+      const elecInput = document.getElementById('tc_electives');
+      if (preset === 'auto') {
+        if (langInput) langInput.value = "KANNADA, ENGLISH";
+        if (elecInput) elecInput.value = "MATHEMATICS, EVS";
+      } else {
+        if (langInput) langInput.value = "KANNADA, ENGLISH, HINDI";
+        if (elecInput) elecInput.value = "MATHEMATICS ,SOCIAL SCIENCE ,SCIENCE";
+      }
+    }
+
+    // Fetch Attendance summary from Attendance management records
+    async function fetchStudentAttendance(studentId, stsNo) {
+      let workingDays = 240;
+      let presentDays = 145;
+      
+      if (supabaseClient && studentId) {
+        try {
+          const { data: attData } = await supabaseClient
+            .from('attendance')
+            .select('working_days, present_days, status')
+            .eq('student_id', studentId);
+            
+          if (attData && attData.length > 0) {
+            workingDays = attData.reduce((acc, r) => acc + (r.working_days || 1), 0);
+            presentDays = attData.reduce((acc, r) => acc + (r.present_days || (r.status === 'present' ? 1 : 0)), 0);
+          }
+        } catch(e) {}
+      }
+      
+      const localAtt = JSON.parse(localStorage.getItem('student_attendance_summary') || '{}');
+      if (localAtt[stsNo] || localAtt[studentId]) {
+        const rec = localAtt[stsNo] || localAtt[studentId];
+        if (rec.workingDays) workingDays = rec.workingDays;
+        if (rec.presentDays) presentDays = rec.presentDays;
+      }
+      
+      return { workingDays, presentDays };
+    }
+
+    function setInputValue(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = val !== undefined ? val : '';
+      if (el.type === 'date') {
+        if (!el.value) el.classList.add('date-empty');
+        else el.classList.remove('date-empty');
+      }
+    }
+
+    function formatDateForPicker(dateStr) {
       if (!dateStr) return '';
-      const parts = dateStr.split('-');
-      if (parts.length === 3) {
-        const yyyy = parts[0];
-        const mm = parts[1];
-        const dd = parts[2];
-        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        const mIdx = parseInt(mm, 10) - 1;
-        const monthWord = (mIdx >= 0 && mIdx < 12) ? months[mIdx] : mm;
-        return `${dd}-${monthWord}-${yyyy}`;
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
       }
       return dateStr;
     }
 
-    function formatDateSlash(dateStr) {
-      if (!dateStr) return '';
-      const parts = dateStr.split('-');
-      if (parts.length === 3) {
-        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    function handleTcDobChange(dobVal) {
+      const words = translateDobToWords(dobVal);
+      const disp = document.getElementById('tc_dob_words_display');
+      if (disp) disp.innerText = words;
+      const el = document.getElementById('tc_dob');
+      if (el) {
+        if (!dobVal) el.classList.add('date-empty');
+        else el.classList.remove('date-empty');
       }
-      return dateStr;
     }
 
     function translateDobToWords(dobStr) {
       if (!dobStr) return '';
       let date = new Date(dobStr);
-      if (isNaN(date.getTime())) {
-        const parts = dobStr.split(/[-/]/);
-        if (parts.length === 3) {
-          if (parts[2].length === 4) {
-            let m = parts[1];
-            if (isNaN(m)) {
-              const months = { 'jan': 0, 'feb': 1, 'mar': 2, 'apr': 3, 'may': 4, 'jun': 5, 'jul': 6, 'aug': 7, 'sep': 8, 'oct': 9, 'nov': 10, 'dec': 11 };
-              m = months[m.toLowerCase()] || 0;
-            } else {
-              m = parseInt(m, 10) - 1;
-            }
-            date = new Date(parseInt(parts[2], 10), m, parseInt(parts[0], 10));
-          } else if (parts[0].length === 4) {
-            date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
-          }
-        }
-      }
       if (isNaN(date.getTime())) return '';
-
       const day = date.getDate();
       const month = date.getMonth();
       const year = date.getFullYear();
@@ -1011,510 +1316,294 @@
         "ELEVENTH", "TWELFTH", "THIRTEENTH", "FOURTEENTH", "FIFTEENTH", "SIXTEENTH", "SEVENTEENTH", "EIGHTEENTH", "NINETEENTH", "TWENTIETH",
         "TWENTY-FIRST", "TWENTY-SECOND", "TWENTY-THIRD", "TWENTY-FOURTH", "TWENTY-FIFTH", "TWENTY-SIXTH", "TWENTY-SEVENTH", "TWENTY-EIGHTH", "TWENTY-NINTH", "THIRTIETH", "THIRTY-FIRST"
       ];
-
-      const monthsToWords = [
-        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
-      ];
+      const monthsToWords = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 
       function numToWords(num) {
         const ones = ["", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN",
                       "ELEVEN", "TWELVE", "THIRTEEN", "FOURTEEN", "FIFTEEN", "SIXTEEN", "SEVENTEEN", "EIGHTEEN", "NINETEEN"];
         const tens = ["", "", "TWENTY", "THIRTY", "FORTY", "FIFTY", "SIXTY", "SEVENTY", "EIGHTY", "NINETY"];
-        
         if (num < 20) return ones[num];
         if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? " " + ones[num % 10] : "");
         if (num < 1000) return ones[Math.floor(num / 100)] + " HUNDRED" + (num % 100 !== 0 ? " AND " + numToWords(num % 100) : "");
-        
         if (num < 100000) {
           return numToWords(Math.floor(num / 1000)) + " THOUSAND" + (num % 1000 !== 0 ? " " + numToWords(num % 1000) : "");
         }
         return num.toString();
       }
 
-      const dayWord = daysToWords[day] || "";
-      const monthWord = monthsToWords[month] || "";
-      const yearWord = numToWords(year);
-
-      return `${dayWord} ${monthWord} ${yearWord}`;
+      return `${daysToWords[day] || ""} ${monthsToWords[month] || ""} ${numToWords(year)}`;
     }
 
-    async function fillFormFields(s) {
-      updateCanvasSpans('canvasVal-tc_type', "DUPLICATE TRANSFER CERTIFICATE");
-      
-      const tcSerial = localStorage.getItem('tc_next_serial') || '001';
-      
-      // Academic year format helper (e.g. 2026-2027 -> 2026-27)
-      let academicYear = s.academic_year || '2026-2027';
-      const parts = academicYear.split('-');
-      if (parts.length === 2 && parts[1].length === 4) {
-        academicYear = parts[0] + '-' + parts[1].substring(2);
-      }
-      
-      // Default TC number: Serial/AcademicYear
-      let generatedTcNo = `${tcSerial}/${academicYear}`;
-      updateCanvasSpans('canvasVal-tc_no', s.transfer_no || generatedTcNo);
-
-      updateCanvasSpans('canvasVal-academic_year', academicYear);
-      updateCanvasSpans('canvasVal-admission_no', s.enrolment_no || s.admission_no || '');
-      updateCanvasSpans('canvasVal-enroll_class', s.enroll_class ? ('Class ' + s.enroll_class) : 'Class 7');
-      updateCanvasSpans('canvasVal-app_no', s.app_no || '');
-      
-      updateCanvasSpans('canvasVal-student_name_en', s.name_english || '');
-      updateCanvasSpans('canvasVal-student_name_kn', s.student_name_kn || s.student_name || '');
-      
-      let gen = s.gender || '';
-      let genLabel = gen;
-      if (gen.toLowerCase() === 'girl' || gen.toLowerCase() === 'female' || gen.toLowerCase() === 'ಸ್ತ್ರೀ' || gen.toLowerCase() === 'ಸ್ತ್ರೀ') {
-        genLabel = 'Girl / ಸ್ತ್ರೀ';
-      } else if (gen.toLowerCase() === 'boy' || gen.toLowerCase() === 'male' || gen.toLowerCase() === 'ಪುರುಷ') {
-        genLabel = 'Boy / ಹುಡುಗ';
-      }
-      updateCanvasSpans('canvasVal-gender', genLabel);
-      
-      updateCanvasSpans('canvasVal-nationality', 'Indian/ಭಾರತೀಯ');
-      updateCanvasSpans('canvasVal-religion', s.religion || 'Hindu / ಹಿಂದು');
-      updateCanvasSpans('canvasVal-caste', s.caste || s.student_caste || '');
-
-      updateCanvasSpans('canvasVal-father_name_en', s.father_name_az || '');
-      updateCanvasSpans('canvasVal-father_name_kn', s.father_name_kn || '');
-      updateCanvasSpans('canvasVal-mother_name_en', s.mother_name_az || '');
-      updateCanvasSpans('canvasVal-mother_name_kn', s.mother_name_kn || '');
-      
-      // Item 10: Show only if SC or ST (with Caste and Social Group). Otherwise show blank/empty.
-      let sc = (s.social_class || '').toUpperCase();
-      let item10Value = '';
-      if (sc === 'SC' || sc === 'ST') {
-        let casteVal = s.caste || s.student_caste || '';
-        let socialGroupVal = s.social_group || '';
-        let scKn = (sc === 'SC') ? 'ಪರಿಶಿಷ್ಟ ಜಾತಿ' : 'ಪರಿಶಿಷ್ಟ ಪಂಗಡ';
-        
-        let scParts = [];
-        scParts.push(sc);
-        if (scKn) scParts.push(scKn);
-        if (casteVal) scParts.push(casteVal);
-        if (socialGroupVal) scParts.push(socialGroupVal);
-        
-        item10Value = scParts.join(' / ');
-      }
-      updateCanvasSpans('canvasVal-social_class', item10Value);
-
-      updateCanvasSpans('canvasVal-date_of_admission', formatDateWordMonth(s.enrolment_date || s.admission_date || '2019-06-12'));
-      
-      // Promotion (Item 11) based on Transfer Month (April/May = YES, else NO)
-      const transferDateStr = s.transfer_date || new Date().toISOString().split('T')[0];
-      evaluatePromotion(transferDateStr);
-
-      updateCanvasSpans('canvasVal-dob', formatDateWordMonth(s.dob || '2012-10-14'));
-      updateCanvasSpans('canvasVal-dob_words', translateDobToWords(s.dob || '2012-10-14'));
-
-      updateCanvasSpans('canvasVal-district', s.district || localStorage.getItem('school_district') || 'RAICHUR');
-      updateCanvasSpans('canvasVal-taluka', s.taluk || localStorage.getItem('school_taluk') || 'Raichur');
-      updateCanvasSpans('canvasVal-village', s.address || 'Merched');
-
-      // Item 15 options: 1-5 Kannada, English, EVS, Maths; otherwise 6-10 same as now
-      const clsNum = parseInt(s.enroll_class, 10);
-      if (clsNum >= 1 && clsNum <= 5) {
-        updateCanvasSpans('canvasVal-languages', 'KANNADA, ENGLISH');
-        updateCanvasSpans('canvasVal-electives', 'EVS, MATHEMATICS');
-      } else {
-        updateCanvasSpans('canvasVal-languages', 'KANNADA, ENGLISH, HINDI');
-        updateCanvasSpans('canvasVal-electives', 'MATHEMATICS ,SOCIAL SCIENCE ,SCIENCE');
-      }
-
-      let med = s.medium || 'Kannada';
-      const normMed = String(med).trim().toLowerCase();
-      if (normMed === 'kannada' || normMed === 'ಕನ್ನಡ') {
-        updateCanvasSpans('canvasVal-medium', 'Kannada / ಕನ್ನಡ');
-      } else {
-        updateCanvasSpans('canvasVal-medium', 'English / ಇಂಗ್ಲಿಷ್');
-      }
-
-      updateCanvasSpans('canvasVal-fees_paid', 'YES');
-      updateCanvasSpans('canvasVal-fee_concession', s.fee_concession || '');
-      updateCanvasSpans('canvasVal-scholarship', s.scholarship_no ? `Yes / ಹೌದು (${s.scholarship_no})` : '');
-      updateCanvasSpans('canvasVal-medical', 'YES');
-
-      updateCanvasSpans('canvasVal-last_attendance', formatDateWordMonth(transferDateStr));
-      updateCanvasSpans('canvasVal-tc_received_date', formatDateSlash(transferDateStr));
-
-      // Fetch Attendance & Working Days from Database or local storage
-      let workingDays = 240;
-      let daysAttended = 145;
-      
-      try {
-        const { data, error } = await supabaseClient
-          .from('attendance')
-          .select('working_days, present_days')
-          .eq('student_id', s.id);
-          
-        if (!error && data && data.length > 0) {
-          let sumWorking = 0;
-          let sumPresent = 0;
-          data.forEach(row => {
-            sumWorking += parseInt(row.working_days || 0, 10);
-            sumPresent += parseInt(row.present_days || 0, 10);
-          });
-          if (sumWorking > 0) workingDays = sumWorking;
-          if (sumPresent > 0) daysAttended = sumPresent;
-        } else {
-          // Local storage fallback
-          const schoolId = localStorage.getItem('school_id');
-          const local = localStorage.getItem(`local_attendance_${schoolId}`) || '[]';
-          const parsed = JSON.parse(local);
-          const studentRecords = parsed.filter(r => r.student_id === s.id);
-          if (studentRecords.length > 0) {
-            let sumWorking = 0;
-            let sumPresent = 0;
-            studentRecords.forEach(row => {
-              sumWorking += parseInt(row.working_days || 0, 10);
-              sumPresent += parseInt(row.present_days || 0, 10);
-            });
-            if (sumWorking > 0) workingDays = sumWorking;
-            if (sumPresent > 0) daysAttended = sumPresent;
-          }
+    function evaluatePromotion(transferDateStr) {
+      let promoVal = "NO";
+      if (transferDateStr) {
+        const d = new Date(transferDateStr);
+        if (!isNaN(d.getTime())) {
+          const month = d.getMonth() + 1;
+          if (month === 5) promoVal = "YES";
         }
-      } catch (err) {
-        console.error("Failed to fetch attendance:", err);
       }
-
-      updateCanvasSpans('canvasVal-working_days', workingDays);
-      updateCanvasSpans('canvasVal-days_attended', daysAttended);
-
-      updateCanvasSpans('canvasVal-conduct', 'Good');
-
-      const today = new Date().toISOString().split('T')[0];
-      updateCanvasSpans('canvasVal-date_of_entry', formatDateWordMonth(today));
-      updateCanvasSpans('canvasVal-date_of_issue', formatDateWordMonth(today));
+      setInputValue('tc_promotion', promoVal);
     }
 
-    function isRoleAllowed(actionType) {
-      const userRole = localStorage.getItem('user_role') || 'teacher';
-      if (['admin', 'hm', 'headmaster', 'developer'].includes(userRole.toLowerCase())) {
-        return true;
-      }
-      if (actionType === 'delete') {
-        return localStorage.getItem('admin_allow_teacher_delete') === 'true';
-      }
-      if (actionType === 'restore') {
-        return localStorage.getItem('admin_allow_teacher_restore') === 'true';
-      }
-      if (actionType === 'permanent_delete') {
-        return localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
-      }
-      return false;
+    const districtTalukasMap = {
+      'RAICHUR': ['Raichur', 'Manvi', 'Devadurga', 'Sindhanur', 'Maski', 'Sirwar', 'Lingsugur'],
+      'KALABURAGI': ['Kalaburagi', 'Aland', 'Afzalpur', 'Jevargi', 'Sedam', 'Chittapur', 'Chincholi'],
+      'YADGIR': ['Yadgir', 'Shahapur', 'Shorapur', 'Gurmatkal', 'Hunasagi'],
+      'KOPPAL': ['Koppal', 'Gangavathi', 'Kushtagi', 'Yelbarga', 'Karatagi', 'Kukanoor'],
+      'BALLARI': ['Ballari', 'Kurugodu', 'Kampli', 'Siruguppa'],
+      'VIJAYANAGARA': ['Hosapete', 'Kudligi', 'Hagaribommanahalli', 'Harapanahalli', 'Hoovina Hadagali']
+    };
+
+    function handleDistrictChange(distVal) {
+      const talukaSelect = document.getElementById('tc_taluka');
+      if (!talukaSelect) return;
+      const list = districtTalukasMap[(distVal || '').toUpperCase()] || ['Raichur', 'Manvi', 'Devadurga', 'Sindhanur', 'Maski', 'Sirwar'];
+      talukaSelect.innerHTML = '<option value=""></option>' + list.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function syncInputsToCanvas() {
+      // Manage date empty classes on change
+      const dateIds = ['tc_date_of_admission', 'tc_dob', 'tc_last_att_date', 'tc_app_date', 'tc_date_entry', 'tc_date_issue'];
+      dateIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (!el.value) el.classList.add('date-empty');
+          else el.classList.remove('date-empty');
+        }
+      });
     }
 
     function clearRosterSelection() {
-      const duplicateCheckbox = document.getElementById('duplicateTcCheck');
-      if (duplicateCheckbox) {
-        duplicateCheckbox.checked = false;
-      }
-      toggleDuplicateTc(false);
-
-      updateCanvasSpans('canvasVal-tc_type', 'DUPLICATE TRANSFER CERTIFICATE');
-      updateCanvasSpans('canvasVal-tc_no', '');
-      updateCanvasSpans('canvasVal-academic_year', '2025-2026');
-      updateCanvasSpans('canvasVal-admission_no', '');
-      updateCanvasSpans('canvasVal-enroll_class', '');
-      updateCanvasSpans('canvasVal-app_no', '');
-      updateCanvasSpans('canvasVal-student_name_en', '');
-      updateCanvasSpans('canvasVal-student_name_kn', '');
-      updateCanvasSpans('canvasVal-gender', '');
-      updateCanvasSpans('canvasVal-nationality', 'Indian/ಭಾರತೀಯ');
-      updateCanvasSpans('canvasVal-religion', '');
-      updateCanvasSpans('canvasVal-caste', '');
-      updateCanvasSpans('canvasVal-father_name_en', '');
-      updateCanvasSpans('canvasVal-father_name_kn', '');
-      updateCanvasSpans('canvasVal-mother_name_en', '');
-      updateCanvasSpans('canvasVal-mother_name_kn', '');
-      updateCanvasSpans('canvasVal-social_class', '');
-      updateCanvasSpans('canvasVal-date_of_admission', '');
-      updateCanvasSpans('canvasVal-promotion', 'YES');
-      updateCanvasSpans('canvasVal-dob', '');
-      updateCanvasSpans('canvasVal-dob_words', '');
-      updateCanvasSpans('canvasVal-district', 'RAICHUR');
-      updateCanvasSpans('canvasVal-taluka', 'Raichur');
-      updateCanvasSpans('canvasVal-village', 'Merched');
-      updateCanvasSpans('canvasVal-languages', 'KANNADA, ENGLISH, HINDI');
-      updateCanvasSpans('canvasVal-electives', 'MATHEMATICS ,SOCIAL SCIENCE ,SCIENCE');
-      updateCanvasSpans('canvasVal-medium', 'Kannada / ಕನ್ನಡ');
-      updateCanvasSpans('canvasVal-fees_paid', 'YES');
-      updateCanvasSpans('canvasVal-fee_concession', '-');
-      updateCanvasSpans('canvasVal-scholarship', '-');
-      updateCanvasSpans('canvasVal-medical', 'YES');
-      updateCanvasSpans('canvasVal-last_attendance', '');
-      updateCanvasSpans('canvasVal-tc_received_date', '');
-      updateCanvasSpans('canvasVal-working_days', '240');
-      updateCanvasSpans('canvasVal-days_attended', '145');
-      updateCanvasSpans('canvasVal-conduct', 'Good');
-      updateCanvasSpans('canvasVal-date_of_entry', '');
-      updateCanvasSpans('canvasVal-date_of_issue', '');
-    }
-
-    function setFillMode(mode) {
-      currentFillMode = mode;
+      const tcInputIds = [
+        'tc_no_input', 'tc_year_input', 'tc_adm_no', 'tc_app_no', 'tc_student_name',
+        'tc_nationality', 'tc_caste', 'tc_father_name', 'tc_mother_name', 'tc_dob',
+        'tc_fee_concession', 'tc_scholarship', 'tc_last_att_date', 'tc_app_date',
+        'tc_working_days', 'tc_days_attended', 'tc_village', 'tc_date_entry', 'tc_date_issue',
+        'tc_languages', 'tc_electives', 'tc_date_of_admission'
+      ];
+      tcInputIds.forEach(id => setInputValue(id, ''));
       
-      const btnAuto = document.getElementById('mode-btn-auto');
-      const btnManual = document.getElementById('mode-btn-manual');
-      const medContainer = document.getElementById('medium-selector-container');
-      const clsContainer = document.getElementById('class-selector-container');
-      const selectorContainer = document.getElementById('student-selector-container');
+      const tcSelectIds = [
+        'tc_class', 'tc_medium', 'tc_gender', 'tc_fees_paid', 'tc_religion',
+        'tc_social_class', 'tc_promotion', 'tc_district', 'tc_taluka', 'tc_conduct', 'tc_medically_examined'
+      ];
+      tcSelectIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+
+      const dispWords = document.getElementById('tc_dob_words_display');
+      if (dispWords) dispWords.innerText = '';
       
-      const activeBtnClass = "flex-1 text-center py-1.5 rounded-lg font-bold text-xs border-0 cursor-pointer transition bg-white text-indigo-700 shadow-sm";
-      const inactiveBtnClass = "flex-1 text-center py-1.5 rounded-lg font-bold text-xs border-0 cursor-pointer transition text-slate-500 hover:text-slate-800 dark:text-slate-400";
-      
-      if (mode === 'auto') {
-        if (btnAuto) btnAuto.className = activeBtnClass;
-        if (btnManual) btnManual.className = inactiveBtnClass;
-        if (medContainer) medContainer.classList.remove('hidden');
-        if (clsContainer) clsContainer.classList.remove('hidden');
-        if (selectorContainer) selectorContainer.classList.remove('hidden');
-        
-        const val = document.getElementById('studentSelector').value;
-        if (val) handleStudentSelect(val);
-      } else {
-        if (btnAuto) btnAuto.className = inactiveBtnClass;
-        if (btnManual) btnManual.className = activeBtnClass;
-        if (medContainer) medContainer.classList.add('hidden');
-        if (clsContainer) clsContainer.classList.add('hidden');
-        if (selectorContainer) selectorContainer.classList.add('hidden');
-        clearRosterSelection();
+      if (document.getElementById('studentSelector')) document.getElementById('studentSelector').value = '';
+    }
+
+    function toggleDuplicateTc(isChecked) {
+      const tcHeader = document.getElementById('tc-type-header');
+      if (tcHeader) {
+        if (isChecked) tcHeader.classList.remove('hidden');
+        else tcHeader.classList.add('hidden');
       }
     }
 
-    function updateCanvasSpans(className, value) {
-      const spans = document.getElementsByClassName(className);
-      for (let i = 0; i < spans.length; i++) {
-        spans[i].innerText = value || '';
-      }
-    }
+    // Print Actions & History Logging
+    async function triggerPrintAndLog() {
+      const name = document.getElementById('tc_student_name')?.value || 'Unknown';
+      const sts = document.getElementById('tc_app_no')?.value || '';
+      const tcNo = document.getElementById('tc_no_input')?.value || '';
+      const today = new Date().toLocaleString();
 
-    let tcCurrentMainView = 'directory'; // 'directory' or 'preview'
-    let tcCurrentDirectoryTab = 'active'; // 'active' or 'tcout'
+      if (currentStudent) {
+        const studentId = currentStudent.id || currentStudent.realId;
+        const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+        const existingTc = logs.find(l => String(l.sts) === String(sts) && l.type === 'tc');
+        const isAlreadyTcOut = (currentStudent.status === 'TC_OUT') || !!existingTc;
 
-    function switchTcMainView(view) {
-      tcCurrentMainView = view;
-      const dirSection = document.getElementById('tcViewDirectorySection');
-      const prevSection = document.getElementById('tcPrintableSection');
+        if (isAlreadyTcOut) {
+          alert(`ಸೂಚನೆ (Duplicate TC Warning):\nವಿದ್ಯಾರ್ಥಿ "${name}" (STS: ${sts}) ಅವರಿಗೆ ಈಗಾಗಲೇ TC ನೀಡಲಾಗಿದೆ (TC No: ${existingTc ? existingTc.tcNo : (currentStudent.transfer_no || tcNo)}).\n\nಈ ಪ್ರಮಾಣ ಪತ್ರವನ್ನು ಡುಪ್ಲಿಕೇಟ್ ಟಿಸಿ ಎಂದು ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ.`);
+          toggleDuplicateTc(true);
+        } else {
+          const confirmGen = confirm(`ವಿದ್ಯಾರ್ಥಿ: ${name}\nTC ಸಂಖ್ಯೆ: ${tcNo}\n\nಈ ವಿದ್ಯಾರ್ಥಿಗೆ TC ನೀಡಿ, ಸಕ್ರಿಯ ಪಟ್ಟಿಯಿಂದ BIN (TC Out Register) ಗೆ ವರ್ಗಾಯಿಸಬೇಕೇ?`);
+          if (!confirmGen) return;
 
-      const btnDir = document.getElementById('btnTcMainViewDirectory');
-      const btnPrev = document.getElementById('btnTcMainViewPreview');
+          // Update Supabase Admissions & TC Register
+          try {
+            if (supabaseClient && studentId) {
+              await supabaseClient
+                .from('admissions')
+                .update({
+                  status: 'TC_OUT',
+                  transfer_no: tcNo,
+                  transfer_date: new Date().toISOString().split('T')[0]
+                })
+                .eq('id', studentId);
 
-      const activeBtn = "bg-indigo-600 text-white font-black text-xs py-2 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer";
-      const inactiveBtn = "text-slate-600 dark:text-slate-400 hover:text-slate-900 font-bold text-xs py-2 px-4 rounded-xl transition flex items-center gap-2 border-0 cursor-pointer";
+              await supabaseClient
+                .from('tc_register')
+                .insert([{
+                  student_id: studentId,
+                  tc_no: tcNo,
+                  sts_no: sts,
+                  student_name: name,
+                  enroll_class: document.getElementById('tc_class')?.value || '',
+                  academic_year: document.getElementById('tc_year_input')?.value || '2026-2027',
+                  date_of_entry: document.getElementById('tc_date_entry')?.value || new Date().toISOString().split('T')[0],
+                  date_of_issue: document.getElementById('tc_date_issue')?.value || new Date().toISOString().split('T')[0],
+                  conduct: document.getElementById('tc_conduct')?.value || 'Good / ಉತ್ತಮವಾಗಿದೆ',
+                  tc_type: 'TC'
+                }]);
+            }
+          } catch (e) {
+            console.error("Failed DB sync:", e);
+          }
 
-      if (view === 'directory') {
-        if (dirSection) dirSection.classList.remove('hidden');
-        if (prevSection) prevSection.classList.add('hidden');
-        if (btnDir) btnDir.className = activeBtn;
-        if (btnPrev) btnPrev.className = inactiveBtn;
-      } else {
-        if (dirSection) dirSection.classList.add('hidden');
-        if (prevSection) prevSection.classList.remove('hidden');
-        if (btnDir) btnDir.className = inactiveBtn;
-        if (btnPrev) btnPrev.className = activeBtn;
-      }
-    }
+          // Update Local Bin Register
+          const trashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+          const tcStudentObj = {
+            ...currentStudent,
+            id: studentId || `tc_${sts}`,
+            student_name: name,
+            app_no: sts,
+            status: 'TC_OUT',
+            transfer_no: tcNo,
+            transfer_date: new Date().toISOString().split('T')[0]
+          };
 
-    function switchTcDirectoryTab(tab) {
-      tcCurrentDirectoryTab = tab;
-      const btnActive = document.getElementById('tabTcActiveBtn');
-      const btnOut = document.getElementById('tabTcOutBtn');
+          const existingIdx = trashed.findIndex(t => String(t.id) === String(studentId) || String(t.app_no) === String(sts));
+          if (existingIdx !== -1) trashed[existingIdx] = tcStudentObj;
+          else trashed.push(tcStudentObj);
+          localStorage.setItem('trashed_students_list', JSON.stringify(trashed));
 
-      if (tab === 'active') {
-        if (btnActive) btnActive.className = "text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer";
-        if (btnOut) btnOut.className = "text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer";
-      } else {
-        if (btnActive) btnActive.className = "text-xs font-bold text-slate-400 pb-1 hover:text-slate-700 cursor-pointer";
-        if (btnOut) btnOut.className = "text-xs font-black text-indigo-600 border-b-2 border-indigo-600 pb-1 cursor-pointer";
-      }
-      renderTcStudentDirectory();
-    }
-
-    function getStudentAttr(s, ...keys) {
-      if (!s) return '';
-      for (let k of keys) {
-        if (s[k] !== undefined && s[k] !== null && s[k] !== '') {
-          return s[k];
+          // Increment Next Serial
+          let serial = localStorage.getItem('tc_next_serial') || '';
+          if (serial && !isNaN(serial)) {
+            let length = serial.length;
+            let nextNum = parseInt(serial, 10) + 1;
+            let nextSerial = String(nextNum).padStart(length, '0');
+            localStorage.setItem('tc_next_serial', nextSerial);
+            initNumberingSettings();
+          }
         }
       }
-      return '';
-    }
 
-    function normalizeClass(classStr) {
-      if (!classStr) return "";
-      let clean = classStr.toString().trim().toLowerCase();
-      
-      clean = clean.replace(/ನೇ/g, '').replace(/ನೆ/g, '').replace(/ನೇ ತರಗತಿ/g, '').replace(/ತರಗತಿ/g, '');
-      
-      const kanDigits = {'೧':'1', '೨':'2', '೩':'3', '೪':'4', '೫':'5', '೬':'6', '೭':'7', '೮':'8', '೯':'9', '೧೦':'10', '೦':'0'};
-      for (const key in kanDigits) {
-        clean = clean.replace(new RegExp(key, 'g'), kanDigits[key]);
-      }
-      
-      clean = clean.trim();
-
-      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("ಎಲ್.ಕೆ.ಜಿ") || clean.includes("ಎಲ್ಕೆಜಿ") || clean.includes("l.k.g")) return "LKG";
-      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2") || clean.includes("ಯು.ಕೆ.ಜಿ") || clean.includes("ಯುಕೆಜಿ") || clean.includes("u.k.g")) return "UKG";
-      
-      if (/\b10\b/.test(clean) || /\bx\b/.test(clean) || clean.includes("10th") || clean.includes("tenth")) return "10";
-      if (/\b9\b/.test(clean) || /\bix\b/.test(clean) || clean.includes("9th") || clean.includes("ninth")) return "9";
-      if (/\b8\b/.test(clean) || /\bviii\b/.test(clean) || clean.includes("8th") || clean.includes("eighth")) return "8";
-      if (/\b7\b/.test(clean) || /\bvii\b/.test(clean) || clean.includes("7th") || clean.includes("seventh")) return "7";
-      if (/\b6\b/.test(clean) || /\bvi\b/.test(clean) || clean.includes("6th") || clean.includes("sixth")) return "6";
-      if (/\b5\b/.test(clean) || /\bv\b/.test(clean) || clean.includes("5th") || clean.includes("fifth")) return "5";
-      if (/\b4\b/.test(clean) || /\biv\b/.test(clean) || clean.includes("4th") || clean.includes("fourth")) return "4";
-      if (/\b3\b/.test(clean) || /\biii\b/.test(clean) || clean.includes("3rd") || clean.includes("third")) return "3";
-      if (/\b2\b/.test(clean) || /\bii\b/.test(clean) || clean.includes("2nd") || clean.includes("second")) return "2";
-      if (/\b1\b/.test(clean) || /\bi\b/.test(clean) || clean.includes("1st") || clean.includes("first")) return "1";
-
-      const numMatch = clean.match(/\d+/);
-      if (numMatch) {
-        const num = parseInt(numMatch[0]);
-        if (num >= 1 && num <= 10) return num.toString();
-      }
-      return clean.toUpperCase();
-    }
-
-    function matchClassString(student, selectedClass) {
-      if (!selectedClass || selectedClass === 'ALL' || selectedClass === '') return true;
-      const rawCls = getStudentAttr(student, 'class_name', 'standard', 'class', 'grade', 'enroll_class', 'className', 'std');
-      const studentNorm = normalizeClass(rawCls);
-      const selectedNorm = normalizeClass(selectedClass);
-      return studentNorm === selectedNorm;
-    }
-
-    function renderTcStudentDirectory() {
-      const tbody = document.getElementById('tcDirectoryTbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      const clsFilter = document.getElementById('tcDirectoryClassFilter')?.value || 'ALL';
-      const query = (document.getElementById('tcDirectorySearch')?.value || '').toLowerCase().trim();
-
-      const activeList = (JSON.parse(localStorage.getItem('student_list_cache') || '[]')).length > 0 ? JSON.parse(localStorage.getItem('student_list_cache')) : allStudentsData;
-      const tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
-      const trashedList = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
-
-      // Update counters
-      if (document.getElementById('statTotalTcIssued')) document.getElementById('statTotalTcIssued').innerText = tcOutList.length;
-      if (document.getElementById('statActiveStudentsCount')) document.getElementById('statActiveStudentsCount').innerText = activeList.length;
-      if (document.getElementById('statTcOutCount')) document.getElementById('statTcOutCount').innerText = tcOutList.length;
-      if (document.getElementById('statRecycleBinCount')) document.getElementById('statRecycleBinCount').innerText = trashedList.length;
-
-      let sourceList = tcCurrentDirectoryTab === 'active' ? activeList : tcOutList;
-
-      let filtered = sourceList.filter(s => {
-        const matchesCls = matchClassString(s, clsFilter);
-        const sName = getStudentAttr(s, 'student_name', 'name', 'student_name_kn', 'student_name_en').toLowerCase();
-        const satsId = getStudentAttr(s, 'sats_number', 'sats_no', 'sts_no', 'sats_id', 'id').toLowerCase();
-        const matchesQ = !query || sName.includes(query) || satsId.includes(query);
-        return matchesCls && matchesQ;
+      // Log print entry
+      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+      logs.unshift({
+        name,
+        sts,
+        tcNo,
+        type: 'tc',
+        date: today,
+        enrollClass: document.getElementById('tc_class')?.value || ''
       });
+      localStorage.setItem('tc_print_logs', JSON.stringify(logs));
+
+      window.print();
+
+      if (currentStudent) await loadStudents();
+    }
+
+    function printBlankTcForm() {
+      setFillMode('blank');
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    }
+
+    // Modal Functions
+    function openHistoryModal() {
+      const modal = document.getElementById('historyModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        renderModalTcOutTable();
+      }
+    }
+
+    function closeHistoryModal() {
+      const modal = document.getElementById('historyModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function applyModalFilter() {
+      renderModalTcOutTable();
+    }
+
+    function renderModalTcOutTable() {
+      const tbody = document.getElementById('modal-tcout-tbody');
+      const summaryText = document.getElementById('modal-summary-text');
+      const query = (document.getElementById('modalSearchInput')?.value || '').toLowerCase().trim();
+      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]').filter(l => (l.type || '').toLowerCase() === 'tc');
+
+      const filtered = logs.filter(l => 
+        (l.name || '').toLowerCase().includes(query) ||
+        (l.sts || '').toLowerCase().includes(query) ||
+        (l.tcNo || '').toLowerCase().includes(query)
+      );
+
+      if (summaryText) summaryText.innerText = `ಒಟ್ಟು ಟಿಸಿ ಪಡೆದ ವಿದ್ಯಾರ್ಥಿಗಳು: ${filtered.length}`;
+      if (!tbody) return;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ. (No students found)</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400 font-bold">ಯಾವುದೇ ಟಿಸಿ ಪಡೆದ ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</td></tr>`;
         return;
       }
 
-      const canDelete = isRoleAllowed('delete');
-
-      filtered.forEach((s, idx) => {
-        const sId = getStudentAttr(s, 'id', 'sats_number', 'sats_no', 'sts_no');
-        const sName = getStudentAttr(s, 'student_name', 'name', 'student_name_kn', 'student_name_en') || 'Unnamed';
-        const satsNo = getStudentAttr(s, 'sats_number', 'sats_no', 'sts_no', 'sats_id') || '-';
-        const clsName = getStudentAttr(s, 'class_name', 'standard', 'class', 'grade', 'std') || '-';
-        const fatherName = getStudentAttr(s, 'father_name', 'father_name_kn', 'father_name_en') || '-';
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
-        
-        const actionHtml = tcCurrentDirectoryTab === 'active' ? `
-          <button onclick="issueTcForStudent('${sId}')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-file-signature"></i> ISSUE TC</button>
-          ${canDelete ? `<button onclick="softDeleteStudent('${sId}')" class="text-rose-600 hover:text-rose-800 font-bold px-1.5 py-1 border-0 bg-transparent cursor-pointer ml-1" title="Move to Recycle Bin"><i class="fa-solid fa-trash-can"></i></button>` : ''}
-        ` : `
-          <button onclick="reAdmitStudent('${sId}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg border-0 cursor-pointer shadow-sm flex items-center gap-1 mx-auto"><i class="fa-solid fa-user-plus"></i> ಮರು-ಸೇರ್ಪಡೆ</button>
-        `;
-
-        tr.innerHTML = `
-          <td class="p-2.5 text-center font-bold">${idx + 1}</td>
-          <td class="p-2.5 font-extrabold text-slate-900 dark:text-white">${sName}</td>
-          <td class="p-2.5 text-center font-mono font-bold text-indigo-600">${satsNo}</td>
-          <td class="p-2.5 text-center font-bold">${clsName}</td>
-          <td class="p-2.5">${fatherName}</td>
-          <td class="p-2.5 text-center">${actionHtml}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      tbody.innerHTML = filtered.map((l, idx) => `
+        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+          <td class="p-3 px-4 font-bold text-slate-400">${idx + 1}</td>
+          <td class="p-3 px-4 font-bold text-slate-800 dark:text-slate-100">${l.name || 'N/A'}</td>
+          <td class="p-3 px-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">${l.sts || '--'}</td>
+          <td class="p-3 px-4"><span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-bold">${l.enrollClass || 'Class 7'}</span></td>
+          <td class="p-3 px-4 text-rose-600 dark:text-rose-400 font-mono font-bold">${l.tcNo || '--'}</td>
+          <td class="p-3 px-4 text-slate-400 text-xs">${l.date || '--'}</td>
+          <td class="p-3 px-4 text-center">
+            <button onclick="reprintFromLog('${l.sts}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-1 rounded-lg text-[11px] transition shadow-sm border-0 cursor-pointer flex items-center gap-1 mx-auto">
+              <i class="fa-solid fa-file-invoice"></i> TC ಪ್ರಿಂಟ್
+            </button>
+          </td>
+        </tr>
+      `).join('');
     }
 
-    function issueTcForStudent(studentId) {
-      const sel = document.getElementById('studentSelector');
-      if (sel) {
-        sel.value = studentId;
-        handleStudentSelect(studentId);
-      }
-      switchTcMainView('preview');
-    }
-
-    function reAdmitStudent(studentId) {
-      let tcOutList = JSON.parse(localStorage.getItem('tc_issued_list') || '[]');
-      const idx = tcOutList.findIndex(s => (s.id || s.sats_number) == studentId);
-      if (idx === -1) return;
-
-      const student = tcOutList.splice(idx, 1)[0];
-      student.status = 'Active';
-
-      let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
-      activeList.push(student);
-
-      localStorage.setItem('tc_issued_list', JSON.stringify(tcOutList));
-      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
-
-      renderTcStudentDirectory();
-      alert(`${student.student_name || student.name} ಅವರನ್ನು ಯಶಸ್ವಿಯಾಗಿ ತರಗತಿಗೆ ಮರು-ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ!`);
-    }
-
-    function softDeleteStudent(studentId) {
-      if (!isRoleAllowed('delete')) {
-        alert("ನಿಮಗೆ ಡೆಲಿಟ್ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
-        return;
-      }
-      let activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
-      const idx = activeList.findIndex(s => (s.id || s.sats_number) == studentId);
-      if (idx === -1) return;
-
-      if (!confirm("ನಿಜವಾಗಿಯೂ ಈ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಮರುಬಳಕೆ ಬುಟ್ಟಿಗೆ (Recycle Bin) ಸರಿಸಬೇಕೇ?")) return;
-
-      const deletedStudent = activeList.splice(idx, 1)[0];
-      deletedStudent.deleted_at = new Date().toLocaleDateString('kn-IN');
-      deletedStudent.status = 'Deleted';
-
-      let trashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
-      trashed.push(deletedStudent);
-
-      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
-      localStorage.setItem('trashed_students_list', JSON.stringify(trashed));
-
-      renderTcStudentDirectory();
-      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಮರುಬಳಕೆ ಬುಟ್ಟಿಗೆ (Recycle Bin) ಸರಿಸಲಾಗಿದೆ!");
-    }
-
-    window.onload = async function() {
-      setupSupabase();
-      await loadStudents();
-      initNumberingSettings();
-      loadPrintLogs();
-      renderTcStudentDirectory();
-      
-      // Inline edit listener to update QR code dynamically on manual correction
-      document.addEventListener('keyup', (e) => {
-        if (e.target.classList.contains('canvasVal-tc_no') || 
-            e.target.classList.contains('canvasVal-student_name_en') || 
-            e.target.classList.contains('canvasVal-app_no')) {
-          updateQrCode(currentStudent);
+    function reprintFromLog(sts) {
+      closeHistoryModal();
+      setFillMode('auto');
+      const selector = document.getElementById('studentSelector');
+      if (selector && sts) {
+        const matched = allStudentsData.find(s => String(s.app_no) === String(sts) || String(s.sts_no) === String(sts) || String(s.id) === String(sts));
+        if (matched) {
+          selector.value = matched.id || matched.app_no;
+          handleStudentSelect(selector.value);
         }
+      }
+    }
+
+    function exportLogsCSV() {
+      const logs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+      if (logs.length === 0) {
+        alert("ಡೌನ್ಲೋಡ್ ಮಾಡಲು ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ.");
+        return;
+      }
+
+      let csv = "Student Name,STS Number,TC Number,Class,Printed Date\n";
+      logs.forEach(l => {
+        csv += `"${l.name || ''}","${l.sts || ''}","${l.tcNo || ''}","${l.enrollClass || ''}","${l.date || ''}"\n`;
       });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `TC_Printed_Register_${new Date().toISOString().slice(0,10)}.csv`);
+      a.click();
+    }
+
+    // DOM Ready Listener
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initTcPage);
+    } else {
+      initTcPage();
     }
   </script>
   <script src="navbar.js"></script>

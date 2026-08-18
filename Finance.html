@@ -1,0 +1,2331 @@
+﻿<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Finance & Fee Management Studio - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="chart.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f1f5f9; }
+    
+    /* Modern Glassmorphic Pill Tab Styling */
+    .fin-tab-pill {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fin-tab-pill.active {
+      background: linear-gradient(135deg, #10b981, #0d9488);
+      color: #ffffff !important;
+      box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Dark Mode Theme Support */
+    body[data-theme="dark"] { background-color: #090d16 !important; color: #f8fafc !important; }
+    body[data-theme="dark"] .bg-white { background-color: #0f172a !important; color: #f8fafc !important; border-color: #1e293b !important; }
+    body[data-theme="dark"] .bg-slate-50 { background-color: #1e293b/60 !important; }
+    body[data-theme="dark"] .text-slate-800, body[data-theme="dark"] .text-slate-700 { color: #f1f5f9 !important; }
+    body[data-theme="dark"] .text-slate-500, body[data-theme="dark"] .text-slate-400 { color: #94a3b8 !important; }
+  </style>
+</head>
+<body class="text-slate-800 bg-[#f1f5f9] min-h-screen flex flex-col justify-between">
+
+  <div class="no-print">
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Outer Container -->
+    <div class="max-w-[98%] lg:max-w-[1650px] mx-auto w-full p-4 sm:p-6 space-y-6">
+      
+      <!-- Top Title & Navigation Header Banner -->
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25 text-xl shrink-0">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white flex items-center gap-2 m-0 tracking-tight">
+              ಹಣಕಾಸು ಮತ್ತು ಶುಲ್ಕ ನಿರ್ವಹಣೆ / Finance & Fee Studio
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium m-0 mt-0.5">
+              ಶುಲ್ಕ ಸಂಗ್ರಹಣೆ, ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ, ರಸೀದಿಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್ಸ್.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3 Subpage Tabs: 📊 Dashboard | 🧾 Fee Collection | ⚙️ Fee Settings -->
+        <div class="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 w-full lg:w-auto overflow-x-auto">
+          <button type="button" onclick="switchFinanceTab('dashboard')" id="fin-tab-dashboard" class="fin-tab-pill active px-4 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 dark:text-slate-300 transition flex items-center gap-2 border-0 cursor-pointer whitespace-nowrap">
+            <i class="fa-solid fa-chart-pie text-sm"></i> 1. ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
+          </button>
+          <button type="button" onclick="switchFinanceTab('collection')" id="fin-tab-collection" class="fin-tab-pill px-4 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 dark:text-slate-300 transition flex items-center gap-2 border-0 cursor-pointer whitespace-nowrap">
+            <i class="fa-solid fa-hand-holding-dollar text-sm"></i> 2. ಶುಲ್ಕ ಸಂಗ್ರಹಣೆ / Fee Collection
+          </button>
+          <button type="button" onclick="switchFinanceTab('settings')" id="fin-tab-settings" class="fin-tab-pill px-4 py-2.5 rounded-xl text-xs font-extrabold text-slate-600 dark:text-slate-300 transition flex items-center gap-2 border-0 cursor-pointer whitespace-nowrap">
+            <i class="fa-solid fa-sliders text-sm"></i> 3. ಸೆಟ್ಟಿಂಗ್ಸ್ / Fee Settings
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SUBPAGE 1: DASHBOARD VIEW (#view-dashboard) -->
+      <!-- ========================================================================= -->
+      <div id="view-dashboard" class="space-y-6">
+        
+        <!-- KPI Summary Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Total Collections -->
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">ಒಟ್ಟು ಸಂಗ್ರಹ / Total Collected</p>
+                <h3 id="stat-total-collected" class="text-2xl font-black text-slate-900 dark:text-white font-mono">₹ 0</h3>
+                <p class="text-[10px] text-emerald-600 font-bold mt-1.5 flex items-center gap-1">
+                  <i class="fa-solid fa-arrow-trend-up"></i> <span id="stat-collected-count">0</span> ರಸೀದಿಗಳು / Receipts
+                </p>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 flex items-center justify-center text-lg font-bold border border-emerald-200 dark:border-emerald-800">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div id="stat-progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <!-- Card 2: Today's Collection -->
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">ಇಂದಿನ ಸಂಗ್ರಹ / Today's Collection</p>
+                <h3 id="stat-today-collected" class="text-2xl font-black text-slate-900 dark:text-white font-mono">₹ 0</h3>
+                <p class="text-[10px] text-sky-600 font-bold mt-1.5 flex items-center gap-1">
+                  <i class="fa-solid fa-calendar-day"></i> <span id="stat-today-count">0</span> ಪಾವತಿಗಳು / Payments
+                </p>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-950/40 dark:text-sky-400 flex items-center justify-center text-lg font-bold border border-sky-200 dark:border-sky-800">
+                <i class="fa-solid fa-money-bill-wave"></i>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-sky-500 h-full rounded-full w-full"></div>
+            </div>
+          </div>
+
+          <!-- Card 3: Pending & Next Due -->
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">ಬಾಕಿ ವಿವರ / Pending Dues</p>
+                <h3 id="stat-pending-dues" class="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">₹ 0</h3>
+                <p class="text-[10px] text-rose-500 font-bold mt-1.5 flex items-center gap-1">
+                  <i class="fa-solid fa-clock"></i> ಗಡುವು: <span id="stat-next-due-date">15-Aug-2026</span> (<span id="stat-pending-count">0</span> ವಿದ್ಯಾರ್ಥಿಗಳು)
+                </p>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 flex items-center justify-center text-lg font-bold border border-rose-200 dark:border-rose-800">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-rose-500 h-full rounded-full w-1/3"></div>
+            </div>
+          </div>
+
+          <!-- Card 4: Total Target -->
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">ಒಟ್ಟು ನಿರೀಕ್ಷಿತ ಮೊತ್ತ / Expected Total</p>
+                <h3 id="stat-expected-total" class="text-2xl font-black text-amber-600 dark:text-amber-400 font-mono">₹ 1,26,250</h3>
+                <p class="text-[10px] text-amber-600 font-bold mt-1.5 flex items-center gap-1">
+                  <i class="fa-solid fa-bullseye"></i> ಶಾಲೆಯ ಒಟ್ಟು 505 ವಿದ್ಯಾರ್ಥಿಗಳು
+                </p>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 flex items-center justify-center text-lg font-bold border border-amber-200 dark:border-amber-800">
+                <i class="fa-solid fa-building-columns"></i>
+              </div>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-amber-500 h-full rounded-full w-3/4"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts & Classwise Breakdown Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+                  <i class="fa-solid fa-chart-pie text-emerald-500"></i> ಶುಲ್ಕ ವಿಭಾಗವಾರು ಸಂಗ್ರಹಣೆ / Category Breakdown
+                </h3>
+                <p class="text-[10px] text-slate-400 font-medium m-0 mt-0.5">ಪರೀಕ್ಷಾ ಶುಲ್ಕ, ಐಡಿ ಕಾರ್ಡ್, ಸಾಂಸ್ಕೃತಿಕ ಮತ್ತು SDMC ಅಭಿವೃದ್ಧಿ ಶುಲ್ಕಗಳು</p>
+              </div>
+              <button onclick="exportFinanceExcel()" class="text-[10px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg border border-slate-200 transition cursor-pointer flex items-center gap-1">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> Export Excel
+              </button>
+            </div>
+
+            <div class="h-64 relative flex items-center justify-center">
+              <canvas id="categoryFeeChart"></canvas>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+            <div class="mb-4">
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+                <i class="fa-solid fa-bars-progress text-indigo-500"></i> ತರಗತಿವಾರು ಪ್ರಗತಿ / Classwise Progress
+              </h3>
+              <p class="text-[10px] text-slate-400 font-medium m-0 mt-0.5">ಪ್ರತಿ ತರಗತಿಯ ಶುಲ್ಕ ಸಂಗ್ರಹಣೆಯ ಶೇಕಡಾವಾರು ಪ್ರಮಾಣ</p>
+            </div>
+
+            <div id="classwise-progress-container" class="space-y-3 overflow-y-auto max-h-64 pr-2">
+              <!-- Class progress bars -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions Table Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 p-5">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+                <i class="fa-solid fa-receipt text-sky-500"></i> ಇತ್ತೀಚಿನ ಶುಲ್ಕ ರಸೀದಿಗಳು / Recent Receipts
+              </h3>
+              <p class="text-[10px] text-slate-400 font-medium m-0 mt-0.5">ಇತ್ತೀಚೆಗೆ ಸ್ವೀಕರಿಸಲಾದ ಶುಲ್ಕ ಪಾವತಿ ದಾಖಲೆಗಳು</p>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+              <input type="text" id="finance-search" oninput="applyFinanceFilters()" placeholder="Search Student, STS..." class="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 bg-white dark:bg-slate-800">
+              <select id="finance-class-filter" onchange="applyFinanceFilters()" class="p-1.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold">
+                <option value="">-- All Classes --</option>
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                  <th class="py-3 px-4 text-center">Sl.No</th>
+                  <th class="py-3 px-4">Receipt No</th>
+                  <th class="py-3 px-4">Student Name (ವಿದ್ಯಾರ್ಥಿ)</th>
+                  <th class="py-3 px-4 text-center">Class</th>
+                  <th class="py-3 px-4">Fee Category</th>
+                  <th class="py-3 px-4 text-center">Mode</th>
+                  <th class="py-3 px-4 text-right">Amount (₹)</th>
+                  <th class="py-3 px-4 text-center">Date</th>
+                  <th class="py-3 px-4 text-center no-print">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="finance-transactions-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-200">
+                <!-- Data loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- SUBPAGE 2: FEE COLLECTION ROSTER TABLE VIEW (#view-collection) -->
+      <!-- ========================================================================= -->
+      <div id="view-collection" class="hidden space-y-6">
+        
+        <!-- Filter Bar & Advanced Controls -->
+        <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+                <i class="fa-solid fa-graduation-cap text-emerald-500"></i> ವಿದ್ಯಾರ್ಥಿ ಶುಲ್ಕ ಪಟ್ಟಿ ಮತ್ತು ಸಂಗ್ರಹಣೆ / Student Fee Roster & Collection
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-medium m-0 mt-0.5">ತರಗತಿ, ಪಾವತಿ ಸ್ಥಿತಿ, ಜಾತಿ/ವರ್ಗ ಫಿಲ್ಟರ್ ಮಾಡಿ ಹಾಗೂ ಸಾರ್ಟಿಂಗ್ ಬಳಸಿ ಶುಲ್ಕ ನಿರ್ವಹಿಸಿ.</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="exportFinanceExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-xs">
+                <i class="fa-solid fa-file-excel"></i> Export Excel
+              </button>
+              <button type="button" onclick="printRosterTable()" class="bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-xs">
+                <i class="fa-solid fa-print"></i> Print List
+              </button>
+              <button type="button" onclick="openBarcodeScanner()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 px-3.5 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 transition cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-xs">
+                <i class="fa-solid fa-barcode text-sm"></i> Barcode Scan
+              </button>
+              <button type="button" onclick="toggleManageColumnsModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-xs">
+                <i class="fa-solid fa-sliders"></i> Columns
+              </button>
+            </div>
+          </div>
+
+          <!-- Dropdowns Row 1 -->
+          <!-- Quick-Filter Chips / Pills Bar -->
+          <div class="flex flex-wrap items-center gap-2 pt-2 pb-1">
+            <span class="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1"><i class="fa-solid fa-bolt text-amber-500"></i> Quick Filters:</span>
+            <button type="button" onclick="applyQuickFilterPill('all')" id="pill-all" class="pill-btn px-3 py-1 bg-emerald-600 text-white rounded-full text-[11px] font-bold shadow-xs cursor-pointer border-0 transition">
+              All Students
+            </button>
+            <button type="button" onclick="applyQuickFilterPill('defaulters')" id="pill-defaulters" class="pill-btn px-3 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition">
+              ⚡ Fee Defaulters (Pending > 0)
+            </button>
+            <button type="button" onclick="applyQuickFilterPill('fullpaid')" id="pill-fullpaid" class="pill-btn px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition">
+              ✅ 100% Fully Paid
+            </button>
+            <button type="button" onclick="applyQuickFilterPill('highschool')" id="pill-highschool" class="pill-btn px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition">
+              🎓 High School (8-10)
+            </button>
+            <button type="button" onclick="applyQuickFilterPill('primary')" id="pill-primary" class="pill-btn px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-full text-[11px] font-bold shadow-xs cursor-pointer transition">
+              🧒 Primary (1-7)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- Academic Year -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Academic Year</label>
+              <select id="col-ay-filter" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="2026-27">2026-27</option>
+                <option value="2025-26">2025-26</option>
+              </select>
+            </div>
+
+            <!-- Class DD -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Class (ತರಗತಿ)</label>
+              <select id="col-class-dd" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="">-- All Classes --</option>
+                <option value="LKG/KG1">LKG/KG1</option>
+                <option value="UKG/KG2">UKG/KG2</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+
+            <!-- Fee Status DD -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Fee Status (ಪಾವತಿ ಸ್ಥಿತಿ)</label>
+              <select id="col-status-dd" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="">-- All Status (ಎಲ್ಲಾ) --</option>
+                <option value="PAID">✅ Fully Paid (ಪೂರ್ಣ ಪಾವತಿಸಲಾಗಿದೆ)</option>
+                <option value="PARTIAL">⏳ Partial Paid (ಭಾಗಶಃ ಪಾವತಿಸಲಾಗಿದೆ)</option>
+                <option value="PENDING">⚠️ Fee Pending (ಬಾಕಿ ಇರುವವರು)</option>
+              </select>
+            </div>
+
+            <!-- Gender DD -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Gender (ಲಿಂಗ)</label>
+              <select id="col-gender-dd" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="">-- All Genders --</option>
+                <option value="Boy">Boy (ಹುಡುಗ)</option>
+                <option value="Girl">Girl (ಹುಡುಗಿ)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Dropdowns Row 2: Advanced Filters -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+            <!-- Category / Caste DD -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Caste / Category (ಪ್ರವರ್ಗ)</label>
+              <select id="col-category-dd" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="">-- All Categories --</option>
+                <option value="SC">SC (ಪರಿಶಿಷ್ಟ ಜಾತಿ)</option>
+                <option value="ST">ST (ಪರಿಶಿಷ್ಟ ಪಂಗಡ)</option>
+                <option value="C1">Category 1 (ಪ್ರವರ್ಗ-೧)</option>
+                <option value="2A">2A</option>
+                <option value="2B">2B</option>
+                <option value="3A">3A</option>
+                <option value="3B">3B</option>
+                <option value="OTHERS">General / Others</option>
+              </select>
+            </div>
+
+            <!-- Specific Unpaid Fee Reason Filter -->
+            <div>
+              <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Unpaid Specific Fee Item</label>
+              <select id="col-reason-dd" onchange="applyRosterFilters()" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                <option value="">-- All Fee Items --</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- Search Field -->
+            <div class="lg:col-span-2 flex items-end gap-2">
+              <div class="flex-1">
+                <label class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Search Student (ಹೆಸರು, STS...)</label>
+                <div class="relative">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400"></i>
+                  <input type="text" id="col-roster-search" oninput="applyRosterFilters()" placeholder="Search Student Name, STS No, Application No, Father Name..." class="w-full pl-9 pr-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-medium bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500">
+                </div>
+              </div>
+              <button type="button" onclick="resetRosterFilters()" title="Reset All Filters" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Live Summary Analytics Card -->
+        <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-700 rounded-3xl p-5 text-white shadow-md relative overflow-hidden">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
+            <div>
+              <div class="text-[11px] text-emerald-100 uppercase font-bold tracking-wider">Filtered Students</div>
+              <div id="roster-stat-students" class="text-2xl font-black font-mono mt-0.5">0</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-emerald-100 uppercase font-bold tracking-wider">Total Expected</div>
+              <div id="roster-stat-expected" class="text-2xl font-black font-mono mt-0.5">₹ 0</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-emerald-100 uppercase font-bold tracking-wider">Total Collected</div>
+              <div id="roster-stat-collected" class="text-2xl font-black font-mono mt-0.5 text-amber-200">₹ 0</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-emerald-100 uppercase font-bold tracking-wider">Pending Balance</div>
+              <div id="roster-stat-pending" class="text-2xl font-black font-mono mt-0.5 text-rose-200">₹ 0</div>
+            </div>
+          </div>
+          <!-- Animated Progress Bar -->
+          <div class="mt-4 pt-3 border-t border-white/10 relative z-10 flex items-center gap-3">
+            <span class="text-xs font-bold text-emerald-100 whitespace-nowrap">Collection Progress: <span id="roster-stat-rate" class="font-mono font-extrabold text-white">0%</span></span>
+            <div class="flex-1 h-2.5 bg-black/20 rounded-full overflow-hidden">
+              <div id="roster-stat-bar" class="h-full bg-amber-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grand Roster Table -->
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+              ತೋರಿಸಲಾಗುತ್ತಿರುವ ವಿದ್ಯಾರ್ಥಿಗಳು / Showing Students: <span id="roster-count-badge" class="font-mono text-emerald-600 dark:text-emerald-400 font-extrabold text-sm">0</span>
+            </span>
+            <span class="text-[11px] text-slate-400 font-medium">💡 ಕಾಲಮ್ ಹೆಡರ್ ಮೇಲಿನ ಬಾಣ ಒತ್ತುವ ಮೂಲಕ Sort ಮಾಡಿ</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold uppercase border-b border-slate-200 dark:border-slate-700">
+                  <th class="py-3.5 px-3 text-center no-print w-10">
+                    <input type="checkbox" id="select-all-roster-cb" onchange="toggleSelectAllRosterStudents(this)" class="w-4 h-4 accent-emerald-600 rounded cursor-pointer">
+                  </th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('status')">
+                    FEE TICK <i id="sort-icon-status" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('slno')">
+                    SL.NO <i id="sort-icon-slno" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('sts')">
+                    STS NO <i id="sort-icon-sts" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('name')">
+                    STUDENT NAME (ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು) <i id="sort-icon-name" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('class')">
+                    CLASS <i id="sort-icon-class" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 text-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('gender')">
+                    GENDER <i id="sort-icon-gender" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 col-fees">APPLICABLE FEES / REASONS</th>
+                  <th class="py-3.5 px-3 text-right cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('collected')">
+                    COLLECTED (₹) <i id="sort-icon-collected" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 text-right cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition" onclick="sortRosterData('pending')">
+                    PENDING (₹) <i id="sort-icon-pending" class="fa-solid fa-sort text-[10px] text-slate-400 ml-1"></i>
+                  </th>
+                  <th class="py-3.5 px-3 text-center col-paydate">PAYMENT DATE & MODE</th>
+                  <th class="py-3.5 px-3 text-center no-print">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="roster-table-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-200">
+                <!-- Roster Rows loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Floating Batch Actions Bar -->
+      <div id="batch-actions-bar" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-900/95 dark:bg-slate-800/95 backdrop-blur-md text-white px-6 py-3.5 rounded-2xl shadow-2xl z-50 hidden flex items-center gap-4 border border-slate-700 animate-bounce-short">
+        <span class="text-xs font-extrabold flex items-center gap-2">
+          <span id="batch-selected-count" class="px-2 py-0.5 bg-emerald-500 text-white rounded-lg text-xs font-mono font-bold">0</span> Selected
+        </span>
+        <div class="h-4 w-px bg-slate-700"></div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="bulkMarkSelectedPaid()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-check-double text-xs"></i> Bulk Mark Fully Paid
+          </button>
+          <button type="button" onclick="exportSelectedExcel()" class="bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-file-excel text-xs"></i> Export Selected
+          </button>
+          <button type="button" onclick="printSelectedRoster()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl font-bold text-xs shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-print text-xs"></i> Print Selected
+          </button>
+        </div>
+      </div>
+
+      <!-- Manage Columns Modal -->
+      <div id="manage-columns-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+          <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+              <i class="fa-solid fa-sliders text-amber-500"></i> Manage Visible Columns
+            </h3>
+            <button onclick="toggleManageColumnsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-0 bg-transparent cursor-pointer text-base">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="space-y-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+            <label class="flex items-center gap-2 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl cursor-pointer">
+              <input type="checkbox" checked onchange="toggleColumnVisibility('col-fees', this.checked)" class="accent-emerald-600"> Applicable Fees / Reasons Column
+            </label>
+            <label class="flex items-center gap-2 p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl cursor-pointer">
+              <input type="checkbox" checked onchange="toggleColumnVisibility('col-paydate', this.checked)" class="accent-emerald-600"> Payment Date & Mode Column
+            </label>
+          </div>
+          <div class="pt-2 flex justify-end">
+            <button onclick="toggleManageColumnsModal()" class="bg-emerald-600 text-white font-bold text-xs px-4 py-2 rounded-xl cursor-pointer border-0 shadow">Done</button>
+          </div>
+        </div>
+      </div>
+<!-- ========================================================================= -->
+      <!-- SUBPAGE 3: FEE SETTINGS VIEW (#view-settings) -->
+      <!-- ========================================================================= -->
+      <div id="view-settings" class="hidden space-y-6">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Add / Edit Fee Reason Form (5 cols) -->
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h3 id="form-heading-title" class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <i class="fa-solid fa-plus-circle text-emerald-500"></i> ಹೊಸ ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Add Fee Reason
+            </h3>
+
+            <div class="space-y-4">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">Fee Collection Reason (ಶುಲ್ಕ ವಿಭಾಗ ವಿವರ) *</label>
+                  <button type="button" onclick="autoTranslateFeeReason(true)" title="Auto Translate to Kannada" class="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-lg transition cursor-pointer flex items-center gap-1">
+                    <i class="fa-solid fa-language text-xs"></i> Auto-Translate
+                  </button>
+                </div>
+                <input type="text" id="set-reason-en" placeholder="e.g. Exam Fee, Sports Fee, Picnic Fee..." onchange="autoTranslateFeeReason(false)" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800" required>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">ಕನ್ನಡ ವಿವರ / Kannada Description (Auto-Filled)</label>
+                <input type="text" id="set-reason-kn" placeholder="ಸ್ವಯಂಚಾಲಿತ ಭಾಷಾಂತರಗೊಳ್ಳುತ್ತದೆ / Auto-translated" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800">
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Default Amount (₹) *</label>
+                  <input type="number" id="set-amount" placeholder="e.g. 150" min="0" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold font-mono bg-white dark:bg-slate-800" required>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Applicable Class *</label>
+                  <select id="set-class" class="w-full px-3.5 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800">
+                    <option value="All">All Classes (ಎಲ್ಲಾ)</option>
+                    <option value="LKG">LKG</option>
+                    <option value="UKG">UKG</option>
+                    <option value="1">Class 1</option>
+                    <option value="2">Class 2</option>
+                    <option value="3">Class 3</option>
+                    <option value="4">Class 4</option>
+                    <option value="5">Class 5</option>
+                    <option value="6">Class 6</option>
+                    <option value="7">Class 7</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="flex gap-2">
+                <button type="button" onclick="saveNewFeeReason(event)" id="save-reason-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 rounded-xl text-xs transition border-0 cursor-pointer shadow-md flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-floppy-disk"></i> ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Save Fee Reason
+                </button>
+                <button type="button" onclick="cancelFeeEdit()" id="cancel-edit-btn" class="hidden bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-4 rounded-xl text-xs transition border-0 cursor-pointer">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Existing Fee Collection Reasons Table with EDIT & DELETE (7 cols) -->
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
+                <i class="fa-solid fa-list-check text-emerald-500"></i> ಲಭ್ಯವಿರುವ ಶುಲ್ಕ ವಿಭಾಗಗಳು / Active Fee Reasons
+              </h3>
+              <span id="fee-reasons-count-badge" class="text-[10px] font-extrabold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full">5 Fee Reasons</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                    <th class="py-3 px-4">Reason Name (ವಿವರ)</th>
+                    <th class="py-3 px-4 text-center">Class</th>
+                    <th class="py-3 px-4 text-right">Default Fee (₹)</th>
+                    <th class="py-3 px-4 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="settings-reasons-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium text-slate-700 dark:text-slate-200">
+                  <!-- Fee Reasons Rows with Edit & Delete buttons -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Student Fee Collection Modal (Inspired by NewAdmissionList.html Template) -->
+  <div id="collect-fee-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[3000] p-4 no-print" onclick="if(event.target === this) closeCollectFeeModal()">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0 uppercase tracking-wide">
+          <i class="fa-solid fa-cash-register text-emerald-600 text-base"></i> ಶುಲ್ಕ ಸ್ವೀಕಾರ ಕೌಂಟರ್ / Collect Student Fee
+        </h3>
+        <button type="button" onclick="closeCollectFeeModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-5 overflow-y-auto custom-scrollbar">
+        <!-- Selected Student Profile Banner -->
+        <div id="modal-student-banner" class="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-850 p-4 rounded-2xl border border-emerald-200 dark:border-slate-700 flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow-md shrink-0">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 id="modal-sel-name" class="text-sm font-black text-slate-900 dark:text-white truncate m-0">Student Name</h4>
+            <p id="modal-sel-sub" class="text-[11px] text-slate-500 dark:text-slate-400 font-medium m-0 mt-0.5">Class: - • STS: -</p>
+          </div>
+        </div>
+
+        <!-- Fee Selection Checklist Table -->
+        <div class="space-y-2">
+          <label class="block text-xs font-extrabold text-slate-700 dark:text-slate-300">ಶುಲ್ಕ ವಿಭಾಗಗಳ ಆಯ್ಕೆ / Select Fee Categories</label>
+          <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+                  <th class="py-2.5 px-3 text-center w-10">Select</th>
+                  <th class="py-2.5 px-3">Fee Reason (ವಿವರ)</th>
+                  <th class="py-2.5 px-3 text-right">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="modal-fee-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                <!-- Checklist items -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Total Payable Box -->
+        <div class="bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center shadow-lg border border-slate-800">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider block">ಒಟ್ಟು ಪಾವತಿಸುವ ಶುಲ್ಕ / Total Amount</span>
+            <span id="modal-total-display" class="text-2xl font-black font-mono text-emerald-400">₹ 0</span>
+          </div>
+          <input type="hidden" id="modal-total-input" value="0">
+          <span class="text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full">
+            <i class="fa-solid fa-calculator mr-1"></i> Auto Calculated
+          </span>
+        </div>
+
+        <!-- Payment Mode & Date -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">ಪಾವತಿ ವಿಧಾನ / Mode *</label>
+            
+          <!-- Dynamic UPI QR Code Display -->
+          <div class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-center space-y-2">
+            <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Dynamic Scan & Pay UPI QR</div>
+            <img id="modal-upi-qr" src="" alt="UPI QR Code" class="w-36 h-36 rounded-xl border border-slate-300 dark:border-slate-700 p-1 bg-white shadow-xs">
+            <span class="text-[10px] text-slate-400 font-mono">GPay / PhonePe / Paytm / BHIM</span>
+          </div>
+
+          <select id="modal-mode-select" class="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold bg-white dark:bg-slate-800">
+              <option value="Cash">Cash (ನಗದು)</option>
+              <option value="UPI / GPay">UPI / PhonePe / GPay</option>
+              <option value="Bank Transfer">Bank Transfer (ಬ್ಯಾಂಕ್)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">ದಿನಾಂಕ / Date *</label>
+            <input type="date" id="modal-date-input" class="w-full px-3.5 py-2 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-medium bg-white dark:bg-slate-800" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-3.5 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2 text-xs font-bold">
+        <button type="button" onclick="closeCollectFeeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-2 px-4 rounded-xl transition border-0 cursor-pointer">
+          Cancel / ರದ್ದು
+        </button>
+        <button type="button" onclick="submitModalFeeCollection()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-2 px-5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-receipt"></i> ಶುಲ್ಕ ಸ್ವೀಕರಿಸಿ ರಸೀದಿ ನೀಡಿ / Collect & Print Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receipt Viewer Modal -->
+  <div id="receipt-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[3000] p-4 no-print" onclick="if(event.target === this) closeReceiptModal()">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0 uppercase tracking-wide">
+          <i class="fa-solid fa-receipt text-emerald-600 text-base"></i> ಶುಲ್ಕ ರಸೀದಿ / Official Fee Receipt
+        </h3>
+        <button type="button" onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="receipt-printable-area" class="p-6 space-y-4">
+        <!-- Generated Dynamically -->
+      </div>
+
+      <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+        <button type="button" onclick="printModalReceipt()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-1.5 px-4 rounded-xl text-xs font-bold transition border-0 cursor-pointer flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ / Print
+        </button>
+        <button type="button" onclick="closeReceiptModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 py-1.5 px-4 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
+          Close / ಮುಚ್ಚಿ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barcode Scanner Modal -->
+  <div id="barcode-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[3000] p-4 no-print" onclick="if(event.target === this) closeBarcodeScanner()">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden space-y-4 p-5">
+      <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-700 pb-3">
+        <h3 class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0 uppercase tracking-wide">
+          <i class="fa-solid fa-barcode text-indigo-500"></i> ಸ್ಕ್ಯಾನ್ ಮಾಡಿ / Scan Barcode / QR Code
+        </h3>
+        <button type="button" onclick="closeBarcodeScanner()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="qr-reader" class="w-full rounded-2xl overflow-hidden bg-black min-h-[250px]"></div>
+
+      <button type="button" onclick="closeBarcodeScanner()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 rounded-xl text-xs transition border-0 cursor-pointer">
+        Cancel / ರದ್ದುಮಾಡಿ
+      </button>
+    </div>
+  </div>
+
+  <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-3.5 text-center text-xs text-slate-400 mt-auto flex-shrink-0">
+    <p class="font-medium m-0">Designed & Developed for <span class="text-slate-700 dark:text-slate-200 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <script src="navbar.js"></script>
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    let allTransactions = [];
+    let defaultFeeReasons = [
+      { id: 'FR1', name_en: 'Exam Fee', name_kn: 'ಪರೀಕ್ಷಾ ಶುಲ್ಕ', amount: 150, class: 'All', active: true },
+      { id: 'FR2', name_en: 'ID Card & Badge', name_kn: 'ಐಡಿ ಕಾರ್ಡ್ ಮತ್ತು ಬ್ಯಾಡ್ಜ್', amount: 50, class: 'All', active: true },
+      { id: 'FR3', name_en: 'Sports & Cultural Fund', name_kn: 'ಕ್ರೀಡಾ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ನಿಧಿ', amount: 50, class: 'All', active: true },
+      { id: 'FR4', name_en: 'SDMC Development Fund', name_kn: 'SDMC ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ನಿಧಿ', amount: 100, class: 'All', active: true },
+      { id: 'FR5', name_en: 'Admission Fee', name_kn: 'ಪ್ರವೇಶ ಶುಲ್ಕ', amount: 200, class: 'LKG', active: true }
+    ];
+
+    let sampleStudents = [];
+    let currentSortCol = null;
+    let currentSortDir = 'asc';
+    let selectedStudentIds = new Set();
+
+    let selectedModalStudent = null;
+    let editingFeeReasonId = null;
+    let categoryChartInstance = null;
+    let html5QrcodeScannerInstance = null;
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // 1. Read URL query param to activate subpage tab
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab') || 'dashboard';
+      switchFinanceTab(tabParam);
+
+      // 2. Load fee structure reasons from localStorage/DB
+      loadFeeReasons();
+
+      // 3. Set today date in collection modal
+      const todayStr = new Date().toISOString().split('T')[0];
+      document.getElementById('modal-date-input').value = todayStr;
+
+      // 4. Load finance transaction data
+      await loadFinanceData();
+
+      // 5. Load student roster table
+      loadStudents();
+    });
+
+    // Subpage Switcher Function
+    function switchFinanceTab(tabId) {
+      const tabs = ['dashboard', 'collection', 'settings'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`fin-tab-${t}`);
+        const view = document.getElementById(`view-${t}`);
+        if (btn && view) {
+          if (t === tabId) {
+            btn.classList.add('active');
+            view.classList.remove('hidden');
+          } else {
+            btn.classList.remove('active');
+            view.classList.add('hidden');
+          }
+        }
+      });
+    }
+
+    // Fee Structure Settings Functions
+    function loadFeeReasons() {
+      const saved = localStorage.getItem('portal_fee_structures');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.length > 0) defaultFeeReasons = parsed;
+        } catch(e) {}
+      } else {
+        localStorage.setItem('portal_fee_structures', JSON.stringify(defaultFeeReasons));
+      }
+
+      renderSettingsReasonsTable();
+      populateReasonDropdown();
+    }
+
+    function populateReasonDropdown() {
+      const dd = document.getElementById('col-reason-dd');
+      if (!dd) return;
+      let html = '<option value="">-- All Fee Items --</option>';
+      defaultFeeReasons.forEach(r => {
+        if (r.active) {
+          html += `<option value="${r.id}">${r.name_kn || r.name_en} (₹${r.amount})</option>`;
+        }
+      });
+      dd.innerHTML = html;
+    }
+
+    function autoTranslateFeeReason(force = false) {
+      const enInput = document.getElementById('set-reason-en');
+      const knInput = document.getElementById('set-reason-kn');
+      if (!enInput || !knInput) return;
+
+      let text = enInput.value.trim();
+      if (!text) return;
+      if (knInput.value.trim() && !force) return;
+
+      knInput.placeholder = "ಭಾಷಾಂತರಿಸಲಾಗುತ್ತಿದೆ... / Translating...";
+
+      const dict = {
+        "EXAM FEE": "ಪರೀಕ್ಷಾ ಶುಲ್ಕ",
+        "EXAM": "ಪರೀಕ್ಷಾ ಶುಲ್ಕ",
+        "ID CARD": "ಐಡಿ ಕಾರ್ಡ್ ಮತ್ತು ಬ್ಯಾಡ್ಜ್",
+        "SPORTS": "ಕ್ರೀಡಾ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ನಿಧಿ",
+        "SPORTS FEE": "ಕ್ರೀಡಾ ಶುಲ್ಕ",
+        "SDMC": "SDMC ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ನಿಧಿ",
+        "SDMC FUND": "SDMC ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ನಿಧಿ",
+        "DEVELOPMENT": "ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ನಿಧಿ",
+        "ADMISSION": "ಪ್ರವೇಶ ಶುಲ್ಕ",
+        "ADMISSION FEE": "ಪ್ರವೇಶ ಶುಲ್ಕ",
+        "UNIFORM": "ಯೂನಿಫಾರ್ಮ್ ಶುಲ್ಕ",
+        "PICNIC": "ಪ್ರವಾಸದ ಶುಲ್ಕ",
+        "TOUR": "ಪ್ರವಾಸದ ಶುಲ್ಕ",
+        "COMPUTER": "ಕಂಪ್ಯೂಟರ್ ಶಿಕ್ಷಣ ಶುಲ್ಕ",
+        "CULTURAL": "ಸಾಂಸ್ಕೃತಿಕ ನಿಧಿ",
+        "MAINTENANCE": "ನಿರ್ವಹಣಾ ವೆಚ್ಚ"
+      };
+
+      let upper = text.toUpperCase();
+      if (dict[upper]) {
+        knInput.value = dict[upper];
+        return;
+      }
+
+      fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=kn&dt=t&q=${encodeURIComponent(text)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data[0] && data[0][0]) {
+            knInput.value = data[0].map(item => item[0]).join('').trim();
+          } else {
+            knInput.value = text;
+          }
+        })
+        .catch(err => {
+          knInput.value = text;
+        });
+    }
+
+    function saveNewFeeReason(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      
+      const enInput = document.getElementById('set-reason-en');
+      const knInput = document.getElementById('set-reason-kn');
+      const amtInput = document.getElementById('set-amount');
+      const clsSelect = document.getElementById('set-class');
+
+      const nameEn = enInput ? enInput.value.trim() : '';
+      let nameKn = knInput ? knInput.value.trim() : '';
+      const amt = parseFloat(amtInput ? amtInput.value : 0);
+      const cls = clsSelect ? clsSelect.value : 'All';
+
+      if (!nameEn) {
+        alert("ದಯವಿಟ್ಟು ಶುಲ್ಕದ ವಿವರವನ್ನು ನಮೂದಿಸಿ (ಉದಾ. Exam Fee, Sports Fee). / Please enter Fee Collection Reason.");
+        if (enInput) enInput.focus();
+        return false;
+      }
+
+      if (isNaN(amt) || amt <= 0) {
+        alert("ದಯವಿಟ್ಟು ಸೂಕ್ತವಾದ ಶುಲ್ಕ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ (ಉದಾ. 150). / Please enter a valid Fee Amount (₹).");
+        if (amtInput) amtInput.focus();
+        return false;
+      }
+
+      if (!nameKn) {
+        const dict = {
+          "EXAM FEE": "ಪರೀಕ್ಷಾ ಶುಲ್ಕ",
+          "EXAM": "ಪರೀಕ್ಷಾ ಶುಲ್ಕ",
+          "ID CARD": "ಐಡಿ ಕಾರ್ಡ್ ಮತ್ತು ಬ್ಯಾಡ್ಜ್",
+          "SPORTS": "ಕ್ರೀಡಾ ಮತ್ತು ಸಾಂಸ್ಕೃತಿಕ ನಿಧಿ",
+          "SDMC": "SDMC ಶಾಲಾ ಅಭಿವೃದ್ಧಿ ನಿಧಿ",
+          "ADMISSION": "ಪ್ರವೇಶ ಶುಲ್ಕ",
+          "UNIFORM": "ಯೂನಿಫಾರ್ಮ್ ಶುಲ್ಕ",
+          "PICNIC": "ಪ್ರವಾಸದ ಶುಲ್ಕ",
+          "COMPUTER": "ಕಂಪ್ಯೂಟರ್ ಶಿಕ್ಷಣ ಶುಲ್ಕ"
+        };
+        const upper = nameEn.toUpperCase();
+        nameKn = dict[upper] || nameEn;
+      }
+
+      if (editingFeeReasonId) {
+        // Edit Mode Update
+        const targetIndex = defaultFeeReasons.findIndex(r => r.id === editingFeeReasonId);
+        if (targetIndex !== -1) {
+          defaultFeeReasons[targetIndex].name_en = nameEn;
+          defaultFeeReasons[targetIndex].name_kn = nameKn;
+          defaultFeeReasons[targetIndex].amount = amt;
+          defaultFeeReasons[targetIndex].class = cls;
+        }
+        editingFeeReasonId = null;
+        document.getElementById('form-heading-title').innerHTML = `<i class="fa-solid fa-plus-circle text-emerald-500"></i> ಹೊಸ ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Add Fee Reason`;
+        document.getElementById('save-reason-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Save Fee Reason`;
+        document.getElementById('cancel-edit-btn').classList.add('hidden');
+      } else {
+        // Create New Mode
+        const newReason = {
+          id: 'FR' + Date.now(),
+          name_en: nameEn,
+          name_kn: nameKn,
+          amount: amt,
+          class: cls,
+          active: true
+        };
+        defaultFeeReasons.push(newReason);
+      }
+
+      localStorage.setItem('portal_fee_structures', JSON.stringify(defaultFeeReasons));
+
+      if (enInput) enInput.value = '';
+      if (knInput) knInput.value = '';
+      if (amtInput) amtInput.value = '';
+
+      loadFeeReasons();
+
+      alert(`ಶುಲ್ಕ ವಿಭಾಗ "${nameKn}" (₹${amt}) ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ! / Fee Reason Saved Successfully!`);
+      return false;
+    }
+
+    function editFeeReason(id) {
+      const reason = defaultFeeReasons.find(r => r.id === id);
+      if (!reason) return;
+
+      editingFeeReasonId = id;
+      document.getElementById('set-reason-en').value = reason.name_en;
+      document.getElementById('set-reason-kn').value = reason.name_kn;
+      document.getElementById('set-amount').value = reason.amount;
+      document.getElementById('set-class').value = reason.class || 'All';
+
+      document.getElementById('form-heading-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500"></i> ಶುಲ್ಕ ವಿಭಾಗ ತಿದ್ದುಪಡಿ ಮಾಡಿ / Edit Fee Reason`;
+      document.getElementById('save-reason-btn').innerHTML = `<i class="fa-solid fa-check-double"></i> 💾 ನವೀಕರಿಸಿ / Update Fee Reason`;
+      document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+      document.getElementById('set-reason-en').focus();
+    }
+
+    function cancelFeeEdit() {
+      editingFeeReasonId = null;
+      document.getElementById('set-reason-en').value = '';
+      document.getElementById('set-reason-kn').value = '';
+      document.getElementById('set-amount').value = '';
+
+      document.getElementById('form-heading-title').innerHTML = `<i class="fa-solid fa-plus-circle text-emerald-500"></i> ಹೊಸ ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Add Fee Reason`;
+      document.getElementById('save-reason-btn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> ಶುಲ್ಕ ವಿಭಾಗ ಸೇರಿಸಿ / Save Fee Reason`;
+      document.getElementById('cancel-edit-btn').classList.add('hidden');
+    }
+
+    function deleteFeeReason(id) {
+      if (!confirm("ಈ ಶುಲ್ಕ ವಿಭಾಗವನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿದ್ದೀರಾ? / Delete this fee reason?")) return;
+      defaultFeeReasons = defaultFeeReasons.filter(r => r.id !== id);
+      localStorage.setItem('portal_fee_structures', JSON.stringify(defaultFeeReasons));
+      loadFeeReasons();
+    }
+
+    function renderSettingsReasonsTable() {
+      const tbody = document.getElementById('settings-reasons-tbody');
+      const badge = document.getElementById('fee-reasons-count-badge');
+      if (!tbody) return;
+
+      badge.textContent = defaultFeeReasons.length + ' Fee Reasons';
+
+      let html = '';
+      defaultFeeReasons.forEach((r, idx) => {
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <td class="py-3 px-4 font-bold">
+              <div class="text-slate-800 dark:text-white">${r.name_kn}</div>
+              <div class="text-[10px] text-slate-400 font-medium">${r.name_en}</div>
+            </td>
+            <td class="py-3 px-4 text-center font-semibold"><span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-[10px]">${r.class}</span></td>
+            <td class="py-3 px-4 text-right font-mono font-black text-emerald-600 dark:text-emerald-400">₹ ${r.amount}</td>
+            <td class="py-3 px-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="editFeeReason('${r.id}')" title="Edit Reason (ತಿದ್ದುಪಡಿ)" class="w-7 h-7 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-600 flex items-center justify-center border border-amber-200 cursor-pointer transition">
+                  <i class="fa-solid fa-pen-to-square text-xs"></i>
+                </button>
+                <button onclick="deleteFeeReason('${r.id}')" title="Delete Reason" class="w-7 h-7 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center border border-rose-200 cursor-pointer transition">
+                  <i class="fa-solid fa-trash text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function normalizeFinanceStudent(s) {
+      if (!s) return null;
+      const stName = s.student_name || s.name_kannada || s.name_english || s.name || s.student_name_kn || s.fullName || '';
+      const enName = s.name_english || s.student_name_en || s.student_name || s.name_en || s.name || stName;
+      const knName = s.name_kannada || s.student_name_kn || s.name_kn || stName;
+      
+      let stsNum = s.student_sts || s.sts_no || s.sts || s.app_no || s.enrolment_no || s.admission_no || s.adminNo || s.id || '';
+      if (stsNum === '-' || stsNum === 'N/A' || stsNum === 'null' || stsNum === 'undefined') stsNum = '';
+
+      const rawCls = s.enroll_class || s.enrollClass || s.standard || s.class || s.class_name || s.enrolment_class || s.admission_class || '1';
+      const cleanCls = (rawCls || '').toString().trim().replace(/^class\s*/i, '');
+      const father = s.father_name_az || s.father_name_kn || s.father_name || s.father_name_en || s.father || '';
+      const gender = s.gender || s.sex || 'Boy';
+
+      return {
+        id: s.id || stsNum || `std_${Math.random()}`,
+        sts: stsNum || (s.app_no && s.app_no !== '-' ? s.app_no : 'N/A'),
+        name_en: enName || knName || stName,
+        name_kn: knName || enName || stName,
+        father: father,
+        class: cleanCls || '1',
+        gender: gender,
+        status: s.status || 'ACTIVE'
+      };
+    }
+
+    function fetchIndexedDBStudents() {
+      return new Promise((resolve) => {
+        try {
+          const req = indexedDB.open('SchoolDB');
+          req.onsuccess = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('students')) {
+              resolve([]);
+              return;
+            }
+            const tx = db.transaction('students', 'readonly');
+            const store = tx.objectStore('students');
+            const getReq = store.getAll();
+            getReq.onsuccess = () => resolve(getReq.result || []);
+            getReq.onerror = () => resolve([]);
+          };
+          req.onerror = () => resolve([]);
+        } catch(err) {
+          resolve([]);
+        }
+      });
+    }
+
+    async function loadStudents() {
+      let rawStudents = [];
+
+      // 1. Try Supabase admissions & student_admissions tables
+      if (window.supabaseClient) {
+        try {
+          const schoolId = localStorage.getItem("school_id");
+          let query = supabaseClient.from('admissions').select('*');
+          if (schoolId) query = query.eq('school_id', schoolId);
+          const { data: res1, error: err1 } = await query;
+          if (!err1 && res1 && res1.length > 0) rawStudents.push(...res1);
+        } catch (e) {}
+
+        if (rawStudents.length === 0) {
+          try {
+            const { data: res1Fallback, error: errFallback } = await supabaseClient.from('admissions').select('*');
+            if (!errFallback && res1Fallback && res1Fallback.length > 0) rawStudents.push(...res1Fallback);
+          } catch (e) {}
+        }
+
+        try {
+          const { data: res2 } = await supabaseClient.from('student_admissions').select('*');
+          if (res2 && res2.length > 0) rawStudents.push(...res2);
+        } catch (e) {}
+      }
+
+      // 2. Fetch from IndexedDB SchoolDB -> students store
+      try {
+        const idbStudents = await fetchIndexedDBStudents();
+        if (idbStudents && idbStudents.length > 0) {
+          rawStudents.push(...idbStudents);
+        }
+      } catch (e) {}
+
+      // 3. Check all localStorage student caches
+      const localKeys = [
+        'local_admissions', 'students_class_1', 'students_class_2', 'students_class_3', 'students_class_4', 'students_class_5',
+        'students_class_6', 'students_class_7', 'students_class_8', 'students_class_9', 'students_class_10',
+        'students', 'admissions', 'all_students', 'students_list', 'student_roster', 'cached_students', 'students_data',
+        'portal_students_cache', 'admitted_students_cache', 'school_students_roster'
+      ];
+
+      localKeys.forEach(k => {
+        try {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) rawStudents.push(...parsed);
+          }
+        } catch(e) {}
+      });
+
+      // 4. Strict Deduplicate and normalize
+      const seen = new Set();
+      let uniqueStudents = [];
+      rawStudents.forEach(item => {
+        if (item && (item.status === 'TC_OUT' || item.status === 'DELETED' || item.status === 'REMOVED')) return;
+        const norm = normalizeFinanceStudent(item);
+        if (norm && (norm.name_en || norm.name_kn || norm.sts !== 'N/A')) {
+          const stsKey = (norm.sts && norm.sts !== 'N/A' && norm.sts !== '-') ? String(norm.sts).trim().toLowerCase() : '';
+          const nameKey = (String(norm.name_en || norm.name_kn).trim() + '_' + String(norm.class).trim()).toLowerCase();
+          const uniqueIdKey = String(norm.id).trim().toLowerCase();
+
+          const isDuplicate = (stsKey && seen.has(stsKey)) || (uniqueIdKey && seen.has(uniqueIdKey)) || (!stsKey && nameKey && seen.has(nameKey));
+
+          if (!isDuplicate) {
+            if (stsKey) seen.add(stsKey);
+            if (uniqueIdKey) seen.add(uniqueIdKey);
+            if (nameKey) seen.add(nameKey);
+            uniqueStudents.push(norm);
+          }
+        }
+      });
+
+      sampleStudents = uniqueStudents;
+      applyRosterFilters();
+    }
+
+    function normalizeClassVal(c) {
+      if (!c) return '';
+      let str = c.toString().trim().toLowerCase();
+      str = str.replace(/^class\s*/, '').replace(/st|nd|rd|th/, '').trim();
+      return str;
+    }
+
+    function normalizeClassVal(c) {
+      if (!c) return '';
+      let str = c.toString().trim().toLowerCase();
+      str = str.replace(/^class\s*/, '').replace(/st|nd|rd|th/, '').trim();
+      return str;
+    }
+
+    function resetRosterFilters() {
+      const ids = ['col-class-dd', 'col-status-dd', 'col-gender-dd', 'col-category-dd', 'col-reason-dd', 'col-roster-search'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const ay = document.getElementById('col-ay-filter');
+      if (ay) ay.value = '2026-27';
+      currentSortCol = null;
+      applyRosterFilters();
+    }
+
+    function sortRosterData(colId) {
+      if (currentSortCol === colId) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortCol = colId;
+        currentSortDir = 'asc';
+      }
+
+      // Update sort icons
+      ['status', 'slno', 'sts', 'name', 'class', 'gender', 'collected', 'pending'].forEach(c => {
+        const icon = document.getElementById(`sort-icon-${c}`);
+        if (icon) {
+          if (c === colId) {
+            icon.className = currentSortDir === 'asc' ? 'fa-solid fa-sort-up text-emerald-500 ml-1' : 'fa-solid fa-sort-down text-emerald-500 ml-1';
+          } else {
+            icon.className = 'fa-solid fa-sort text-[10px] text-slate-400 ml-1';
+          }
+        }
+      });
+
+      applyRosterFilters();
+    }
+
+    function applyRosterFilters() {
+      const q = (document.getElementById('col-roster-search')?.value || '').trim().toLowerCase();
+      const cls = document.getElementById('col-class-dd')?.value || '';
+      const status = document.getElementById('col-status-dd')?.value || '';
+      const gender = document.getElementById('col-gender-dd')?.value || '';
+      const category = document.getElementById('col-category-dd')?.value || '';
+      const reasonId = document.getElementById('col-reason-dd')?.value || '';
+
+      const tbody = document.getElementById('roster-table-tbody');
+      const badge = document.getElementById('roster-count-badge');
+      if (!tbody) return;
+
+      let filtered = sampleStudents.filter(s => {
+        const nameEn = (s.name_en || '').toLowerCase();
+        const nameKn = (s.name_kn || '').toLowerCase();
+        const father = (s.father || '').toLowerCase();
+        const sts = (s.sts || '').toLowerCase();
+        const studentGender = s.gender || '';
+        const studentCat = (s.social_class || s.caste || s.category || '').toString().trim().toUpperCase();
+
+        const normStudentClass = normalizeClassVal(s.class);
+        const normFilterClass = normalizeClassVal(cls.split('/')[0]);
+        
+        const matchClass = !cls || normStudentClass === normFilterClass || (cls.includes('LKG') && normStudentClass.includes('lkg')) || (cls.includes('UKG') && normStudentClass.includes('ukg'));
+
+        const studentTrans = allTransactions.filter(t => 
+          (t.student_id && String(t.student_id) === String(s.id)) ||
+          (t.sts && String(t.sts) === String(s.sts)) ||
+          (t.student_name_en && t.student_name_en === s.name_en) ||
+          (t.student_name_kn && t.student_name_kn === s.name_kn)
+        );
+
+        const normStClass = normalizeClassVal(s.class);
+        const applicableReasons = defaultFeeReasons.filter(r => {
+          if (!r.active) return false;
+          if (r.class === 'All' || !r.class) return true;
+          const normRClass = normalizeClassVal(r.class);
+          return normRClass === normStClass || (normRClass.includes('lkg') && normStClass.includes('lkg')) || (normRClass.includes('ukg') && normStClass.includes('ukg'));
+        });
+
+        let paidCount = 0;
+        applicableReasons.forEach(r => {
+          const isPaid = studentTrans.some(t => 
+            t.fee_reason_id === r.id ||
+            (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en)))
+          );
+          if (isPaid) paidCount++;
+        });
+
+        const isFullPaid = applicableReasons.length > 0 && paidCount === applicableReasons.length;
+        const isPartialPaid = paidCount > 0 && paidCount < applicableReasons.length;
+        const isPending = paidCount === 0;
+
+        const matchQ = !q || nameEn.includes(q) || nameKn.includes(q) || sts.includes(q) || father.includes(q);
+        const matchGender = !gender || studentGender.toLowerCase() === gender.toLowerCase();
+        
+        let matchStatus = true;
+        if (status === 'PAID') matchStatus = isFullPaid;
+        else if (status === 'PARTIAL') matchStatus = isPartialPaid;
+        else if (status === 'PENDING') matchStatus = isPending || !isFullPaid;
+
+        let matchCategory = true;
+        if (category) {
+          matchCategory = studentCat.includes(category) || (category === 'OTHERS' && !['SC', 'ST', 'C1', '2A', '2B', '3A', '3B'].some(c => studentCat.includes(c)));
+        }
+
+        let matchReason = true;
+        if (reasonId) {
+          const reasonObj = defaultFeeReasons.find(r => r.id === reasonId);
+          if (reasonObj) {
+            const isReasonPaid = studentTrans.some(t => 
+              t.fee_reason_id === reasonId ||
+              (t.fee_category && (t.fee_category.includes(reasonObj.name_kn) || t.fee_category.includes(reasonObj.name_en)))
+            );
+            matchReason = !isReasonPaid; // Show students who have NOT paid this specific fee
+          }
+        }
+
+        return matchQ && matchClass && matchGender && matchStatus && matchCategory && matchReason;
+      });
+
+      // Apply Column Sorting if set
+      if (currentSortCol) {
+        filtered.sort((a, b) => {
+          let valA = '', valB = '';
+
+          const getStudentFeeTotals = (st) => {
+            const stTrans = allTransactions.filter(t => (t.student_id && String(t.student_id) === String(st.id)) || (t.sts && String(t.sts) === String(st.sts)));
+            const normCls = normalizeClassVal(st.class);
+            const appReasons = defaultFeeReasons.filter(r => r.active && (r.class === 'All' || !r.class || normalizeClassVal(r.class) === normCls));
+            let paidSum = 0, expSum = 0;
+            appReasons.forEach(r => {
+              expSum += parseFloat(r.amount || 0);
+              if (stTrans.some(t => t.fee_reason_id === r.id || (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en))))) {
+                paidSum += parseFloat(r.amount || 0);
+              }
+            });
+            return { exp: expSum, paid: paidSum, pending: expSum - paidSum, count: appReasons.length, paidCount: stTrans.length };
+          };
+
+          if (currentSortCol === 'name') {
+            valA = a.name_en || a.name_kn || '';
+            valB = b.name_en || b.name_kn || '';
+          } else if (currentSortCol === 'sts') {
+            valA = a.sts || '';
+            valB = b.sts || '';
+          } else if (currentSortCol === 'class') {
+            valA = parseInt(normalizeClassVal(a.class)) || 0;
+            valB = parseInt(normalizeClassVal(b.class)) || 0;
+            return currentSortDir === 'asc' ? valA - valB : valB - valA;
+          } else if (currentSortCol === 'gender') {
+            valA = a.gender || '';
+            valB = b.gender || '';
+          } else if (currentSortCol === 'collected') {
+            valA = getStudentFeeTotals(a).paid;
+            valB = getStudentFeeTotals(b).paid;
+            return currentSortDir === 'asc' ? valA - valB : valB - valA;
+          } else if (currentSortCol === 'pending') {
+            valA = getStudentFeeTotals(a).pending;
+            valB = getStudentFeeTotals(b).pending;
+            return currentSortDir === 'asc' ? valA - valB : valB - valA;
+          }
+
+          return currentSortDir === 'asc' ? valA.toString().localeCompare(valB.toString(), undefined, {numeric: true}) : valB.toString().localeCompare(valA.toString(), undefined, {numeric: true});
+        });
+      }
+
+      if (badge) badge.textContent = filtered.length;
+
+      // Calculate Summary KPIs for Filtered View
+      let totalExpected = 0;
+      let totalCollected = 0;
+      filtered.forEach(s => {
+        const studentTrans = allTransactions.filter(t => (t.student_id && String(t.student_id) === String(s.id)) || (t.sts && String(t.sts) === String(s.sts)));
+        const normStClass = normalizeClassVal(s.class);
+        const applicableReasons = defaultFeeReasons.filter(r => r.active && (r.class === 'All' || !r.class || normalizeClassVal(r.class) === normStClass));
+        
+        applicableReasons.forEach(r => {
+          const amt = parseFloat(r.amount || 0);
+          totalExpected += amt;
+          const isPaid = studentTrans.some(t => t.fee_reason_id === r.id || (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en))));
+          if (isPaid) totalCollected += amt;
+        });
+      });
+
+      const totalPending = totalExpected - totalCollected;
+      const ratePct = totalExpected > 0 ? Math.round((totalCollected / totalExpected) * 100) : 0;
+
+      const elStudents = document.getElementById('roster-stat-students');
+      const elExpected = document.getElementById('roster-stat-expected');
+      const elCollected = document.getElementById('roster-stat-collected');
+      const elPending = document.getElementById('roster-stat-pending');
+      const elRate = document.getElementById('roster-stat-rate');
+      const elBar = document.getElementById('roster-stat-bar');
+
+      if (elStudents) elStudents.textContent = filtered.length;
+      if (elExpected) elExpected.textContent = `₹ ${totalExpected.toLocaleString('en-IN')}`;
+      if (elCollected) elCollected.textContent = `₹ ${totalCollected.toLocaleString('en-IN')}`;
+      if (elPending) elPending.textContent = `₹ ${totalPending.toLocaleString('en-IN')}`;
+      if (elRate) elRate.textContent = `${ratePct}%`;
+      if (elBar) elBar.style.width = `${ratePct}%`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" class="p-8 text-center text-slate-400 font-semibold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ವಿವರಗಳು ಕಂಡುಬಂದಿಲ್ಲ. / No student records found matching filters.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((s, idx) => {
+        const isChecked = selectedStudentIds.has(s.id);
+        const studentTrans = allTransactions.filter(t => 
+          (t.student_id && String(t.student_id) === String(s.id)) ||
+          (t.sts && String(t.sts) === String(s.sts)) ||
+          (t.student_name_en && t.student_name_en === s.name_en) ||
+          (t.student_name_kn && t.student_name_kn === s.name_kn)
+        );
+
+        const normStClass = normalizeClassVal(s.class);
+        const applicableReasons = defaultFeeReasons.filter(r => {
+          if (!r.active) return false;
+          if (r.class === 'All' || !r.class) return true;
+          const normRClass = normalizeClassVal(r.class);
+          return normRClass === normStClass || (normRClass.includes('lkg') && normStClass.includes('lkg')) || (normRClass.includes('ukg') && normStClass.includes('ukg'));
+        });
+
+        let paidReasonsSum = 0;
+        let expectedReasonsSum = 0;
+        let paidCount = 0;
+        let reasonPillsHtml = '';
+
+        applicableReasons.forEach(r => {
+          const amt = parseFloat(r.amount || 0);
+          expectedReasonsSum += amt;
+          const isPaid = studentTrans.some(t => 
+            t.fee_reason_id === r.id ||
+            (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en)))
+          );
+
+          if (isPaid) {
+            paidReasonsSum += amt;
+            paidCount++;
+            reasonPillsHtml += `
+              <button type="button" onclick="toggleStudentFeeReasonPaid('${s.id}', '${r.id}', false)" title="ಪಾವತಿಸಲಾಗಿದೆ - 1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ ರದ್ದುಗೊಳಿಸಿ (Click to Mark Unpaid)" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-extrabold text-[10px] flex items-center gap-1 shadow-2xs border-0 cursor-pointer transition">
+                <i class="fa-solid fa-circle-check text-white"></i> ${r.name_kn} ₹${r.amount}
+              </button>
+            `;
+          } else {
+            reasonPillsHtml += `
+              <button type="button" onclick="toggleStudentFeeReasonPaid('${s.id}', '${r.id}', true)" title="1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ ಪಾವತಿಸಿ (Tap to Select as Paid)" class="px-2 py-0.5 bg-amber-50 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-800/80 rounded-lg font-bold text-[10px] flex items-center gap-1 shadow-2xs border-0 cursor-pointer transition">
+                <i class="fa-solid fa-plus-circle text-amber-500"></i> ${r.name_kn} ₹${r.amount}
+              </button>
+            `;
+          }
+        });
+
+        const pendingSum = expectedReasonsSum - paidReasonsSum;
+
+        let tickBadge = '';
+        if (paidCount === applicableReasons.length && applicableReasons.length > 0) {
+          tickBadge = `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded-full font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-2xs"><i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i> Full Paid</span>`;
+        } else if (paidCount > 0) {
+          tickBadge = `<span class="px-2.5 py-1 bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 rounded-full font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-2xs"><i class="fa-solid fa-clock-rotate-left text-amber-600 text-xs"></i> Partial (${paidCount}/${applicableReasons.length})</span>`;
+        } else {
+          tickBadge = `<span class="px-2.5 py-1 bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 rounded-full font-extrabold text-[10px] flex items-center justify-center gap-1 shadow-2xs"><i class="fa-solid fa-triangle-exclamation text-rose-600 text-xs"></i> Pending</span>`;
+        }
+
+        const latestTrans = studentTrans[0];
+        const dateStr = latestTrans ? `${latestTrans.payment_date} (${latestTrans.payment_mode})` : '-';
+
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <td class="py-3 px-3 text-center no-print">
+              <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleStudentCheckbox('${s.id}', this.checked)" class="w-4 h-4 accent-emerald-600 rounded cursor-pointer">
+            </td>
+            <td class="py-3 px-3 text-center">${tickBadge}</td>
+            <td class="py-3 px-3 text-center font-mono font-semibold text-slate-500">${idx + 1}</td>
+            <td class="py-3 px-3 font-mono font-bold text-sky-600 dark:text-sky-400">${s.sts || 'N/A'}</td>
+            <td class="py-3 px-3">
+              <button type="button" onclick="openStudentPassportModal('${s.id}')" title="View Student Financial Passport & Ledger" class="text-left border-0 bg-transparent cursor-pointer p-0 group">
+                <div class="font-bold text-slate-900 dark:text-white text-xs group-hover:text-emerald-600 transition flex items-center gap-1.5">
+                  <i class="fa-solid fa-address-card text-emerald-500 opacity-80 text-[11px]"></i> ${s.name_kn || s.name_en}
+                </div>
+                <div class="text-[10px] text-slate-400 font-medium">${s.name_en} • Father: ${s.father || 'N/A'}</div>
+              </button>
+            </td>
+            <td class="py-3 px-3 text-center font-bold">${s.class}</td>
+            <td class="py-3 px-3 text-center font-semibold text-slate-600 dark:text-slate-300">${s.gender}</td>
+            <td class="py-3 px-3 col-fees">
+              <div class="flex flex-wrap items-center gap-1.5">${reasonPillsHtml}</div>
+            </td>
+            <td class="py-3 px-3 text-right font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm">₹ ${paidReasonsSum}</td>
+            <td class="py-3 px-3 text-right font-mono font-bold text-rose-600 dark:text-rose-400 text-xs">₹ ${pendingSum}</td>
+            <td class="py-3 px-3 text-center font-mono text-xs text-slate-500 col-paydate">${dateStr}</td>
+            <td class="py-3 px-3 text-center no-print">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="openCollectFeeModal('${s.sts}')" title="Collect Custom Fee / ಶುಲ್ಕ ಸ್ವೀಕರಿಸಿ" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-[11px] transition shadow-2xs border-0 cursor-pointer flex items-center gap-1">
+                  <i class="fa-solid fa-receipt"></i> Modal Counter
+                </button>
+                ${latestTrans ? `
+                  <button onclick="openReceiptModal('${latestTrans.id}')" title="View Receipt" class="w-7 h-7 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-600 flex items-center justify-center border border-sky-200 cursor-pointer">
+                    <i class="fa-solid fa-eye text-xs"></i>
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+      updateBatchActionsBar();
+    }
+
+    function toggleSelectAllRosterStudents(masterCb) {
+      const cbs = document.querySelectorAll('#roster-table-tbody input[type="checkbox"]');
+      cbs.forEach(cb => {
+        cb.checked = masterCb.checked;
+        const onChangeAttr = cb.getAttribute('onchange');
+        if (onChangeAttr) {
+          const match = onChangeAttr.match(/'([^']+)'/);
+          if (match) {
+            if (masterCb.checked) selectedStudentIds.add(match[1]);
+            else selectedStudentIds.delete(match[1]);
+          }
+        }
+      });
+      updateBatchActionsBar();
+    }
+
+    function toggleStudentCheckbox(id, isChecked) {
+      if (isChecked) selectedStudentIds.add(id);
+      else selectedStudentIds.delete(id);
+      
+      const masterCb = document.getElementById('select-all-roster-cb');
+      if (masterCb) {
+        const cbs = document.querySelectorAll('#roster-table-tbody input[type="checkbox"]');
+        masterCb.checked = cbs.length > 0 && Array.from(cbs).every(c => c.checked);
+      }
+      updateBatchActionsBar();
+    }
+
+    function updateBatchActionsBar() {
+      const bar = document.getElementById('batch-actions-bar');
+      const countBadge = document.getElementById('batch-selected-count');
+      if (!bar || !countBadge) return;
+
+      if (selectedStudentIds.size > 0) {
+        countBadge.textContent = selectedStudentIds.size;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    async function bulkMarkSelectedPaid() {
+      if (selectedStudentIds.size === 0) return;
+      if (!confirm(`Are you sure you want to mark all applicable fees as PAID for ${selectedStudentIds.size} selected student(s)?`)) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      selectedStudentIds.forEach(id => {
+        const student = sampleStudents.find(s => String(s.id) === String(id));
+        if (!student) return;
+
+        const normStClass = normalizeClassVal(student.class);
+        const applicableReasons = defaultFeeReasons.filter(r => r.active && (r.class === 'All' || !r.class || normalizeClassVal(r.class) === normStClass));
+
+        applicableReasons.forEach(async r => {
+          const isAlreadyPaid = allTransactions.some(t => 
+            ((t.student_id && String(t.student_id) === String(student.id)) || (t.sts && String(t.sts) === String(student.sts))) &&
+            (t.fee_reason_id === r.id || (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en))))
+          );
+
+          if (!isAlreadyPaid) {
+            const record = {
+              id: 'txn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+              student_id: student.id,
+              sts: student.sts,
+              student_name_en: student.name_en,
+              student_name_kn: student.name_kn,
+              enroll_class: student.class,
+              fee_category: r.name_kn,
+              fee_reason_id: r.id,
+              amount: parseFloat(r.amount || 0),
+              payment_date: todayStr,
+              payment_mode: 'CASH'
+            };
+            allTransactions.unshift(record);
+
+            if (window.supabaseClient) {
+              try { await supabaseClient.from('fee_collections').insert([record]); } catch (e) {}
+            }
+          }
+        });
+      });
+
+      localStorage.setItem('portal_fee_transactions', JSON.stringify(allTransactions));
+      selectedStudentIds.clear();
+      applyRosterFilters();
+      alert('Bulk fee collection completed successfully!');
+    }
+
+    function exportSelectedExcel() {
+      if (selectedStudentIds.size === 0) {
+        alert('Please select at least one student!');
+        return;
+      }
+      const selected = sampleStudents.filter(s => selectedStudentIds.has(s.id));
+      const exportData = selected.map((s, i) => ({
+        'SL.NO': i + 1,
+        'STS NO': s.sts,
+        'STUDENT NAME (KN)': s.name_kn,
+        'STUDENT NAME (EN)': s.name_en,
+        'FATHER NAME': s.father,
+        'CLASS': s.class,
+        'GENDER': s.gender
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Selected_Students_Fees");
+      XLSX.writeFile(wb, "Selected_Students_Fee_Roster.xlsx");
+    }
+
+    function printSelectedRoster() {
+      if (selectedStudentIds.size === 0) {
+        alert('Please select at least one student!');
+        return;
+      }
+      window.print();
+    }
+
+    function printRosterTable() {
+      window.print();
+    }
+
+    function toggleManageColumnsModal() {
+      const modal = document.getElementById('manage-columns-modal');
+      if (modal) modal.classList.toggle('hidden');
+    }
+
+    function toggleColumnVisibility(colClass, isVisible) {
+      const els = document.querySelectorAll('.' + colClass);
+      els.forEach(el => {
+        if (isVisible) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+    }
+
+    function toggleStudentFeeReasonPaid(studentId, feeReasonId, markPaid) {
+      const student = sampleStudents.find(s => String(s.id) === String(studentId));
+      const reason = defaultFeeReasons.find(r => r.id === feeReasonId);
+      if (!student || !reason) return;
+
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      if (markPaid) {
+        const record = {
+          id: 'txn_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+          student_id: student.id,
+          sts: student.sts,
+          student_name_en: student.name_en,
+          student_name_kn: student.name_kn,
+          enroll_class: student.class,
+          fee_category: reason.name_kn,
+          fee_reason_id: reason.id,
+          amount: parseFloat(reason.amount || 0),
+          payment_date: todayStr,
+          payment_mode: 'CASH'
+        };
+        allTransactions.unshift(record);
+
+        if (window.supabaseClient) {
+          try { supabaseClient.from('fee_collections').insert([record]); } catch (e) {}
+        }
+        showToast(`✅ ${reason.name_kn} (₹${reason.amount}) marked PAID for ${student.name_kn || student.name_en}`, 'success');
+      } else {
+        allTransactions = allTransactions.filter(t => {
+          const matchStudent = (t.student_id && String(t.student_id) === String(student.id)) || (t.sts && String(t.sts) === String(student.sts));
+          const matchReason = t.fee_reason_id === reason.id || (t.fee_category && (t.fee_category.includes(reason.name_kn) || t.fee_category.includes(reason.name_en)));
+          return !(matchStudent && matchReason);
+        });
+
+        if (window.supabaseClient) {
+          try { supabaseClient.from('fee_collections').delete().eq('student_name_en', student.name_en); } catch (e) {}
+        }
+        showToast(`⚠️ ${reason.name_kn} marked UNPAID for ${student.name_kn || student.name_en}`, 'error');
+      }
+
+      localStorage.setItem('portal_fee_transactions', JSON.stringify(allTransactions));
+      applyRosterFilters();
+    }
+
+    // Modal Fee Collection Functions (Inspired by NewAdmissionList.html)
+    function openCollectFeeModal(stsNo) {
+      const student = sampleStudents.find(s => String(s.sts) === String(stsNo) || String(s.id) === String(stsNo));
+      if (!student) return;
+
+      selectedModalStudent = student;
+      document.getElementById('modal-sel-name').textContent = student.name_kn || student.name_en;
+      document.getElementById('modal-sel-sub').textContent = `Class ${student.class} • STS: ${student.sts}`;
+
+      const studentTrans = allTransactions.filter(t => (t.student_id && String(t.student_id) === String(student.id)) || (t.sts && String(t.sts) === String(student.sts)));
+      const normStClass = normalizeClassVal(student.class);
+      const applicableReasons = defaultFeeReasons.filter(r => r.active && (r.class === 'All' || !r.class || normalizeClassVal(r.class) === normStClass));
+
+      let html = '';
+      applicableReasons.forEach(r => {
+        const isPaid = studentTrans.some(t => t.fee_reason_id === r.id || (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en))));
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="p-2 text-center">
+              <input type="checkbox" data-reason-id="${r.id}" data-amount="${r.amount}" ${isPaid ? 'disabled checked' : 'checked'} onchange="recalculateModalTotal()" class="w-4 h-4 accent-emerald-600 rounded cursor-pointer">
+            </td>
+            <td class="p-2 font-bold text-slate-800 dark:text-slate-200 text-xs">${r.name_kn}</td>
+            <td class="p-2 text-right font-mono font-bold text-xs">₹ ${r.amount}</td>
+            <td class="p-2 text-center">
+              ${isPaid ? '<span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded-full">Paid</span>' : '<span class="text-[10px] font-bold text-rose-600 bg-rose-50 dark:bg-rose-950 px-2 py-0.5 rounded-full">Pending</span>'}
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('modal-fee-tbody').innerHTML = html;
+      recalculateModalTotal();
+      document.getElementById('collect-fee-modal').classList.remove('hidden');
+    }
+
+    function recalculateModalTotal() {
+      const cbs = document.querySelectorAll('#modal-fee-tbody input[type="checkbox"]:not([disabled])');
+      let sum = 0;
+      cbs.forEach(cb => {
+        if (cb.checked) sum += parseFloat(cb.getAttribute('data-amount') || 0);
+      });
+      document.getElementById('modal-total-display').textContent = sum;
+
+      // Update Dynamic UPI QR Code
+      const qrImg = document.getElementById('modal-upi-qr');
+      if (qrImg) {
+        const upiUrl = `upi://pay?pa=ghpsmarched@upi&pn=GHPS%20Marched&am=${sum}&cu=INR`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUrl)}`;
+      }
+    }
+
+    function closeCollectFeeModal() {
+      document.getElementById('collect-fee-modal').classList.add('hidden');
+    }
+
+    function recalculateModalTotal() {
+      let sum = 0;
+      document.querySelectorAll('.modal-fee-cb:checked').forEach(cb => {
+        sum += parseFloat(cb.getAttribute('data-amount') || 0);
+      });
+      document.getElementById('modal-total-display').textContent = '₹ ' + sum;
+      document.getElementById('modal-total-input').value = sum;
+    }
+
+    async function submitModalFeeCollection() {
+      if (!selectedModalStudent) return;
+
+      const totalAmt = parseFloat(document.getElementById('modal-total-input').value || 0);
+      if (totalAmt <= 0) {
+        alert("ದಯವಿಟ್ಟು ಕನಿಷ್ಠ ಒಂದು ಶುಲ್ಕ ವಿಭಾಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ. / Please select at least one fee category.");
+        return;
+      }
+
+      const selectedReasons = Array.from(document.querySelectorAll('.modal-fee-cb:checked')).map(cb => cb.getAttribute('data-name')).join(', ');
+      const mode = document.getElementById('modal-mode-select').value;
+      const date = document.getElementById('modal-date-input').value;
+      const receiptNo = 'REC-2026-' + Math.floor(1000 + Math.random() * 9000);
+
+      const record = {
+        id: 'FEE-' + Date.now(),
+        receipt_no: receiptNo,
+        student_name_en: selectedModalStudent.name_en,
+        student_name_kn: selectedModalStudent.name_kn,
+        enroll_class: selectedModalStudent.class,
+        fee_category: selectedReasons,
+        amount: totalAmt,
+        payment_mode: mode,
+        payment_date: date,
+        created_at: new Date().toISOString()
+      };
+
+      try {
+        if (window.supabaseClient) {
+          await supabaseClient.from('fee_collections').insert([record]);
+        }
+      } catch (err) {}
+
+      allTransactions.unshift(record);
+      localStorage.setItem('portal_fee_transactions', JSON.stringify(allTransactions));
+
+      closeCollectFeeModal();
+      openReceiptModal(record.id);
+      renderFinanceKPIs();
+      applyRosterFilters();
+      applyFinanceFilters();
+    }
+
+    // Finance Data Loading
+    async function loadFinanceData() {
+      try {
+        let transactions = [];
+        if (window.supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('fee_collections')
+            .select('*')
+            .order('created_at', { ascending: false });
+          if (!error && data && data.length > 0) transactions = data;
+        }
+
+        const localData = JSON.parse(localStorage.getItem('portal_fee_transactions') || '[]');
+        if (localData.length > 0) {
+          const existingIds = transactions.map(t => t.id);
+          localData.forEach(lt => {
+            if (!existingIds.includes(lt.id)) transactions.push(lt);
+          });
+        }
+
+        // Filter out any legacy dummy transactions (e.g. AADHYA/STS281626778)
+        transactions = transactions.filter(t => t.student_name_en !== 'AADHYA' && t.sts !== 'STS281626778');
+
+        allTransactions = transactions;
+        renderFinanceKPIs();
+        renderCategoryChart();
+        renderClasswiseProgress();
+        applyFinanceFilters();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderFinanceKPIs() {
+      let totalAmt = 0, todayAmt = 0, todayCount = 0;
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      allTransactions.forEach(t => {
+        const amt = parseFloat(t.amount || 0);
+        totalAmt += amt;
+        if (t.payment_date === todayStr || (t.created_at && t.created_at.startsWith(todayStr))) {
+          todayAmt += amt;
+          todayCount++;
+        }
+      });
+
+      document.getElementById('stat-total-collected').textContent = '₹ ' + totalAmt.toLocaleString('en-IN');
+      document.getElementById('stat-collected-count').textContent = allTransactions.length;
+      document.getElementById('stat-today-collected').textContent = '₹ ' + todayAmt.toLocaleString('en-IN');
+      document.getElementById('stat-today-count').textContent = todayCount;
+
+      const totalEnrolled = 505;
+      const pendingCount = Math.max(0, totalEnrolled - allTransactions.length);
+      const estimatedPending = pendingCount * 200;
+
+      document.getElementById('stat-pending-dues').textContent = '₹ ' + estimatedPending.toLocaleString('en-IN');
+      document.getElementById('stat-pending-count').textContent = pendingCount;
+    }
+
+    function renderCategoryChart() {
+      const ctx = document.getElementById('categoryFeeChart')?.getContext('2d');
+      if (!ctx) return;
+
+      if (categoryChartInstance) categoryChartInstance.destroy();
+
+      categoryChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Exam Fee', 'ID Card', 'Sports Fund', 'SDMC Fund', 'Admission Fee'],
+          datasets: [{
+            data: [4500, 1500, 1500, 3000, 2000],
+            backgroundColor: ['#10b981', '#06b6d4', '#6366f1', '#f59e0b', '#ec4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+    function renderClasswiseProgress() {
+      const container = document.getElementById('classwise-progress-container');
+      if (!container) return;
+
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7'];
+      let html = '';
+      classes.forEach(cls => {
+        html += `
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span>Class ${cls}</span>
+              <span>18 / 30 Collected (60%)</span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div class="bg-emerald-500 h-full rounded-full" style="width: 60%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function applyFinanceFilters() {
+      const q = document.getElementById('finance-search').value.trim().toLowerCase();
+      const cls = document.getElementById('finance-class-filter').value;
+      const tbody = document.getElementById('finance-transactions-tbody');
+
+      const filtered = allTransactions.filter(t => {
+        const nameEn = (t.student_name_en || '').toLowerCase();
+        const nameKn = (t.student_name_kn || '').toLowerCase();
+        const recNo = (t.receipt_no || t.id || '').toLowerCase();
+        const studentClass = (t.enroll_class || '').toString();
+
+        const matchQ = !q || nameEn.includes(q) || nameKn.includes(q) || recNo.includes(q);
+        const matchClass = !cls || studentClass === cls;
+
+        return matchQ && matchClass;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">ಯಾವುದೇ ಶುಲ್ಕ ರಸೀದಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((t, idx) => {
+        html += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+            <td class="py-3 px-4 text-center font-mono text-slate-500">${idx + 1}</td>
+            <td class="py-3 px-4 font-mono font-bold text-emerald-600">${t.receipt_no || t.id}</td>
+            <td class="py-3 px-4 font-bold">${t.student_name_kn || t.student_name_en}</td>
+            <td class="py-3 px-4 text-center font-bold">${t.enroll_class || '-'}</td>
+            <td class="py-3 px-4 font-medium text-slate-600">${t.fee_category}</td>
+            <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold">${t.payment_mode}</span></td>
+            <td class="py-3 px-4 text-right font-mono font-black text-sm">₹ ${t.amount}</td>
+            <td class="py-3 px-4 text-center font-mono text-slate-500">${t.payment_date}</td>
+            <td class="py-3 px-4 text-center no-print">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="openReceiptModal('${t.id}')" title="View Receipt" class="w-7 h-7 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center border border-sky-200 cursor-pointer">
+                  <i class="fa-solid fa-eye text-xs"></i>
+                </button>
+                <button onclick="sendWhatsAppReceipt('${t.id}')" title="WhatsApp Receipt" class="w-7 h-7 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-200 cursor-pointer">
+                  <i class="fa-brands fa-whatsapp text-xs"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function openReceiptModal(transId) {
+      const trans = allTransactions.find(t => t.id === transId);
+      if (!trans) return;
+
+      const html = `
+        <div class="border-2 border-slate-800 p-6 rounded-2xl bg-white text-slate-900 space-y-4">
+          <div class="flex items-center gap-3 border-b-2 border-slate-800 pb-3">
+            <div class="flex-1">
+              <h2 class="text-xs font-black uppercase text-slate-900 tracking-wider">GHPS MARCHED</h2>
+              <p class="text-[10px] font-bold text-slate-600">ಅಧಿಕೃತ ಶುಲ್ಕ ರಸೀದಿ / OFFICIAL FEE RECEIPT</p>
+            </div>
+            <div class="text-right font-mono">
+              <span class="text-[9px] font-bold block text-slate-500">Receipt No:</span>
+              <span class="text-xs font-black text-emerald-700">${trans.receipt_no || trans.id}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-bold border-b border-slate-200 pb-3">
+            <div><span class="text-slate-400 text-[10px] block">Student:</span><span>${trans.student_name_kn || trans.student_name_en}</span></div>
+            <div><span class="text-slate-400 text-[10px] block">Class:</span><span>${trans.enroll_class}</span></div>
+            <div><span class="text-slate-400 text-[10px] block">Date:</span><span>${trans.payment_date}</span></div>
+            <div><span class="text-slate-400 text-[10px] block">Mode:</span><span>${trans.payment_mode}</span></div>
+          </div>
+          <div class="py-2 text-xs font-bold">
+            <p>Reason: ${trans.fee_category}</p>
+            <p class="text-right font-mono text-sm text-emerald-700 mt-2">Total Paid: ₹ ${trans.amount}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('receipt-printable-area').innerHTML = html;
+      document.getElementById('receipt-modal').classList.remove('hidden');
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receipt-modal').classList.add('hidden');
+    }
+
+    function printModalReceipt() {
+      const content = document.getElementById('receipt-printable-area').innerHTML;
+      const win = window.open('', '_blank');
+      win.document.write(`<html><head><title>Fee Receipt</title><script src="https://cdn.tailwindcss.com"><\/script></head><body class="p-8">${content}<script>window.onload = function() { window.print(); window.close(); };<\/script><!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Student Financial Passport Modal -->
+    <div id="student-passport-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xl">
+              <i class="fa-solid fa-address-card"></i>
+            </div>
+            <div>
+              <h3 id="passport-student-name" class="text-base font-bold text-slate-900 dark:text-white m-0">Student Name</h3>
+              <p id="passport-student-sub" class="text-xs text-slate-500 dark:text-slate-400 m-0">Class 1 • STS: 022101480049</p>
+            </div>
+          </div>
+          <button onclick="closeStudentPassportModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 border-0 bg-transparent cursor-pointer text-lg">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Student Summary Cards -->
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div class="text-[10px] text-slate-400 font-bold uppercase">Total Expected</div>
+            <div id="passport-total-exp" class="text-sm font-black font-mono text-slate-800 dark:text-white mt-0.5">₹0</div>
+          </div>
+          <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-100 dark:border-emerald-800/60">
+            <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase">Total Paid</div>
+            <div id="passport-total-paid" class="text-sm font-black font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">₹0</div>
+          </div>
+          <div class="p-3 bg-rose-50 dark:bg-rose-950/40 rounded-2xl border border-rose-100 dark:border-rose-800/60">
+            <div class="text-[10px] text-rose-600 dark:text-rose-400 font-bold uppercase">Pending Balance</div>
+            <div id="passport-total-pending" class="text-sm font-black font-mono text-rose-600 dark:text-rose-400 mt-0.5">₹0</div>
+          </div>
+        </div>
+
+        <!-- Itemized Fee Ledger Table -->
+        <div>
+          <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Itemized Fee Ledger & History</h4>
+          <div class="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold">
+                <tr>
+                  <th class="p-3">Fee Item</th>
+                  <th class="p-3 text-right">Amount</th>
+                  <th class="p-3 text-center">Status</th>
+                  <th class="p-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="passport-ledger-tbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                <!-- Ledger items dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <button id="passport-wa-btn" type="button" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer flex items-center gap-1.5 border-0 shadow-xs">
+            <i class="fa-brands fa-whatsapp text-sm"></i> Send Parent WhatsApp Reminder
+          </button>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="printStudentPassportLedger()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition cursor-pointer border-0 shadow-xs flex items-center gap-1.5">
+              <i class="fa-solid fa-print"></i> Print Statement
+            </button>
+            <button type="button" onclick="closeStudentPassportModal()" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs px-4 py-2 rounded-xl border-0 cursor-pointer">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Command Palette Modal (Ctrl + K) -->
+    <div id="cmd-palette-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden flex items-start justify-center pt-20 p-4">
+      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-4 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-3">
+        <div class="relative">
+          <i class="fa-solid fa-terminal absolute left-4 top-3 text-slate-400 text-sm"></i>
+          <input type="text" id="cmd-input" oninput="filterCmdPalette()" placeholder="Type a command or student name... (e.g. 'Class 5', 'Ankita', 'Paid')" class="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+        </div>
+        <div id="cmd-results" class="max-h-60 overflow-y-auto space-y-1 text-xs">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-slate-400 px-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <span>Tip: Use <kbd class="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-mono">Ctrl + K</kbd> anywhere to open</span>
+          <button onclick="closeCmdPalette()" class="bg-transparent border-0 text-slate-400 cursor-pointer font-bold">Esc to close</button>
+        </div>
+      </div>
+    </div>
+</body></html>`);
+      win.document.close();
+    }
+
+    function sendWhatsAppReceipt(transId) {
+      const trans = allTransactions.find(t => t.id === transId);
+      if (!trans) return;
+      const msg = `ಆತ್ಮೀಯ ಪೋಷಕರೇ, GHPS ಮರ್ಚೆಡ್ ಶಾಲೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಗ/ಮಗಳು ${trans.student_name_kn || trans.student_name_en} ಅವರ ${trans.fee_category} ₹${trans.amount} ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ರಸೀದಿ ನಂ: ${trans.receipt_no || trans.id}.`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function exportFinanceExcel() {
+      const data = allTransactions.map((t, i) => ({
+        "Sl.No": i + 1,
+        "Receipt No": t.receipt_no || t.id,
+        "Student Name (EN)": t.student_name_en,
+        "Student Name (KN)": t.student_name_kn,
+        "Class": t.enroll_class,
+        "Fee Category": t.fee_category,
+        "Amount (INR)": t.amount,
+        "Payment Date": t.payment_date
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Finance");
+      XLSX.writeFile(wb, "Finance_Report_2026-27.xlsx");
+    }
+
+    function openBarcodeScanner() {
+      document.getElementById('barcode-modal').classList.remove('hidden');
+      if (typeof Html5Qrcode !== 'undefined') {
+        html5QrcodeScannerInstance = new Html5Qrcode("qr-reader");
+        html5QrcodeScannerInstance.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 200, height: 200 } },
+          (decodedText) => {
+            document.getElementById('col-roster-search').value = decodedText;
+            applyRosterFilters();
+            closeBarcodeScanner();
+          },
+          (errorMessage) => {}
+        ).catch(err => {});
+      }
+    }
+
+    function closeBarcodeScanner() {
+      document.getElementById('barcode-modal').classList.add('hidden');
+      if (html5QrcodeScannerInstance && html5QrcodeScannerInstance.isScanning) {
+        html5QrcodeScannerInstance.stop().catch(err => {});
+      }
+    }
+  
+    let activeQuickPill = 'all';
+    let passportCurrentStudentId = null;
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const bgClass = type === 'success' ? 'bg-slate-900/90 border-emerald-500 text-white' : 'bg-rose-900/90 border-rose-500 text-white';
+      const icon = type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-triangle-exclamation text-rose-400';
+
+      toast.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-2xl border backdrop-blur-md text-xs font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-y-4 opacity-0 ${bgClass}`;
+      toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i> <span>${message}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    function applyQuickFilterPill(type) {
+      activeQuickPill = type;
+      document.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white');
+        btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+      });
+
+      const activeBtn = document.getElementById(`pill-${type}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300');
+        activeBtn.classList.add('bg-emerald-600', 'text-white');
+      }
+
+      applyRosterFilters();
+      showToast(`Filter applied: ${type.toUpperCase()}`, 'success');
+    }
+
+    function openStudentPassportModal(studentId) {
+      const student = sampleStudents.find(s => String(s.id) === String(studentId));
+      if (!student) return;
+
+      passportCurrentStudentId = studentId;
+
+      document.getElementById('passport-student-name').textContent = student.name_kn || student.name_en;
+      document.getElementById('passport-student-sub').textContent = `Class ${student.class} • STS: ${student.sts} • Father: ${student.father || 'N/A'}`;
+
+      const studentTrans = allTransactions.filter(t => 
+        (t.student_id && String(t.student_id) === String(student.id)) ||
+        (t.sts && String(t.sts) === String(student.sts))
+      );
+
+      const normStClass = normalizeClassVal(student.class);
+      const applicableReasons = defaultFeeReasons.filter(r => {
+        if (!r.active) return false;
+        if (r.class === 'All' || !r.class) return true;
+        const normRClass = normalizeClassVal(r.class);
+        return normRClass === normStClass || (normRClass.includes('lkg') && normStClass.includes('lkg')) || (normRClass.includes('ukg') && normStClass.includes('ukg'));
+      });
+
+      let paidSum = 0, expSum = 0;
+      let tbodyHtml = '';
+
+      applicableReasons.forEach(r => {
+        const amt = parseFloat(r.amount || 0);
+        expSum += amt;
+        const isPaid = studentTrans.some(t => 
+          t.fee_reason_id === r.id ||
+          (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en)))
+        );
+
+        if (isPaid) paidSum += amt;
+
+        tbodyHtml += `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="p-3 font-bold text-slate-800 dark:text-slate-200">${r.name_kn} (${r.name_en})</td>
+            <td class="p-3 text-right font-mono font-bold">₹ ${amt}</td>
+            <td class="p-3 text-center">
+              ${isPaid ? '<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded-full font-bold text-[10px]">✅ Paid</span>' : '<span class="px-2 py-0.5 bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 rounded-full font-bold text-[10px]">⏳ Pending</span>'}
+            </td>
+            <td class="p-3 text-center">
+              <button type="button" onclick="toggleStudentFeeReasonPaid('${student.id}', '${r.id}', ${!isPaid}); openStudentPassportModal('${student.id}');" class="px-2.5 py-1 ${isPaid ? 'bg-rose-50 text-rose-700 hover:bg-rose-100' : 'bg-emerald-600 text-white hover:bg-emerald-500'} rounded-lg font-bold text-[10px] cursor-pointer border-0 shadow-2xs transition">
+                ${isPaid ? 'Undo Pay' : 'Mark Paid'}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      const pendingSum = expSum - paidSum;
+
+      document.getElementById('passport-total-exp').textContent = `₹ ${expSum}`;
+      document.getElementById('passport-total-paid').textContent = `₹ ${paidSum}`;
+      document.getElementById('passport-total-pending').textContent = `₹ ${pendingSum}`;
+      document.getElementById('passport-ledger-tbody').innerHTML = tbodyHtml;
+
+      const waBtn = document.getElementById('passport-wa-btn');
+      if (waBtn) {
+        waBtn.onclick = () => sendWhatsAppReminder(student.id);
+      }
+
+      document.getElementById('student-passport-modal').classList.remove('hidden');
+    }
+
+    function closeStudentPassportModal() {
+      document.getElementById('student-passport-modal').classList.add('hidden');
+    }
+
+    function printStudentPassportLedger() {
+      window.print();
+    }
+
+    function sendWhatsAppReminder(studentId) {
+      const student = sampleStudents.find(s => String(s.id) === String(studentId));
+      if (!student) return;
+
+      const studentTrans = allTransactions.filter(t => (t.student_id && String(t.student_id) === String(student.id)) || (t.sts && String(t.sts) === String(student.sts)));
+      const normStClass = normalizeClassVal(student.class);
+      const applicableReasons = defaultFeeReasons.filter(r => r.active && (r.class === 'All' || !r.class || normalizeClassVal(r.class) === normStClass));
+
+      let expSum = 0, paidSum = 0;
+      applicableReasons.forEach(r => {
+        const amt = parseFloat(r.amount || 0);
+        expSum += amt;
+        if (studentTrans.some(t => t.fee_reason_id === r.id || (t.fee_category && (t.fee_category.includes(r.name_kn) || t.fee_category.includes(r.name_en))))) {
+          paidSum += amt;
+        }
+      });
+
+      const pendingSum = expSum - paidSum;
+      const text = `ನಮಸ್ಕಾರ! GHPS ಮಾರ್ಚೆಡ್ ಶಾಲೆಯಿಂದ ನೆನಪೋಲೆ: ವಿದ್ಯಾರ್ಥಿ/ನಿ ${student.name_kn} (${student.name_en}), ತರಗತಿ ${student.class}, STS: ${student.sts}. ಒಟ್ಟು ಬಾಕಿ ಶುಲ್ಕ ಮೊತ್ತ: ₹${pendingSum}. ದಯವಿಟ್ಟು ಶಾಲಾ ಕಚೇರಿಯಲ್ಲಿ ಅಥವಾ UPI QR ಮೂಲಕ ಪಾವತಿಸಲು ವಿನಂತಿ. ಧನ್ಯವಾದಗಳು!`;
+
+      const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      showToast('WhatsApp reminder draft generated!', 'success');
+    }
+
+    // Command Palette Logic
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openCmdPalette();
+      }
+      if (e.key === 'Escape') {
+        closeCmdPalette();
+      }
+    });
+
+    function openCmdPalette() {
+      const modal = document.getElementById('cmd-palette-modal');
+      const input = document.getElementById('cmd-input');
+      if (modal && input) {
+        modal.classList.remove('hidden');
+        input.value = '';
+        input.focus();
+        filterCmdPalette();
+      }
+    }
+
+    function closeCmdPalette() {
+      const modal = document.getElementById('cmd-palette-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function filterCmdPalette() {
+      const q = (document.getElementById('cmd-input')?.value || '').trim().toLowerCase();
+      const resultsDiv = document.getElementById('cmd-results');
+      if (!resultsDiv) return;
+
+      let html = '';
+      if (!q) {
+        html = `
+          <div onclick="switchFinanceTab('collection'); closeCmdPalette();" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl cursor-pointer flex items-center justify-between font-semibold">
+            <span><i class="fa-solid fa-receipt text-emerald-500 mr-2"></i> Open Fee Collection Roster</span>
+            <span class="text-[10px] text-slate-400">Tab Switch</span>
+          </div>
+          <div onclick="switchFinanceTab('dashboard'); closeCmdPalette();" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl cursor-pointer flex items-center justify-between font-semibold">
+            <span><i class="fa-solid fa-chart-pie text-sky-500 mr-2"></i> Open Fee Dashboard & Charts</span>
+            <span class="text-[10px] text-slate-400">Tab Switch</span>
+          </div>
+          <div onclick="switchFinanceTab('settings'); closeCmdPalette();" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl cursor-pointer flex items-center justify-between font-semibold">
+            <span><i class="fa-solid fa-gear text-amber-500 mr-2"></i> Open Fee Structure Settings</span>
+            <span class="text-[10px] text-slate-400">Tab Switch</span>
+          </div>
+        `;
+      } else {
+        const matchingStudents = sampleStudents.filter(s => 
+          (s.name_en || '').toLowerCase().includes(q) ||
+          (s.name_kn || '').toLowerCase().includes(q) ||
+          (s.sts || '').toLowerCase().includes(q) ||
+          (s.class || '').toLowerCase().includes(q)
+        ).slice(0, 8);
+
+        matchingStudents.forEach(s => {
+          html += `
+            <div onclick="openStudentPassportModal('${s.id}'); closeCmdPalette();" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl cursor-pointer flex items-center justify-between font-semibold">
+              <span><i class="fa-solid fa-user-graduate text-emerald-500 mr-2"></i> ${s.name_kn || s.name_en} (Class ${s.class})</span>
+              <span class="text-[10px] text-slate-400 font-mono">STS: ${s.sts}</span>
+            </div>
+          `;
+        });
+
+        if (matchingStudents.length === 0) {
+          html = `<div class="p-4 text-center text-slate-400 font-medium">No matching students found for '${q}'</div>`;
+        }
+      }
+      resultsDiv.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

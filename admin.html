@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HM Admin Panel - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   
@@ -188,10 +188,15 @@
                 <div class="space-y-4">
                   <div>
                     <label class="block text-xs font-bold text-slate-650 mb-1">School Name (English) *</label>
-                    <input type="text" id="schNameEn" placeholder="e.g. GHPS MARCHED" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all uppercase" required>
+                    <input type="text" id="schNameEn" placeholder="e.g. GHPS MARCHED" onchange="autoTranslateSchoolName(false)" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all uppercase" required>
                   </div>
                   <div>
-                    <label class="block text-xs font-bold text-slate-650 mb-1">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+                    <div class="flex items-center justify-between mb-1">
+                      <label class="block text-xs font-bold text-slate-650">ಶಾಲೆಯ ಹೆಸರು (ಕನ್ನಡ) *</label>
+                      <button type="button" onclick="autoTranslateSchoolName(true)" title="ಇಂಗ್ಲಿಷ್ ಹೆಸರನ್ನು ಕನ್ನಡಕ್ಕೆ ಸ್ವಯಂ ಭಾಷಾಂತರಿಸಿ (Auto Translate)" class="text-[10px] font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800 px-2 py-0.5 rounded-lg transition cursor-pointer flex items-center gap-1">
+                        <i class="fa-solid fa-language text-xs"></i> ಸ್ವಯಂ ಭಾಷಾಂತರ / Auto-Translate
+                      </button>
+                    </div>
                     <input type="text" id="schNameKn" placeholder="ಉದಾ. ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none transition-all" required>
                   </div>
                   <div>
@@ -201,9 +206,9 @@
                 </div>
               </div>
               
-              <!-- Card 2: Site Design Settings -->
+              <!-- Card 2: Site Design Settings & Logos -->
               <div class="p-6 border border-slate-250/60 rounded-2xl bg-slate-50/20 space-y-4">
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-palette text-rose-500"></i> ಸೈಟ್ ವಿನ್ಯಾಸ ಸೆಟ್ಟಿಂಗ್ಸ್ / Site Design Settings</h3>
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5"><i class="fa-solid fa-palette text-rose-500"></i> ಸೈಟ್ ವಿನ್ಯಾಸ ಮತ್ತು ಲಾಂಛನ ಸೆಟ್ಟಿಂಗ್ಸ್ / Site & Certificate Logos</h3>
                 <div class="w-12 h-[3px] bg-rose-500 rounded-full"></div>
                 
                 <div class="space-y-4">
@@ -213,24 +218,45 @@
                       <option value="default_top">Default Top Menu Bar / ಡೀಫಾಲ್ಟ್ ಟಾಪ್ ಬಾರ್</option>
                       <option value="modern_top">Modern Top Menu Bar / ಮಾಡರ್ನ್ ಟಾಪ್ ಬಾರ್</option>
                       <option value="side">Left Sidebar Layout / ಎಡ ಸೈಡ್ ಬಾರ್</option>
+                      <option value="compact_top">Compact Top Menu Bar / ಕಾಂಪ್ಯಾಕ್ಟ್ ಟಾಪ್ ಬಾರ್</option>
                     </select>
                   </div>
+
+                  <!-- 1. Government Logo Uploader -->
                   <div>
-                    <label class="block text-xs font-bold text-slate-650 mb-2">School Logo (ಶಾಲಾ ಲಾಂಛನ / ಲೋಗೋ ಅಪ್‌ಲೋಡ್)</label>
-                    <div class="flex items-center gap-3">
-                      <!-- Preview image -->
-                      <img id="schLogoPreview" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" class="w-14 h-14 object-contain rounded-xl border border-slate-200 bg-slate-50 shadow-inner p-1">
-                      
-                      <!-- Custom file upload styled button -->
+                    <label class="block text-xs font-bold text-slate-650 mb-1.5 flex items-center gap-1">
+                      <i class="fa-solid fa-landmark text-amber-600"></i>
+                      <span>1. Government Logo (ಸರ್ಕಾರಿ ಲಾಂಛನ - ಪ್ರಮಾಣಪತ್ರಗಳ ಎಡಭಾಗಕ್ಕೆ)</span>
+                    </label>
+                    <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-slate-200">
+                      <img id="schGovLogoPreview" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" class="w-12 h-12 object-contain rounded-lg border border-slate-200 bg-slate-50 p-1">
                       <div class="relative flex-1">
-                        <input type="file" id="schLogoFile" accept="image/*" class="hidden" onchange="previewLogoFile(this)">
-                        <label for="schLogoFile" class="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-xl transition duration-200 shadow-sm bg-white">
-                          <i class="fa-solid fa-cloud-arrow-up text-rose-500"></i> ಫೈಲ್ ಆಯ್ಕೆ ಮಾಡಿ / Choose File
+                        <input type="file" id="schGovLogoFile" accept="image/*" class="hidden" onchange="previewGovLogoFile(this)">
+                        <label for="schGovLogoFile" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-lg transition shadow-xs bg-white">
+                          <i class="fa-solid fa-cloud-arrow-up text-amber-600"></i> ಸರ್ಕಾರಿ ಲಾಂಛನ ಆಯ್ಕೆಮಾಡಿ
                         </label>
-                        <p class="text-[9px] text-slate-400 mt-1.5 font-semibold">Square size (PNG/JPG) of max 800KB is recommended.</p>
+                        <p class="text-[9px] text-slate-400 mt-1 font-semibold">Karnataka Govt Emblem or Official Crest (PNG/SVG).</p>
                       </div>
                     </div>
-                    <!-- Hidden input to hold Base64 logo value -->
+                    <input type="hidden" id="schGovLogoUrl">
+                  </div>
+
+                  <!-- 2. School Logo Uploader -->
+                  <div>
+                    <label class="block text-xs font-bold text-slate-650 mb-1.5 flex items-center gap-1">
+                      <i class="fa-solid fa-school text-rose-500"></i>
+                      <span>2. School Logo / Other Image (ಶಾಲಾ ಲಾಂಛನ - ಪ್ರಮಾಣಪತ್ರಗಳ ಬಲಭಾಗಕ್ಕೆ)</span>
+                    </label>
+                    <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-slate-200">
+                      <img id="schLogoPreview" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" class="w-12 h-12 object-contain rounded-lg border border-slate-200 bg-slate-50 p-1">
+                      <div class="relative flex-1">
+                        <input type="file" id="schLogoFile" accept="image/*" class="hidden" onchange="previewLogoFile(this)">
+                        <label for="schLogoFile" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-lg transition shadow-xs bg-white">
+                          <i class="fa-solid fa-cloud-arrow-up text-rose-500"></i> ಶಾಲಾ ಲೋಗೋ ಆಯ್ಕೆಮಾಡಿ
+                        </label>
+                        <p class="text-[9px] text-slate-400 mt-1 font-semibold">School Logo or Badge Image (PNG/JPG max 800KB).</p>
+                      </div>
+                    </div>
                     <input type="hidden" id="schLogoUrl">
                   </div>
                 </div>
@@ -607,31 +633,6 @@
 
               </div>
 
-              <!-- Secret HM / Admin Security Controls for Deletion & Restoration -->
-              <div class="mt-6 p-4 border border-rose-200 dark:border-rose-900/50 bg-rose-50/50 dark:bg-rose-950/20 rounded-2xl space-y-4">
-                <h4 class="text-xs font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider flex items-center gap-2">
-                  <i class="fa-solid fa-user-shield text-rose-600"></i> HM & Admin ಡೆಲಿಟ್ ಮತ್ತು ಮರುಸ್ಥಾಪನೆ ರಹಸ್ಯ ನಿಯಂತ್ರಣ / Delete & Restore Teacher Role Controls
-                </h4>
-                <p class="text-[11px] text-slate-500 dark:text-slate-400">
-                  ಸಾಮಾನ್ಯ ಶಿಕ್ಷಕರಿಗೆ (Teacher Role) ಡೆಲಿಟ್ ಬಟನ್, ಮರುಸ್ಥಾಪನೆ ಬಟನ್ ಹಾಗೂ ಶಾಶ್ವತ ಡೆಲಿಟ್ ಬಟನ್‌ಗಳು ಕಾಣಿಸಬೇಕೇ ಅಥವಾ ಮರೆಯಾಗಬೇಕೇ ಎಂಬುದನ್ನು ಇಲ್ಲಿ ನಿಯಂತ್ರಿಸಿ. (HM, Admin, Developer ಗೆ ಸದಾ ಲಭ್ಯವಿರುತ್ತವೆ).
-                </p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-bold">
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ ಡೆಲಿಟ್ ಬಟನ್ ತೋರಿಸಿ (Show Delete to Teachers)</span>
-                    <input type="checkbox" id="adminAllowTeacherDelete" onchange="localStorage.setItem('admin_allow_teacher_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ Restore ಬಟನ್ ತೋರಿಸಿ (Show Restore to Teachers)</span>
-                    <input type="checkbox" id="adminAllowTeacherRestore" onchange="localStorage.setItem('admin_allow_teacher_restore', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                  <div class="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl">
-                    <span>ಶಿಕ್ಷಕರಿಗೆ Permanent Delete ತೋರಿಸಿ</span>
-                    <input type="checkbox" id="adminAllowTeacherPermDelete" onchange="localStorage.setItem('admin_allow_teacher_perm_delete', this.checked)" class="accent-rose-600 w-4 h-4 cursor-pointer">
-                  </div>
-                </div>
-              </div>
-
               <div class="pt-2">
                 <button type="submit" class="bg-gradient-to-tr from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition-all text-xs border-0 cursor-pointer flex items-center gap-1.5">
                   <i class="fa-solid fa-floppy-disk"></i> ಪ್ರವೇಶ ಅನುಮತಿ ಉಳಿಸಿ / Save Permissions
@@ -836,6 +837,80 @@
       }
     }
 
+    async function autoTranslateSchoolName(force = false) {
+      const enInput = document.getElementById('schNameEn');
+      const knInput = document.getElementById('schNameKn');
+      if (!enInput || !knInput) return;
+
+      let text = enInput.value.trim();
+      if (!text) {
+        if (force) {
+          alert("ದಯವಿಟ್ಟು ಮೊದಲು ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಶಾಲೆಯ ಹೆಸರನ್ನು ಟೈಪ್ ಮಾಡಿ. / Please enter School Name in English first.");
+          enInput.focus();
+        }
+        return;
+      }
+
+      // If Kannada field already has text and user didn't explicitly click button, don't overwrite
+      if (knInput.value.trim() && !force) return;
+
+      knInput.placeholder = "ಭಾಷಾಂತರಿಸಲಾಗುತ್ತಿದೆ... / Translating...";
+
+      // Dictionary of standard school terms
+      const schoolDict = {
+        "GOVERNMENT HIGHER PRIMARY SCHOOL": "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GOVT HIGHER PRIMARY SCHOOL": "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GOVT. HIGHER PRIMARY SCHOOL": "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GOVERNMENT LOWER PRIMARY SCHOOL": "ಸರ್ಕಾರಿ ಕಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GOVT LOWER PRIMARY SCHOOL": "ಸರ್ಕಾರಿ ಕಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GOVERNMENT HIGH SCHOOL": "ಸರ್ಕಾರಿ ಪ್ರೌಢ ಶಾಲೆ",
+        "GOVT HIGH SCHOOL": "ಸರ್ಕಾರಿ ಪ್ರೌಢ ಶಾಲೆ",
+        "GHPS": "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GLPS": "ಸರ್ಕಾರಿ ಕಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ",
+        "GHS": "ಸರ್ಕಾರಿ ಪ್ರೌಢ ಶಾಲೆ",
+        "PU COLLEGE": "ಪದವಿ ಪೂರ್ವ ಕಾಲೇಜು",
+        "HIGH SCHOOL": "ಪ್ರೌಢ ಶಾಲೆ"
+      };
+
+      let upperText = text.toUpperCase();
+      let prefixKn = "";
+      let remainingEn = text;
+
+      for (let key in schoolDict) {
+        if (upperText.startsWith(key)) {
+          prefixKn = schoolDict[key];
+          remainingEn = text.substring(key.length).replace(/^[\s,.\-]+/, '');
+          break;
+        }
+      }
+
+      if (remainingEn.length === 0) {
+        knInput.value = prefixKn;
+        if (typeof showToast === 'function') showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Translated", "ಶಾಲೆಯ ಹೆಸರು ಕನ್ನಡಕ್ಕೆ ಯಶಸ್ವಿಯಾಗಿ ಭಾಷಾಂತರಗೊಂಡಿದೆ.", "success");
+        return;
+      }
+
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=kn&dt=t&q=${encodeURIComponent(remainingEn)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        let translatedPart = "";
+        if (data && data[0]) {
+          translatedPart = data[0].map(item => item[0]).join('').trim();
+        }
+
+        let finalKn = prefixKn ? `${prefixKn}, ${translatedPart}` : translatedPart;
+        knInput.value = finalKn;
+        if (typeof showToast === 'function') showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Auto-Translated", "ಶಾಲೆಯ ಹೆಸರು ಕನ್ನಡಕ್ಕೆ ಯಶಸ್ವಿಯಾಗಿ ಭಾಷಾಂತರಗೊಂಡಿದೆ.", "success");
+      } catch (err) {
+        console.warn("Translation API error:", err);
+        if (prefixKn) {
+          knInput.value = prefixKn;
+        }
+      }
+    }
+
     function switchTab(tabId) {
       const tabs = ['settings', 'approvals', 'allotment', 'register', 'permissions', 'admission'];
       tabs.forEach(t => {
@@ -929,6 +1004,26 @@
       }
     };
 
+    window.previewGovLogoFile = function(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        if (file.size > 800 * 1024) {
+          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಸರ್ಕಾರಿ ಲಾಂಛನ ಚಿತ್ರವು 800KB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು. / Image must be less than 800KB.", "error");
+          input.value = '';
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64Data = e.target.result;
+          document.getElementById('schGovLogoPreview').src = base64Data;
+          document.getElementById('schGovLogoUrl').value = base64Data;
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
     async function loadSchoolSettings() {
       if (!currentSchoolId) return;
       try {
@@ -950,33 +1045,149 @@
           if (bannerKn) bannerKn.innerText = school.school_name_kn || '';
         }
 
-        // Fetch web_design navigation layout preference from school_settings
-        const { data: configData, error: configErr } = await supabaseClient
+        // Fetch web_design navigation layout & logos from school_settings
+        const { data: configDataList, error: configErr } = await supabaseClient
           .from('school_settings')
           .select('*')
           .eq('school_id', currentSchoolId)
-          .eq('settings_key', 'web_design')
-          .maybeSingle();
+          .eq('settings_key', 'web_design');
+
+        const defaultGovLogo = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg";
+        const defaultSchoolLogo = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+
+        const configData = (configDataList && configDataList.length > 0) ? configDataList[configDataList.length - 1] : null;
 
         if (configData && configData.settings_value) {
           const layout = configData.settings_value.nav_layout || 'default_top';
-          const logo = configData.settings_value.logo_url || '';
+          const logo = configData.settings_value.logo_url || localStorage.getItem('school_logo_url') || '';
+          const govLogo = configData.settings_value.gov_logo_url || localStorage.getItem('school_gov_logo') || defaultGovLogo;
+
           document.getElementById('schNavLayout').value = layout;
           document.getElementById('schLogoUrl').value = logo;
-          if (logo) {
-            document.getElementById('schLogoPreview').src = logo;
-          } else {
-            document.getElementById('schLogoPreview').src = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
-          }
+          document.getElementById('schGovLogoUrl').value = govLogo;
+
+          document.getElementById('schLogoPreview').src = logo || defaultSchoolLogo;
+          document.getElementById('schGovLogoPreview').src = govLogo || defaultGovLogo;
+
           localStorage.setItem('school_nav_layout', layout);
           localStorage.setItem('school_logo_url', logo);
+          localStorage.setItem('school_gov_logo', govLogo);
         } else {
           document.getElementById('schNavLayout').value = 'default_top';
-          document.getElementById('schLogoUrl').value = '';
-          document.getElementById('schLogoPreview').src = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+          const localGov = localStorage.getItem('school_gov_logo') || defaultGovLogo;
+          const localSch = localStorage.getItem('school_logo_url') || '';
+
+          document.getElementById('schLogoUrl').value = localSch;
+          document.getElementById('schGovLogoUrl').value = localGov;
+
+          document.getElementById('schLogoPreview').src = localSch || defaultSchoolLogo;
+          document.getElementById('schGovLogoPreview').src = localGov;
+
           localStorage.setItem('school_nav_layout', 'default_top');
-          localStorage.setItem('school_logo_url', '');
+          localStorage.setItem('school_logo_url', localSch);
+          localStorage.setItem('school_gov_logo', localGov);
         }
+
+        function compressImageFile(file, maxWidth = 350, maxHeight = 350) {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const img = new Image();
+              img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let w = img.width;
+                let h = img.height;
+                if (w > h) {
+                  if (w > maxWidth) {
+                    h = Math.round((h * maxWidth) / w);
+                    w = maxWidth;
+                  }
+                } else {
+                  if (h > maxHeight) {
+                    w = Math.round((w * maxHeight) / h);
+                    h = maxHeight;
+                  }
+                }
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/png'));
+              };
+              img.onerror = function() { resolve(e.target.result); };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+
+        window.previewGovLogoFile = async function(input) {
+          if (input.files && input.files[0]) {
+            const file = input.files[0];
+            let finalUrl = await compressImageFile(file);
+
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+              try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `gov_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
+                const { data, error } = await supabaseClient.storage
+                  .from('school-logo')
+                  .upload(fileName, file, { upsert: true });
+
+                if (!error && data) {
+                  const { data: publicData } = supabaseClient.storage
+                    .from('school-logo')
+                    .getPublicUrl(fileName);
+                  if (publicData && publicData.publicUrl) {
+                    finalUrl = publicData.publicUrl;
+                  }
+                }
+              } catch (err) {
+                console.warn("Supabase logo upload notice:", err);
+              }
+            }
+            const inputHidden = document.getElementById('schGovLogoUrl');
+            const previewImg = document.getElementById('schGovLogoPreview');
+            if (inputHidden) inputHidden.value = finalUrl;
+            if (previewImg) previewImg.src = finalUrl;
+            localStorage.setItem('school_gov_logo', finalUrl);
+            showToast("ಸರ್ಕಾರಿ ಲಾಂಛನ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಿ ಬಟನ್ ಒತ್ತಿ.", "success");
+          }
+        };
+
+        window.previewLogoFile = async function(input) {
+          if (input.files && input.files[0]) {
+            const file = input.files[0];
+            let finalUrl = await compressImageFile(file);
+
+            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+              try {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `school_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
+                const { data, error } = await supabaseClient.storage
+                  .from('school-logo')
+                  .upload(fileName, file, { upsert: true });
+
+                if (!error && data) {
+                  const { data: publicData } = supabaseClient.storage
+                    .from('school-logo')
+                    .getPublicUrl(fileName);
+                  if (publicData && publicData.publicUrl) {
+                    finalUrl = publicData.publicUrl;
+                  }
+                }
+              } catch (err) {
+                console.warn("Supabase logo upload notice:", err);
+              }
+            }
+            const inputHidden = document.getElementById('schLogoUrl');
+            const previewImg = document.getElementById('schLogoPreview');
+            if (inputHidden) inputHidden.value = finalUrl;
+            if (previewImg) previewImg.src = finalUrl;
+            localStorage.setItem('school_logo_url', finalUrl);
+            showToast("ಶಾಲಾ ಲೋಗೋ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಿ ಬಟನ್ ಒತ್ತಿ.", "success");
+          }
+        };
 
         // Fetch feature permissions from school_settings
         const { data: permData } = await supabaseClient
@@ -1073,7 +1284,8 @@
       const schKn = document.getElementById('schNameKn').value.trim();
       const schUdise = document.getElementById('schUdise').value.trim();
       const navLayout = document.getElementById('schNavLayout').value;
-      const logoUrl = document.getElementById('schLogoUrl').value.trim();
+      const logoUrl = document.getElementById('schLogoUrl').value.trim() || document.getElementById('schLogoPreview').src;
+      const govLogoUrl = document.getElementById('schGovLogoUrl').value.trim() || document.getElementById('schGovLogoPreview').src;
 
       if (!schEn || !schKn || !schUdise) {
         showToast("Error", "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.", "error");
@@ -1093,31 +1305,47 @@
 
         if (error) throw error;
 
-        // 2. Save web design navigation style & logo to school_settings, preserving existing keys like admission_config
+        // 2. Save web design navigation style & logos to school_settings
         const { data: existingSettings } = await supabaseClient
           .from('school_settings')
-          .select('settings_value')
+          .select('id, settings_value')
           .eq('school_id', currentSchoolId)
           .eq('settings_key', 'web_design');
 
         let mergedSettingsValue = {
           nav_layout: navLayout,
-          logo_url: logoUrl
+          logo_url: logoUrl,
+          gov_logo_url: govLogoUrl
         };
+        let targetRowId = null;
         if (existingSettings && existingSettings.length > 0) {
+          const lastObj = existingSettings[existingSettings.length - 1];
+          targetRowId = lastObj.id;
           mergedSettingsValue = {
-            ...existingSettings[existingSettings.length - 1].settings_value,
+            ...(lastObj.settings_value || {}),
             ...mergedSettingsValue
           };
         }
 
-        const { error: settingsError } = await supabaseClient
-          .from('school_settings')
-          .upsert({
-            school_id: currentSchoolId,
-            settings_key: 'web_design',
-            settings_value: mergedSettingsValue
-          });
+        let settingsError = null;
+        if (targetRowId) {
+          const res = await supabaseClient
+            .from('school_settings')
+            .update({
+              settings_value: mergedSettingsValue
+            })
+            .eq('id', targetRowId);
+          settingsError = res.error;
+        } else {
+          const res = await supabaseClient
+            .from('school_settings')
+            .insert({
+              school_id: currentSchoolId,
+              settings_key: 'web_design',
+              settings_value: mergedSettingsValue
+            });
+          settingsError = res.error;
+        }
 
         if (settingsError) throw settingsError;
 
@@ -1126,6 +1354,7 @@
         localStorage.setItem('school_udise', schUdise);
         localStorage.setItem('school_nav_layout', navLayout);
         localStorage.setItem('school_logo_url', logoUrl);
+        localStorage.setItem('school_gov_logo', govLogoUrl);
 
         const bannerEn = document.getElementById('bannerSchoolNameEn');
         const bannerKn = document.getElementById('bannerSchoolNameKn');
@@ -1134,7 +1363,10 @@
 
         showToast("ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಲಾಗಿದೆ", "ಶಾಲೆಯ ವಿವರಗಳು ಮತ್ತು ವೆಬ್ ವಿನ್ಯಾಸವನ್ನು ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಿಸಲಾಗಿದೆ.", "success");
 
-        // Dynamically apply layout changes instantly if the function exists
+        // Dynamically apply layout & school config changes instantly across all certificates
+        if (window.loadAndApplySchoolConfig) {
+          await window.loadAndApplySchoolConfig();
+        }
         if (window.applyNavLayout) {
           window.applyNavLayout(navLayout, logoUrl);
         }
@@ -2086,19 +2318,6 @@
         showToast("Error", "ಸಿಬ್ಬಂದಿ ವಿವರ ಸೃಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ: " + err.message, "error");
       }
     }
-
-    function initAdminDeletionControls() {
-      const delChk = document.getElementById('adminAllowTeacherDelete');
-      if (delChk) delChk.checked = localStorage.getItem('admin_allow_teacher_delete') === 'true';
-
-      const resChk = document.getElementById('adminAllowTeacherRestore');
-      if (resChk) resChk.checked = localStorage.getItem('admin_allow_teacher_restore') === 'true';
-
-      const permChk = document.getElementById('adminAllowTeacherPermDelete');
-      if (permChk) permChk.checked = localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
-    }
-
-    document.addEventListener('DOMContentLoaded', initAdminDeletionControls);
 
     async function handleLogout() {
       await supabaseClient.auth.signOut();

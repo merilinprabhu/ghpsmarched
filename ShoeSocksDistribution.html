@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Government Higher Primary School, Marched - Shoe & Socks Distribution</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <script src="chart.umd.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;850&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-h-screen: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #0b0f19; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
     .glass-card {
       background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(16px);
@@ -201,21 +201,135 @@
           ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣೆ / Shoe & Socks Distribution
         </h2>
         <p class="text-[10px] text-slate-400 font-semibold tracking-wide mt-0.5">
-          ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ-ಸಾಕ್ಸ್ ಗಾತ್ರದ ನಮೂದು ಹಾಗೂ ದಾಸ್ತಾನು ವರದಿಗಳು / Entry of shoe & socks sizes and inventory reports
+          ವಿದ್ಯಾರ್ಥಿಗಳ ಕಾಲಿನ ಅಳತೆ (C.M.), ಶೂ-ಸಾಕ್ಸ್ ಗಾತ್ರದ ನಮೂದು ಹಾಗೂ ದಾಸ್ತಾನು ವರದಿಗಳು / Student foot length (C.M.), shoe & socks distribution
         </p>
       </div>
 
-      <!-- Tab Buttons -->
-      <div class="flex gap-2 bg-black/40 p-1.5 border border-white/5 rounded-2xl w-full md:w-auto overflow-x-auto">
-        <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md">
-          <i class="fa-solid fa-chart-pie"></i> ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
+      <!-- Action Buttons & Tab Switchers -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <!-- Direct WhatsApp / Universal Share Button for HM -->
+        <button onclick="openShareModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-xs font-black bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg cursor-pointer transition-all hover:scale-105 active:scale-95 border-0">
+          <i class="fa-brands fa-whatsapp text-sm"></i>
+          <span>ಲಿಂಕ್ ಶೇರ್ ಮಾಡಿ / Share Link</span>
         </button>
-        <button onclick="switchTab('entry')" id="btn-tab-entry" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
-          <i class="fa-solid fa-file-pen"></i> ನಮೂದು / Entry Form
-        </button>
-        <button onclick="switchTab('settings')" id="btn-tab-settings" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
-          <i class="fa-solid fa-sliders"></i> ನಿಯಮಾವಳಿ / Settings
-        </button>
+
+        <!-- Tab Buttons -->
+        <div class="flex gap-2 bg-black/40 p-1.5 border border-white/5 rounded-2xl w-full md:w-auto overflow-x-auto">
+          <button onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-indigo-600 text-white shadow-md">
+            <i class="fa-solid fa-chart-pie"></i> ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / Dashboard
+          </button>
+          <button onclick="switchTab('entry')" id="btn-tab-entry" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
+            <i class="fa-solid fa-file-pen"></i> ನಮೂದು / Entry Form
+          </button>
+          <button onclick="switchTab('settings')" id="btn-tab-settings" class="flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-400 hover:text-white">
+            <i class="fa-solid fa-sliders"></i> ಸೈಜ್ ಗ್ರೂಪ್ & ಸೆಟ್ಟಿಂಗ್ಸ್ / Size Groups & Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Public Entry Mode Friendly Notification Banner -->
+    <div id="publicEntryBanner" class="hidden glass-card p-4 rounded-3xl border border-emerald-500/30 bg-emerald-950/20 text-emerald-300 flex items-center justify-between gap-3 shadow-md">
+      <div class="flex items-center gap-3">
+        <span class="p-2 bg-emerald-600 text-white rounded-xl text-sm"><i class="fa-solid fa-shoe-prints"></i></span>
+        <div>
+          <h4 class="text-xs font-black text-white">ಶಿಕ್ಷಕರ ನೇರ ಶೂ & ಸಾಕ್ಸ್ ಸೈಜ್ ನಮೂದು (Direct Teacher Entry Mode)</h4>
+          <p class="text-[10px] text-emerald-400">ದಯವಿಟ್ಟು ನಿಮ್ಮ ತರಗತಿಯನ್ನು ಆರಿಸಿ, ವಿದ್ಯಾರ್ಥಿಗಳ ಕಾಲಿನ ಅಳತೆ (C.M.) ಅಥವಾ ಶೂ ಸೈಜ್ ನಮೂದಿಸಿ. ನಿಮ್ಮ ಬದಲಾವಣೆಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ (Auto-Save) ಉಳಿಯುತ್ತವೆ.</p>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 border border-emerald-500/40 text-emerald-200">
+        🟢 Auto-Save Active
+      </span>
+    </div>
+
+    <!-- Universal Share Modal for HM -->
+    <div id="shareLinkModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center z-[2500] p-4">
+      <div class="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 text-white animate-scale-in">
+        <div class="flex items-center justify-between pb-3 border-b border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-2xl text-lg">
+              <i class="fa-brands fa-whatsapp"></i>
+            </span>
+            <div>
+              <h3 class="text-base font-black">ಶಿಕ್ಷಕರೊಂದಿಗೆ ಶೇರ್ ಮಾಡಿ (Share Entry Link)</h3>
+              <p class="text-xs text-slate-400 font-medium">ಯಾವುದೇ ಲಾಗಿನ್ / ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲದೆ ನೇರವಾಗಿ ಎಂಟ್ರಿ ಮಾಡಲು ಲಿಂಕ್</p>
+            </div>
+          </div>
+          <button onclick="closeShareModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <!-- 1. All-Class Universal Share Link (Main) -->
+        <div class="space-y-2 bg-black/40 p-4 rounded-2xl border border-white/10">
+          <div class="flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group"></i> ಎಲ್ಲಾ ತರಗತಿಗಳ ಸಾಮಾನ್ಯ ಲಿಂಕ್ (All-Class Link):
+            </span>
+            <span class="text-[10px] text-slate-400">ಯಾವುದೇ ಕ್ಲಾಸ್ ಶಿಕ್ಷಕರೂ ಬಳಸಬಹುದು</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="allClassShareUrlInput" readonly class="w-full bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none select-all">
+            <button onclick="copyShareUrl('allClassShareUrlInput')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl border-0 cursor-pointer shadow flex items-center gap-1 shrink-0">
+              <i class="fa-solid fa-copy"></i> ಕಾಪಿ
+            </button>
+          </div>
+          <div class="pt-2">
+            <button onclick="shareViaWhatsApp('ALL')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs py-2.5 px-4 rounded-xl shadow-lg cursor-pointer transition flex items-center justify-center gap-2 border-0">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+              <span>WhatsApp ನಲ್ಲಿ ಎಲ್ಲಾ ಶಿಕ್ಷಕರಿಗೆ ಕಳುಹಿಸಿ (Share on WhatsApp)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Class-Specific Quick Links (Optional) -->
+        <div class="space-y-2">
+          <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+            ಅಥವಾ ನಿರ್ದಿಷ್ಟ ತರಗತಿಗೆ ಪ್ರತ್ಯೇಕವಾಗಿ ಕಳುಹಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ:
+          </label>
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+            <button onclick="shareViaWhatsApp('LKG')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>LKG</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('UKG')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>UKG</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('1')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 1</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('2')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 2</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('3')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 3</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('4')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 4</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('5')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 5</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('6')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 6</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('7')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 7</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('8')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 8</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('9')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 9</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+            <button onclick="shareViaWhatsApp('10')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
+              <span>Class 10</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2 border-t border-white/10">
+          <button onclick="closeShareModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl cursor-pointer border-0">ಮುಚ್ಚಿ / Close</button>
+        </div>
       </div>
     </div>
 
@@ -294,6 +408,8 @@
                 <span class="text-[9px] font-bold text-slate-450 uppercase"><i class="fa-solid fa-filter text-indigo-400"></i> Class:</span>
                 <select id="dashClassFilter" onchange="updateDashboardStats()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-indigo-300">
                   <option value="ALL">ALL / ಎಲ್ಲಾ ತರಗತಿ</option>
+                  <option value="LKG">LKG</option>
+                  <option value="UKG">UKG</option>
                   <option value="1">Class 1</option>
                   <option value="2">Class 2</option>
                   <option value="3">Class 3</option>
@@ -441,7 +557,7 @@
           <!-- Search input -->
           <div class="relative w-full sm:w-60">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-            <input type="text" id="entrySearch" oninput="applyEntryFilters()" placeholder="ಹೆಸರು / STS ಸಂಖ್ಯೆ ಬಳಸಿ ಹುಡುಕಿ..." class="w-full bg-black/40 border border-white/5 pl-9 pr-4 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <input type="text" id="entrySearch" oninput="applyEntryFilters()" placeholder="ಹೆಸರು / STS / ತಂದೆಯ ಹೆಸರು..." class="w-full bg-black/40 border border-white/5 pl-9 pr-4 py-1.5 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
           </div>
         </div>
 
@@ -461,7 +577,7 @@
 
           <!-- Import -->
           <input type="file" id="shoeSocksImportFile" class="hidden" accept=".csv, .xlsx, .xls" onchange="handleShoeSocksImport(event)">
-          <button onclick="document.getElementById('shoeSocksImportFile').click()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm" title="Import Shoe and Socks distribution Excel or CSV data directly to Supabase">
+          <button onclick="document.getElementById('shoeSocksImportFile').click()" class="bg-white/5 hover:bg-white/10 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm" title="Import Shoe and Socks distribution Excel or CSV data directly">
             <i class="fa-solid fa-file-import text-amber-500"></i> ಆಮದು / Import CSV/Excel
           </button>
 
@@ -472,22 +588,25 @@
         </div>
       </div>
 
+      <!-- Quick Guidance Banner -->
+      <div class="bg-indigo-950/40 border border-indigo-500/20 px-4 py-2.5 rounded-2xl flex items-center justify-between flex-wrap gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-indigo-400 text-sm"></i>
+          <span class="text-slate-300">
+            <strong class="text-indigo-300">ಸೂಚನೆ (Tip):</strong> ಟೇಬಲ್ ಹೆಡ್ಡರ್‌ನಲ್ಲಿರುವ <strong class="text-emerald-400">"ಎಲ್ಲಾ / All" ಚೆಕ್‌ಬಾಕ್ಸ್</strong> ಕ್ಲಿಕ್ ಮಾಡಿ ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಒಂದೇ ಬಾರಿಗೆ ಶೂ/ಸಾಕ್ಸ್ ವಿತರಣೆ ಗುರುತಿಸಬಹುದು. C.M. ಅಳತೆ ಟೈಪ್ ಮಾಡಿದರೆ ಶೂ ಗಾತ್ರ ತಾನಾಗಿಯೇ ಮ್ಯಾಪ್ ಆಗುತ್ತದೆ.
+          </span>
+        </div>
+        <button onclick="switchTab('settings')" class="text-[11px] text-indigo-400 hover:text-indigo-300 underline font-bold">
+          <i class="fa-solid fa-sliders"></i> ಬೇಸ್ ಗ್ರೂಪ್ ಸೆಟ್ಟಿಂಗ್ಸ್ ಬದಲಾಯಿಸಿ
+        </button>
+      </div>
+
       <!-- Main entry table -->
       <div class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
           <table id="shoes-socks-distribution-table" class="w-full border-collapse text-left text-xs">
             <thead id="entryTableHeader">
-              <tr class="bg-slate-900/80 text-slate-300 font-bold border-b border-white/5 text-center">
-                <th class="p-3 w-12">ಕ್ರಮ ಸಂ. / Sl.No.</th>
-                <th class="p-3 w-28">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No.</th>
-                <th class="p-3 text-left">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
-                <th class="p-3 w-20">ಲಿಂಗ / Gender</th>
-                <th class="p-3 w-40 bg-indigo-500/[0.02]">ಶೂ ಗಾತ್ರ / Shoe Size</th>
-                <th class="p-3 w-32 bg-indigo-500/[0.02]">ಶೂ ವಿತರಣೆ / Shoe Status</th>
-                <th class="p-3 w-40 bg-pink-500/[0.02]">ಸಾಕ್ಸ್ ಗಾತ್ರ / Socks Size</th>
-                <th class="p-3 w-32 bg-pink-500/[0.02]">ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks Status</th>
-                <th class="p-3 w-24 no-print">ಸ್ಥಿತಿ / Auto-Save</th>
-              </tr>
+              <!-- Loaded dynamically with sort buttons and bulk checkboxes -->
             </thead>
             <tbody id="distributionTableBody" class="font-semibold text-slate-350 divide-y divide-white/5 text-center">
               <!-- Loaded dynamically -->
@@ -499,23 +618,93 @@
 
     <!-- Section 3: Settings Tab -->
     <div id="section-settings" class="space-y-6 hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Rules Config -->
-        <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
-          <div>
-            <h4 class="font-bold text-base">ಗಾತ್ರದ ನಿಯಮಾವಳಿ / Size Mapping Rules</h4>
-            <p class="text-[10px] text-slate-400 mt-0.5">ತರಗತಿವಾರು ಮತ್ತು ಲಿಂಗವಾರು ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳನ್ನು ನಿಗದಿಪಡಿಸಿ / Define default shoe & socks sizes based on class groups</p>
-          </div>
+        <!-- Left 7 Cols: Shoe Size Base Groups (C.M. Ranges) -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
+            <div class="flex justify-between items-start flex-wrap gap-2">
+              <div>
+                <h4 class="font-bold text-base flex items-center gap-2">
+                  <i class="fa-solid fa-ruler-combined text-indigo-400"></i>
+                  ಶೂ ಸೈಜ್ ಬೇಸ್ ಗ್ರೂಪ್‌ಗಳು / Shoe Size Base Groups (C.M. Ranges)
+                </h4>
+                <p class="text-[10px] text-slate-400 mt-0.5">
+                  ವಿದ್ಯಾರ್ಥಿಯ ಕಾಲಿನ C.M. ಅಳತೆಗೆ ತಕ್ಕಂತೆ ಯಾವ ಶೂ ಗಾತ್ರ & ಸಾಕ್ಸ್ ಅನ್ವಯಿಸಬೇಕು ಎಂಬುದನ್ನು ಇಲ್ಲಿ ಗ್ರೂಪ್ ಮಾಡಿ ನಿರ್ಧರಿಸಿ
+                </p>
+              </div>
+              <button onclick="resetBaseGroupsToDefault()" class="text-[10px] text-slate-400 hover:text-rose-400 font-bold border border-white/10 px-2.5 py-1 rounded-xl transition">
+                <i class="fa-solid fa-rotate-left mr-1"></i> ಡೀಫಾಲ್ಟ್‌ಗೆ ಮರುಹೊಂದಿಸಿ
+              </button>
+            </div>
 
-          <div class="space-y-4">
-            <!-- Sizes Lists Config -->
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3 animate-fade-in">
-              <h5 class="font-bold text-xs text-indigo-400">ಲಭ್ಯವಿರುವ ಗಾತ್ರಗಳ ಪಟ್ಟಿ / Available Size Lists</h5>
+            <!-- Base Groups Table -->
+            <div class="overflow-x-auto custom-scrollbar border border-white/10 rounded-2xl">
+              <table class="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr class="bg-slate-900/80 text-slate-300 font-bold border-b border-white/5 text-center">
+                    <th class="p-2.5 text-left">ಗಾತ್ರ / Size Code</th>
+                    <th class="p-2.5">ಕನಿಷ್ಠ C.M. (Min)</th>
+                    <th class="p-2.5">ಗರಿಷ್ಠ C.M. (Max)</th>
+                    <th class="p-2.5">ಲಿಂಗ / Gender</th>
+                    <th class="p-2.5">ಡೀಫಾಲ್ಟ್ ಸಾಕ್ಸ್ / Socks</th>
+                    <th class="p-2.5 w-16">ಕ್ರಿಯೆ / Action</th>
+                  </tr>
+                </thead>
+                <tbody id="baseGroupsTableBody" class="divide-y divide-white/5 text-center font-medium">
+                  <!-- Loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Add New Base Group Form -->
+            <div class="settings-card border border-indigo-500/20 p-4 rounded-2xl space-y-3 bg-indigo-950/10">
+              <h5 class="font-bold text-xs text-indigo-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-plus-circle"></i> ಹೊಸ ಶೂ ಸೈಜ್ ಗ್ರೂಪ್ ಸೇರಿಸಿ / Add New Shoe Size Base Group
+              </h5>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 items-end">
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Size Code / ಸೈಜ್</label>
+                  <input type="text" id="new-group-size" placeholder="e.g. 1 or B1" class="w-full bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Min C.M.</label>
+                  <input type="number" step="0.1" id="new-group-min-cm" placeholder="15.0" class="w-full bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Max C.M.</label>
+                  <input type="number" step="0.1" id="new-group-max-cm" placeholder="16.5" class="w-full bg-black/40 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Gender</label>
+                  <select id="new-group-gender" class="w-full bg-black/40 border border-white/10 rounded-xl px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    <option value="ALL">ALL (ಎಲ್ಲಾ)</option>
+                    <option value="Boy">Boy (ಗಂಡು)</option>
+                    <option value="Girl">Girl (ಹೆಣ್ಣು)</option>
+                  </select>
+                </div>
+                <div class="space-y-1">
+                  <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Socks Size</label>
+                  <select id="new-group-socks" class="w-full bg-black/40 border border-white/10 rounded-xl px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="addNewBaseGroup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 rounded-xl text-xs transition duration-300 shadow-md flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-plus"></i> ಗ್ರೂಪ್ ಸೇರಿಸಿ / Add Group to List
+              </button>
+            </div>
+
+            <!-- General Available Sizes Lists -->
+            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+              <h5 class="font-bold text-xs text-indigo-400">ಸಾಮಾನ್ಯ ಗಾತ್ರಗಳ ಪಟ್ಟಿ / General Size Options Lists</h5>
               <div class="space-y-3">
                 <div class="space-y-1">
                   <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Shoe Sizes List (Comma separated) / ಶೂ ಗಾತ್ರಗಳ ಪಟ್ಟಿ</label>
-                  <input type="text" id="setting-shoe-sizes" value="B1,B2,B3,B4,B5,G1,G2,G3,G4,G5" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                  <input type="text" id="setting-shoe-sizes" value="1,2,3,4,5,6,7,8,B1,B2,B3,B4,B5,G1,G2,G3,G4,G5" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
                 </div>
                 <div class="space-y-1">
                   <label class="block text-[9px] uppercase tracking-wider text-slate-400 font-bold">Socks Sizes List (Comma separated) / ಸಾಕ್ಸ್ ಗಾತ್ರಗಳ ಪಟ್ಟಿ</label>
@@ -524,107 +713,120 @@
               </div>
             </div>
 
+            <button onclick="saveAllSettings()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-floppy-disk mr-1"></i> ಎಲ್ಲಾ ನಿಯಮಾವಳಿಗಳನ್ನು ಉಳಿಸಿ / Save All Base Groups & Rules
+            </button>
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Fallback Class Rules & Inventory Limits -->
+        <div class="lg:col-span-5 space-y-6">
+          
+          <!-- Class Default Fallback Rules -->
+          <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-4">
+            <div>
+              <h4 class="font-bold text-base">ಡೀಫಾಲ್ಟ್ ತರಗತಿ ಗಾತ್ರಗಳು / Class Fallback Defaults</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">C.M. ನಮೂದಿಸದೇ ಇದ್ದಾಗ ತರಗತಿವಾರು ಅನ್ವಯವಾಗುವ ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು / Fallback when C.M. is not entered</p>
+            </div>
+
             <!-- Group 1: Class 1-5 -->
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
-              <h5 class="font-bold text-xs text-indigo-400">Class 1-5 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
-                  <input type="text" id="rule-15-boys-shoe" value="B1" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <div class="settings-card border border-white/5 p-3 rounded-2xl space-y-2">
+              <h5 class="font-bold text-[11px] text-indigo-400">Class 1-5 Group</h5>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Shoe</label>
+                  <input type="text" id="rule-15-boys-shoe" value="1" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
-                  <input type="text" id="rule-15-girls-shoe" value="G1" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Shoe</label>
+                  <input type="text" id="rule-15-girls-shoe" value="1" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
-                  <input type="text" id="rule-15-boys-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Socks</label>
+                  <input type="text" id="rule-15-boys-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
-                  <input type="text" id="rule-15-girls-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Socks</label>
+                  <input type="text" id="rule-15-girls-socks" value="S" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
               </div>
             </div>
 
             <!-- Group 2: Class 6-7 -->
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
-              <h5 class="font-bold text-xs text-indigo-400">Class 6-7 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
-                  <input type="text" id="rule-67-boys-shoe" value="B2" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <div class="settings-card border border-white/5 p-3 rounded-2xl space-y-2">
+              <h5 class="font-bold text-[11px] text-indigo-400">Class 6-7 Group</h5>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Shoe</label>
+                  <input type="text" id="rule-67-boys-shoe" value="3" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
-                  <input type="text" id="rule-67-girls-shoe" value="G2" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Shoe</label>
+                  <input type="text" id="rule-67-girls-shoe" value="3" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
-                  <input type="text" id="rule-67-boys-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Socks</label>
+                  <input type="text" id="rule-67-boys-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
-                  <input type="text" id="rule-67-girls-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Socks</label>
+                  <input type="text" id="rule-67-girls-socks" value="M" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
               </div>
             </div>
 
             <!-- Group 3: Class 8-10 -->
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
-              <h5 class="font-bold text-xs text-indigo-400">Class 8-10 Group (ಡೀಫಾಲ್ಟ್ ಗಾತ್ರಗಳು)</h5>
-              <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Shoe Size</label>
-                  <input type="text" id="rule-810-boys-shoe" value="B3" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <div class="settings-card border border-white/5 p-3 rounded-2xl space-y-2">
+              <h5 class="font-bold text-[11px] text-indigo-400">Class 8-10 Group</h5>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Shoe</label>
+                  <input type="text" id="rule-810-boys-shoe" value="5" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Shoe Size</label>
-                  <input type="text" id="rule-810-girls-shoe" value="G3" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Shoe</label>
+                  <input type="text" id="rule-810-girls-shoe" value="5" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Boys Socks Size</label>
-                  <input type="text" id="rule-810-boys-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Boys Socks</label>
+                  <input type="text" id="rule-810-boys-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
-                <div class="space-y-1">
-                  <label class="block text-[9px] uppercase tracking-wider text-slate-400">Girls Socks Size</label>
-                  <input type="text" id="rule-810-girls-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <div>
+                  <label class="block text-[8px] uppercase text-slate-400 font-bold">Girls Socks</label>
+                  <input type="text" id="rule-810-girls-socks" value="L" class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1 text-xs font-bold text-white">
                 </div>
               </div>
             </div>
-
-            <button onclick="saveRulesConfig()" class="w-full bg-indigo-650 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md">
-              <i class="fa-solid fa-floppy-disk mr-1"></i> ಉಳಿಸು / Save Rules
-            </button>
-          </div>
-        </div>
-
-        <!-- Stock / Inventory Limits Config -->
-        <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
-          <div>
-            <h4 class="font-bold text-base">ದಾಸ್ತಾನು ನಿಯಂತ್ರಣ / Stock Inventory Configuration</h4>
-            <p class="text-[10px] text-slate-400 mt-0.5">ಪ್ರತಿ ಗಾತ್ರದ ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮೌಲ್ಯಗಳನ್ನು ಹೊಂದಿಸಿ / Update total available stocks for warning thresholds</p>
           </div>
 
-          <div class="space-y-4">
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
-              <h5 class="font-bold text-xs text-pink-400">Shoe Size Total Stock Limits</h5>
-              <div class="grid grid-cols-4 gap-2.5" id="shoeStockInputsGrid">
-                <!-- Populated dynamically -->
-              </div>
+          <!-- Stock / Inventory Limits Config -->
+          <div class="glass-card p-6 rounded-3xl border border-white/5 shadow-xl space-y-6">
+            <div>
+              <h4 class="font-bold text-base">ದಾಸ್ತಾನು ಮಿತಿ / Stock Inventory Configuration</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">ಪ್ರತಿ ಗಾತ್ರದ ಲಭ್ಯವಿರುವ ದಾಸ್ತಾನು ಮೌಲ್ಯಗಳನ್ನು ಹೊಂದಿಸಿ / Update total stock caps</p>
             </div>
 
-            <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
-              <h5 class="font-bold text-xs text-pink-400">Socks Size Total Stock Limits</h5>
-              <div class="grid grid-cols-4 gap-2.5" id="socksStockInputsGrid">
-                <!-- Populated dynamically -->
+            <div class="space-y-4">
+              <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+                <h5 class="font-bold text-xs text-pink-400">Shoe Size Total Stock Limits</h5>
+                <div class="grid grid-cols-4 gap-2.5" id="shoeStockInputsGrid">
+                  <!-- Populated dynamically -->
+                </div>
               </div>
-            </div>
 
-            <button onclick="saveStockConfig()" class="w-full bg-emerald-650 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md">
-              <i class="fa-solid fa-floppy-disk mr-1"></i> ಉಳಿಸು / Save Stock Settings
-            </button>
+              <div class="settings-card border border-white/5 p-4 rounded-2xl space-y-3">
+                <h5 class="font-bold text-xs text-pink-400">Socks Size Total Stock Limits</h5>
+                <div class="grid grid-cols-4 gap-2.5" id="socksStockInputsGrid">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+
+              <button onclick="saveStockConfig()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition duration-300 shadow-md">
+                <i class="fa-solid fa-floppy-disk mr-1"></i> ದಾಸ್ತಾನು ಉಳಿಸಿ / Save Stock Limits
+              </button>
+            </div>
           </div>
+
         </div>
 
       </div>
@@ -650,14 +852,16 @@
           <th class="p-2 border border-black">Sl.No</th>
           <th class="p-2 border border-black">STS No.</th>
           <th class="p-2 border border-black text-left">Student Name</th>
+          <th class="p-2 border border-black text-left">Father Name</th>
           <th class="p-2 border border-black">Gender</th>
+          <th class="p-2 border border-black">Foot (C.M.)</th>
           <th class="p-2 border border-black">Shoe Size</th>
           <th class="p-2 border border-black">Shoe Status</th>
           <th class="p-2 border border-black">Socks Size</th>
           <th class="p-2 border border-black">Socks Status</th>
         </tr>
       </thead>
-      <tbody id="printTableBody" class="divide-y divide-black">
+      <tbody id="printTableBody" class="divide-y border-black">
         <!-- Loaded on demand -->
       </tbody>
     </table>
@@ -677,21 +881,36 @@
     let incentiveRecords = []; // Upserted values from student_incentives
     let filteredStudents = []; // Active list inside Entry tab
     
+    // Default Shoe Size Base Groups (C.M. ranges)
+    const DEFAULT_BASE_GROUPS = [
+      { id: 'g1', size_code: '1', min_cm: 15.0, max_cm: 16.5, gender: 'ALL', socks_size: 'S' },
+      { id: 'g2', size_code: '2', min_cm: 16.6, max_cm: 18.0, gender: 'ALL', socks_size: 'S' },
+      { id: 'g3', size_code: '3', min_cm: 18.1, max_cm: 19.5, gender: 'ALL', socks_size: 'M' },
+      { id: 'g4', size_code: '4', min_cm: 19.6, max_cm: 21.0, gender: 'ALL', socks_size: 'M' },
+      { id: 'g5', size_code: '5', min_cm: 21.1, max_cm: 22.5, gender: 'ALL', socks_size: 'L' },
+      { id: 'g6', size_code: '6', min_cm: 22.6, max_cm: 24.0, gender: 'ALL', socks_size: 'L' },
+      { id: 'g7', size_code: '7', min_cm: 24.1, max_cm: 25.5, gender: 'ALL', socks_size: 'XL' },
+      { id: 'g8', size_code: '8', min_cm: 25.6, max_cm: 27.5, gender: 'ALL', socks_size: 'XL' }
+    ];
+
+    let shoeSizeBaseGroups = [...DEFAULT_BASE_GROUPS];
+
     // Default size arrays
-    let shoeSizesList = ['B1', 'B2', 'B3', 'B4', 'B5', 'G1', 'G2', 'G3', 'G4', 'G5'];
+    let shoeSizesList = ['1', '2', '3', '4', '5', '6', '7', '8', 'B1', 'B2', 'B3', 'B4', 'B5', 'G1', 'G2', 'G3', 'G4', 'G5'];
     let socksSizesList = ['S', 'M', 'L', 'XL'];
 
     // Default configuration rules
     let defaultMappingRules = {
-      '1-5': { boys_shoe: 'B1', girls_shoe: 'G1', boys_socks: 'S', girls_socks: 'S' },
-      '6-7': { boys_shoe: 'B2', girls_shoe: 'G2', boys_socks: 'M', girls_socks: 'M' },
-      '8-10': { boys_shoe: 'B3', girls_shoe: 'G3', boys_socks: 'L', girls_socks: 'L' }
+      '1-5': { boys_shoe: '1', girls_shoe: '1', boys_socks: 'S', girls_socks: 'S' },
+      '6-7': { boys_shoe: '3', girls_shoe: '3', boys_socks: 'M', girls_socks: 'M' },
+      '8-10': { boys_shoe: '5', girls_shoe: '5', boys_socks: 'L', girls_socks: 'L' }
     };
 
     // Default stock caps
     let defaultStockLimits = {
-      'B1': 50, 'B2': 50, 'B3': 50, 'B4': 30, 'B5': 20,
-      'G1': 50, 'G2': 50, 'G3': 50, 'G4': 30, 'G5': 20,
+      '1': 50, '2': 50, '3': 50, '4': 50, '5': 40, '6': 30, '7': 20, '8': 20,
+      'B1': 30, 'B2': 30, 'B3': 30, 'B4': 20, 'B5': 20,
+      'G1': 30, 'G2': 30, 'G3': 30, 'G4': 20, 'G5': 20,
       'S': 100, 'M': 100, 'L': 100, 'XL': 50
     };
 
@@ -707,18 +926,105 @@
       await fetchAdmissionsAndIncentives();
       renderEntryTableHeaders();
       loadSettingsUI();
-      switchTab('dashboard');
+      
+      // Initialize Universal Share Link
+      initShareLinks();
+
+      // Check URL parameters for Public / Direct Entry Mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const isPublic = urlParams.get('public') === 'true';
+      const reqMode = urlParams.get('mode');
+      const reqClass = urlParams.get('class');
+
+      if (isPublic || reqMode === 'entry') {
+        switchTab('entry');
+        if (isPublic) {
+          const settingsBtn = document.getElementById('btn-tab-settings');
+          if (settingsBtn) settingsBtn.classList.add('hidden');
+          const banner = document.getElementById('publicEntryBanner');
+          if (banner) banner.classList.remove('hidden');
+        }
+        if (reqClass) {
+          const clsSel = document.getElementById('entryClassFilter');
+          if (clsSel) {
+            clsSel.value = reqClass;
+            loadStudentsData();
+          }
+        }
+      } else {
+        switchTab('dashboard');
+      }
     });
+
+    // --- SHARE LINK & WHATSAPP FUNCTIONS ---
+    function initShareLinks() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const allClassUrl = `${baseUrl}?mode=entry&public=true`;
+      const input = document.getElementById('allClassShareUrlInput');
+      if (input) input.value = allClassUrl;
+    }
+
+    function openShareModal() {
+      initShareLinks();
+      document.getElementById('shareLinkModal')?.classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      document.getElementById('shareLinkModal')?.classList.add('hidden');
+    }
+
+    function copyShareUrl(inputId) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+          alert("📋 ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ! ಶಿಕ್ಷಕರಿಗೆ WhatsApp ಮೂಲಕ ಕಳುಹಿಸಬಹುದು.");
+        }).catch(() => {
+          document.execCommand('copy');
+          alert("📋 ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!");
+        });
+      }
+    }
+
+    function shareViaWhatsApp(classVal) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      let targetUrl = `${baseUrl}?mode=entry&public=true`;
+      let classText = "ಎಲ್ಲಾ ತರಗತಿಗಳು";
+      
+      if (classVal && classVal !== 'ALL') {
+        targetUrl += `&class=${encodeURIComponent(classVal)}`;
+        classText = (classVal === 'LKG' || classVal === 'UKG') ? classVal : `Class ${classVal}`;
+      }
+
+      const message = `🏫 *GHPS MARCHED - ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ಸೈಜ್ ನಮೂದು*\n\nನಮಸ್ಕಾರ ಶಿಕ್ಷಕರೇ,\nದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಲಿಂಕ್ ತೆರೆದು ವಿದ್ಯಾರ್ಥಿಗಳ ಕಾಲಿನ ಅಳತೆ (C.M.) ಮತ್ತು ಶೂ ಸೈಜ್ ನಮೂದಿಸಿ:\n👉 ${targetUrl}\n\n📌 *ತರಗತಿ:* ${classText}\n*(ಯಾವುದೇ Login / Password ಅಗತ್ಯವಿಲ್ಲ)*`;
+
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
 
     function loadThemeAndSync() {
       const savedTheme = localStorage.getItem('portal_theme') || 'dark';
       document.body.setAttribute('data-theme', savedTheme);
       
+      // Load saved active Base Groups
+      const savedGroups = localStorage.getItem('shoes_size_base_groups');
+      if (savedGroups) {
+        try {
+          shoeSizeBaseGroups = JSON.parse(savedGroups);
+        } catch (e) {
+          shoeSizeBaseGroups = [...DEFAULT_BASE_GROUPS];
+        }
+      }
+
       // Load saved active size lists
       const savedShoeSizes = localStorage.getItem('shoes_sizes_list');
       if (savedShoeSizes) {
         shoeSizesList = savedShoeSizes.split(',').map(s => s.trim()).filter(s => s);
+      } else {
+        // Sync with base groups
+        syncShoeSizesFromBaseGroups();
       }
+
       const savedSocksSizes = localStorage.getItem('socks_sizes_list');
       if (savedSocksSizes) {
         socksSizesList = savedSocksSizes.split(',').map(s => s.trim()).filter(s => s);
@@ -733,6 +1039,14 @@
       if (savedStock) {
         try { defaultStockLimits = JSON.parse(savedStock); } catch(e) {}
       }
+    }
+
+    function syncShoeSizesFromBaseGroups() {
+      const set = new Set(shoeSizesList);
+      shoeSizeBaseGroups.forEach(g => {
+        if (g.size_code) set.add(g.size_code.toString().trim());
+      });
+      shoeSizesList = Array.from(set);
     }
 
     function initSupabase() {
@@ -764,6 +1078,8 @@
         updateDashboardStats();
       } else if (tabId === 'entry') {
         loadStudentsData();
+      } else if (tabId === 'settings') {
+        loadSettingsUI();
       }
     }
 
@@ -792,6 +1108,7 @@
               print_header: 'SHOE & SOCKS DISTRIBUTION REPORT',
               print_footer: 'Signature of Head Master / Class Teacher||true',
               columns: [
+                { name: 'foot_cm', type: 'number' },
                 { name: 'shoe_size', type: 'dropdown', options: shoeSizesList },
                 { name: 'shoe_status', type: 'boolean' },
                 { name: 'socks_size', type: 'dropdown', options: socksSizesList },
@@ -857,8 +1174,40 @@
       }
     }
 
+    // Match Shoe Size & Socks Size by C.M. & Gender
+    function getMatchedBaseGroup(cmVal, gender) {
+      if (cmVal === null || cmVal === undefined || isNaN(cmVal) || cmVal === '') return null;
+      const numCm = parseFloat(cmVal);
+      if (isNaN(numCm) || numCm <= 0) return null;
+
+      const isGirl = gender && (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female') || gender.includes('ಹೆಣ್ಣು'));
+      const targetGender = isGirl ? 'Girl' : 'Boy';
+
+      // 1. First try to find exact match with gender
+      let match = shoeSizeBaseGroups.find(g => {
+        const min = parseFloat(g.min_cm);
+        const max = parseFloat(g.max_cm);
+        const genderMatch = (!g.gender || g.gender === 'ALL' || g.gender === targetGender);
+        return genderMatch && numCm >= min && numCm <= max;
+      });
+
+      // 2. Fallback to any range matching C.M.
+      if (!match) {
+        match = shoeSizeBaseGroups.find(g => {
+          const min = parseFloat(g.min_cm);
+          const max = parseFloat(g.max_cm);
+          return numCm >= min && numCm <= max;
+        });
+      }
+
+      return match;
+    }
+
     // Settings UI Loading
     function loadSettingsUI() {
+      // Render Base Groups Table
+      renderBaseGroupsTable();
+
       // Load available lists inputs
       if (document.getElementById('setting-shoe-sizes')) {
         document.getElementById('setting-shoe-sizes').value = shoeSizesList.join(',');
@@ -867,21 +1216,23 @@
         document.getElementById('setting-socks-sizes').value = socksSizesList.join(',');
       }
 
-      // Load rules inputs
-      document.getElementById('rule-15-boys-shoe').value = defaultMappingRules['1-5'].boys_shoe;
-      document.getElementById('rule-15-girls-shoe').value = defaultMappingRules['1-5'].girls_shoe;
-      document.getElementById('rule-15-boys-socks').value = defaultMappingRules['1-5'].boys_socks;
-      document.getElementById('rule-15-girls-socks').value = defaultMappingRules['1-5'].girls_socks;
+      // Load fallback rules inputs
+      if (document.getElementById('rule-15-boys-shoe')) {
+        document.getElementById('rule-15-boys-shoe').value = defaultMappingRules['1-5']?.boys_shoe || '1';
+        document.getElementById('rule-15-girls-shoe').value = defaultMappingRules['1-5']?.girls_shoe || '1';
+        document.getElementById('rule-15-boys-socks').value = defaultMappingRules['1-5']?.boys_socks || 'S';
+        document.getElementById('rule-15-girls-socks').value = defaultMappingRules['1-5']?.girls_socks || 'S';
 
-      document.getElementById('rule-67-boys-shoe').value = defaultMappingRules['6-7'].boys_shoe;
-      document.getElementById('rule-67-girls-shoe').value = defaultMappingRules['6-7'].girls_shoe;
-      document.getElementById('rule-67-boys-socks').value = defaultMappingRules['6-7'].boys_socks;
-      document.getElementById('rule-67-girls-socks').value = defaultMappingRules['6-7'].girls_socks;
+        document.getElementById('rule-67-boys-shoe').value = defaultMappingRules['6-7']?.boys_shoe || '3';
+        document.getElementById('rule-67-girls-shoe').value = defaultMappingRules['6-7']?.girls_shoe || '3';
+        document.getElementById('rule-67-boys-socks').value = defaultMappingRules['6-7']?.boys_socks || 'M';
+        document.getElementById('rule-67-girls-socks').value = defaultMappingRules['6-7']?.girls_socks || 'M';
 
-      document.getElementById('rule-810-boys-shoe').value = defaultMappingRules['8-10'].boys_shoe;
-      document.getElementById('rule-810-girls-shoe').value = defaultMappingRules['8-10'].girls_shoe;
-      document.getElementById('rule-810-boys-socks').value = defaultMappingRules['8-10'].boys_socks;
-      document.getElementById('rule-810-girls-socks').value = defaultMappingRules['8-10'].girls_socks;
+        document.getElementById('rule-810-boys-shoe').value = defaultMappingRules['8-10']?.boys_shoe || '5';
+        document.getElementById('rule-810-girls-shoe').value = defaultMappingRules['8-10']?.girls_shoe || '5';
+        document.getElementById('rule-810-boys-socks').value = defaultMappingRules['8-10']?.boys_socks || 'L';
+        document.getElementById('rule-810-girls-socks').value = defaultMappingRules['8-10']?.girls_socks || 'L';
+      }
 
       // Load stock config grid inputs
       let shoeStockHtml = '';
@@ -907,9 +1258,119 @@
       document.getElementById('socksStockInputsGrid').innerHTML = socksStockHtml;
     }
 
-    // Save rules settings local + DB fallback if needed
-    function saveRulesConfig() {
-      // First save available sizes lists
+    function renderBaseGroupsTable() {
+      const tbody = document.getElementById('baseGroupsTableBody');
+      if (!tbody) return;
+
+      if (shoeSizeBaseGroups.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">ಯಾವುದೇ ಬೇಸ್ ಗ್ರೂಪ್‌ಗಳಿಲ್ಲ. ದಯವಿಟ್ಟು ಹೊಸ ಗ್ರೂಪ್ ಸೇರಿಸಿ.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      shoeSizeBaseGroups.forEach((g, idx) => {
+        const genderBadge = g.gender === 'Boy' 
+          ? `<span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">Boy</span>` 
+          : (g.gender === 'Girl' 
+            ? `<span class="bg-pink-500/10 text-pink-400 border border-pink-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">Girl</span>` 
+            : `<span class="bg-slate-500/10 text-slate-400 border border-slate-500/20 px-1.5 py-0.5 rounded text-[10px] font-bold">ALL</span>`);
+
+        html += `
+          <tr class="hover:bg-slate-50/5 border-b border-white/5 text-slate-300">
+            <td class="p-2.5 text-left font-bold text-white flex items-center gap-1.5">
+              <span class="w-6 h-6 rounded-lg bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 flex items-center justify-center text-xs font-black">${g.size_code}</span>
+              <span>Size ${g.size_code}</span>
+            </td>
+            <td class="p-2.5 font-mono text-emerald-400 font-bold">${parseFloat(g.min_cm).toFixed(1)} cm</td>
+            <td class="p-2.5 font-mono text-emerald-400 font-bold">${parseFloat(g.max_cm).toFixed(1)} cm</td>
+            <td class="p-2.5">${genderBadge}</td>
+            <td class="p-2.5 font-bold text-pink-300">${g.socks_size || 'S'}</td>
+            <td class="p-2.5">
+              <button onclick="deleteBaseGroup(${idx})" class="text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 p-1.5 rounded-lg transition" title="Delete group">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+    }
+
+    function addNewBaseGroup() {
+      const sizeInput = document.getElementById('new-group-size');
+      const minInput = document.getElementById('new-group-min-cm');
+      const maxInput = document.getElementById('new-group-max-cm');
+      const genderSelect = document.getElementById('new-group-gender');
+      const socksSelect = document.getElementById('new-group-socks');
+
+      const sizeCode = sizeInput.value.trim().toUpperCase();
+      const minCm = parseFloat(minInput.value);
+      const maxCm = parseFloat(maxInput.value);
+      const gender = genderSelect.value;
+      const socksSize = socksSelect.value;
+
+      if (!sizeCode) {
+        alert("ದಯವಿಟ್ಟು ಶೂ ಸೈಜ್ ಕೋಡ್ (Size Code) ನಮೂದಿಸಿ.");
+        return;
+      }
+      if (isNaN(minCm) || isNaN(maxCm) || minCm <= 0 || maxCm <= 0) {
+        alert("ದಯವಿಟ್ಟು ಸರಿಯಾದ ಕನಿಷ್ಠ (Min) ಮತ್ತು ಗರಿಷ್ಠ (Max) C.M. ಅಳತೆ ನಮೂದಿಸಿ.");
+        return;
+      }
+      if (minCm > maxCm) {
+        alert("ಕನಿಷ್ಠ C.M. ಮೌಲ್ಯವು ಗರಿಷ್ಠ C.M. ಮೌಲ್ಯಕ್ಕಿಂತ ಹೆಚ್ಚಿರಲು ಸಾಧ್ಯವಿಲ್ಲ.");
+        return;
+      }
+
+      // Add to array
+      shoeSizeBaseGroups.push({
+        id: 'g_' + Date.now(),
+        size_code: sizeCode,
+        min_cm: minCm,
+        max_cm: maxCm,
+        gender: gender,
+        socks_size: socksSize
+      });
+
+      // Sort by min_cm ascending
+      shoeSizeBaseGroups.sort((a, b) => parseFloat(a.min_cm) - parseFloat(b.min_cm));
+
+      // Sync size list
+      if (!shoeSizesList.includes(sizeCode)) {
+        shoeSizesList.push(sizeCode);
+      }
+
+      // Save locally
+      localStorage.setItem('shoes_size_base_groups', JSON.stringify(shoeSizeBaseGroups));
+      localStorage.setItem('shoes_sizes_list', shoeSizesList.join(','));
+
+      // Reset form
+      sizeInput.value = '';
+      minInput.value = '';
+      maxInput.value = '';
+
+      loadSettingsUI();
+      alert(`ಹೊಸ ಗ್ರೂಪ್ Size ${sizeCode} (${minCm} - ${maxCm} cm) ಯಶಸ್ವಿಯಾಗಿ ಸೇರಿಸಲಾಗಿದೆ!`);
+    }
+
+    function deleteBaseGroup(index) {
+      if (!confirm("ಈ ಶೂ ಸೈಜ್ ಬೇಸ್ ಗ್ರೂಪ್ ಅನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?")) return;
+      shoeSizeBaseGroups.splice(index, 1);
+      localStorage.setItem('shoes_size_base_groups', JSON.stringify(shoeSizeBaseGroups));
+      loadSettingsUI();
+    }
+
+    function resetBaseGroupsToDefault() {
+      if (!confirm("ಎಲ್ಲಾ ಶೂ ಸೈಜ್ ಬೇಸ್ ಗ್ರೂಪ್‌ಗಳನ್ನು ಮೊದಲಿನ ಡೀಫಾಲ್ಟ್ ಸ್ಥಿತಿಗೆ ಮರುಹೊಂದಿಸಲು ನೀವು ಬಯಸುವಿರಾ?")) return;
+      shoeSizeBaseGroups = JSON.parse(JSON.stringify(DEFAULT_BASE_GROUPS));
+      localStorage.setItem('shoes_size_base_groups', JSON.stringify(shoeSizeBaseGroups));
+      loadSettingsUI();
+      alert("ಬೇಸ್ ಗ್ರೂಪ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್‌ಗೆ ಮರುಹೊಂದಿಸಲಾಗಿದೆ.");
+    }
+
+    // Save all rules and settings
+    function saveAllSettings() {
+      // Save available sizes lists
       const shoeInput = document.getElementById('setting-shoe-sizes').value.trim();
       const socksInput = document.getElementById('setting-socks-sizes').value.trim();
 
@@ -922,27 +1383,35 @@
         localStorage.setItem('socks_sizes_list', socksSizesList.join(','));
       }
 
-      defaultMappingRules['1-5'].boys_shoe = document.getElementById('rule-15-boys-shoe').value.trim();
-      defaultMappingRules['1-5'].girls_shoe = document.getElementById('rule-15-girls-shoe').value.trim();
-      defaultMappingRules['1-5'].boys_socks = document.getElementById('rule-15-boys-socks').value.trim();
-      defaultMappingRules['1-5'].girls_socks = document.getElementById('rule-15-girls-socks').value.trim();
+      // Save fallback mapping rules
+      if (document.getElementById('rule-15-boys-shoe')) {
+        defaultMappingRules['1-5'] = {
+          boys_shoe: document.getElementById('rule-15-boys-shoe').value.trim(),
+          girls_shoe: document.getElementById('rule-15-girls-shoe').value.trim(),
+          boys_socks: document.getElementById('rule-15-boys-socks').value.trim(),
+          girls_socks: document.getElementById('rule-15-girls-socks').value.trim()
+        };
+        defaultMappingRules['6-7'] = {
+          boys_shoe: document.getElementById('rule-67-boys-shoe').value.trim(),
+          girls_shoe: document.getElementById('rule-67-girls-shoe').value.trim(),
+          boys_socks: document.getElementById('rule-67-boys-socks').value.trim(),
+          girls_socks: document.getElementById('rule-67-girls-socks').value.trim()
+        };
+        defaultMappingRules['8-10'] = {
+          boys_shoe: document.getElementById('rule-810-boys-shoe').value.trim(),
+          girls_shoe: document.getElementById('rule-810-girls-shoe').value.trim(),
+          boys_socks: document.getElementById('rule-810-boys-socks').value.trim(),
+          girls_socks: document.getElementById('rule-810-girls-socks').value.trim()
+        };
+        localStorage.setItem('shoes_socks_rules', JSON.stringify(defaultMappingRules));
+      }
 
-      defaultMappingRules['6-7'].boys_shoe = document.getElementById('rule-67-boys-shoe').value.trim();
-      defaultMappingRules['6-7'].girls_shoe = document.getElementById('rule-67-girls-shoe').value.trim();
-      defaultMappingRules['6-7'].boys_socks = document.getElementById('rule-67-boys-socks').value.trim();
-      defaultMappingRules['6-7'].girls_socks = document.getElementById('rule-67-girls-socks').value.trim();
-
-      defaultMappingRules['8-10'].boys_shoe = document.getElementById('rule-810-boys-shoe').value.trim();
-      defaultMappingRules['8-10'].girls_shoe = document.getElementById('rule-810-girls-shoe').value.trim();
-      defaultMappingRules['8-10'].boys_socks = document.getElementById('rule-810-boys-socks').value.trim();
-      defaultMappingRules['8-10'].girls_socks = document.getElementById('rule-810-girls-socks').value.trim();
-
-      localStorage.setItem('shoes_socks_rules', JSON.stringify(defaultMappingRules));
+      // Save base groups
+      localStorage.setItem('shoes_size_base_groups', JSON.stringify(shoeSizeBaseGroups));
       
-      // Re-initialize stock limits input blocks for the new list
+      // Reload UI
       loadSettingsUI();
-      
-      alert("ಗಾತ್ರದ ನಿಯಮಾವಳಿಗಳು ಮತ್ತು ಲಭ್ಯವಿರುವ ಸೈಜ್ ಪಟ್ಟಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ. / Rules and available sizes saved successfully!");
+      alert("ಎಲ್ಲಾ ಶೂ ಸೈಜ್ ಗ್ರೂಪ್‌ಗಳು ಮತ್ತು ನಿಯಮಾವಳಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ! / All size groups & rules saved successfully!");
     }
 
     // Save stock settings limits
@@ -987,7 +1456,7 @@
       return classStr.toString().trim();
     }
 
-    // Resolve default values based on mapping rules
+    // Resolve default fallback values based on class mapping rules
     function getDefaultSize(enrollClass, gender, type) {
       let group = '1-5';
       const cleanClass = normalizeClass(enrollClass) || '4';
@@ -1001,9 +1470,9 @@
       const genNorm = gender && (gender.toLowerCase().includes('girl') || gender.toLowerCase().includes('female') || gender.includes('ಹೆಣ್ಣು')) ? 'girls' : 'boys';
       
       if (type === 'shoe') {
-        return defaultMappingRules[group][genNorm + '_shoe'] || 'B1';
+        return defaultMappingRules[group]?.[genNorm + '_shoe'] || '1';
       } else {
-        return defaultMappingRules[group][genNorm + '_socks'] || 'S';
+        return defaultMappingRules[group]?.[genNorm + '_socks'] || 'S';
       }
     }
 
@@ -1012,6 +1481,14 @@
       const en = s.name_english ? s.name_english.trim().toUpperCase() : '';
       const kn = s.student_name ? s.student_name.trim() : '';
       if (en && kn) return `${en} / ${kn}`;
+      return en || kn || '-';
+    }
+
+    // Normalize Father name
+    function getFatherName(s) {
+      const en = s.father_name_english ? s.father_name_english.trim().toUpperCase() : '';
+      const kn = s.father_name ? s.father_name.trim() : (s.father_name_kannada ? s.father_name_kannada.trim() : '');
+      if (en && kn && en !== kn) return `${en} / ${kn}`;
       return en || kn || '-';
     }
 
@@ -1051,7 +1528,8 @@
         // Search match
         const sts = s.app_no ? s.app_no.toLowerCase() : '';
         const name = (s.name_english || '').toLowerCase() + ' ' + (s.student_name || '').toLowerCase();
-        if (search && !sts.includes(search) && !name.includes(search)) return false;
+        const father = (s.father_name_english || '').toLowerCase() + ' ' + (s.father_name || '').toLowerCase();
+        if (search && !sts.includes(search) && !name.includes(search) && !father.includes(search)) return false;
 
         // Status filter
         const vals = incentiveValuesMap[s.id] || {};
@@ -1076,12 +1554,19 @@
           if (entrySortCol === 'name_english') {
             valA = a.name_english || '';
             valB = b.name_english || '';
+          } else if (entrySortCol === 'father_name') {
+            valA = a.father_name_english || a.father_name || '';
+            valB = b.father_name_english || b.father_name || '';
           } else if (entrySortCol === 'app_no') {
             valA = a.app_no || '';
             valB = b.app_no || '';
           } else if (entrySortCol === 'gender') {
             valA = a.gender || '';
             valB = b.gender || '';
+          } else if (entrySortCol === 'foot_cm') {
+            valA = incentiveValuesMap[a.id]?.foot_cm || 0;
+            valB = incentiveValuesMap[b.id]?.foot_cm || 0;
+            return (parseFloat(valA) - parseFloat(valB)) * mult;
           } else if (entrySortCol === 'shoe_size') {
             valA = incentiveValuesMap[a.id]?.shoe_size || getDefaultSize(a.enroll_class, a.gender, 'shoe');
             valB = incentiveValuesMap[b.id]?.shoe_size || getDefaultSize(b.enroll_class, b.gender, 'shoe');
@@ -1133,11 +1618,35 @@
           <th class="p-3 w-12">ಕ್ರಮ ಸಂ. / Sl.No.</th>
           <th onclick="handleEntrySort('app_no')" class="p-3 w-28 cursor-pointer hover:bg-slate-800/40 transition">ಎಸ್‌ಟಿಎಸ್ ಸಂಖ್ಯೆ / STS No.${getIcon('app_no')}</th>
           <th onclick="handleEntrySort('name_english')" class="p-3 text-left cursor-pointer hover:bg-slate-800/40 transition">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name${getIcon('name_english')}</th>
+          <th onclick="handleEntrySort('father_name')" class="p-3 text-left cursor-pointer hover:bg-slate-800/40 transition">ತಂದೆಯ ಹೆಸರು / Father Name${getIcon('father_name')}</th>
           <th onclick="handleEntrySort('gender')" class="p-3 w-20 cursor-pointer hover:bg-slate-800/40 transition">ಲಿಂಗ / Gender${getIcon('gender')}</th>
-          <th onclick="handleEntrySort('shoe_size')" class="p-3 w-40 bg-indigo-500/[0.02] cursor-pointer hover:bg-indigo-500/10 transition">ಶೂ ಗಾತ್ರ / Shoe Size${getIcon('shoe_size')}</th>
-          <th onclick="handleEntrySort('shoe_status')" class="p-3 w-32 bg-indigo-500/[0.02] cursor-pointer hover:bg-indigo-500/10 transition">ಶೂ ವಿತರಣೆ / Shoe Status${getIcon('shoe_status')}</th>
-          <th onclick="handleEntrySort('socks_size')" class="p-3 w-40 bg-pink-500/[0.02] cursor-pointer hover:bg-pink-500/10 transition">ಸಾಕ್ಸ್ ಗಾತ್ರ / Socks Size${getIcon('socks_size')}</th>
-          <th onclick="handleEntrySort('socks_status')" class="p-3 w-32 bg-pink-500/[0.02] cursor-pointer hover:bg-pink-500/10 transition">ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks Status${getIcon('socks_status')}</th>
+          <th onclick="handleEntrySort('foot_cm')" class="p-3 w-32 bg-indigo-500/[0.04] cursor-pointer hover:bg-indigo-500/10 transition text-indigo-300">
+            <i class="fa-solid fa-ruler-horizontal mr-1"></i> ಅಳತೆ C.M.${getIcon('foot_cm')}
+          </th>
+          <th onclick="handleEntrySort('shoe_size')" class="p-3 w-36 bg-indigo-500/[0.02] cursor-pointer hover:bg-indigo-500/10 transition">ಶೂ ಗಾತ್ರ / Shoe Size${getIcon('shoe_size')}</th>
+          <th class="p-3 w-36 bg-indigo-500/[0.02]">
+            <div class="flex flex-col items-center justify-center gap-1">
+              <div class="flex items-center gap-1 cursor-pointer hover:text-white" onclick="handleEntrySort('shoe_status')">
+                <span>ಶೂ ವಿತರಣೆ / Shoe</span>${getIcon('shoe_status')}
+              </div>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer bg-black/40 hover:bg-slate-800/60 border border-indigo-500/30 px-2 py-0.5 rounded-lg transition" title="Mark all filtered students as Distributed / Pending for Shoes">
+                <input type="checkbox" id="bulk-shoe-status-header" onchange="handleBulkColumnToggle('shoe', this.checked)" class="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 border-white/20 bg-black cursor-pointer">
+                <span class="text-[9px] font-bold text-indigo-300">ಎಲ್ಲಾ / All</span>
+              </label>
+            </div>
+          </th>
+          <th onclick="handleEntrySort('socks_size')" class="p-3 w-32 bg-pink-500/[0.02] cursor-pointer hover:bg-pink-500/10 transition">ಸಾಕ್ಸ್ ಗಾತ್ರ / Socks Size${getIcon('socks_size')}</th>
+          <th class="p-3 w-36 bg-pink-500/[0.02]">
+            <div class="flex flex-col items-center justify-center gap-1">
+              <div class="flex items-center gap-1 cursor-pointer hover:text-white" onclick="handleEntrySort('socks_status')">
+                <span>ಸಾಕ್ಸ್ ವಿತರಣೆ / Socks</span>${getIcon('socks_status')}
+              </div>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer bg-black/40 hover:bg-slate-800/60 border border-pink-500/30 px-2 py-0.5 rounded-lg transition" title="Mark all filtered students as Distributed / Pending for Socks">
+                <input type="checkbox" id="bulk-socks-status-header" onchange="handleBulkColumnToggle('socks', this.checked)" class="w-3.5 h-3.5 rounded text-pink-600 focus:ring-pink-500 border-white/20 bg-black cursor-pointer">
+                <span class="text-[9px] font-bold text-pink-300">ಎಲ್ಲಾ / All</span>
+              </label>
+            </div>
+          </th>
           <th class="p-3 w-24 no-print">ಸ್ಥಿತಿ / Auto-Save</th>
         </tr>
       `;
@@ -1154,14 +1663,41 @@
         return;
       }
 
-      window.openPrintDrawer({
-        tableId: 'shoes-socks-distribution-table',
-        title: 'ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ವಿತರಣಾ ವರದಿ / Shoe & Socks Distribution Report',
-        class: classText,
-        exam: '',
-        subject: '',
-        students: activeRenderedStudents || []
+      const tbody = document.getElementById('printTableBody');
+      const incentiveValuesMap = {};
+      incentiveRecords.forEach(rec => {
+        incentiveValuesMap[rec.student_id] = rec.values || {};
       });
+
+      let html = '';
+      activeRenderedStudents.forEach((s, idx) => {
+        const vals = incentiveValuesMap[s.id] || {};
+        const cm = vals.foot_cm ? `${vals.foot_cm} cm` : '-';
+        const shoeSz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+        const shoeStatus = (vals.shoe_status === true || vals.shoe_status === 'true') ? 'Distributed' : 'Pending';
+        const socksSz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+        const socksStatus = (vals.socks_status === true || vals.socks_status === 'true') ? 'Distributed' : 'Pending';
+
+        html += `
+          <tr>
+            <td class="p-2 border border-black">${idx + 1}</td>
+            <td class="p-2 border border-black">${s.app_no || '-'}</td>
+            <td class="p-2 border border-black text-left font-bold">${getStudentName(s)}</td>
+            <td class="p-2 border border-black text-left">${getFatherName(s)}</td>
+            <td class="p-2 border border-black">${s.gender || '-'}</td>
+            <td class="p-2 border border-black font-bold">${cm}</td>
+            <td class="p-2 border border-black font-bold">${shoeSz}</td>
+            <td class="p-2 border border-black">${shoeStatus}</td>
+            <td class="p-2 border border-black font-bold">${socksSz}</td>
+            <td class="p-2 border border-black">${socksStatus}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = html;
+      document.getElementById('printClassVal').textContent = classText;
+      document.getElementById('printDateVal').textContent = new Date().toLocaleDateString('kn-IN');
+
+      window.print();
     }
 
     async function handleShoeSocksImport(event) {
@@ -1188,6 +1724,11 @@
             return norm === 'stsno' || norm === 'sts' || norm === 'appno' || norm === 'studentno';
           }) || 'STS No';
 
+          const cmKey = headers.find(h => {
+            const norm = h.trim().toLowerCase();
+            return norm.includes('cm') || norm.includes('c.m') || norm.includes('foot') || norm.includes('ಅಳತೆ') || norm.includes('length');
+          });
+
           const shoeSizeKey = headers.find(h => h.trim().toLowerCase().includes('shoe size') || h.trim().toLowerCase().includes('ಶೂ ಗಾತ್ರ') || h.trim().toLowerCase() === 'shoe_size') || 'shoe_size';
           const shoeStatusKey = headers.find(h => h.trim().toLowerCase().includes('shoe status') || h.trim().toLowerCase().includes('shoe_status') || h.trim().toLowerCase().includes('ಶೂ ವಿತರಣೆ')) || 'shoe_status';
           const socksSizeKey = headers.find(h => h.trim().toLowerCase().includes('socks size') || h.trim().toLowerCase().includes('socks_size') || h.trim().toLowerCase().includes('ಸಾಕ್ಸ್ ಗಾತ್ರ')) || 'socks_size';
@@ -1211,15 +1752,27 @@
             const student = admissionsList.find(s => s.app_no === stsVal);
             if (!student) return;
 
-            const shoeSize = row[shoeSizeKey] !== undefined ? String(row[shoeSizeKey]).trim() : '';
+            let footCm = (cmKey && row[cmKey] !== undefined) ? parseFloat(row[cmKey]) : null;
+            let shoeSize = row[shoeSizeKey] !== undefined ? String(row[shoeSizeKey]).trim() : '';
+            let socksSize = row[socksSizeKey] !== undefined ? String(row[socksSizeKey]).trim() : '';
+
+            // If CM is given but shoe size is missing, auto calculate from base groups!
+            if (footCm && !shoeSize) {
+              const matched = getMatchedBaseGroup(footCm, student.gender);
+              if (matched) {
+                shoeSize = matched.size_code;
+                if (!socksSize) socksSize = matched.socks_size;
+              }
+            }
+
             const shoeStatusRaw = String(row[shoeStatusKey] || '').trim().toLowerCase();
             const shoeStatus = (shoeStatusRaw === 'true' || shoeStatusRaw === 'yes' || shoeStatusRaw === 'distributed' || shoeStatusRaw === '1' || shoeStatusRaw === 'ವಿತರಿಸಲಾಗಿದೆ');
 
-            const socksSize = row[socksSizeKey] !== undefined ? String(row[socksSizeKey]).trim() : '';
             const socksStatusRaw = String(row[socksStatusKey] || '').trim().toLowerCase();
             const socksStatus = (socksStatusRaw === 'true' || socksStatusRaw === 'yes' || socksStatusRaw === 'distributed' || socksStatusRaw === '1' || socksStatusRaw === 'ವಿತರಿಸಲಾಗಿದೆ');
 
             const recordValues = {
+              foot_cm: footCm || null,
               shoe_size: shoeSize || getDefaultSize(student.enroll_class, student.gender, 'shoe'),
               shoe_status: shoeStatus,
               socks_size: socksSize || getDefaultSize(student.enroll_class, student.gender, 'socks'),
@@ -1265,7 +1818,7 @@
     function renderEntryTable(students, recordsMap) {
       const tbody = document.getElementById('distributionTableBody');
       if (students.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-500 font-semibold bg-slate-50/5"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> No records match these filters.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-500 font-semibold bg-slate-50/5"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> No records match these filters.</td></tr>`;
         return;
       }
 
@@ -1273,15 +1826,37 @@
       students.forEach((s, idx) => {
         const vals = recordsMap[s.id] || {};
         
+        // Foot C.M.
+        const footCm = vals.foot_cm !== undefined && vals.foot_cm !== null ? vals.foot_cm : '';
+
         // Resolve Shoe
-        const activeShoeSize = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+        let activeShoeSize = vals.shoe_size;
+        let matchedFromCm = null;
+
+        if (footCm !== '') {
+          matchedFromCm = getMatchedBaseGroup(footCm, s.gender);
+          if (!activeShoeSize && matchedFromCm) {
+            activeShoeSize = matchedFromCm.size_code;
+          }
+        }
+        if (!activeShoeSize) {
+          activeShoeSize = getDefaultSize(s.enroll_class, s.gender, 'shoe');
+        }
+
         const isShoeDistributed = vals.shoe_status === true || vals.shoe_status === 'true';
-        const shoeSizeIsDefault = !vals.shoe_size;
+        const shoeSizeIsDefault = !vals.shoe_size && !footCm;
 
         // Resolve Socks
-        const activeSocksSize = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+        let activeSocksSize = vals.socks_size;
+        if (!activeSocksSize && matchedFromCm?.socks_size) {
+          activeSocksSize = matchedFromCm.socks_size;
+        }
+        if (!activeSocksSize) {
+          activeSocksSize = getDefaultSize(s.enroll_class, s.gender, 'socks');
+        }
+
         const isSocksDistributed = vals.socks_status === true || vals.socks_status === 'true';
-        const socksSizeIsDefault = !vals.socks_size;
+        const socksSizeIsDefault = !vals.socks_size && !footCm;
 
         const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
         const displayGender = isGirl ? 'Girl / ಹೆಣ್ಣು' : 'Boy / ಗಂಡು';
@@ -1290,19 +1865,49 @@
           <tr class="hover:bg-slate-50/5 border-b border-white/5 text-slate-300 font-medium">
             <td class="p-2.5 font-bold text-slate-500">${idx + 1}</td>
             <td class="p-2.5 font-mono text-center">${s.app_no || '-'}</td>
+            
+            <!-- Student Name -->
             <td class="p-2.5 text-left text-white">
               <div class="font-bold text-xs">${s.name_english || '-'}</div>
               <div class="text-[9px] text-slate-400">${s.student_name || '-'}</div>
             </td>
+
+            <!-- Father Name -->
+            <td class="p-2.5 text-left text-slate-300">
+              <div class="font-bold text-xs">${s.father_name_english || s.father_name || '-'}</div>
+              ${s.father_name && s.father_name !== s.father_name_english ? `<div class="text-[9px] text-slate-400">${s.father_name}</div>` : ''}
+            </td>
+
             <td class="p-2.5 text-center text-[10px]">${displayGender}</td>
             
+            <!-- Foot Size in C.M. (Free entry) -->
+            <td class="p-2.5 bg-indigo-500/[0.04]">
+              <div class="flex items-center gap-1 justify-center">
+                <input 
+                  type="number" 
+                  step="0.1" 
+                  min="8" 
+                  max="35" 
+                  id="foot-cm-${s.id}" 
+                  value="${footCm}" 
+                  oninput="handleCmInput('${s.id}', '${s.gender}', '${s.enroll_class}')"
+                  placeholder="e.g. 18.5" 
+                  class="w-20 bg-black/60 border border-indigo-500/30 text-indigo-300 rounded-lg px-2 py-1 text-xs font-bold text-center focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  title="Enter student foot measurement in C.M."
+                />
+                <span class="text-[10px] font-bold text-slate-400">cm</span>
+              </div>
+            </td>
+
             <!-- Shoe Size -->
             <td class="p-2.5 bg-indigo-500/[0.01]">
               <div class="flex items-center gap-1.5 justify-center">
                 <select id="shoe-size-${s.id}" onchange="autoSaveRecord('${s.id}')" class="bg-black/60 border border-white/10 rounded-lg px-1.5 py-1 text-[11px] focus:outline-none font-bold cursor-pointer">
-                  ${shoeSizesList.map(sz => `<option value="${sz}" ${sz === activeShoeSize ? 'selected' : ''}>${sz}</option>`).join('')}
+                  ${shoeSizesList.map(sz => `<option value="${sz}" ${sz == activeShoeSize ? 'selected' : ''}>${sz}</option>`).join('')}
                 </select>
-                ${shoeSizeIsDefault ? `<span class="text-[8px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Rule</span>` : ''}
+                <span id="shoe-badge-${s.id}">
+                  ${footCm ? `<span class="text-[8px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Auto</span>` : (shoeSizeIsDefault ? `<span class="text-[8px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Rule</span>` : '')}
+                </span>
               </div>
             </td>
             
@@ -1343,6 +1948,148 @@
       });
 
       tbody.innerHTML = html;
+      syncBulkHeaderCheckboxes();
+    }
+
+    // Synchronize Master Header Checkboxes with row states
+    function syncBulkHeaderCheckboxes() {
+      const shoeHeaderChk = document.getElementById('bulk-shoe-status-header');
+      const socksHeaderChk = document.getElementById('bulk-socks-status-header');
+
+      if (!activeRenderedStudents || activeRenderedStudents.length === 0) {
+        if (shoeHeaderChk) { shoeHeaderChk.checked = false; shoeHeaderChk.indeterminate = false; }
+        if (socksHeaderChk) { socksHeaderChk.checked = false; socksHeaderChk.indeterminate = false; }
+        return;
+      }
+
+      let shoeDistCount = 0;
+      let socksDistCount = 0;
+
+      activeRenderedStudents.forEach(s => {
+        const shoeChk = document.getElementById(`shoe-status-${s.id}`);
+        const socksChk = document.getElementById(`socks-status-${s.id}`);
+        if (shoeChk && shoeChk.checked) shoeDistCount++;
+        if (socksChk && socksChk.checked) socksDistCount++;
+      });
+
+      const total = activeRenderedStudents.length;
+
+      if (shoeHeaderChk) {
+        shoeHeaderChk.checked = (shoeDistCount === total && total > 0);
+        shoeHeaderChk.indeterminate = (shoeDistCount > 0 && shoeDistCount < total);
+      }
+
+      if (socksHeaderChk) {
+        socksHeaderChk.checked = (socksDistCount === total && total > 0);
+        socksHeaderChk.indeterminate = (socksDistCount > 0 && socksDistCount < total);
+      }
+    }
+
+    // Handles bulk column toggle from header checkbox
+    async function handleBulkColumnToggle(type, isChecked) {
+      if (!activeRenderedStudents || activeRenderedStudents.length === 0 || !supabaseClient || !selectedTemplate) return;
+
+      const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
+      const upsertPayloads = [];
+
+      activeRenderedStudents.forEach(student => {
+        // Update DOM row immediately
+        const chk = document.getElementById(`${type}-status-${student.id}`);
+        if (chk) {
+          chk.checked = isChecked;
+          toggleCheckboxLabel(chk);
+        }
+
+        const oldRec = incentiveRecords.find(r => r.student_id === student.id && r.template_id === selectedTemplate.id);
+        const oldVals = oldRec?.values || {};
+
+        const footCmInput = document.getElementById(`foot-cm-${student.id}`);
+        const footCm = (footCmInput && footCmInput.value.trim() !== '') ? parseFloat(footCmInput.value.trim()) : (oldVals.foot_cm || null);
+        
+        const shoeSizeSelect = document.getElementById(`shoe-size-${student.id}`);
+        const shoeSize = shoeSizeSelect ? shoeSizeSelect.value : (oldVals.shoe_size || getDefaultSize(student.enroll_class, student.gender, 'shoe'));
+        
+        const socksSizeSelect = document.getElementById(`socks-size-${student.id}`);
+        const socksSize = socksSizeSelect ? socksSizeSelect.value : (oldVals.socks_size || getDefaultSize(student.enroll_class, student.gender, 'socks'));
+
+        const shoeStatus = (type === 'shoe') ? isChecked : (oldVals.shoe_status === true || oldVals.shoe_status === 'true');
+        const socksStatus = (type === 'socks') ? isChecked : (oldVals.socks_status === true || oldVals.socks_status === 'true');
+
+        const newVals = {
+          foot_cm: footCm,
+          shoe_size: shoeSize,
+          shoe_status: shoeStatus,
+          socks_size: socksSize,
+          socks_status: socksStatus
+        };
+
+        if (oldRec) {
+          oldRec.values = newVals;
+        } else {
+          incentiveRecords.push({ student_id: student.id, template_id: selectedTemplate.id, values: newVals });
+        }
+
+        upsertPayloads.push({
+          school_id: schoolId,
+          student_id: student.id,
+          template_id: selectedTemplate.id,
+          values: newVals,
+          updated_at: new Date().toISOString()
+        });
+      });
+
+      syncBulkHeaderCheckboxes();
+
+      try {
+        const { error } = await supabaseClient
+          .from('student_incentives')
+          .upsert(upsertPayloads, { onConflict: 'student_id,template_id' });
+        if (error) throw error;
+        updateDashboardStats();
+      } catch (err) {
+        console.error("Bulk toggle failed:", err);
+        alert("ಬದಲಾವಣೆ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    // Handles live C.M. input from teacher
+    let debounceTimers = {};
+    function handleCmInput(studentId, gender, enrollClass) {
+      const cmInput = document.getElementById(`foot-cm-${studentId}`);
+      const cmVal = cmInput ? cmInput.value.trim() : '';
+
+      if (cmVal !== '') {
+        const matched = getMatchedBaseGroup(cmVal, gender);
+        if (matched) {
+          const shoeSelect = document.getElementById(`shoe-size-${studentId}`);
+          if (shoeSelect) {
+            // Check if size option exists or add it
+            if (!Array.from(shoeSelect.options).some(o => o.value == matched.size_code)) {
+              const opt = document.createElement('option');
+              opt.value = matched.size_code;
+              opt.textContent = matched.size_code;
+              shoeSelect.appendChild(opt);
+            }
+            shoeSelect.value = matched.size_code;
+          }
+
+          const socksSelect = document.getElementById(`socks-size-${studentId}`);
+          if (socksSelect && matched.socks_size) {
+            socksSelect.value = matched.socks_size;
+          }
+
+          const badge = document.getElementById(`shoe-badge-${studentId}`);
+          if (badge) {
+            badge.innerHTML = `<span class="text-[8px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.5 rounded font-black tracking-wider uppercase">Auto (${matched.min_cm}-${matched.max_cm})</span>`;
+          }
+        }
+      }
+
+      // Debounced auto-save
+      clearTimeout(debounceTimers[studentId]);
+      debounceTimers[studentId] = setTimeout(() => {
+        autoSaveRecord(studentId);
+      }, 400);
     }
 
     function toggleCheckboxLabel(checkbox) {
@@ -1354,6 +2101,7 @@
         label.textContent = "Pending";
         label.className = "text-[10px] font-bold text-slate-500";
       }
+      syncBulkHeaderCheckboxes();
     }
 
     async function autoSaveRecord(studentId) {
@@ -1365,12 +2113,16 @@
         indicator.className = "text-[10px] text-slate-400 font-bold flex items-center justify-center gap-1 transition-opacity duration-300";
       }
 
+      const cmInput = document.getElementById(`foot-cm-${studentId}`);
+      const footCm = cmInput && cmInput.value.trim() !== '' ? parseFloat(cmInput.value.trim()) : null;
+
       const shoeSize = document.getElementById(`shoe-size-${studentId}`).value;
       const shoeStatus = document.getElementById(`shoe-status-${studentId}`).checked;
       const socksSize = document.getElementById(`socks-size-${studentId}`).value;
       const socksStatus = document.getElementById(`socks-status-${studentId}`).checked;
 
       const recordValues = {
+        foot_cm: footCm,
         shoe_size: shoeSize,
         shoe_status: shoeStatus,
         socks_size: socksSize,
@@ -1405,6 +2157,7 @@
           indicator.innerHTML = `<i class="fa-solid fa-circle-check"></i> Saved`;
           indicator.className = "text-[10px] text-emerald-400 font-bold flex items-center justify-center gap-1 transition-opacity duration-300";
         }
+        syncBulkHeaderCheckboxes();
       } catch (err) {
         console.error("Auto-save failed:", err);
         if (indicator) {
@@ -1414,13 +2167,7 @@
       }
     }
 
-    // Save a single student incentive entry (Wrapper for fallback compatibility)
-    async function saveSingleRecord(studentId) {
-      await autoSaveRecord(studentId);
-    }
-
-
-    // Bulk actions
+    // Bulk actions dropdown
     async function handleBulkAction(action) {
       if (!action || admissionsList.length === 0 || !selectedTemplate) return;
       
@@ -1438,11 +2185,15 @@
 
       try {
         const schoolId = localStorage.getItem("school_id") || "GHPS_MARCHED_DEFAULT";
-        const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls);
+        const classStudents = admissionsList.filter(s => {
+          if (cls === 'ALL') return true;
+          return (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls;
+        });
 
         const promises = classStudents.map(student => {
           const oldVals = incentiveRecords.find(r => r.student_id === student.id && r.template_id === selectedTemplate.id)?.values || {};
           const recordValues = {
+            foot_cm: oldVals.foot_cm || null,
             shoe_size: oldVals.shoe_size || getDefaultSize(student.enroll_class, student.gender, 'shoe'),
             shoe_status: isBothDistributed,
             socks_size: oldVals.socks_size || getDefaultSize(student.enroll_class, student.gender, 'socks'),
@@ -1518,18 +2269,34 @@
         // Shoe Count
         if (vals.shoe_status === true || vals.shoe_status === 'true') {
           distributedShoes++;
-          const sz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+          let sz = vals.shoe_size;
+          if (!sz && vals.foot_cm) {
+            const matched = getMatchedBaseGroup(vals.foot_cm, s.gender);
+            if (matched) sz = matched.size_code;
+          }
+          if (!sz) sz = getDefaultSize(s.enroll_class, s.gender, 'shoe');
+
           if (shoeSizeCounts[genKey][sz] !== undefined) {
             shoeSizeCounts[genKey][sz]++;
+          } else {
+            shoeSizeCounts[genKey][sz] = 1;
           }
         }
 
         // Socks Count
         if (vals.socks_status === true || vals.socks_status === 'true') {
           distributedSocks++;
-          const sz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+          let sz = vals.socks_size;
+          if (!sz && vals.foot_cm) {
+            const matched = getMatchedBaseGroup(vals.foot_cm, s.gender);
+            if (matched) sz = matched.socks_size;
+          }
+          if (!sz) sz = getDefaultSize(s.enroll_class, s.gender, 'socks');
+
           if (socksSizeCounts[genKey][sz] !== undefined) {
             socksSizeCounts[genKey][sz]++;
+          } else {
+            socksSizeCounts[genKey][sz] = 1;
           }
         }
       });
@@ -1550,17 +2317,19 @@
 
       // Render breakdown static table
       let breakdownRows = '';
-      const maxLength = Math.max(shoeSizesList.length, socksSizesList.length);
+      const distinctShoeSizes = Array.from(new Set([...shoeSizesList, ...Object.keys(shoeSizeCounts.Boys), ...Object.keys(shoeSizeCounts.Girls)]));
+      const maxLength = Math.max(distinctShoeSizes.length, socksSizesList.length);
+      
       for (let i = 0; i < maxLength; i++) {
-        const shoeSz = shoeSizesList[i] || '';
+        const shoeSz = distinctShoeSizes[i] || '';
         const socksSz = socksSizesList[i] || '';
 
-        const shoeBoysCount = shoeSz ? shoeSizeCounts.Boys[shoeSz] : 0;
-        const shoeGirlsCount = shoeSz ? shoeSizeCounts.Girls[shoeSz] : 0;
+        const shoeBoysCount = shoeSz ? (shoeSizeCounts.Boys[shoeSz] || 0) : 0;
+        const shoeGirlsCount = shoeSz ? (shoeSizeCounts.Girls[shoeSz] || 0) : 0;
         const shoeTot = shoeBoysCount + shoeGirlsCount;
 
-        const socksBoysCount = socksSz ? socksSizeCounts.Boys[socksSz] : 0;
-        const socksGirlsCount = socksSz ? socksSizeCounts.Girls[socksSz] : 0;
+        const socksBoysCount = socksSz ? (socksSizeCounts.Boys[socksSz] || 0) : 0;
+        const socksGirlsCount = socksSz ? (socksSizeCounts.Girls[socksSz] || 0) : 0;
         const socksTot = socksBoysCount + socksGirlsCount;
 
         breakdownRows += `
@@ -1578,7 +2347,7 @@
       document.getElementById('sizeBreakdownTableBody').innerHTML = breakdownRows;
 
       // Render class summary table
-      const classesList = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      const classesList = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
       let classSummaryHtml = '';
       classesList.forEach(c => {
         const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === c);
@@ -1615,27 +2384,36 @@
 
       // Render Stock List Widget
       let stockListHtml = '';
-      // Combined shoe stock counts
       const globalShoeSizeCounts = {};
       const globalSocksSizeCounts = {};
-      shoeSizesList.forEach(sz => { globalShoeSizeCounts[sz] = 0; });
+      distinctShoeSizes.forEach(sz => { globalShoeSizeCounts[sz] = 0; });
       socksSizesList.forEach(sz => { globalSocksSizeCounts[sz] = 0; });
 
       admissionsList.forEach(s => {
         const vals = incentiveValuesMap[s.id] || {};
         if (vals.shoe_status === true || vals.shoe_status === 'true') {
-          const sz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
+          let sz = vals.shoe_size;
+          if (!sz && vals.foot_cm) {
+            const matched = getMatchedBaseGroup(vals.foot_cm, s.gender);
+            if (matched) sz = matched.size_code;
+          }
+          if (!sz) sz = getDefaultSize(s.enroll_class, s.gender, 'shoe');
           if (globalShoeSizeCounts[sz] !== undefined) globalShoeSizeCounts[sz]++;
         }
         if (vals.socks_status === true || vals.socks_status === 'true') {
-          const sz = vals.socks_size || getDefaultSize(s.enroll_class, s.gender, 'socks');
+          let sz = vals.socks_size;
+          if (!sz && vals.foot_cm) {
+            const matched = getMatchedBaseGroup(vals.foot_cm, s.gender);
+            if (matched) sz = matched.socks_size;
+          }
+          if (!sz) sz = getDefaultSize(s.enroll_class, s.gender, 'socks');
           if (globalSocksSizeCounts[sz] !== undefined) globalSocksSizeCounts[sz]++;
         }
       });
 
       // Display stock lists
       const warningLimit = 5;
-      shoeSizesList.forEach(size => {
+      distinctShoeSizes.forEach(size => {
         const distributed = globalShoeSizeCounts[size] || 0;
         const totalStock = defaultStockLimits[size] || 0;
         const balance = totalStock - distributed;
@@ -1646,7 +2424,7 @@
         if (balance <= warningLimit && balance > 0) {
           barColor = 'bg-amber-500';
           alertText = `<span class="text-[8px] font-extrabold text-amber-400 uppercase tracking-wider animate-pulse mr-1">Low Stock</span>`;
-        } else if (balance <= 0) {
+        } else if (balance <= 0 && totalStock > 0) {
           barColor = 'bg-red-500';
           alertText = `<span class="text-[8px] font-extrabold text-red-400 uppercase tracking-wider mr-1">Out of stock</span>`;
         }
@@ -1732,7 +2510,10 @@
       const cls = document.getElementById('entryClassFilter').value;
       if (admissionsList.length === 0) return;
 
-      const classStudents = admissionsList.filter(s => (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls);
+      const classStudents = admissionsList.filter(s => {
+        if (cls === 'ALL') return true;
+        return (s.enroll_class ? s.enroll_class.toString().trim() : '') === cls;
+      });
       
       const incentiveValuesMap = {};
       incentiveRecords.forEach(rec => {
@@ -1742,6 +2523,7 @@
       const dataRows = classStudents.map((s, index) => {
         const vals = incentiveValuesMap[s.id] || {};
         
+        const footCm = vals.foot_cm !== undefined && vals.foot_cm !== null ? vals.foot_cm : '';
         const shoeSz = vals.shoe_size || getDefaultSize(s.enroll_class, s.gender, 'shoe');
         const shoeStatus = (vals.shoe_status === true || vals.shoe_status === 'true') ? 'Distributed' : 'Pending';
 
@@ -1753,7 +2535,9 @@
           'STS Number': s.app_no || '',
           'Student Name (English)': s.name_english || '',
           'Student Name (Kannada)': s.student_name || '',
+          'Father Name': getFatherName(s),
           'Gender': s.gender || '',
+          'Foot Size (C.M.)': footCm,
           'Shoe Size': shoeSz,
           'Shoe Status': shoeStatus,
           'Socks Size': socksSz,

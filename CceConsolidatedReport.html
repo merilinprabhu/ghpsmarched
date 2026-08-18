@@ -1,0 +1,1407 @@
+﻿<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ & ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ 2026-27 - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Kannada', 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; transition: background-color 0.3s ease, color 0.3s ease; }
+    
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+    
+    /* Table Styling for Optimal Fit */
+    #register-table-wrapper {
+      position: relative;
+      max-height: 78vh;
+      overflow: auto;
+      border-radius: 12px;
+    }
+
+    #register-table, #abstract-table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      width: 100%;
+      background-color: #ffffff;
+      border: 2px solid #1e293b !important;
+    }
+
+    #register-table th, #register-table td,
+    #abstract-table th, #abstract-table td {
+      border-right: 1px solid #475569 !important;
+      border-bottom: 1px solid #475569 !important;
+      padding: 3px 2px !important;
+      text-align: center !important;
+      vertical-align: middle !important;
+      font-size: 11px;
+    }
+
+    /* Fixed Row 1 & Row 2 Headers */
+    #register-table thead tr:nth-child(1) th,
+    #abstract-table thead tr:nth-child(1) th {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 40 !important;
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      font-weight: 800 !important;
+      height: 36px !important;
+      box-shadow: 0 1px 0 #0f172a;
+    }
+
+    #register-table thead tr:nth-child(2) th,
+    #abstract-table thead tr:nth-child(2) th {
+      position: sticky !important;
+      top: 36px !important;
+      z-index: 39 !important;
+      background-color: #1e293b !important;
+      color: #38bdf8 !important;
+      font-weight: 800 !important;
+      height: 26px !important;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Vertical Text for DOB Column */
+    .vertical-dob {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: 0.5px;
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    
+    .row-sem1-tot, .row-sem2-tot {
+      background-color: #e0e7ff !important;
+      font-weight: 700 !important;
+    }
+    .row-grand-tot {
+      background-color: #c7d2fe !important;
+      font-weight: 800 !important;
+    }
+
+    .bg-category-tot {
+      background-color: #dbeafe !important;
+      font-weight: 800 !important;
+    }
+    .bg-abstract-row-tot {
+      background-color: #c7d2fe !important;
+      font-weight: 900 !important;
+    }
+
+    .edit-mark-input {
+      width: 32px;
+      padding: 1px 0px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 11px;
+      border: 1px solid #6366f1;
+      border-radius: 4px;
+      background-color: #f5f3ff;
+      color: #312e81;
+      outline: none;
+    }
+
+    body[data-theme="dark"] #register-table,
+    body[data-theme="dark"] #abstract-table {
+      background-color: #0f172a;
+      color: #f8fafc;
+      border-color: #475569 !important;
+    }
+    body[data-theme="dark"] #register-table th, body[data-theme="dark"] #register-table td,
+    body[data-theme="dark"] #abstract-table th, body[data-theme="dark"] #abstract-table td {
+      border-color: #334155 !important;
+    }
+    body[data-theme="dark"] .bg-category-tot {
+      background-color: #1e1b4b !important;
+      color: #a5b4fc !important;
+    }
+    body[data-theme="dark"] .bg-abstract-row-tot {
+      background-color: #312e81 !important;
+      color: #c7d2fe !important;
+    }
+
+    /* Print Formatting */
+    @media print {
+      @page {
+        size: auto;
+        margin: 6mm;
+      }
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 9px !important; margin-top: 8px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 3px 2px !important; text-align: center !important; color: #000000 !important; }
+      #printArea th { font-weight: bold !important; background-color: #f1f5f9 !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .vertical-dob { writing-mode: vertical-rl; transform: rotate(180deg); }
+      #printArea .row-sem1-tot, #printArea .row-sem2-tot, #printArea .bg-category-tot { background-color: #e0e7ff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .row-grand-tot, #printArea .bg-abstract-row-tot { background-color: #c7d2fe !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .edit-mark-input { border: none !important; background: transparent !important; }
+      #printArea .print-signatures-row { margin-top: 30px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Toast Notification Container -->
+  <div id="toast-notif" class="fixed bottom-5 right-5 px-5 py-3 rounded-2xl shadow-xl transition transform z-[100] translate-y-20 opacity-0 bg-emerald-600 text-white font-bold text-xs flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-base"></i>
+    <span id="toast-message"></span>
+  </div>
+
+  <!-- Printable Area (Hidden in screen mode) -->
+  <div id="printArea" class="hidden">
+    <div class="border-b-2 border-black pb-3 mb-3 text-center">
+      <h1 class="text-xl font-black uppercase tracking-wider text-black font-sans" id="print-school-name">
+        GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED
+      </h1>
+      <h2 class="text-lg font-black text-black mt-1" id="print-page-title">
+        ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ 2026-27
+      </h2>
+      <div class="flex justify-between items-center text-xs font-bold text-black mt-2 pt-1 border-t border-slate-400">
+        <span id="print-class-lbl">ತರಗತಿ: Class 7</span>
+        <span id="print-exam-lbl">ಶೈಕ್ಷಣಿಕ ವರ್ಷ: 2026-27</span>
+        <span id="print-date-lbl">ದಿನಾಂಕ: </span>
+      </div>
+    </div>
+    <div id="print-table-wrapper"></div>
+  </div>
+
+  <div class="no-print flex-grow flex flex-col">
+    <!-- Shared Top Navbar Placeholder -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Main Content Area -->
+    <div class="max-w-[99%] lg:max-w-[1750px] mx-auto w-full p-2.5 sm:p-4 space-y-4">
+      
+      <!-- Banner & Register Header -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-5 sm:p-6 rounded-2xl border border-slate-800 shadow-lg relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="absolute right-0 top-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 space-y-1">
+          <div class="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-wider">
+            <a href="CceAssessmet.html" class="hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-left"></i> CCE Assessment</a>
+            <span>/</span>
+            <span>Consolidated Suite</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2.5">
+            <i class="fa-solid fa-book-open-reader text-indigo-400"></i>
+            CCE ಮೌಲ್ಯಮಾಪನ ವಹಿ ಹಾಗೂ ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ 2026-27
+          </h1>
+          <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
+            Switch between the Student Register Log and Category-wise Exam Result Abstract Matrix (ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ).
+          </p>
+        </div>
+        <div class="relative z-10 flex items-center gap-2 flex-wrap">
+          <a href="CceAssessmet.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl transition border border-slate-700 flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-pen-to-square text-sky-400"></i> CCE Entry Grid
+          </a>
+          <a href="Attendance.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3.5 py-2 rounded-xl transition border border-slate-700 flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-clipboard-user text-emerald-400"></i> Attendance Portal
+          </a>
+          <button onclick="window.location.reload()" class="bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition border border-indigo-500/50 flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN TAB SWITCHER (1. ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ | 2. ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ) -->
+      <div class="bg-slate-200 dark:bg-slate-800 p-1.5 rounded-2xl flex flex-wrap gap-2 shadow-xs border border-slate-300 dark:border-slate-700">
+        <button id="tab-btn-register" onclick="switchReportTab('register')" class="text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-indigo-600 text-white shadow-md">
+          <i class="fa-solid fa-table text-sm"></i> ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ / Marks Register Log
+        </button>
+        <button id="tab-btn-abstract" onclick="switchReportTab('abstract')" class="text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700">
+          <i class="fa-solid fa-chart-pie text-sm text-amber-500"></i> ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ / Exam Result Abstract
+        </button>
+      </div>
+
+      <!-- Control Toolbar with Gender & Caste Dropdowns -->
+      <div class="bg-white dark:bg-slate-900 p-3.5 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+          
+          <!-- Dropdowns Group -->
+          <div class="flex flex-wrap items-center gap-2.5 flex-grow">
+            
+            <!-- Class Selector -->
+            <div class="w-full sm:w-36">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-chalkboard-user text-indigo-500 mr-1"></i>ತರಗತಿ / Class
+              </label>
+              <select id="dd-class" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40 shadow-xs cursor-pointer">
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+                <option value="7" selected>Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+              </select>
+            </div>
+
+            <!-- Gender Selector Dropdown (Default ALL) -->
+            <div class="w-full sm:w-36">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-venus-mars text-rose-500 mr-1"></i>ಲಿಂಗ / Gender
+              </label>
+              <select id="dd-gender" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40 shadow-xs cursor-pointer">
+                <option value="ALL" selected>ಎಲ್ಲಾ (All Gender)</option>
+                <option value="BOYS">ಗಂಡು (Boys)</option>
+                <option value="GIRLS">ಹೆಣ್ಣು (Girls)</option>
+              </select>
+            </div>
+
+            <!-- Caste / Category Selector Dropdown (Default ALL) -->
+            <div class="w-full sm:w-36">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-people-group text-emerald-500 mr-1"></i>ಜಾತಿ / Caste
+              </label>
+              <select id="dd-caste" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40 shadow-xs cursor-pointer">
+                <option value="ALL" selected>ಎಲ್ಲಾ (All Caste)</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="Muslim">Muslim</option>
+                <option value="C-1">C-1</option>
+                <option value="Other">Other (GM / 2A / 3A / 3B)</option>
+              </select>
+            </div>
+
+            <!-- Exam Selector for Abstract Subpage -->
+            <div id="abstract-exam-container" class="w-full sm:w-52 hidden">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-file-signature text-amber-500 mr-1"></i>ಘೋಷ್ವಾರೆ ಪರೀಕ್ಷೆ / Abstract Exam
+              </label>
+              <select id="dd-abstract-exam" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40 shadow-xs cursor-pointer">
+                <option value="SA1">ಪ್ರಥಮ ಸಂಕಲನಾತ್ಮಕ (SA1)</option>
+                <option value="SA2">ದ್ವಿತೀಯ ಸಂಕಲನಾತ್ಮಕ (SA2)</option>
+                <option value="FA1">ರೂಪಣಾತ್ಮಕ-1 (FA1)</option>
+                <option value="FA2">ರೂಪಣಾತ್ಮಕ-2 (FA2)</option>
+                <option value="FA3">ರೂಪಣಾತ್ಮಕ-3 (FA3)</option>
+                <option value="FA4">ರೂಪಣಾತ್ಮಕ-4 (FA4)</option>
+                <option value="SEM1_TOT">ಒಟ್ಟು 50% (Sem 1)</option>
+                <option value="SEM2_TOT">ಒಟ್ಟು 50% (Sem 2)</option>
+                <option value="GRAND_TOT">ಒಟ್ಟು 100% (Grand Total)</option>
+              </select>
+            </div>
+
+            <!-- Search Filter -->
+            <div id="register-search-container" class="w-full sm:w-56">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-magnifying-glass text-sky-500 mr-1"></i>ವಿದ್ಯಾರ್ಥಿ ಹುಡುಕು / Search (A-Z)
+              </label>
+              <input type="text" id="input-search" placeholder="STS, Student Name, Father..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40 shadow-xs">
+            </div>
+
+          </div>
+
+          <!-- Actions Group -->
+          <div class="flex items-center gap-2 flex-wrap justify-end pt-2 xl:pt-0">
+            <button id="btn-toggle-edit" onclick="toggleEditMode()" class="bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold text-xs px-3.5 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800 transition duration-200 flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <i class="fa-solid fa-pen-to-square text-indigo-600 dark:text-indigo-400"></i>
+              <span id="btn-edit-text">Edit Marks / ತಿದ್ದುಪಡಿ</span>
+            </button>
+
+            <button id="btn-save-marks" onclick="saveConsolidatedMarks()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl shadow-md transition duration-200 flex items-center gap-1.5 cursor-pointer hidden">
+              <i class="fa-solid fa-floppy-disk"></i> <span>Save Marks / ಉಳಿಸಿ</span>
+            </button>
+
+            <button onclick="exportToExcel()" class="bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 font-bold text-xs px-3 py-2 rounded-xl transition duration-200 flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-file-excel"></i> <span>Excel</span>
+            </button>
+            <button onclick="exportToCSV()" class="bg-teal-50 dark:bg-teal-950/40 hover:bg-teal-100 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-bold text-xs px-3 py-2 rounded-xl transition duration-200 flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-file-csv"></i> <span>CSV</span>
+            </button>
+            <button onclick="triggerPrint()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-xs transition duration-200 flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-print"></i> <span>Print</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TITLE BAR BELOW TOOLBAR -->
+      <div class="text-center bg-white dark:bg-slate-900 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between px-4">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" id="subpage-indicator-left"><i class="fa-solid fa-arrow-down-a-z text-sky-500 mr-1"></i>Sorted A to Z</span>
+        <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-slate-100 tracking-wide font-sans" id="subpage-main-title">
+          ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ 2026-27
+        </h2>
+        <span id="edit-indicator-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">Read Only</span>
+      </div>
+
+      <!-- SUBPAGE 1: MARKS REGISTER LOG VIEW -->
+      <div id="subpage-register-container" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+        <div id="register-table-wrapper" class="custom-scrollbar p-1">
+          <table id="register-table">
+            <thead id="table-head"></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SUBPAGE 2: EXAM RESULT ABSTRACT (ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ) VIEW -->
+      <div id="subpage-abstract-container" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col hidden">
+        <div class="p-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 flex items-center justify-between">
+          <span class="text-xs font-extrabold text-slate-700 dark:text-slate-300" id="abstract-exam-title-badge">2026-27ನೇ ಸಾಲಿನ ಪ್ರಥಮ ಸಂಕಲನಾತ್ಮಕ ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ</span>
+          <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-indigo-200 dark:border-indigo-800"><i class="fa-solid fa-database mr-1"></i>100% Live Data from Marks Register</span>
+        </div>
+        <div id="abstract-table-wrapper" class="custom-scrollbar p-1 overflow-x-auto max-h-[75vh]">
+          <table id="abstract-table">
+            <thead id="abstract-table-head"></thead>
+            <tbody id="abstract-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div id="loading-state" class="p-12 text-center hidden">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-indigo-600 mb-3"></i>
+        <p class="text-xs font-bold text-slate-500">ಡೇಟಾ ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</p>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 py-3 text-center text-xs text-slate-400 mt-auto no-print">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 dark:text-slate-300 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    const configPrimary = {
+      classes: ["1", "2", "3", "4", "5"],
+      faMax: 15,
+      saMax: 50,
+      saWrittenMax: 30,
+      saOralMax: 20,
+      subjects: [
+        { id: "kannada", name: "ಕನ್ನಡ", keys: ["kannada", "sub_0"] },
+        { id: "english", name: "ಇಂಗ್ಲಿಷ್", keys: ["english", "sub_1"] },
+        { id: "maths", name: "ಗಣಿತ", keys: ["maths", "math", "sub_2"] },
+        { id: "evs", name: "ಪರಿಸರ", keys: ["evs", "science", "sub_3"] },
+        { id: "physical_education", name: "ದೈಹಿಕ ಶಿಕ್ಷಣ", keys: ["physical_education", "physical", "pe", "sub_4"] }
+      ]
+    };
+
+    const configMiddleHigh = {
+      classes: ["6", "7", "8", "9", "10"],
+      faMax: 10,
+      saMax: 40,
+      saWrittenMax: 40,
+      saOralMax: 10,
+      subjects: [
+        { id: "kannada", name: "ಕನ್ನಡ", keys: ["kannada", "sub_0"] },
+        { id: "english", name: "ಇಂಗ್ಲಿಷ್", keys: ["english", "sub_1"] },
+        { id: "hindi", name: "ಹಿಂದಿ", keys: ["hindi", "sub_2"] },
+        { id: "maths", name: "ಗಣಿತ", keys: ["maths", "math", "sub_3"] },
+        { id: "science", name: "ವಿಜ್ಞಾನ", keys: ["science", "sub_4"] },
+        { id: "social_science", name: "ಸ.ವಿಜ್ಞಾನ", keys: ["social_science", "social_sci", "social", "sub_5"] },
+        { id: "physical_education", name: "ದೈಹಿಕ ಶಿಕ್ಷಣ", keys: ["physical_education", "physical", "pe", "sub_6"] }
+      ]
+    };
+
+    let currentStudents = [];
+    let allEvaluations = {};
+    let allAttendance = {};
+    let activeSubpage = 'register';
+    let isEditMode = false;
+
+    const ddClass = document.getElementById('dd-class');
+    const ddGender = document.getElementById('dd-gender');
+    const ddCaste = document.getElementById('dd-caste');
+    const ddAbstractExam = document.getElementById('dd-abstract-exam');
+    const inputSearch = document.getElementById('input-search');
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session) {
+          window.location.href = "index.html";
+          return;
+        }
+      } catch(e) { console.warn("Session check error:", e); }
+
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('class')) ddClass.value = params.get('class');
+
+      await loadConsolidatedData();
+
+      ddClass.addEventListener('change', loadConsolidatedData);
+      ddGender.addEventListener('change', () => { activeSubpage === 'register' ? renderRegisterTable() : renderAbstractTable(); });
+      ddCaste.addEventListener('change', () => { activeSubpage === 'register' ? renderRegisterTable() : renderAbstractTable(); });
+      ddAbstractExam.addEventListener('change', renderAbstractTable);
+      inputSearch.addEventListener('input', renderRegisterTable);
+    });
+
+    function showToast(msg, type = "success") {
+      const toast = document.getElementById('toast-notif');
+      const msgEl = document.getElementById('toast-message');
+      if (msgEl) msgEl.innerText = msg;
+      if (toast) {
+        toast.className = `fixed bottom-5 right-5 px-5 py-3 rounded-2xl shadow-xl transition transform z-[100] ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+      }
+    }
+
+    function switchReportTab(tabKey) {
+      activeSubpage = tabKey;
+      const btnReg = document.getElementById('tab-btn-register');
+      const btnAbs = document.getElementById('tab-btn-abstract');
+
+      const pageReg = document.getElementById('subpage-register-container');
+      const pageAbs = document.getElementById('subpage-abstract-container');
+
+      const examFilterDiv = document.getElementById('abstract-exam-container');
+      const searchFilterDiv = document.getElementById('register-search-container');
+      const btnEdit = document.getElementById('btn-toggle-edit');
+
+      const mainTitle = document.getElementById('subpage-main-title');
+      const leftIndicator = document.getElementById('subpage-indicator-left');
+
+      if (tabKey === 'register') {
+        btnReg.className = "text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-indigo-600 text-white shadow-md";
+        btnAbs.className = "text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700";
+
+        pageReg.classList.remove('hidden');
+        pageAbs.classList.add('hidden');
+
+        examFilterDiv.classList.add('hidden');
+        searchFilterDiv.classList.remove('hidden');
+        btnEdit.classList.remove('hidden');
+
+        if (mainTitle) mainTitle.innerText = "ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ 2026-27";
+        if (leftIndicator) leftIndicator.innerHTML = '<i class="fa-solid fa-arrow-down-a-z text-sky-500 mr-1"></i>Sorted A to Z';
+        renderRegisterTable();
+      } else {
+        btnReg.className = "text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700";
+        btnAbs.className = "text-xs font-black px-5 py-2.5 rounded-xl transition-all duration-200 flex items-center gap-2 border-0 cursor-pointer bg-indigo-600 text-white shadow-md";
+
+        pageReg.classList.add('hidden');
+        pageAbs.classList.remove('hidden');
+
+        examFilterDiv.classList.remove('hidden');
+        searchFilterDiv.classList.add('hidden');
+        btnEdit.classList.add('hidden');
+
+        if (mainTitle) mainTitle.innerText = "ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ 2026-27";
+        if (leftIndicator) leftIndicator.innerHTML = '<i class="fa-solid fa-chart-pie text-amber-500 mr-1"></i>Category Abstract';
+        renderAbstractTable();
+      }
+    }
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const btnText = document.getElementById('btn-edit-text');
+      const btnSave = document.getElementById('btn-save-marks');
+      const badge = document.getElementById('edit-indicator-badge');
+
+      if (isEditMode) {
+        if (btnText) btnText.innerText = "Cancel Edit / ರದ್ದುಗೊಳಿಸು";
+        if (btnSave) btnSave.classList.remove('hidden');
+        if (badge) {
+          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500 text-white animate-pulse";
+          badge.innerText = "Editing Mode ON";
+        }
+        showToast("ತಿದ್ದುಪಡಿ ಮೋಡ್ ಸಕ್ರಿಯಗೊಂಡಿದೆ. ಅಂಕಗಳನ್ನು ಬದಲಾಯಿಸಿ 'Save Marks' ಕ್ಲಿಕ್ ಮಾಡಿ.", "success");
+      } else {
+        if (btnText) btnText.innerText = "Edit Marks / ತಿದ್ದುಪಡಿ";
+        if (btnSave) btnSave.classList.add('hidden');
+        if (badge) {
+          badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400";
+          badge.innerText = "Read Only";
+        }
+      }
+      renderRegisterTable();
+    }
+
+    function formatDateDisplay(dStr) {
+      if (!dStr) return '-';
+      const clean = dStr.toString().trim();
+      if (clean.includes('-')) {
+        const pts = clean.split('-');
+        if (pts.length === 3 && pts[0].length === 4) return `${pts[2]}/${pts[1]}/${pts[0]}`;
+      }
+      return clean;
+    }
+
+    function parseNormalizedGender(rawG) {
+      if (!rawG) return 'MALE';
+      const str = rawG.toString().trim().toUpperCase();
+      if (str === 'F' || str === 'FEMALE' || str === 'GIRL' || str.includes('GIRL') || str.includes('FEMALE') || str.includes('ಹೆಣ್ಣು') || str === 'H') {
+        return 'FEMALE';
+      }
+      return 'MALE';
+    }
+
+    function parseNormalizedCategory(casteStr, categoryStr) {
+      const combined = ((casteStr || '') + ' ' + (categoryStr || '')).trim().toUpperCase();
+      if (!combined) return 'Other';
+
+      if (combined.includes("SC") || combined.includes("SCHEDULED CASTE") || combined.includes("MADIGA") || combined.includes("HOLEYA") || combined.includes("ಮಾದಿಗ") || combined.includes("ಹೊಲೆಯ")) return "SC";
+      if (combined.includes("ST") || combined.includes("SCHEDULED TRIBE") || combined.includes("NAYAKA") || combined.includes("VALMIKI") || combined.includes("ನಾಯ್ಕ") || combined.includes("ವಾಲ್ಮೀಕಿ")) return "ST";
+      if (combined.includes("MUSLIM") || combined.includes("ISLAM") || combined.includes("2B") || combined.includes("ಮುಸ್ಲಿಂ")) return "Muslim";
+      if (combined.includes("C-1") || combined.includes("CAT-1") || combined.includes("CAT 1") || combined.includes("C1") || combined.includes("CATEGORY 1") || combined.includes("CATEGORY-1") || combined.includes("KURUBA") || combined.includes("ಕುರುಬ")) return "C-1";
+      return "Other";
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      if (!clean.includes("lkg")) {
+        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
+      }
+      
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
+      
+      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
+      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
+      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
+      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
+      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
+      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
+      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
+      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
+      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
+      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      
+      return classStr.toString().trim();
+    }
+
+    function getActiveConfig(className) {
+      return configPrimary.classes.includes(className) ? configPrimary : configMiddleHigh;
+    }
+
+    function calculateGrade(m, maxM) {
+      if (m === undefined || m === null || isNaN(m) || maxM <= 0) return 'C';
+      const pct = (parseFloat(m) / maxM) * 100;
+      if (pct >= 90) return 'A+';
+      if (pct >= 75) return 'A';
+      if (pct >= 60) return 'B+';
+      if (pct >= 50) return 'B';
+      if (pct >= 35) return 'C+';
+      return 'C';
+    }
+
+    async function loadConsolidatedData() {
+      document.getElementById('loading-state').classList.remove('hidden');
+      const cls = ddClass.value;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+
+      // 1. Fetch Students
+      currentStudents = [];
+      try {
+        let q = supabaseClient.from('admissions').select('*').neq('is_admitted', false);
+        if (schoolId) q = q.eq('school_id', schoolId);
+        const { data, error } = await q;
+
+        if (!error && data && data.length > 0) {
+          const matched = data.filter(s => normalizeClass(s.enroll_class || s.standard || s.class) === normalizeClass(cls));
+          if (matched.length > 0) {
+            currentStudents = matched.map(s => ({
+              id: s.id,
+              name: s.student_name || s.name || s.name_english || '',
+              father: s.father_name_kn || s.father_name || s.father || '',
+              mother: s.mother_name_kn || s.mother_name || s.mother || '',
+              dob: formatDateDisplay(s.dob || s.date_of_birth || s.birth_date),
+              sts_no: s.app_no || s.sts_no || s.adminNo || s.id,
+              caste: s.caste || s.category || 'ಮಾದಿಗ',
+              categoryGroup: parseNormalizedCategory(s.caste, s.category),
+              genderCode: parseNormalizedGender(s.gender || s.sex)
+            }));
+          }
+        }
+      } catch(e) {
+        console.error("Error loading students from Supabase admissions:", e);
+      }
+
+      // Fallback: LocalStorage student cache
+      if (currentStudents.length === 0) {
+        try {
+          const localSt = JSON.parse(localStorage.getItem(`students_class_${cls}`) || localStorage.getItem("students") || "[]");
+          const matchedLocal = localSt.filter(s => normalizeClass(s.enrollClass || s.standard || s.class || cls) === normalizeClass(cls));
+          if (matchedLocal.length > 0) {
+            currentStudents = matchedLocal.map(s => ({
+              id: s.id,
+              name: s.name || s.student_name || '',
+              father: s.father || s.father_name || '',
+              mother: s.mother || s.mother_name || '',
+              dob: formatDateDisplay(s.dob || s.date_of_birth),
+              sts_no: s.adminNo || s.sts_no || s.id,
+              caste: s.caste || s.category || 'ಮಾದಿಗ',
+              categoryGroup: parseNormalizedCategory(s.caste, s.category),
+              genderCode: parseNormalizedGender(s.gender || s.sex)
+            }));
+          }
+        } catch(e) {}
+      }
+
+      // SORT ALPHABETICALLY A to Z
+      currentStudents.sort((a, b) => {
+        const nameA = (a.name || '').toString().trim();
+        const nameB = (b.name || '').toString().trim();
+        return nameA.localeCompare(nameB, 'kn', { numeric: true, sensitivity: 'base' });
+      });
+
+      // 2. Fetch Attendance
+      allAttendance = {};
+      try {
+        let attQuery = supabaseClient.from('attendance').select('student_id, present_days, working_days');
+        if (schoolId) attQuery = attQuery.eq('school_id', schoolId);
+        const { data: attData } = await attQuery;
+        if (attData) {
+          attData.forEach(r => {
+            const sId = r.student_id;
+            if (!allAttendance[sId]) allAttendance[sId] = 0;
+            allAttendance[sId] += (parseInt(r.present_days) || 0);
+          });
+        }
+      } catch(e) {}
+
+      // 3. Fetch Evaluations across all exams including Part B
+      allEvaluations = {};
+      const examTypes = ["FA1", "FA2", "SA1", "FA3", "FA4", "SA2", "PART_B_SEM1", "PART_B_SEM2"];
+
+      try {
+        let q = supabaseClient.from('cce_evaluations').select('*');
+        if (schoolId) q = q.eq('school_id', schoolId);
+        const { data: evalData } = await q;
+
+        if (evalData) {
+          evalData.forEach(row => {
+            const sId = row.student_id;
+            const exType = row.exam_type;
+            if (!allEvaluations[sId]) allEvaluations[sId] = {};
+            allEvaluations[sId][exType] = row.marks || {};
+          });
+        }
+
+        examTypes.forEach(exType => {
+          const mockKey = `cce_mock_cce_${cls}_${exType}`;
+          const localEval = JSON.parse(localStorage.getItem(mockKey) || "{}");
+          Object.keys(localEval).forEach(sId => {
+            if (!allEvaluations[sId]) allEvaluations[sId] = {};
+            if (!allEvaluations[sId][exType] || Object.keys(allEvaluations[sId][exType]).length === 0) {
+              allEvaluations[sId][exType] = localEval[sId];
+            }
+          });
+        });
+
+      } catch(e) {
+        console.error("Error loading evaluations:", e);
+      }
+
+      document.getElementById('loading-state').classList.add('hidden');
+      
+      if (activeSubpage === 'register') {
+        renderRegisterTable();
+      } else {
+        renderAbstractTable();
+      }
+    }
+
+    function getSubjectMark(marksObj, subObj, isSA) {
+      if (!marksObj) return { mark: 0, grade: '-', has: false };
+      
+      let rawVal = null;
+      let rawGrade = null;
+
+      for (let k of subObj.keys) {
+        if (marksObj[k + "_mark"] !== undefined && marksObj[k + "_mark"] !== '') {
+          rawVal = marksObj[k + "_mark"];
+          rawGrade = marksObj[k + "_grade"];
+          break;
+        } else if (marksObj[k] !== undefined && marksObj[k] !== '') {
+          rawVal = marksObj[k];
+          break;
+        }
+      }
+
+      if (rawVal === null || rawVal === undefined || rawVal === '') {
+        return { mark: 0, grade: '-', has: false };
+      }
+
+      let numericMark = 0;
+      if (isSA) {
+        const parts = rawVal.toString().split('+');
+        numericMark = (parseFloat(parts[0]) || 0) + (parseFloat(parts[1]) || 0);
+      } else {
+        numericMark = parseFloat(rawVal) || 0;
+      }
+
+      return { mark: numericMark, grade: rawGrade || null, has: true };
+    }
+
+    function updatePartBGradeLive(studentId, semKey, subKey, val) {
+      if (!allEvaluations[studentId]) allEvaluations[studentId] = {};
+      const evalKey = `PART_B_${semKey}`;
+      if (!allEvaluations[studentId][evalKey]) allEvaluations[studentId][evalKey] = {};
+      allEvaluations[studentId][evalKey][subKey] = val;
+
+      const cls = ddClass.value;
+      const mockKey = `cce_mock_cce_${cls}_PART_B_${semKey}`;
+      const localData = JSON.parse(localStorage.getItem(mockKey) || "{}");
+      if (!localData[studentId]) localData[studentId] = {};
+      localData[studentId][subKey] = val;
+      localStorage.setItem(mockKey, JSON.stringify(localData));
+
+      const schoolId = localStorage.getItem("school_id");
+
+      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient.from('cce_evaluations').upsert({
+          school_id: schoolId,
+          student_id: studentId,
+          exam_type: evalKey,
+          marks: localData[studentId],
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'student_id,exam_type' }).then(() => {
+          showToast(`Part B (${semKey}) ಗ್ರೇಡ್ ${val} ಸೇವಿಯಾಗಿದೆ!`, "success");
+        }).catch(e => console.error("Error saving Part B grade:", e));
+      } else {
+        showToast(`Part B (${semKey}) ಗ್ರೇಡ್ ${val} ಸೇವಿಯಾಗಿದೆ!`, "success");
+      }
+    }
+
+    function getFilteredStudentList() {
+      const selectedGender = ddGender ? ddGender.value : 'ALL';
+      const selectedCaste = ddCaste ? ddCaste.value : 'ALL';
+      const searchVal = inputSearch ? inputSearch.value.trim().toLowerCase() : '';
+
+      return currentStudents.filter(s => {
+        // Gender Filter
+        if (selectedGender === 'BOYS' && s.genderCode !== 'MALE') return false;
+        if (selectedGender === 'GIRLS' && s.genderCode !== 'FEMALE') return false;
+
+        // Caste Filter
+        if (selectedCaste !== 'ALL' && s.categoryGroup !== selectedCaste) return false;
+
+        // Search Filter
+        if (searchVal) {
+          const name = (s.name || '').toLowerCase();
+          const father = (s.father || '').toLowerCase();
+          const mother = (s.mother || '').toLowerCase();
+          const sts = (s.sts_no || s.id || '').toLowerCase();
+          const caste = (s.caste || '').toLowerCase();
+          const dob = (s.dob || '').toLowerCase();
+          if (!name.includes(searchVal) && !father.includes(searchVal) && !mother.includes(searchVal) && !sts.includes(searchVal) && !caste.includes(searchVal) && !dob.includes(searchVal)) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+    }
+
+    // ----------------------------------------------------
+    // MARKS REGISTER LOG TABLE RENDERER
+    // ----------------------------------------------------
+    function renderRegisterTable() {
+      const cls = ddClass.value;
+      const cfg = getActiveConfig(cls);
+      const filteredStudents = getFilteredStudentList();
+
+      const thead = document.getElementById('table-head');
+      const tbody = document.getElementById('table-body');
+
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      if (filteredStudents.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="25" class="py-12 text-center text-slate-400 font-bold">
+              <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300"></i>
+              <p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಲಭ್ಯವಿಲ್ಲ / No matching student records found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let hRow1 = `<tr>`;
+      hRow1 += `<th rowspan="2" class="w-8">ಕ್ರ.ಸಂ.</th>`;
+      hRow1 += `<th rowspan="2" class="w-7 text-[10px]">ಜನ್ಮ ದಿನಾಂಕ</th>`;
+      hRow1 += `<th rowspan="2" class="min-w-[190px] max-w-[240px]">ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ</th>`;
+      hRow1 += `<th rowspan="2" class="w-12">ಹಾಜರಾತಿ</th>`;
+      hRow1 += `<th rowspan="2" class="w-16">ಪರೀಕ್ಷೆ</th>`;
+
+      cfg.subjects.forEach(sub => {
+        hRow1 += `<th colspan="2" class="text-[11px]">${sub.name}</th>`;
+      });
+      hRow1 += `<th colspan="2" class="font-bold text-[11px]">ಒಟ್ಟು</th>`;
+      hRow1 += `<th colspan="7" class="font-bold text-[10.5px] bg-amber-900/90 text-amber-200">ಭಾಗ-ಬಿ (PART B – Non scholastic subjects)</th>`;
+      hRow1 += `<th rowspan="2" class="w-20">ಫಲಿತಾಂಶ</th>`;
+      hRow1 += `</tr>`;
+
+      let hRow2 = `<tr>`;
+      cfg.subjects.forEach(() => {
+        hRow2 += `<th class="w-9 text-[10px]">ಅಂಕ</th>`;
+        hRow2 += `<th class="w-9 text-[10px]">ಶ್ರೇಣಿ</th>`;
+      });
+      hRow2 += `<th class="w-10 text-[10px]">ಅಂಕ</th>`;
+      hRow2 += `<th class="w-10 text-[10px]">ಶ್ರೇಣಿ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಭಾವನಾತ್ಮಕ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಸಾಂಸ್ಥಿಕ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ವೈಜ್ಞಾನಿಕ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಲಲಿತ ಕಲೆ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಸೃಜನಶೀಲತೆ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಮನೋಧರ್ಮ</th>`;
+      hRow2 += `<th class="w-8 text-[8.5px] bg-slate-800 text-amber-300">ಮೌಲ್ಯಗಳು</th>`;
+      hRow2 += `</tr>`;
+
+      thead.innerHTML = hRow1 + hRow2;
+
+      const faMax = cfg.faMax; 
+      const saMax = cfg.saMax; 
+      const sem1MaxPerSub = (faMax * 2) + saMax; 
+      const sem2MaxPerSub = (faMax * 2) + saMax; 
+      const annualMaxPerSub = sem1MaxPerSub + sem2MaxPerSub; 
+      const grandMaxAllSubs = annualMaxPerSub * cfg.subjects.length;
+
+      let tableRowsHtml = '';
+
+      filteredStudents.forEach((student, sIdx) => {
+        const sId = student.id;
+        const candidateIds = [
+          String(student.id || '').trim(),
+          String(student.sts_no || '').trim(),
+          String(student.sts_no || '').replace(/\s+/g, ''),
+          String(student.id || '').replace(/\s+/g, '')
+        ].filter(Boolean);
+
+        let evals = {};
+        candidateIds.forEach(cid => {
+          if (allEvaluations[cid]) {
+            evals = { ...evals, ...allEvaluations[cid] };
+          }
+        });
+
+        const studentName = student.name || '-';
+        const fatherName = student.father || '-';
+        const motherName = student.mother || '-';
+        const dobVal = student.dob || '-';
+        const stsNo = student.sts_no || student.id || '-';
+        const casteVal = student.caste || 'ಮಾದಿಗ';
+        const attVal = allAttendance[sId] !== undefined ? allAttendance[sId] : 256;
+
+        const examData = {
+          FA1: {}, FA2: {}, SA1: {},
+          FA3: {}, FA4: {}, SA2: {}
+        };
+
+        const examTypes = ["FA1", "FA2", "SA1", "FA3", "FA4", "SA2"];
+        let hasAnyMarkEntered = false;
+
+        examTypes.forEach(ex => {
+          const maxM = ex.startsWith("SA") ? saMax : faMax;
+          cfg.subjects.forEach(sub => {
+            const extracted = getSubjectMark(evals[ex], sub, ex.startsWith("SA"));
+            const g = extracted.grade || calculateGrade(extracted.mark, maxM);
+            examData[ex][sub.id] = { mark: extracted.mark, grade: extracted.has ? g : '-', has: extracted.has };
+            if (extracted.has) hasAnyMarkEntered = true;
+          });
+        });
+
+        const sem1Data = {};
+        let sem1GrandTotalMarks = 0;
+        cfg.subjects.forEach(sub => {
+          const totM = (examData.FA1[sub.id].mark || 0) + (examData.FA2[sub.id].mark || 0) + (examData.SA1[sub.id].mark || 0);
+          const g = calculateGrade(totM, sem1MaxPerSub);
+          sem1Data[sub.id] = { mark: totM, grade: g };
+          sem1GrandTotalMarks += totM;
+        });
+
+        const sem2Data = {};
+        let sem2GrandTotalMarks = 0;
+        cfg.subjects.forEach(sub => {
+          const totM = (examData.FA3[sub.id].mark || 0) + (examData.FA4[sub.id].mark || 0) + (examData.SA2[sub.id].mark || 0);
+          const g = calculateGrade(totM, sem2MaxPerSub);
+          sem2Data[sub.id] = { mark: totM, grade: g };
+          sem2GrandTotalMarks += totM;
+        });
+
+        const grandData = {};
+        let annualGrandTotalMarks = 0;
+        const scholasticSubs = cfg.subjects.filter(sub => sub.id !== 'physical_education' && sub.id !== 'pe');
+        cfg.subjects.forEach(sub => {
+          const totM = sem1Data[sub.id].mark + sem2Data[sub.id].mark;
+          const g = calculateGrade(totM, annualMaxPerSub);
+          grandData[sub.id] = { mark: totM, grade: g };
+          if (sub.id !== 'physical_education' && sub.id !== 'pe') {
+            annualGrandTotalMarks += totM;
+          }
+        });
+
+        const grandMaxForCalc = (annualMaxPerSub * scholasticSubs.length) || 600;
+        const overallPctVal = grandMaxForCalc > 0 && hasAnyMarkEntered ? ((annualGrandTotalMarks / grandMaxForCalc) * 100) : 0;
+        const overall100Grade = calculateGrade(annualGrandTotalMarks, grandMaxForCalc);
+        const isPass = overallPctVal >= 35;
+
+        const rowsConfig = [
+          { type: 'FA1', label: 'FA1', maxPerSub: faMax, bgClass: '' },
+          { type: 'FA2', label: 'FA2', maxPerSub: faMax, bgClass: '' },
+          { type: 'SA1', label: 'SA1', maxPerSub: saMax, bgClass: '' },
+          { type: 'SEM1_TOT', label: 'ಒಟ್ಟು 50%', maxPerSub: sem1MaxPerSub, bgClass: 'row-sem1-tot' },
+          { type: 'FA3', label: 'FA3', maxPerSub: faMax, bgClass: '' },
+          { type: 'FA4', label: 'FA4', maxPerSub: faMax, bgClass: '' },
+          { type: 'SA2', label: 'SA2', maxPerSub: saMax, bgClass: '' },
+          { type: 'SEM2_TOT', label: 'ಒಟ್ಟು 50%', maxPerSub: sem2MaxPerSub, bgClass: 'row-sem2-tot' },
+          { type: 'GRAND_TOT', label: 'ಒಟ್ಟು 100%', maxPerSub: annualMaxPerSub, bgClass: 'row-grand-tot' }
+        ];
+
+        rowsConfig.forEach((rConf, rIdx) => {
+          let tr = `<tr class="${rConf.bgClass}">`;
+
+          if (rIdx === 0) {
+            tr += `<td rowspan="9" class="font-bold font-sans text-xs">${sIdx + 1}</td>`;
+            tr += `<td rowspan="9" class="p-1 align-middle"><div class="vertical-dob text-slate-700 dark:text-slate-300">${dobVal}</div></td>`;
+            tr += `<td rowspan="9" class="p-2.5 text-left leading-normal">
+              <div class="font-extrabold text-[13.5px] text-slate-900 dark:text-slate-100 mb-1 tracking-tight">${studentName}</div>
+              <div class="text-[11.5px] text-slate-800 dark:text-slate-200 font-semibold mb-0.5">ತಂದೆ: <span class="font-medium">${fatherName}</span></div>
+              <div class="text-[11.5px] text-slate-800 dark:text-slate-200 font-semibold mb-1">ತಾಯಿ: <span class="font-medium">${motherName}</span></div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-400 font-semibold mb-0.5">STS: <span class="font-mono font-bold">${stsNo}</span></div>
+              <div class="text-[11px] text-slate-600 dark:text-slate-400 font-semibold">ಜಾತಿ: <span class="font-bold">${casteVal}</span></div>
+            </td>`;
+            tr += `<td rowspan="9" class="font-bold font-mono text-xs">${attVal}</td>`;
+          }
+
+          tr += `<td class="font-extrabold text-[11px] text-slate-800 dark:text-slate-200">${rConf.label}</td>`;
+
+          let rowMarksSum = 0;
+
+          cfg.subjects.forEach(sub => {
+            let mVal = '0', gVal = '-';
+            const isScholastic = (sub.id !== 'physical_education' && sub.id !== 'pe');
+
+            if (['FA1', 'FA2', 'SA1', 'FA3', 'FA4', 'SA2'].includes(rConf.type)) {
+              const exObj = examData[rConf.type][sub.id];
+              mVal = exObj.has ? exObj.mark.toString() : '0';
+              gVal = exObj.grade;
+              if (isScholastic) rowMarksSum += (exObj.mark || 0);
+
+              if (isEditMode) {
+                tr += `<td class="p-0.5">
+                  <input type="number" min="0" max="${rConf.maxPerSub}" step="0.5" 
+                    id="input_${sId}_${rConf.type}_${sub.id}" 
+                    value="${mVal !== '0' ? mVal : ''}" 
+                    oninput="recalculateCellLive('${sId}', '${rConf.type}', '${sub.id}')" 
+                    class="edit-mark-input">
+                </td>`;
+              } else {
+                tr += `<td class="font-bold">${mVal}</td>`;
+              }
+            } else if (rConf.type === 'SEM1_TOT') {
+              mVal = sem1Data[sub.id].mark.toString();
+              gVal = sem1Data[sub.id].grade;
+              if (isScholastic) rowMarksSum += sem1Data[sub.id].mark;
+              tr += `<td class="font-extrabold">${mVal}</td>`;
+            } else if (rConf.type === 'SEM2_TOT') {
+              mVal = sem2Data[sub.id].mark.toString();
+              gVal = sem2Data[sub.id].grade;
+              if (isScholastic) rowMarksSum += sem2Data[sub.id].mark;
+              tr += `<td class="font-extrabold">${mVal}</td>`;
+            } else if (rConf.type === 'GRAND_TOT') {
+              mVal = grandData[sub.id].mark.toString();
+              gVal = grandData[sub.id].grade;
+              if (isScholastic) rowMarksSum += grandData[sub.id].mark;
+              tr += `<td class="font-black">${mVal}</td>`;
+            }
+
+            tr += `<td class="font-bold text-[10px]">${gVal}</td>`;
+          });
+
+          const scholasticCount = cfg.subjects.filter(s => s.id !== 'physical_education' && s.id !== 'pe').length;
+          const rowMaxPossible = rConf.maxPerSub * scholasticCount;
+          const rowOverallGrade = calculateGrade(rowMarksSum, rowMaxPossible);
+
+          tr += `<td class="font-black text-indigo-900 dark:text-indigo-200">${rowMarksSum}</td>`;
+          tr += `<td class="font-black text-indigo-900 dark:text-indigo-200 text-[10px]">${rowOverallGrade}</td>`;
+
+          const pbSem1 = evals['PART_B_SEM1'] || evals['PART_B'] || {};
+          const pbSem2 = evals['PART_B_SEM2'] || {};
+          const pbKeys = ['emotional', 'org', 'sci', 'art', 'creative', 'temp', 'value'];
+          const defaultGradesSem1 = { emotional: 'A', org: 'A', sci: 'A+', art: 'B+', creative: 'A', temp: 'A', value: 'A+' };
+          const defaultGradesSem2 = { emotional: 'A', org: 'A+', sci: 'B+', art: 'A+', creative: 'A', temp: 'A+', value: 'B+' };
+
+          if (rIdx === 0) {
+            // SEMESTER 1 (SA1) Part B Columns (Rowspan 4 for FA1, FA2, SA1, SEM1_TOT)
+            pbKeys.forEach(k => {
+              const currentG = pbSem1[k] || defaultGradesSem1[k];
+              if (isEditMode) {
+                tr += `<td rowspan="4" class="p-0.5 align-middle text-center bg-amber-50/60 dark:bg-amber-950/40">
+                  <select onchange="updatePartBGradeLive('${sId}', 'SEM1', '${k}', this.value)" class="w-10 text-[10px] font-black bg-amber-100 dark:bg-amber-900 text-amber-950 dark:text-amber-100 border border-amber-400 rounded outline-none p-0.5 cursor-pointer">
+                    <option value="A+" ${currentG === 'A+' ? 'selected' : ''}>A+</option>
+                    <option value="A" ${currentG === 'A' ? 'selected' : ''}>A</option>
+                    <option value="B+" ${currentG === 'B+' ? 'selected' : ''}>B+</option>
+                    <option value="B" ${currentG === 'B' ? 'selected' : ''}>B</option>
+                    <option value="C+" ${currentG === 'C+' ? 'selected' : ''}>C+</option>
+                    <option value="C" ${currentG === 'C' ? 'selected' : ''}>C</option>
+                  </select>
+                </td>`;
+              } else {
+                tr += `<td rowspan="4" class="font-black text-xs text-amber-900 dark:text-amber-300 bg-amber-50/40 dark:bg-amber-950/30 text-center align-middle">${currentG}</td>`;
+              }
+            });
+
+            tr += `<td rowspan="9" class="p-2 font-black text-center align-middle">
+              <div class="text-sm font-extrabold text-indigo-700 dark:text-indigo-300 mb-0.5">${hasAnyMarkEntered ? overall100Grade : '-'}</div>
+              <div class="text-xs font-extrabold ${isPass ? 'text-rose-600 dark:text-rose-400' : 'text-slate-600'} mb-1">${hasAnyMarkEntered ? overallPctVal.toFixed(0) + '%' : '0%'}</div>
+              <div class="text-[11px] font-bold ${isPass ? 'text-rose-600 dark:text-rose-400' : 'text-slate-600'}">${isPass ? 'ಉತ್ತೀರ್ಣ' : 'ಅನುತ್ತೀರ್ಣ'}</div>
+            </td>`;
+          } else if (rIdx === 4) {
+            // SEMESTER 2 (SA2) Part B Columns (Rowspan 5 for FA3, FA4, SA2, SEM2_TOT, GRAND_TOT)
+            pbKeys.forEach(k => {
+              const currentG = pbSem2[k] || defaultGradesSem2[k];
+              if (isEditMode) {
+                tr += `<td rowspan="5" class="p-0.5 align-middle text-center bg-amber-50/60 dark:bg-amber-950/40">
+                  <select onchange="updatePartBGradeLive('${sId}', 'SEM2', '${k}', this.value)" class="w-10 text-[10px] font-black bg-amber-100 dark:bg-amber-900 text-amber-950 dark:text-amber-100 border border-amber-400 rounded outline-none p-0.5 cursor-pointer">
+                    <option value="A+" ${currentG === 'A+' ? 'selected' : ''}>A+</option>
+                    <option value="A" ${currentG === 'A' ? 'selected' : ''}>A</option>
+                    <option value="B+" ${currentG === 'B+' ? 'selected' : ''}>B+</option>
+                    <option value="B" ${currentG === 'B' ? 'selected' : ''}>B</option>
+                    <option value="C+" ${currentG === 'C+' ? 'selected' : ''}>C+</option>
+                    <option value="C" ${currentG === 'C' ? 'selected' : ''}>C</option>
+                  </select>
+                </td>`;
+              } else {
+                tr += `<td rowspan="5" class="font-black text-xs text-amber-900 dark:text-amber-300 bg-amber-50/40 dark:bg-amber-950/30 text-center align-middle">${currentG}</td>`;
+              }
+            });
+          }
+
+          tr += `</tr>`;
+          tableRowsHtml += tr;
+        });
+      });
+
+      tbody.innerHTML = tableRowsHtml;
+    }
+
+    // ----------------------------------------------------
+    // SUBPAGE 2: EXAM RESULT ABSTRACT RENDERER
+    // ----------------------------------------------------
+    function renderAbstractTable() {
+      const cls = ddClass.value;
+      const selectedExam = ddAbstractExam.value;
+      const cfg = getActiveConfig(cls);
+      const filteredStudents = getFilteredStudentList();
+
+      const examLabelText = ddAbstractExam.options[ddAbstractExam.selectedIndex].text;
+      document.getElementById('abstract-exam-title-badge').innerText = `2026-27ನೇ ಸಾಲಿನ ${examLabelText} ಘೋಷ್ವಾರೆ`;
+
+      const thead = document.getElementById('abstract-table-head');
+      const tbody = document.getElementById('abstract-table-body');
+
+      thead.innerHTML = '';
+      tbody.innerHTML = '';
+
+      let hRow1 = `<tr>`;
+      hRow1 += `<th rowspan="2" class="min-w-[180px] bg-slate-900 text-white">ವಿವರ / Category</th>`;
+      const categories = ["SC", "ST", "Muslim", "C-1", "other", "ಒಟ್ಟು"];
+      categories.forEach(cat => {
+        const bgCls = cat === "ಒಟ್ಟು" ? "bg-indigo-950 text-indigo-200" : "bg-slate-900 text-white";
+        hRow1 += `<th colspan="3" class="${bgCls}">${cat}</th>`;
+      });
+      hRow1 += `</tr>`;
+
+      let hRow2 = `<tr>`;
+      categories.forEach(cat => {
+        const bgCls = cat === "ಒಟ್ಟು" ? "bg-indigo-900 text-indigo-100" : "bg-slate-850 text-slate-200";
+        hRow2 += `<th class="${bgCls} w-10 text-[10px]">ಗಂಡು</th>`;
+        hRow2 += `<th class="${bgCls} w-10 text-[10px]">ಹೆಣ್ಣು</th>`;
+        hRow2 += `<th class="${bgCls} w-10 text-[10px] font-bold">ಒಟ್ಟು</th>`;
+      });
+      hRow2 += `</tr>`;
+      thead.innerHTML = hRow1 + hRow2;
+
+      const catList = ["SC", "ST", "Muslim", "C-1", "Other"];
+      const rowKeys = [
+        "enrolled", "appeared", "failed", "passed", "tot_students_top",
+        "A+", "A", "B+", "B", "C+", "C", "tot_students_bottom"
+      ];
+
+      const stats = {};
+      rowKeys.forEach(rk => {
+        stats[rk] = {};
+        catList.forEach(c => {
+          stats[rk][c] = { G: 0, H: 0 };
+        });
+      });
+
+      const faMax = cfg.faMax; 
+      const saMax = cfg.saMax; 
+      const sem1MaxPerSub = (faMax * 2) + saMax; 
+      const sem2MaxPerSub = (faMax * 2) + saMax; 
+      const annualMaxPerSub = sem1MaxPerSub + sem2MaxPerSub;
+
+      let maxSubM = faMax;
+      if (selectedExam.startsWith("SA")) maxSubM = saMax;
+      else if (selectedExam === "SEM1_TOT") maxSubM = sem1MaxPerSub;
+      else if (selectedExam === "SEM2_TOT") maxSubM = sem2MaxPerSub;
+      else if (selectedExam === "GRAND_TOT") maxSubM = annualMaxPerSub;
+
+      const maxExamTotal = maxSubM * cfg.subjects.length;
+
+      filteredStudents.forEach(student => {
+        const catGroup = student.categoryGroup;
+        const gender = student.genderCode === 'FEMALE' ? 'H' : 'G';
+        const sId = student.id;
+        const evals = allEvaluations[sId] || {};
+
+        stats["enrolled"][catGroup][gender]++;
+
+        let rowMarksSum = 0;
+
+        if (["FA1", "FA2", "SA1", "FA3", "FA4", "SA2"].includes(selectedExam)) {
+          const exObj = evals[selectedExam] || {};
+          cfg.subjects.forEach(sub => {
+            const ext = getSubjectMark(exObj, sub, selectedExam.startsWith("SA"));
+            rowMarksSum += ext.mark;
+          });
+        } else if (selectedExam === "SEM1_TOT") {
+          ["FA1", "FA2", "SA1"].forEach(ex => {
+            const exObj = evals[ex] || {};
+            cfg.subjects.forEach(sub => {
+              const ext = getSubjectMark(exObj, sub, ex.startsWith("SA"));
+              rowMarksSum += ext.mark;
+            });
+          });
+        } else if (selectedExam === "SEM2_TOT") {
+          ["FA3", "FA4", "SA2"].forEach(ex => {
+            const exObj = evals[ex] || {};
+            cfg.subjects.forEach(sub => {
+              const ext = getSubjectMark(exObj, sub, ex.startsWith("SA"));
+              rowMarksSum += ext.mark;
+            });
+          });
+        } else if (selectedExam === "GRAND_TOT") {
+          ["FA1", "FA2", "SA1", "FA3", "FA4", "SA2"].forEach(ex => {
+            const exObj = evals[ex] || {};
+            cfg.subjects.forEach(sub => {
+              const ext = getSubjectMark(exObj, sub, ex.startsWith("SA"));
+              rowMarksSum += ext.mark;
+            });
+          });
+        }
+
+        stats["appeared"][catGroup][gender]++;
+
+        const pct = maxExamTotal > 0 ? (rowMarksSum / maxExamTotal) * 100 : 0;
+        const isPass = pct >= 35;
+        let grade = calculateGrade(rowMarksSum, maxExamTotal);
+
+        if (!["A+", "A", "B+", "B", "C+", "C"].includes(grade)) {
+          grade = 'C';
+        }
+
+        if (isPass) {
+          stats["passed"][catGroup][gender]++;
+        } else {
+          stats["failed"][catGroup][gender]++;
+        }
+
+        stats[grade][catGroup][gender]++;
+      });
+
+      catList.forEach(c => {
+        stats["tot_students_top"][c].G = stats["enrolled"][c].G;
+        stats["tot_students_top"][c].H = stats["enrolled"][c].H;
+        stats["tot_students_bottom"][c].G = stats["enrolled"][c].G;
+        stats["tot_students_bottom"][c].H = stats["enrolled"][c].H;
+      });
+
+      const rowsDef = [
+        { key: "enrolled", label: "ದಾಖಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳು", bgCls: "" },
+        { key: "appeared", label: "ಪರೀಕ್ಷೆಗೆ ಹಾಜರಾದವರು", bgCls: "" },
+        { key: "failed", label: "ಅನುತ್ತೀರ್ಣರಾದ ವಿದ್ಯಾರ್ಥಿಗಳು", bgCls: "" },
+        { key: "passed", label: "ಉತ್ತೀರ್ಣರಾದ ವಿದ್ಯಾರ್ಥಿಗಳು", bgCls: "" },
+        { key: "tot_students_top", label: "ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು", bgCls: "bg-category-tot" },
+        { key: "A+", label: "A+", bgCls: "" },
+        { key: "A", label: "A", bgCls: "" },
+        { key: "B+", label: "B+", bgCls: "" },
+        { key: "B", label: "B", bgCls: "" },
+        { key: "C+", label: "C+", bgCls: "" },
+        { key: "C", label: "C", bgCls: "" },
+        { key: "tot_students_bottom", label: "ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು", bgCls: "bg-category-tot" }
+      ];
+
+      rowsDef.forEach(rDef => {
+        let tr = `<tr class="${rDef.bgCls}">`;
+        tr += `<td class="text-left font-extrabold p-2 text-slate-900 dark:text-slate-100">${rDef.label}</td>`;
+
+        let rowGrandG = 0;
+        let rowGrandH = 0;
+
+        catList.forEach(c => {
+          const gVal = stats[rDef.key][c].G;
+          const hVal = stats[rDef.key][c].H;
+          const totVal = gVal + hVal;
+
+          rowGrandG += gVal;
+          rowGrandH += hVal;
+
+          tr += `<td>${gVal || ''}</td>`;
+          tr += `<td>${hVal || ''}</td>`;
+          tr += `<td class="bg-indigo-50/70 dark:bg-indigo-950/40 font-bold">${totVal || ''}</td>`;
+        });
+
+        const overallTot = rowGrandG + rowGrandH;
+        tr += `<td class="font-extrabold bg-category-tot">${rowGrandG || ''}</td>`;
+        tr += `<td class="font-extrabold bg-category-tot">${rowGrandH || ''}</td>`;
+        tr += `<td class="font-black bg-abstract-row-tot">${overallTot || ''}</td>`;
+
+        tr += `</tr>`;
+        tbody.innerHTML += tr;
+      });
+    }
+
+    function recalculateCellLive(sId, examType, subId) {
+      const input = document.getElementById(`input_${sId}_${examType}_${subId}`);
+      if (!input) return;
+
+      const val = parseFloat(input.value) || 0;
+      if (!allEvaluations[sId]) allEvaluations[sId] = {};
+      if (!allEvaluations[sId][examType]) allEvaluations[sId][examType] = {};
+
+      const cfg = getActiveConfig(ddClass.value);
+      const subObj = cfg.subjects.find(s => s.id === subId);
+      const subKey = subObj ? subObj.keys[0] : subId;
+      const maxM = examType.startsWith("SA") ? cfg.saMax : cfg.faMax;
+
+      allEvaluations[sId][examType][subKey + "_mark"] = val.toString();
+      allEvaluations[sId][examType][subKey + "_grade"] = calculateGrade(val, maxM);
+    }
+
+    async function saveConsolidatedMarks() {
+      const cls = ddClass.value;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+
+      document.getElementById('loading-state').classList.remove('hidden');
+
+      const examTypes = ["FA1", "FA2", "SA1", "FA3", "FA4", "SA2", "PART_B_SEM1", "PART_B_SEM2"];
+      const upsertPayloads = [];
+
+      currentStudents.forEach(student => {
+        const sId = student.id;
+        const sEvals = allEvaluations[sId] || {};
+
+        examTypes.forEach(ex => {
+          if (sEvals[ex] && Object.keys(sEvals[ex]).length > 0) {
+            upsertPayloads.push({
+              school_id: schoolId,
+              student_id: sId,
+              exam_type: ex,
+              marks: sEvals[ex],
+              updated_at: new Date().toISOString()
+            });
+
+            const mockKey = `cce_mock_cce_${cls}_${ex}`;
+            const localObj = JSON.parse(localStorage.getItem(mockKey) || "{}");
+            localObj[sId] = sEvals[ex];
+            localStorage.setItem(mockKey, JSON.stringify(localObj));
+          }
+        });
+      });
+
+      if (upsertPayloads.length > 0) {
+        try {
+          const { error } = await supabaseClient
+            .from('cce_evaluations')
+            .upsert(upsertPayloads, { onConflict: 'student_id,exam_type' });
+
+          if (error) {
+            console.warn("Supabase upsert warning, fallbacked to localStorage:", error);
+          }
+        } catch(err) {
+          console.error("Save error:", err);
+        }
+      }
+
+      document.getElementById('loading-state').classList.add('hidden');
+      showToast("ಅಂಕಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ CCE Assessment ನೊಂದಿಗೆ ಸಿಂಕ್ ಮಾಡಿ ಉಳಿಸಲಾಗಿದೆ!", "success");
+
+      toggleEditMode();
+    }
+
+    function triggerPrint() {
+      const cls = ddClass.value;
+      let schoolName = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
+      document.getElementById('print-school-name').innerText = schoolName.toUpperCase();
+      document.getElementById('print-class-lbl').innerText = `ತರಗತಿ: Class ${cls}`;
+      document.getElementById('print-date-lbl').innerText = `ದಿನಾಂಕ: ${new Date().toLocaleDateString()}`;
+
+      let targetTableId = activeSubpage === 'register' ? 'register-table' : 'abstract-table';
+      let pageTitle = activeSubpage === 'register' ? "ಅಂಕ ಕ್ರೋಢೀಕೃತ ವಹಿ 2026-27" : "ಪರೀಕ್ಷಾ ಘೋಷ್ವಾರೆ 2026-27";
+      document.getElementById('print-page-title').innerText = pageTitle;
+
+      const tableClone = document.getElementById(targetTableId).cloneNode(true);
+      const printWrapper = document.getElementById('print-table-wrapper');
+      printWrapper.innerHTML = '';
+      printWrapper.appendChild(tableClone);
+
+      const sigRow = document.createElement('div');
+      sigRow.className = 'print-signatures-row';
+      sigRow.innerHTML = `
+        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher</span>
+        <span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher</span>
+        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Headmaster Signature</span>
+      `;
+      printWrapper.appendChild(sigRow);
+
+      window.print();
+    }
+
+    function exportToExcel() {
+      if (currentStudents.length === 0) {
+        alert("ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ / No data available to export");
+        return;
+      }
+      const cls = ddClass.value;
+      const targetTableId = activeSubpage === 'register' ? 'register-table' : 'abstract-table';
+      const table = document.getElementById(targetTableId);
+      const sheetName = activeSubpage === 'register' ? `ಅಂಕ_ವಹಿ_${cls}` : `ಘೋಷ್ವಾರೆ_${cls}`;
+      const wb = XLSX.utils.table_to_book(table, { sheet: sheetName });
+      XLSX.writeFile(wb, `${sheetName}_Class_${cls}.xlsx`);
+    }
+
+    function exportToCSV() {
+      if (currentStudents.length === 0) {
+        alert("ಯಾವುದೇ ಡೇಟಾ ಲಭ್ಯವಿಲ್ಲ / No data available to export");
+        return;
+      }
+      const cls = ddClass.value;
+      const targetTableId = activeSubpage === 'register' ? 'register-table' : 'abstract-table';
+      const table = document.getElementById(targetTableId);
+      const sheet = XLSX.utils.table_to_sheet(table);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, sheet, "Report");
+      XLSX.writeFile(wb, `Report_Class_${cls}.csv`, { bookType: 'csv' });
+    }
+  </script>
+  <script src="navbar.js"></script>
+</body>
+</html>

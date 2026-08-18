@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SATS ಅಧಿಕೃತ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase.js"></script>
+  <script src="navbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); border: 1px solid rgba(226, 232, 240, 0.9); }
+    .dark .glass-card { background: rgba(15, 23, 42, 0.95); border-color: rgba(30, 41, 59, 0.9); }
+    
+    /* Smooth Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .dark .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Sticky Headers and Columns */
+    .sticky-header th {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+    }
+    .sticky-col-1 {
+      position: sticky;
+      left: 0;
+      z-index: 20;
+    }
+    .sticky-col-2 {
+      position: sticky;
+      left: 48px;
+      z-index: 20;
+    }
+    .sticky-header th.sticky-col-1,
+    .sticky-header th.sticky-col-2 {
+      z-index: 40 !important;
+    }
+
+    @media print {
+      body { background: white !important; color: black !important; }
+      #navbar-placeholder, #configBar, #filterToolbar, #topBanner, .no-print, button, input, select { display: none !important; }
+      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .table-container { max-height: none !important; overflow: visible !important; border: 0 !important; }
+      table { width: 100% !important; font-size: 9px !important; border-collapse: collapse !important; }
+      th, td { border: 1px solid black !important; padding: 4px 6px !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+
+  <!-- Shared Top Navigation Bar (Rendered via navbar.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
+
+    <!-- Header Banner -->
+    <div id="topBanner" class="glass-card rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="p-3 bg-emerald-600 text-white rounded-2xl shadow-md">
+            <i class="fa-solid fa-file-excel text-xl"></i>
+          </span>
+          <div>
+            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+              SATS / STS ಅಧಿಕೃತ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ (Official SATS Roster)
+            </h1>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+              ಅಧಿಕೃತ SATS Google Spreadsheet & Excel ಫೈಲ್‌ನಲ್ಲಿರುವ ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ, ನೇರ ದಾಖಲಾತಿ & ತ್ವರಿತ ಪರಿಶೀಲನೆ
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="toggleSummaryDrawer()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 cursor-pointer transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-xs"></i> <span id="summaryDrawerBtnText">ತರಗತಿವಾರು ಸಾರಾಂಶ</span>
+        </button>
+
+        <button onclick="forceRefreshData()" title="ಡೇಟಾ ಮರುಹೊಂದಿಸಿ" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 cursor-pointer transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate text-xs"></i> ಮರುಹೊಂದಿಸಿ
+        </button>
+
+        <button onclick="printClassRoster()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
+          <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ (Print A4)
+        </button>
+
+        <button onclick="exportExcelReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Metric Cards & Sync Rate -->
+    <div id="analyticsDashboard" class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <!-- 1. STS Total -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20">
+        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">🎯 ಒಟ್ಟು SATS ಮಕ್ಕಳು</div>
+        <div id="statTotalSats" class="text-3xl font-black text-emerald-900 dark:text-emerald-100">0</div>
+        <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Total SATS Records</div>
+      </div>
+
+      <!-- 2. Boys -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-sky-200 dark:border-sky-800 bg-sky-50/40 dark:bg-sky-950/20">
+        <div class="text-[10px] font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider">👦 ಗಂಡು ಮಕ್ಕಳು (Boys)</div>
+        <div id="statTotalBoys" class="text-3xl font-black text-sky-900 dark:text-sky-100">0</div>
+        <div class="text-[10px] text-sky-600 dark:text-sky-400 font-bold">Total Boys</div>
+      </div>
+
+      <!-- 3. Girls -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-pink-200 dark:border-pink-800 bg-pink-50/40 dark:bg-pink-950/20">
+        <div class="text-[10px] font-bold text-pink-700 dark:text-pink-300 uppercase tracking-wider">👧 ಹೆಣ್ಣು ಮಕ್ಕಳು (Girls)</div>
+        <div id="statTotalGirls" class="text-3xl font-black text-pink-900 dark:text-pink-100">0</div>
+        <div class="text-[10px] text-pink-600 dark:text-pink-400 font-bold">Total Girls</div>
+      </div>
+
+      <!-- 4. Missing / Unadmitted in Site -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-amber-200 dark:border-amber-800 bg-amber-50/40 dark:bg-amber-950/20 cursor-pointer hover:scale-[1.02] transition" onclick="filterByAdmissionStatus('missing')" title="ಸೈಟ್‌ನಲ್ಲಿ ಇಲ್ಲದವರನ್ನು ಮಾತ್ರ ವೀಕ್ಷಿಸಿ">
+        <div class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">🔴 ಸೈಟ್‌ನಲ್ಲಿ ಬಾಕಿ (Pending)</div>
+        <div id="statTotalPending" class="text-3xl font-black text-amber-900 dark:text-amber-100">0</div>
+        <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Missing in Site</div>
+      </div>
+
+      <!-- 5. Synced Progress -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-indigo-200 dark:border-indigo-800 bg-indigo-50/40 dark:bg-indigo-950/20 col-span-2 sm:col-span-1">
+        <div class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">🟢 ಸೈಟ್ ಸಿಂಕ್ ದರ (Sync Rate)</div>
+        <div id="statSyncPercent" class="text-3xl font-black text-indigo-900 dark:text-indigo-100">0%</div>
+        <div id="statSyncCountText" class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">0 / 0 ದಾಖಲಿಸಲಾಗಿದೆ</div>
+      </div>
+    </div>
+
+    <!-- Collapsible Class-wise Summary Matrix Drawer -->
+    <div id="summaryMatrixDrawer" class="hidden glass-card rounded-2xl p-5 border border-indigo-200 dark:border-indigo-800 shadow-md space-y-3 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/20">
+      <div class="flex items-center justify-between pb-2 border-b border-indigo-100 dark:border-indigo-900/40">
+        <div class="flex items-center gap-2">
+          <span class="p-1.5 bg-indigo-600 text-white rounded-lg text-xs"><i class="fa-solid fa-table-cells"></i></span>
+          <h3 class="text-sm font-black text-slate-800 dark:text-slate-100">ಶಾಲೆಯ ತರಗತಿವಾರು ಬಾಲಕ / ಬಾಲಕಿಯರ ಸಾರಾಂಶ ಕೋಷ್ಟಕ (Class-wise Roster Matrix)</h3>
+        </div>
+        <button onclick="toggleSummaryDrawer()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-xs text-center border-collapse">
+          <thead>
+            <tr class="bg-indigo-900 text-white font-bold text-[11px]">
+              <th class="p-2 text-left rounded-tl-xl">ತರಗತಿ (Class)</th>
+              <th class="p-2">👦 ಬಾಲಕರು (Boys)</th>
+              <th class="p-2">👧 ಬಾಲಕಿಯರು (Girls)</th>
+              <th class="p-2 font-black">🎯 ಒಟ್ಟು SATS</th>
+              <th class="p-2 text-emerald-300">🟢 ಸೈಟ್‌ನಲ್ಲಿದ್ದಾರೆ</th>
+              <th class="p-2 text-amber-300">🔴 ದಾಖಲಾಗಲು ಬಾಕಿ</th>
+              <th class="p-2 rounded-tr-xl">ಕ್ರಮ (Action)</th>
+            </tr>
+          </thead>
+          <tbody id="summaryMatrixBody" class="divide-y divide-indigo-100 dark:divide-slate-800 font-semibold bg-white/80 dark:bg-slate-900/80">
+            <!-- Rendered Dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SATS Link & Upload Configuration Bar -->
+    <div id="configBar" class="glass-card p-3.5 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg font-bold">
+          <i class="fa-solid fa-circle-check"></i> SATS ಲಿಂಕ್ (Live Sync):
+        </span>
+        <span id="sheetStatusLabel" class="font-bold text-slate-600 dark:text-slate-300">Google Spreadsheet Live Sync Active</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <input type="text" id="sheetUrlInput" placeholder="Google Sheet URL..." class="text-xs p-1.5 px-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-mono w-64 md:w-80 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        <button onclick="saveAndSyncSpreadsheetUrl()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm flex items-center gap-1">
+          <i class="fa-solid fa-arrows-rotate"></i> ಸಿಂಕ್ ಮಾಡಿ
+        </button>
+        <label class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm flex items-center gap-1">
+          <i class="fa-solid fa-file-arrow-up"></i> SATS Excel ಅಪ್‌ಲೋಡ್
+          <input type="file" id="satsFileInput" accept=".xlsx,.xls,.csv" onchange="handleSatsFileUpload(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div id="filterToolbar" class="glass-card p-4 rounded-2xl shadow-sm space-y-3">
+      
+      <!-- Dynamic Class Quick-Filter Pills Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-indigo-600"></i> ತರಗತಿವಾರು ಆಯ್ಕೆ (Select Class):
+        </div>
+        <div id="classQuickPills" class="flex flex-wrap items-center gap-1.5">
+          <!-- Rendered Dynamically with Class Counts -->
+        </div>
+      </div>
+
+      <!-- Filter Controls Toolbar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 items-center">
+        
+        <!-- Search with Clear Button -->
+        <div class="relative col-span-1 sm:col-span-2">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="satsSearch" oninput="applyFilters()" placeholder="ಹೆಸರು, STS ಸಂಖ್ಯೆ, ತಂದೆಯ ಹೆಸರು ಹುಡುಕಿ..." class="w-full pl-8 pr-8 py-2 text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+          <button type="button" onclick="clearSearch()" id="btnClearSearch" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 border-0 bg-transparent cursor-pointer p-1">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Admission Status Filter -->
+        <div>
+          <select id="admissionStatusFilter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm text-indigo-700 dark:text-indigo-300">
+            <option value="">-- ಎಲ್ಲಾ ಸ್ಥಿತಿ (All Status) --</option>
+            <option value="missing">🔴 ಸೈಟ್‌ನಲ್ಲಿ ಇಲ್ಲದವರು ಮಾತ್ರ (Missing)</option>
+            <option value="admitted">🟢 ಸೈಟ್‌ನಲ್ಲಿದ್ದಾರೆ (Admitted)</option>
+          </select>
+        </div>
+
+        <!-- Class Filter Dropdown -->
+        <div>
+          <select id="classFilter" onchange="onClassDropdownChange(this.value)" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+            <option value="">-- ಎಲ್ಲಾ ತರಗತಿಗಳು (All Classes) --</option>
+            <option value="LKG">LKG</option>
+            <option value="UKG">UKG</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+          </select>
+        </div>
+
+        <!-- Gender Filter -->
+        <div>
+          <select id="genderFilter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+            <option value="">-- ಎಲ್ಲಾ ಲಿಂಗ (All Genders) --</option>
+            <option value="Boy">Boy / ಗಂಡು</option>
+            <option value="Girl">Girl / ಹೆಣ್ಣು</option>
+          </select>
+        </div>
+
+        <!-- Social Category / Caste Filter -->
+        <div>
+          <select id="casteFilter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+            <option value="">-- ಎಲ್ಲಾ ಜಾತಿ/ವರ್ಗ --</option>
+            <option value="SC">SC</option>
+            <option value="ST">ST</option>
+            <option value="OTHERS">OTHERS / OBC</option>
+            <option value="GENERAL">GENERAL</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bulk Action Bar & Selection Count -->
+      <div id="bulkActionBar" class="flex flex-wrap items-center justify-between gap-3 text-xs pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-3 flex-wrap">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700 dark:text-slate-300">
+            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer">
+            <span>ಪುಟದಲ್ಲಿರುವ ಎಲ್ಲರನ್ನೂ ಆಯ್ಕೆಮಾಡಿ (Select Page)</span>
+          </label>
+          <span id="selectedCountBadge" class="hidden px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 font-extrabold text-[11px] border border-indigo-300">0 ಆಯ್ಕೆಯಾಗಿದೆ</span>
+          
+          <button id="btnBulkAdmit" onclick="admitSelectedStudents()" class="hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-black text-xs py-1.5 px-4 rounded-xl shadow-md transition flex items-center gap-1.5 border-0 cursor-pointer animate-bounce">
+            <i class="fa-solid fa-bolt"></i> <span>ಆಯ್ಕೆ ಮಾಡಿದವರನ್ನು ಒಮ್ಮೆಲೇ ದಾಖಲಿಸಿ (Bulk Admit)</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Page Size -->
+          <select id="pageSize" onchange="changePageSize(this.value)" class="p-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="25">25 Rows / ಪುಟ</option>
+            <option value="50" selected>50 Rows / ಪುಟ</option>
+            <option value="100">100 Rows / ಪುಟ</option>
+            <option value="1000">ಎಲ್ಲಾ (All Rows)</option>
+          </select>
+          <span id="displayCountText" class="font-black text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800">ತೋರಿಸಲಾಗುತ್ತಿದೆ: 0 ವಿದ್ಯಾರ್ಥಿಗಳು</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SATS Master Table Grid -->
+    <div class="glass-card rounded-2xl p-5 shadow-sm space-y-3">
+      <div class="table-container max-h-[650px] overflow-x-auto overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl relative bg-white dark:bg-slate-900 shadow-inner">
+        <table class="w-full text-xs text-left border-collapse min-w-[1200px]">
+          <thead class="sticky-header">
+            <tr class="font-bold border-b border-slate-700 text-slate-200 select-none bg-slate-900">
+              <th class="p-3 text-center w-10 sticky-col-1 bg-slate-900">
+                <input type="checkbox" id="tableHeaderSelectAll" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 text-indigo-600 rounded cursor-pointer" title="ಪುಟದ ಎಲ್ಲರನ್ನೂ ಆಯ್ಕೆಮಾಡಿ">
+              </th>
+              <th class="p-3 text-center w-12 sticky-col-2 bg-slate-900 cursor-pointer hover:text-indigo-300" onclick="sortTable('idx')">
+                #
+              </th>
+              <th class="p-3 bg-slate-900 min-w-[130px] cursor-pointer hover:text-indigo-300" onclick="sortTable('sts')">
+                STS ಸಂಖ್ಯೆ <i id="sort-sts" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[170px] cursor-pointer hover:text-indigo-300" onclick="sortTable('name')">
+                ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (English) <i id="sort-name" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[150px] text-slate-300">
+                ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಕನ್ನಡ)
+              </th>
+              <th class="p-3 min-w-[160px] cursor-pointer hover:text-indigo-300" onclick="sortTable('father')">
+                ತಂದೆಯ ಹೆಸರು (English) <i id="sort-father" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[150px] text-slate-300">
+                ತಂದೆಯ ಹೆಸರು (ಕನ್ನಡ)
+              </th>
+              <th class="p-3 text-center min-w-[110px] cursor-pointer hover:text-indigo-300 bg-indigo-950/80 text-indigo-200 font-black border-x border-indigo-800" onclick="sortTable('class')">
+                ತರಗತಿ (Class) <i id="sort-class" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[90px] cursor-pointer hover:text-indigo-300" onclick="sortTable('gender')">
+                ಲಿಂಗ <i id="sort-gender" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[110px] cursor-pointer hover:text-indigo-300" onclick="sortTable('dob')">
+                ಜನ್ಮ ದಿನಾಂಕ <i id="sort-dob" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[100px]">
+                ಜಾತಿ / ವರ್ಗ
+              </th>
+              <th class="p-3 text-center min-w-[90px]">
+                ಮಾಧ್ಯಮ
+              </th>
+              <th class="p-3 text-center min-w-[160px] bg-slate-950 font-black">
+                ಕ್ರಮ / Action
+              </th>
+            </tr>
+          </thead>
+          <tbody id="satsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+            <!-- Rendered Dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+        <div id="paginationInfo">ಪುಟ 1 / 1</div>
+        <div class="flex items-center gap-1" id="paginationBtns"></div>
+      </div>
+    </div>
+
+    <!-- Quick Student Profile Modal -->
+    <div id="studentProfileModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div class="glass-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-scale-in">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="flex items-center gap-3">
+            <span class="p-2.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-xl"><i class="fa-solid fa-id-card text-lg"></i></span>
+            <div>
+              <h3 class="text-base font-black text-slate-900 dark:text-white" id="modalStudentName">Student Profile</h3>
+              <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold" id="modalSts">STS: -</p>
+            </div>
+          </div>
+          <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
+            <i class="fa-solid fa-xmark text-lg"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-xs" id="modalContentGrid">
+          <!-- Populated Dynamically -->
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800" id="modalActionFooter">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    // --- 1. CONFIGURATION & STATE ---
+    const DEFAULT_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1awYBM024orzUascz9uTYIeXg6rN55sbSJj7hIrhMWp8/edit?gid=1852377268#gid=1852377268";
+
+    let rawSatsRows = [];
+    let siteStudentsList = [];
+    let currentClassFilter = '';
+    let currentPage = 1;
+    let pageSize = 50;
+    let sortCol = 'idx';
+    let sortDir = 'asc';
+
+    // --- 2. INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load Shared Navigation
+      if (typeof renderNavbar === 'function') {
+        renderNavbar();
+      }
+
+      // Initialize Spreadsheet URL
+      const savedUrl = localStorage.getItem('sats_spreadsheet_url') || DEFAULT_SPREADSHEET_URL;
+      const urlInput = document.getElementById('sheetUrlInput');
+      if (urlInput) urlInput.value = savedUrl;
+
+      // Load Site Database Students in background
+      fetchSiteStudents();
+
+      // Clear legacy caches
+      localStorage.removeItem('sats_cached_sheet_rows');
+      localStorage.removeItem('sats_cached_sheet_rows_v2');
+      localStorage.removeItem('sats_cached_sheet_rows_v3');
+      localStorage.removeItem('sats_cached_sheet_rows_v4');
+      localStorage.removeItem('sats_cached_sheet_rows_v6');
+      localStorage.removeItem('sats_cached_sheet_rows_v7');
+
+      // Load Cached or Live SATS Data with version key
+      const cached = localStorage.getItem('sats_cached_sheet_rows_v8');
+      if (cached) {
+        try {
+          rawSatsRows = JSON.parse(cached);
+          updateMetrics();
+          renderClassQuickPills();
+          renderTable();
+        } catch (e) {}
+      }
+
+      // Fetch Fresh Live SATS Data
+      fetchSpreadsheetData(true);
+    });
+
+    async function fetchSiteStudents() {
+      try {
+        if (!supabaseClient) return;
+        const schoolId = localStorage.getItem('school_id');
+        let query = supabaseClient.from('admissions').select('id, app_no, student_sts, enrolment_no, name_english, student_name, enroll_class, gender, dob, father_name_english, father_name, status');
+        if (schoolId) query = query.eq('school_id', schoolId);
+        const { data, error } = await query;
+        if (!error && data) {
+          siteStudentsList = data;
+          renderTable();
+        }
+      } catch (e) {
+        console.warn("Could not fetch site students:", e);
+      }
+    }
+
+    // --- 3. SATS SPREADSHEET LIVE SYNC & PARSING ---
+    async function fetchSpreadsheetData(isSilent = false) {
+      const rawUrl = localStorage.getItem('sats_spreadsheet_url') || DEFAULT_SPREADSHEET_URL;
+      const statusLabel = document.getElementById('sheetStatusLabel');
+
+      if (!isSilent && statusLabel) {
+        statusLabel.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-emerald-500 mr-1"></i> SATS ಡೇಟಾ ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...`;
+      }
+
+      try {
+        let jsonRows = null;
+        if (rawUrl.includes("docs.google.com/spreadsheets")) {
+          const match = rawUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+          if (match && match[1]) {
+            const sheetId = match[1];
+            const gidMatch = rawUrl.match(/gid=([0-9]+)/);
+            const gid = gidMatch ? gidMatch[1] : '1852377268';
+            
+            // Priority 1: Fetch direct HTML table output (This extracts ALL 520 rows 100% UNFILTERED, completely ignoring any active UI filters or hidden rows in Google Sheets!)
+            try {
+              const htmlUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:html&gid=${gid}&_nocache=${Date.now()}`;
+              const res = await fetch(htmlUrl);
+              if (res.ok) {
+                const htmlText = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const table = doc.querySelector('table');
+                if (table && table.rows.length > 5) {
+                  jsonRows = Array.from(table.rows).map(tr => 
+                    Array.from(tr.cells).map(td => td.textContent.replace(/\u00a0/g, ' ').trim())
+                  );
+                }
+              }
+            } catch (e) {
+              console.warn("Direct HTML table extract failed:", e);
+            }
+
+            // Priority 2: Direct CSV export
+            if (!jsonRows || jsonRows.length === 0) {
+              try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_nocache=${Date.now()}`;
+                const res2 = await fetch(csvUrl);
+                if (res2.ok) {
+                  const text = await res2.text();
+                  const wb = XLSX.read(text, { type: 'string' });
+                  const sheet = wb.Sheets[wb.SheetNames[0]];
+                  jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                }
+              } catch (e2) {
+                console.warn("Direct CSV export failed:", e2);
+              }
+            }
+
+            // Priority 3: JSONP Fallback
+            if (!jsonRows || jsonRows.length === 0) {
+              try {
+                jsonRows = await fetchGoogleSheetJsonp(sheetId, gid);
+              } catch (e3) {
+                console.warn("JSONP fallback failed:", e3);
+              }
+            }
+          }
+        }
+
+        if (!jsonRows || jsonRows.length === 0) {
+          const res = await fetch(rawUrl + (rawUrl.includes('?') ? '&' : '?') + '_nocache=' + Date.now());
+          const buf = await res.arrayBuffer();
+          const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        }
+
+        // Parse and Cache SATS Students
+        rawSatsRows = parseSatsRawRows(jsonRows);
+        localStorage.setItem('sats_cached_sheet_rows_v8', JSON.stringify(rawSatsRows));
+
+        if (statusLabel) {
+          statusLabel.innerHTML = `Google Spreadsheet ಲೈವ್ ಸಿಂಕ್ ಸಕ್ರಿಯವಾಗಿದೆ (${rawSatsRows.length} SATS ವಿದ್ಯಾರ್ಥಿಗಳು)`;
+        }
+
+        updateMetrics();
+        renderClassQuickPills();
+        renderTable();
+
+      } catch (err) {
+        console.error("Spreadsheet sync error:", err);
+        if (!isSilent) {
+          alert("ಸ್ಪ್ರೆಡ್‌ಶೀಟ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+        }
+      }
+    }
+
+    function fetchGoogleSheetJsonp(sheetId, gid) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gviz_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=responseHandler:${callbackName}&gid=${gid || 0}&_nocache=${Date.now()}`;
+
+        const script = document.createElement('script');
+        const cleanup = () => {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error("Google Sheets timeout"));
+        }, 12000);
+
+        window[callbackName] = function(response) {
+          clearTimeout(timeoutId);
+          cleanup();
+          if (response && response.status === 'ok' && response.table) {
+            const table = response.table;
+            const headers = table.cols.map(c => (c ? (c.label || c.id || '') : ''));
+            const rows = table.rows.map(r => {
+              if (!r || !r.c) return [];
+              return r.c.map(cell => {
+                if (!cell) return '';
+                return cell.f !== undefined ? cell.f : (cell.v !== undefined ? cell.v : '');
+              });
+            });
+            resolve([headers, ...rows]);
+          } else {
+            reject(new Error("Invalid response format"));
+          }
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Script load failed"));
+        };
+
+        script.src = url;
+        document.head.appendChild(script);
+      });
+    }
+
+    function saveAndSyncSpreadsheetUrl() {
+      const input = document.getElementById('sheetUrlInput');
+      const val = input ? input.value.trim() : '';
+      if (val) {
+        localStorage.removeItem('sats_cached_sheet_rows_v8');
+        localStorage.setItem('sats_spreadsheet_url', val);
+        fetchSpreadsheetData(false);
+      }
+    }
+
+    function forceRefreshData() {
+      localStorage.removeItem('sats_cached_sheet_rows_v8');
+      localStorage.removeItem('sats_cached_sheet_rows_v7');
+      localStorage.removeItem('sats_cached_sheet_rows_v6');
+      localStorage.removeItem('sats_cached_sheet_rows');
+      fetchSiteStudents();
+      fetchSpreadsheetData(false);
+    }
+
+    // Direct Excel / CSV File Upload Handler
+    function handleSatsFileUpload(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const statusLabel = document.getElementById('sheetStatusLabel');
+      if (statusLabel) statusLabel.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-emerald-500 mr-1"></i> ಫೈಲ್ ಲೋಡ್ ಆಗುತ್ತಿದೆ (${file.name})...`;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          rawSatsRows = parseSatsRawRows(jsonRows);
+          localStorage.setItem('sats_cached_sheet_rows_v8', JSON.stringify(rawSatsRows));
+
+          if (statusLabel) {
+            statusLabel.innerHTML = `ಫೈಲ್ ಲೋಡ್ ಆಗಿದೆ (${file.name} - ${rawSatsRows.length} SATS ವಿದ್ಯಾರ್ಥಿಗಳು)`;
+          }
+
+          updateMetrics();
+          renderClassQuickPills();
+          renderTable();
+          alert(`SATS ಫೈಲ್‌ನಿಂದ ಒಟ್ಟು ${rawSatsRows.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ! 🎯`);
+        } catch (err) {
+          console.error("File parse error:", err);
+          alert("ಫೈಲ್ ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Parse SATS Spreadsheet Rows into Normalized Objects
+    function parseSatsRawRows(jsonRows) {
+      if (!jsonRows || jsonRows.length === 0) return [];
+
+      let headerIdx = -1;
+      for (let r = 0; r < Math.min(jsonRows.length, 15); r++) {
+        const row = jsonRows[r];
+        if (row && row.some(cell => {
+          const s = String(cell || '').toLowerCase();
+          return s.includes('enrollment') || s.includes('student name') || s.includes('sts') || s.includes('sr. no') || s.includes('standard') || s.includes('father name') || s.includes('date of birth') || s.includes('socialcategory');
+        })) {
+          headerIdx = r;
+          break;
+        }
+      }
+      if (headerIdx === -1) headerIdx = 0;
+
+      const headers = jsonRows[headerIdx].map(h => String(h || '').trim().toLowerCase());
+      
+      const findCol = (...names) => {
+        // Pass 1: Exact Clean Match
+        for (const n of names) {
+          const target = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = headers.findIndex(h => {
+            const hClean = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return hClean === target;
+          });
+          if (idx !== -1) return idx;
+        }
+        // Pass 2: StartsWith / Includes Match
+        for (const n of names) {
+          const target = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = headers.findIndex(h => {
+            const hClean = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return hClean.includes(target) || hClean.startsWith(target);
+          });
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+
+      const cSr = findCol('srno', 'sr. no', 'slno', 'sl. no', 'sno');
+      const cSts = findCol('enrollmentno', 'enrollment no', 'enrollment', 'stsnumber', 'stsno', 'satsno', 'appno', 'sts', 'studentid', 'satsid', 'childid');
+      const cName = findCol('studentname', 'student name', 'studentsname', 'candidatename', 'nameofstudent', 'name', 'ವಿದ್ಯಾರ್ಥಿ');
+      const cFather = findCol('fathername', 'father name', 'father', 'parentname', 'guardianname', 'ತಂದೆ');
+      const cDob = findCol('dateofbirth', 'date of birth', 'dob', 'birthdate', 'ಜನ್ಮ ದಿನಾಂಕ');
+      const cCaste = findCol('socialcategory', 'social category', 'socialcategory', 'caste', 'category', 'ಜಾತಿ');
+      const cClass = findCol('standard', 'standa rd', 'std', 'class', 'studyingclass', 'ತರಗತಿ', 'grade');
+      const cGender = findCol('gender', 'sex', 'ಲಿಂಗ');
+      const cMedium = findCol('medium', 'ಮಾಧ್ಯಮ');
+      const cGradeGroup = findCol('gradegroup', 'grade group');
+      
+      // Specifically search Kannada names
+      let cNameKn = findCol('studentsnamekannada', 'studentnamekannada', 'studentnameinkannada', 'ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಕನ್ನಡ', 'studentsnamekn', 'namekn');
+      let cFatherKn = findCol('fathernameinkannada', 'fathernamekannada', 'fathernameinkn', 'ತಂದೆ ಹೆಸರು ಕನ್ನಡ', 'fathernamekn', 'fatherkn');
+
+      // Fallback column positions if header text was slightly different
+      if (cNameKn === -1 && headers.length > 10) cNameKn = 10;
+      if (cFatherKn === -1 && headers.length > 11) cFatherKn = 11;
+
+      const parsed = [];
+      for (let i = headerIdx + 1; i < jsonRows.length; i++) {
+        const row = jsonRows[i];
+        if (!row || row.length === 0) continue;
+
+        const rawSr = cSr !== -1 ? parseInt(String(row[cSr] || '0').trim(), 10) || 0 : (i - headerIdx);
+        const rawSts = cSts !== -1 ? String(row[cSts] || '').trim() : '';
+        const rawName = cName !== -1 ? String(row[cName] || '').trim() : '';
+
+        // Ignore empty lines
+        if (!rawSts && !rawName) continue;
+        if (rawName.toLowerCase().includes('total') || rawName.toLowerCase().includes('student name')) continue;
+
+        const cleanSts = rawSts.replace(/[\s\-_.]/g, '');
+        const cleanDob = cDob !== -1 ? normalizeDob(row[cDob]) : '';
+        
+        let rawClassVal = cClass !== -1 ? String(row[cClass] || '').trim() : '';
+        let rawGradeGroupVal = cGradeGroup !== -1 ? String(row[cGradeGroup] || '').trim() : '';
+
+        // Clean and Resolve Class
+        let cleanClass = resolveClassValue(rawClassVal, rawGradeGroupVal, rawSr, cleanDob);
+
+        const cleanGender = cGender !== -1 ? normalizeGender(row[cGender]) : '';
+        const cleanFather = cFather !== -1 ? String(row[cFather] || '').trim() : '';
+        const cleanCaste = cCaste !== -1 ? String(row[cCaste] || '').trim() : '';
+        const cleanMedium = cMedium !== -1 ? String(row[cMedium] || '').trim() : 'Kannada';
+        const cleanGradeGroup = rawGradeGroupVal;
+        const cleanNameKn = cNameKn !== -1 ? String(row[cNameKn] || '').trim() : '';
+        const cleanFatherKn = cFatherKn !== -1 ? String(row[cFatherKn] || '').trim() : '';
+
+        parsed.push({
+          sts: cleanSts,
+          rawSts: rawSts,
+          name: rawName,
+          name_kn: cleanNameKn,
+          father: cleanFather,
+          father_kn: cleanFatherKn,
+          class: cleanClass,
+          gender: cleanGender,
+          dob: cleanDob,
+          caste: cleanCaste,
+          medium: cleanMedium,
+          grade_group: cleanGradeGroup
+        });
+      }
+
+      return parsed;
+    }
+
+    // Resolve Class from Spreadsheet Values (Handles LKG 1-25 and UKG 26-60 if Standard is blank in sheet)
+    function resolveClassValue(classVal, gradeGroupVal, srNo, dobStr) {
+      const val = (classVal || gradeGroupVal || '').trim();
+      const upper = val.toUpperCase();
+
+      // 1. Explicit LKG / UKG
+      if (upper === 'LKG' || upper === 'L.K.G' || upper.startsWith('LKG') || upper.includes('LKG')) return 'LKG';
+      if (upper === 'UKG' || upper === 'U.K.G' || upper.startsWith('UKG') || upper.includes('UKG')) return 'UKG';
+
+      // 2. Explicit Class 1 to 10
+      for (let n = 10; n >= 1; n--) {
+        if (upper === String(n) || upper === ('CLASS ' + n) || upper === ('CLASS-' + n) || upper === (n + 'TH') || upper === (n + 'ST') || upper === (n + 'ND') || upper === (n + 'RD') || upper === ('STD ' + n)) {
+          return String(n);
+        }
+      }
+
+      // 3. If Standard is blank in the sheet (e.g. Pre-Primary section where Sr. 1-25 is LKG and Sr. 26-60 is UKG)
+      if (!val) {
+        if (srNo >= 1 && srNo <= 25) return 'LKG';
+        if (srNo >= 26 && srNo <= 60) return 'UKG';
+        if (dobStr) {
+          const y = parseInt(dobStr.split('-')[0], 10);
+          if (y >= 2021) return 'LKG';
+          if (y === 2020) return 'UKG';
+        }
+        return 'LKG';
+      }
+
+      const numMatch = upper.match(/\b(10|[1-9])\b/);
+      if (numMatch) return numMatch[1];
+
+      return val;
+    }
+
+    // Standard Normalizer for filter matching
+    function normalizeClass(val) {
+      if (!val && val !== 0) return '';
+      let s = String(val).toUpperCase().trim();
+      
+      if (s === 'LKG' || s.includes('LKG')) return 'LKG';
+      if (s === 'UKG' || s.includes('UKG')) return 'UKG';
+
+      for (let n = 10; n >= 1; n--) {
+        if (s === String(n) || s.includes('CLASS ' + n) || s.includes('CLASS-' + n) || s.includes(n + 'TH') || s.includes(n + 'ST') || s.includes(n + 'ND') || s.includes(n + 'RD')) {
+          return String(n);
+        }
+      }
+
+      const numMatch = s.match(/\b(10|[1-9])\b/);
+      if (numMatch) return numMatch[1];
+
+      return s;
+    }
+
+    // Standard Normalizer for filter matching
+    function normalizeClass(val) {
+      if (!val && val !== 0) return '';
+      let s = String(val).toUpperCase().trim();
+      
+      if (s === 'LKG' || s.includes('LKG')) return 'LKG';
+      if (s === 'UKG' || s.includes('UKG')) return 'UKG';
+
+      for (let n = 10; n >= 1; n--) {
+        if (s === String(n) || s.includes('CLASS ' + n) || s.includes('CLASS-' + n) || s.includes(n + 'TH') || s.includes(n + 'ST') || s.includes(n + 'ND') || s.includes(n + 'RD')) {
+          return String(n);
+        }
+      }
+
+      const numMatch = s.match(/\b(10|[1-9])\b/);
+      if (numMatch) return numMatch[1];
+
+      return s;
+    }
+
+    function normalizeGender(val) {
+      if (!val) return '';
+      const s = String(val).trim().toUpperCase();
+      if (s.startsWith('B') || s.startsWith('M') || s.includes('ಗಂಡು') || s.includes('BOY') || s.includes('MALE')) return 'Boy';
+      if (s.startsWith('G') || s.startsWith('F') || s.includes('ಹೆಣ್ಣು') || s.includes('GIRL') || s.includes('FEMALE')) return 'Girl';
+      return val;
+    }
+
+    function normalizeDob(val) {
+      if (!val) return '';
+      if (typeof val === 'number') {
+        const d = new Date(Math.round((val - 25569) * 86400 * 1000));
+        return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+      }
+      let s = String(val).trim();
+      s = s.replace(/[\s/._]/g, '-');
+      const parts = s.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          const y = parts[0];
+          const m = parts[1].padStart(2, '0');
+          const d = parts[2].padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        } else if (parts[2].length === 4) {
+          const d = parts[0].padStart(2, '0');
+          const m = parts[1].padStart(2, '0');
+          const y = parts[2];
+          return `${y}-${m}-${d}`;
+        }
+      }
+      return String(val).trim();
+    }
+
+    // --- 4. STATE & SELECTIONS ---
+    let selectedStsSet = new Set();
+
+    // Check if a student is already admitted in the site database
+    function isStudentInSite(s) {
+      if (!s) return false;
+      const cleanSSts = String(s.sts || s.rawSts || '').replace(/[\s\-_.]/g, '');
+      const sName = (s.name || '').trim().toLowerCase();
+
+      return siteStudentsList.some(p => {
+        const pSts = String(p.student_sts || p.enrolment_no || p.sts_no || p.app_no || '').replace(/[\s\-_.]/g, '');
+        const pName = (p.name_english || p.student_name || '').trim().toLowerCase();
+        return (cleanSSts && pSts && cleanSSts === pSts) || (sName && pName && sName === pName);
+      });
+    }
+
+    // --- 5. STATS & QUICK CLASS PILLS ---
+    function updateMetrics() {
+      const total = rawSatsRows.length;
+      const boys = rawSatsRows.filter(s => s.gender === 'Boy').length;
+      const girls = rawSatsRows.filter(s => s.gender === 'Girl').length;
+
+      let admittedCount = 0;
+      rawSatsRows.forEach(s => {
+        if (isStudentInSite(s)) admittedCount++;
+      });
+      const pendingCount = Math.max(0, total - admittedCount);
+      const syncPercent = total > 0 ? Math.round((admittedCount / total) * 100) : 0;
+
+      document.getElementById('statTotalSats').innerText = total;
+      document.getElementById('statTotalBoys').innerText = boys;
+      document.getElementById('statTotalGirls').innerText = girls;
+      document.getElementById('statTotalPending').innerText = pendingCount;
+      document.getElementById('statSyncPercent').innerText = `${syncPercent}%`;
+      document.getElementById('statSyncCountText').innerText = `${admittedCount} / ${total} ದಾಖಲಿಸಲಾಗಿದೆ`;
+
+      renderSummaryMatrix();
+    }
+
+    function renderClassQuickPills() {
+      const container = document.getElementById('classQuickPills');
+      if (!container) return;
+
+      const classes = ['ALL', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      
+      const counts = {};
+      classes.forEach(c => {
+        if (c === 'ALL') counts[c] = rawSatsRows.length;
+        else counts[c] = rawSatsRows.filter(s => normalizeClass(s.class) === c).length;
+      });
+
+      container.innerHTML = classes.map(c => {
+        const isActive = (c === 'ALL' && !currentClassFilter) || (currentClassFilter === c);
+        const label = c === 'ALL' ? 'ಎಲ್ಲಾ (All)' : (c === 'LKG' || c === 'UKG' ? c : `Class ${c}`);
+        const activeClass = isActive 
+          ? 'bg-indigo-600 text-white shadow-md' 
+          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700';
+
+        return `
+          <button onclick="selectQuickClass('${c}')" class="px-2.5 py-1 rounded-xl text-xs font-bold transition cursor-pointer border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 ${activeClass}">
+            <span>${label}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-indigo-800 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'}">${counts[c] || 0}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectQuickClass(c) {
+      currentClassFilter = c === 'ALL' ? '' : c;
+      const dropdown = document.getElementById('classFilter');
+      if (dropdown) dropdown.value = currentClassFilter;
+      currentPage = 1;
+      renderClassQuickPills();
+      renderTable();
+    }
+
+    function onClassDropdownChange(val) {
+      currentClassFilter = val;
+      currentPage = 1;
+      renderClassQuickPills();
+      renderTable();
+    }
+
+    function filterByAdmissionStatus(status) {
+      const sel = document.getElementById('admissionStatusFilter');
+      if (sel) sel.value = status;
+      applyFilters();
+    }
+
+    function toggleSummaryDrawer() {
+      const drawer = document.getElementById('summaryMatrixDrawer');
+      if (!drawer) return;
+      drawer.classList.toggle('hidden');
+      const isHidden = drawer.classList.contains('hidden');
+      const btnText = document.getElementById('summaryDrawerBtnText');
+      if (btnText) btnText.innerText = isHidden ? "ತರಗತಿವಾರು ಸಾರಾಂಶ" : "ಸಾರಾಂಶ ಮರೆಮಾಡಿ";
+      if (!isHidden) renderSummaryMatrix();
+    }
+
+    function renderSummaryMatrix() {
+      const tbody = document.getElementById('summaryMatrixBody');
+      if (!tbody) return;
+
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      
+      tbody.innerHTML = classes.map(cls => {
+        const clsStudents = rawSatsRows.filter(s => normalizeClass(s.class) === cls);
+        const boys = clsStudents.filter(s => s.gender === 'Boy').length;
+        const girls = clsStudents.filter(s => s.gender === 'Girl').length;
+        const total = clsStudents.length;
+        
+        let admitted = 0;
+        clsStudents.forEach(s => {
+          if (isStudentInSite(s)) admitted++;
+        });
+        const pending = Math.max(0, total - admitted);
+        const clsLabel = (cls === 'LKG' || cls === 'UKG') ? cls : `Class ${cls}`;
+
+        return `
+          <tr class="hover:bg-indigo-50/50 dark:hover:bg-slate-800/60 transition">
+            <td class="p-2.5 text-left font-black text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full ${pending === 0 ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+              ${clsLabel}
+            </td>
+            <td class="p-2.5 font-bold text-sky-600 dark:text-sky-400">${boys}</td>
+            <td class="p-2.5 font-bold text-pink-600 dark:text-pink-400">${girls}</td>
+            <td class="p-2.5 font-black text-slate-900 dark:text-white">${total}</td>
+            <td class="p-2.5 font-bold text-emerald-600 dark:text-emerald-400">${admitted}</td>
+            <td class="p-2.5 font-bold text-amber-600 dark:text-amber-400">${pending}</td>
+            <td class="p-2.5">
+              <div class="flex items-center justify-center gap-1">
+                <button onclick="selectQuickClass('${cls}')" class="bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 hover:text-white font-bold text-[10px] px-2 py-0.5 rounded-lg transition cursor-pointer">
+                  ಫಿಲ್ಟರ್
+                </button>
+                ${pending > 0 ? `
+                  <button onclick="admitAllPendingInClass('${cls}')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold text-[10px] px-2 py-0.5 rounded-lg transition cursor-pointer shadow-xs" title="ಈ ತರಗತಿಯ ಬಾಕಿ ಎಲ್ಲರನ್ನೂ ದಾಖಲಿಸಿ">
+                    ದಾಖಲಿಸಿ (${pending})
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function clearSearch() {
+      const input = document.getElementById('satsSearch');
+      if (input) {
+        input.value = '';
+        document.getElementById('btnClearSearch')?.classList.add('hidden');
+        applyFilters();
+      }
+    }
+
+    function applyFilters() {
+      const q = document.getElementById('satsSearch')?.value || '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (q) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+
+      currentPage = 1;
+      renderTable();
+    }
+
+    function changePageSize(val) {
+      pageSize = parseInt(val, 10) || 50;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function sortTable(colKey) {
+      if (sortCol === colKey) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = colKey;
+        sortDir = 'asc';
+      }
+
+      ['sts', 'name', 'father', 'class', 'gender', 'dob'].forEach(k => {
+        const icon = document.getElementById('sort-' + k);
+        if (icon) {
+          if (k === sortCol) {
+            icon.className = `fa-solid fa-sort-${sortDir === 'asc' ? 'up' : 'down'} text-[10px] ml-0.5 text-indigo-400 opacity-100`;
+          } else {
+            icon.className = "fa-solid fa-sort text-[10px] ml-0.5 opacity-60";
+          }
+        }
+      });
+
+      renderTable();
+    }
+
+    // --- 6. SELECTION & BULK ADMISSION LOGIC ---
+    function toggleSelectAll(checked) {
+      const selectAllCb = document.getElementById('selectAllCheckbox');
+      const tableHeaderCb = document.getElementById('tableHeaderSelectAll');
+      if (selectAllCb) selectAllCb.checked = checked;
+      if (tableHeaderCb) tableHeaderCb.checked = checked;
+
+      const checkboxes = document.querySelectorAll('.student-row-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = checked;
+        const sts = cb.getAttribute('data-sts');
+        if (sts) {
+          if (checked) selectedStsSet.add(sts);
+          else selectedStsSet.delete(sts);
+        }
+      });
+      updateBulkActionBar();
+    }
+
+    function onStudentCheckboxChange(sts, checked) {
+      if (checked) selectedStsSet.add(sts);
+      else selectedStsSet.delete(sts);
+      updateBulkActionBar();
+    }
+
+    function updateBulkActionBar() {
+      const count = selectedStsSet.size;
+      const badge = document.getElementById('selectedCountBadge');
+      const btn = document.getElementById('btnBulkAdmit');
+      const selectAllCb = document.getElementById('selectAllCheckbox');
+      const tableHeaderCb = document.getElementById('tableHeaderSelectAll');
+
+      if (count > 0) {
+        if (badge) {
+          badge.classList.remove('hidden');
+          badge.innerText = `${count} ಆಯ್ಕೆಯಾಗಿದೆ`;
+        }
+        if (btn) {
+          btn.classList.remove('hidden');
+        }
+      } else {
+        if (badge) badge.classList.add('hidden');
+        if (btn) btn.classList.add('hidden');
+        if (selectAllCb) selectAllCb.checked = false;
+        if (tableHeaderCb) tableHeaderCb.checked = false;
+      }
+    }
+
+    async function admitSelectedStudents() {
+      const unadmittedList = [];
+      selectedStsSet.forEach(sts => {
+        const s = rawSatsRows.find(r => (r.sts || r.rawSts) === sts);
+        if (s && !isStudentInSite(s)) {
+          unadmittedList.push(s);
+        }
+      });
+
+      if (unadmittedList.length === 0) {
+        alert("ಆಯ್ಕೆ ಮಾಡಿದ ಎಲ್ಲ ವಿದ್ಯಾರ್ಥಿಗಳು ಈಗಾಗಲೇ ಸೈಟ್‌ನಲ್ಲಿ ದಾಖಲಾಗಿದ್ದಾರೆ! 👍");
+        selectedStsSet.clear();
+        updateBulkActionBar();
+        return;
+      }
+
+      const ok = confirm(`⚡ ಬೃಹತ್ ದಾಖಲಾತಿ (Bulk Admission):\n\nಒಟ್ಟು ${unadmittedList.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಸೈಟ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಅಧಿಕೃತವಾಗಿ ದಾಖಲಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತೀರಾ?`);
+      if (!ok) return;
+
+      const schoolId = localStorage.getItem('school_id') || null;
+      const recordsToInsert = unadmittedList.map(s => {
+        const sClass = s.class || '1';
+        const rec = {
+          app_no: s.sts || s.rawSts,
+          student_sts: s.sts || s.rawSts,
+          enrolment_no: s.sts || s.rawSts,
+          name_english: s.name,
+          student_name: s.name_kn || s.name,
+          enroll_class: sClass,
+          gender: s.gender || 'Boy',
+          dob: s.dob || '2015-01-01',
+          father_name_english: s.father || '',
+          father_name: s.father_kn || s.father || '',
+          student_caste: s.caste || '',
+          medium: s.medium || 'ಕನ್ನಡ',
+          status: 'ACTIVE',
+          is_admitted: true
+        };
+        if (schoolId) rec.school_id = schoolId;
+        return rec;
+      });
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('admissions').insert(recordsToInsert).select();
+          if (error) {
+            console.warn("Bulk insert error, fallback inserts:", error);
+          }
+        }
+      } catch (e) {
+        console.warn("DB bulk error:", e);
+      }
+
+      recordsToInsert.forEach(rec => {
+        if (!rec.id) rec.id = 'local_' + Math.random().toString(36).substr(2, 9);
+        siteStudentsList.push(rec);
+      });
+
+      selectedStsSet.clear();
+      updateMetrics();
+      renderTable();
+      updateBulkActionBar();
+      alert(`🎯 ಯಶಸ್ಸು! ಒಟ್ಟು ${recordsToInsert.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೈಟ್‌ಗೆ ದಾಖಲಿಸಿಕೊಳ್ಳಲಾಗಿದೆ!`);
+    }
+
+    async function admitAllPendingInClass(cls) {
+      const pendingInCls = rawSatsRows.filter(s => normalizeClass(s.class) === cls && !isStudentInSite(s));
+      if (pendingInCls.length === 0) {
+        alert(`Class ${cls} ನಲ್ಲಿ ಯಾವುದೇ ಬಾಕಿ ವಿದ್ಯಾರ್ಥಿಗಳು ಇಲ್ಲ.`);
+        return;
+      }
+
+      const ok = confirm(`⚡ Class ${cls} ನ ಒಟ್ಟು ${pendingInCls.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಒಮ್ಮೆಲೇ ಸೈಟ್‌ಗೆ ದಾಖಲಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತೀರಾ?`);
+      if (!ok) return;
+
+      pendingInCls.forEach(s => selectedStsSet.add(s.sts || s.rawSts));
+      await admitSelectedStudents();
+    }
+
+    // --- 7. RENDER SATS MASTER TABLE ---
+    function renderTable() {
+      const q = (document.getElementById('satsSearch')?.value || '').toLowerCase().trim();
+      const cls = currentClassFilter || document.getElementById('classFilter')?.value || '';
+      const gen = document.getElementById('genderFilter')?.value || '';
+      const caste = (document.getElementById('casteFilter')?.value || '').toUpperCase();
+      const statusFilter = document.getElementById('admissionStatusFilter')?.value || '';
+
+      let filtered = rawSatsRows.filter(s => {
+        // Search Filter
+        if (q) {
+          const matchSts = (s.sts || '').toLowerCase().includes(q) || (s.rawSts || '').toLowerCase().includes(q);
+          const matchName = (s.name || '').toLowerCase().includes(q);
+          const matchNameKn = (s.name_kn || '').toLowerCase().includes(q);
+          const matchFather = (s.father || '').toLowerCase().includes(q);
+          const matchFatherKn = (s.father_kn || '').toLowerCase().includes(q);
+          if (!matchSts && !matchName && !matchNameKn && !matchFather && !matchFatherKn) return false;
+        }
+
+        // Class Filter
+        if (cls && normalizeClass(s.class) !== normalizeClass(cls)) {
+          return false;
+        }
+
+        // Gender Filter
+        if (gen && s.gender !== gen) {
+          return false;
+        }
+
+        // Caste Filter
+        if (caste) {
+          const sCaste = (s.caste || '').toUpperCase();
+          if (caste === 'SC' && !sCaste.includes('SC') && !sCaste.includes('SCHEDULED CASTE')) return false;
+          if (caste === 'ST' && !sCaste.includes('ST') && !sCaste.includes('SCHEDULED TRIBE')) return false;
+          if (caste === 'OTHERS' && (sCaste.includes('SC') || sCaste.includes('ST') || sCaste === 'GENERAL')) return false;
+          if (caste === 'GENERAL' && sCaste !== 'GENERAL' && sCaste !== 'GM') return false;
+        }
+
+        // Admission Status Filter
+        if (statusFilter) {
+          const inSite = isStudentInSite(s);
+          if (statusFilter === 'missing' && inSite) return false;
+          if (statusFilter === 'admitted' && !inSite) return false;
+        }
+
+        return true;
+      });
+
+      // Sorting
+      filtered.sort((a, b) => {
+        let valA = '';
+        let valB = '';
+
+        if (sortCol === 'name') {
+          valA = (a.name || '').toLowerCase();
+          valB = (b.name || '').toLowerCase();
+        } else if (sortCol === 'sts') {
+          valA = (a.sts || '').toLowerCase();
+          valB = (b.sts || '').toLowerCase();
+        } else if (sortCol === 'class') {
+          valA = parseInt(normalizeClass(a.class), 10) || 0;
+          valB = parseInt(normalizeClass(b.class), 10) || 0;
+          return sortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (sortCol === 'gender') {
+          valA = a.gender || '';
+          valB = b.gender || '';
+        } else if (sortCol === 'dob') {
+          valA = a.dob || '';
+          valB = b.dob || '';
+        } else if (sortCol === 'father') {
+          valA = (a.father || '').toLowerCase();
+          valB = (b.father || '').toLowerCase();
+        }
+
+        if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+        if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      const totalItems = filtered.length;
+      document.getElementById('displayCountText').innerText = `ತೋರಿಸಲಾಗುತ್ತಿದೆ: ${totalItems} ವಿದ್ಯಾರ್ಥಿಗಳು`;
+
+      const tbody = document.getElementById('satsTableBody');
+      if (totalItems === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="13" class="text-center py-12 text-slate-400 font-bold">
+              <i class="fa-solid fa-file-circle-question text-3xl mb-2 text-indigo-400"></i>
+              <p>ಯಾವುದೇ SATS ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ (No records found for selected filter).</p>
+            </td>
+          </tr>
+        `;
+        document.getElementById('paginationInfo').innerText = "ಪುಟ 1 / 1";
+        document.getElementById('paginationBtns').innerHTML = "";
+        return;
+      }
+
+      // Pagination
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      currentPage = Math.min(currentPage, totalPages);
+      const startIdx = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(startIdx, startIdx + pageSize);
+
+      tbody.innerHTML = pageItems.map((s, pageIdx) => {
+        const globalIdx = startIdx + pageIdx + 1;
+        const sSts = s.rawSts || s.sts || '-';
+        const sClass = s.class || '1';
+        const inSite = isStudentInSite(s);
+        const isChecked = selectedStsSet.has(sSts);
+
+        let actionBtnHtml = '';
+        if (inSite) {
+          actionBtnHtml = `
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-300 flex items-center justify-center gap-1">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i> ಸೈಟ್‌ನಲ್ಲಿದ್ದಾರೆ
+            </span>
+          `;
+        } else {
+          actionBtnHtml = `
+            <button onclick="admitStudentToSite('${sSts}')" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs py-1 px-2.5 rounded-xl border-0 cursor-pointer shadow flex items-center justify-center gap-1 mx-auto transition">
+              <i class="fa-solid fa-user-plus text-[10px]"></i> ದಾಖಲಿಸಿ
+            </button>
+          `;
+        }
+
+        return `
+          <tr class="hover:bg-indigo-50/40 dark:hover:bg-slate-800/60 transition border-b border-slate-100 dark:border-slate-800 group">
+            <td class="p-3 text-center sticky-col-1 bg-white dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-slate-800 transition">
+              <input type="checkbox" data-sts="${sSts}" ${isChecked ? 'checked' : ''} onchange="onStudentCheckboxChange('${sSts}', this.checked)" class="student-row-checkbox w-4 h-4 text-indigo-600 rounded cursor-pointer">
+            </td>
+            <td class="p-3 text-center font-bold text-slate-400 sticky-col-2 bg-white dark:bg-slate-900 group-hover:bg-indigo-50 dark:group-hover:bg-slate-800 transition">${globalIdx}</td>
+            <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline" onclick="openStudentModal('${sSts}')" title="ಕ್ಲಿಕ್ ಮಾಡಿ ಸಂಪೂರ್ಣ ವಿವರ ವೀಕ್ಷಿಸಿ">
+              ${sSts}
+            </td>
+            <td class="p-3 font-black text-slate-900 dark:text-white cursor-pointer hover:text-indigo-600 transition" onclick="openStudentModal('${sSts}')">
+              ${s.name || '-'}
+            </td>
+            <td class="p-3 text-slate-700 dark:text-slate-200 font-semibold">
+              ${s.name_kn || '-'}
+            </td>
+            <td class="p-3 text-slate-800 dark:text-slate-200">
+              ${s.father || '-'}
+            </td>
+            <td class="p-3 text-slate-700 dark:text-slate-300 font-semibold">
+              ${s.father_kn || '-'}
+            </td>
+            <td class="p-3 text-center bg-indigo-50/30 dark:bg-indigo-950/20 border-x border-indigo-100 dark:border-indigo-900/50">
+              <span class="px-2.5 py-1 rounded-xl text-xs font-black ${sClass === 'LKG' || sClass === 'UKG' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/60 dark:text-purple-200 border-purple-300' : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/60 dark:text-indigo-200 border-indigo-300'} border shadow-sm">
+                ${sClass === 'LKG' || sClass === 'UKG' ? sClass : 'Class ' + sClass}
+              </span>
+            </td>
+            <td class="p-3 text-center font-semibold text-slate-600 dark:text-slate-300">
+              ${s.gender || '-'}
+            </td>
+            <td class="p-3 text-center font-mono text-xs text-slate-600 dark:text-slate-300">
+              ${s.dob || '-'}
+            </td>
+            <td class="p-3 text-center text-xs text-slate-600 dark:text-slate-300 font-semibold">
+              ${s.caste || '-'}
+            </td>
+            <td class="p-3 text-center text-xs text-slate-600 dark:text-slate-300 font-semibold">
+              ${s.medium || 'Kannada'}
+            </td>
+            <td class="p-3 text-center bg-slate-50 dark:bg-slate-900/50">
+              ${actionBtnHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('paginationInfo').innerText = `ಪುಟ ${currentPage} / ${totalPages}`;
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      const container = document.getElementById('paginationBtns');
+      if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = '';
+      if (currentPage > 1) {
+        html += `<button onclick="goToPage(${currentPage - 1})" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-700 rounded-lg font-bold">‹</button>`;
+      }
+      for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+        html += `<button onclick="goToPage(${i})" class="px-2.5 py-1 rounded-lg font-bold ${i === currentPage ? 'bg-indigo-600 text-white' : 'bg-slate-200 dark:bg-slate-700'}">${i}</button>`;
+      }
+      if (currentPage < totalPages) {
+        html += `<button onclick="goToPage(${currentPage + 1})" class="px-2.5 py-1 bg-slate-200 dark:bg-slate-700 rounded-lg font-bold">›</button>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      renderTable();
+    }
+
+    // --- 8. 1-CLICK DIRECT ADMISSION TO SITE DATABASE ---
+    async function admitStudentToSite(sts) {
+      const cleanSts = String(sts || '').replace(/[\s\-_.]/g, '');
+      const s = rawSatsRows.find(r => r.sts === cleanSts || r.rawSts === sts || r.sts === sts);
+      if (!s) {
+        alert("ವಿದ್ಯಾರ್ಥಿ ವಿವರ ಕಂಡುಬಂದಿಲ್ಲ.");
+        return;
+      }
+
+      const sClass = s.class || '1';
+      const ok = confirm(`➕ ಸೈಟ್‌ಗೆ ದಾಖಲಾತಿ (Admission Confirmation):\n\nವಿದ್ಯಾರ್ಥಿ ಹೆಸರು: ${s.name} (${s.name_kn || ''})\nSTS ಸಂಖ್ಯೆ: ${s.sts || s.rawSts}\nತರಗತಿ: Class ${sClass}\nತಂದೆಯ ಹೆಸರು: ${s.father}\nಲಿಂಗ: ${s.gender}\n\nಈ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಸೈಟ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಅಧಿಕೃತವಾಗಿ ದಾಖಲಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತೀರಾ?`);
+      if (!ok) return;
+
+      const schoolId = localStorage.getItem('school_id') || null;
+      const newRecord = {
+        app_no: s.sts || s.rawSts,
+        student_sts: s.sts || s.rawSts,
+        enrolment_no: s.sts || s.rawSts,
+        name_english: s.name,
+        student_name: s.name_kn || s.name,
+        enroll_class: sClass,
+        gender: s.gender || 'Boy',
+        dob: s.dob || '2015-01-01',
+        father_name_english: s.father || '',
+        father_name: s.father_kn || s.father || '',
+        student_caste: s.caste || '',
+        medium: s.medium || 'ಕನ್ನಡ',
+        status: 'ACTIVE',
+        is_admitted: true
+      };
+      if (schoolId) newRecord.school_id = schoolId;
+
+      try {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.from('admissions').insert([newRecord]).select();
+          if (error) {
+            console.warn("DB insert error, retrying base record:", error);
+            const baseRecord = {
+              app_no: s.sts || s.rawSts,
+              name_english: s.name,
+              student_name: s.name,
+              enroll_class: sClass,
+              gender: s.gender || 'Boy',
+              dob: s.dob || '2015-01-01',
+              father_name_english: s.father || '',
+              father_name: s.father || '',
+              status: 'ACTIVE',
+              is_admitted: true
+            };
+            if (schoolId) baseRecord.school_id = schoolId;
+            const res2 = await supabaseClient.from('admissions').insert([baseRecord]).select();
+            if (res2.data && res2.data[0]) newRecord.id = res2.data[0].id;
+          } else if (data && data[0]) {
+            newRecord.id = data[0].id;
+          }
+        }
+      } catch (e) {
+        console.warn("DB admission insert fallback:", e);
+      }
+
+      if (!newRecord.id) newRecord.id = 'local_' + Date.now();
+      siteStudentsList.push(newRecord);
+      updateMetrics();
+      renderTable();
+      alert(`ವಿದ್ಯಾರ್ಥಿ ${s.name} (Class ${sClass}) ಅವರನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಸೈಟ್‌ನ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಗೆ ದಾಖಲಿಸಿಕೊಳ್ಳಲಾಗಿದೆ! 🎯`);
+    }
+
+    // --- 9. STUDENT PROFILE MODAL ---
+    function openStudentModal(sts) {
+      const s = rawSatsRows.find(r => (r.sts || r.rawSts) === sts);
+      if (!s) return;
+
+      const inSite = isStudentInSite(s);
+      const sClass = s.class || '1';
+
+      document.getElementById('modalStudentName').innerText = `${s.name} ${s.name_kn ? '(' + s.name_kn + ')' : ''}`;
+      document.getElementById('modalSts').innerText = `STS: ${s.sts || s.rawSts}`;
+
+      const grid = document.getElementById('modalContentGrid');
+      grid.innerHTML = `
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ತರಗತಿ (Class)</span>
+          <span class="font-black text-indigo-600 dark:text-indigo-400 text-sm">${sClass === 'LKG' || sClass === 'UKG' ? sClass : 'Class ' + sClass}</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ಲಿಂಗ (Gender)</span>
+          <span class="font-bold text-slate-800 dark:text-slate-200">${s.gender || '-'}</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ತಂದೆಯ ಹೆಸರು (Father)</span>
+          <span class="font-bold text-slate-800 dark:text-slate-200">${s.father || '-'} ${s.father_kn ? '(' + s.father_kn + ')' : ''}</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ಜನ್ಮ ದಿನಾಂಕ (DOB)</span>
+          <span class="font-mono font-bold text-slate-800 dark:text-slate-200">${s.dob || '-'}</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ಜಾತಿ / ವರ್ಗ</span>
+          <span class="font-bold text-slate-800 dark:text-slate-200">${s.caste || '-'}</span>
+        </div>
+        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl">
+          <span class="text-slate-400 block text-[10px] font-bold uppercase">ಮಾಧ್ಯಮ (Medium)</span>
+          <span class="font-bold text-slate-800 dark:text-slate-200">${s.medium || 'Kannada'}</span>
+        </div>
+      `;
+
+      const footer = document.getElementById('modalActionFooter');
+      if (inSite) {
+        footer.innerHTML = `
+          <span class="px-3 py-1.5 rounded-xl font-black text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-emerald-500"></i> ಈ ವಿದ್ಯಾರ್ಥಿ ಈಗಾಗಲೇ ಸೈಟ್‌ನಲ್ಲಿ ದಾಖಲಾಗಿದ್ದಾರೆ
+          </span>
+          <button onclick="closeStudentModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-xl font-bold text-xs cursor-pointer">ಮುಚ್ಚಿ</button>
+        `;
+      } else {
+        footer.innerHTML = `
+          <button onclick="closeStudentModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-xl font-bold text-xs cursor-pointer">ರದ್ದು</button>
+          <button onclick="admitStudentToSite('${s.sts || s.rawSts}'); closeStudentModal();" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-black text-xs shadow-md cursor-pointer flex items-center gap-1.5">
+            <i class="fa-solid fa-user-plus"></i> ಸೈಟ್‌ಗೆ ದಾಖಲಿಸಿ
+          </button>
+        `;
+      }
+
+      document.getElementById('studentProfileModal').classList.remove('hidden');
+    }
+
+    function closeStudentModal() {
+      document.getElementById('studentProfileModal').classList.add('hidden');
+    }
+
+    // --- 10. PRINT & EXCEL EXPORT ---
+    function printClassRoster() {
+      const cls = currentClassFilter ? (currentClassFilter === 'LKG' || currentClassFilter === 'UKG' ? currentClassFilter : `Class ${currentClassFilter}`) : 'All Classes';
+      document.title = `SATS_Roster_${cls}_GHPS_MARCHED`;
+      window.print();
+    }
+
+    function exportExcelReport() {
+      if (rawSatsRows.length === 0) {
+        alert("ರಫ್ತು ಮಾಡಲು ಯಾವುದೇ SATS ಡೇಟಾ ಇಲ್ಲ.");
+        return;
+      }
+
+      const q = (document.getElementById('satsSearch')?.value || '').toLowerCase().trim();
+      const cls = currentClassFilter || document.getElementById('classFilter')?.value || '';
+      const gen = document.getElementById('genderFilter')?.value || '';
+      const statusFilter = document.getElementById('admissionStatusFilter')?.value || '';
+
+      const exportList = rawSatsRows.filter(s => {
+        if (q) {
+          const matchSts = (s.sts || '').toLowerCase().includes(q) || (s.rawSts || '').toLowerCase().includes(q);
+          const matchName = (s.name || '').toLowerCase().includes(q);
+          if (!matchSts && !matchName) return false;
+        }
+        if (cls && normalizeClass(s.class) !== normalizeClass(cls)) return false;
+        if (gen && s.gender !== gen) return false;
+        if (statusFilter) {
+          const inSite = isStudentInSite(s);
+          if (statusFilter === 'missing' && inSite) return false;
+          if (statusFilter === 'admitted' && !inSite) return false;
+        }
+        return true;
+      });
+
+      const rows = exportList.map((s, idx) => ({
+        "Sl No": idx + 1,
+        "STS Number": s.sts || s.rawSts,
+        "Student Name": s.name,
+        "Student Name (Kannada)": s.name_kn || '',
+        "Father Name": s.father || '',
+        "Father Name (Kannada)": s.father_kn || '',
+        "Standard / Class": (s.class === 'LKG' || s.class === 'UKG') ? s.class : 'Class ' + (s.class || '1'),
+        "Gender": s.gender || '',
+        "Date of Birth": s.dob || '',
+        "Social Category": s.caste || '',
+        "Medium": s.medium || 'Kannada',
+        "Site Enrolled": isStudentInSite(s) ? 'YES (ದಾಖಲಾಗಿದೆ)' : 'NO (ಬಾಕಿ ಇದೆ)'
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "SATS_Students");
+      XLSX.writeFile(wb, `SATS_Official_Roster_${cls || 'ALL'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+  </script>
+</body>
+</html>

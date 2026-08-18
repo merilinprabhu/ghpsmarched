@@ -1,6 +1,61 @@
 // GHPS Marched School Portal Shared Navigation Component
 // Upgraded to ULTRA-MODERN GLASSMORPHIC STYLE with PREMIUM RADIUM ACCENTS
 // Supports three layouts: default_top, modern_top, and side (left sidebar)
+window.PORTAL_VERSION = "2.5.1";
+window.PORTAL_BUILD_DATE = "2026.07.27";
+
+// Shared Supabase Client Singleton Helper
+window.getPortalSupabase = function() {
+  if (window.portalSupabaseClient) return window.portalSupabaseClient;
+  const url = localStorage.getItem('supabase_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+  const key = localStorage.getItem('supabase_key') || "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    window.portalSupabaseClient = window.supabase.createClient(url, key);
+    window.supabaseClient = window.portalSupabaseClient;
+    return window.portalSupabaseClient;
+  }
+  return null;
+};
+
+// Global Glassmorphic Toast Notification Utility
+window.showPortalToast = function(message, type = 'info', duration = 3000) {
+  let container = document.getElementById('portal-toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'portal-toast-container';
+    container.className = 'fixed bottom-5 right-5 z-[99999] flex flex-col gap-2 pointer-events-none';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  const bgColors = {
+    success: 'bg-emerald-600/90 text-white border-emerald-400/30',
+    error: 'bg-rose-600/90 text-white border-rose-400/30',
+    warning: 'bg-amber-600/90 text-white border-amber-400/30',
+    info: 'bg-indigo-600/90 text-white border-indigo-400/30'
+  };
+  const icons = {
+    success: 'fa-circle-check',
+    error: 'fa-circle-exclamation',
+    warning: 'fa-triangle-exclamation',
+    info: 'fa-circle-info'
+  };
+  const colorClass = bgColors[type] || bgColors.info;
+  const iconClass = icons[type] || icons.info;
+
+  toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl backdrop-blur-md border text-sm font-medium transition-all duration-300 transform translate-y-4 opacity-0 ${colorClass}`;
+  toast.innerHTML = `<i class="fa-solid ${iconClass} text-lg"></i><span>${message}</span>`;
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.remove('translate-y-4', 'opacity-0');
+  });
+
+  setTimeout(() => {
+    toast.classList.add('translate-y-4', 'opacity-0');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+};
+
 (function() {
   const initialLayout = localStorage.getItem('school_nav_layout') || 'default_top';
 
@@ -28,17 +83,35 @@
       layoutStyleEl.textContent = `
         @media screen and (min-width: 1024px) {
           body {
-            padding-left: 260px !important;
+            padding-left: 270px !important;
             transition: padding-left 0.3s ease;
           }
+          body > div:not(#navbar-container):not(#navbar-placeholder),
+          body > main,
+          #main-content,
+          .main-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+          }
           .sticky.top-0:not(#navbar-placeholder):not(#navbar-container) {
-            left: 260px !important;
-            width: calc(100% - 260px) !important;
+            left: 270px !important;
+            width: calc(100% - 270px) !important;
+          }
+        }
+        @media screen and (max-width: 1023px) {
+          body {
+            padding-left: 0 !important;
           }
         }
       `;
     } else {
-      layoutStyleEl.textContent = '';
+      layoutStyleEl.textContent = `
+        body {
+          padding-left: 0 !important;
+          transition: padding-left 0.3s ease;
+        }
+      `;
     }
   }
   
@@ -91,6 +164,13 @@
       border-color: rgba(239, 68, 68, 0.6) !important;
     }
 
+    /* Protect Left Sidebar from theme override */
+    #navbar-container aside {
+      background-color: #020617 !important;
+      color: #f8fafc !important;
+      border-color: #1e293b !important;
+    }
+
     /* Active Tab Glow Indicator */
     .active-nav-tab {
       background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
@@ -99,16 +179,77 @@
       color: #4f46e5 !important;
     }
 
-    /* Scrollbar customization for mobile drawer & sidebar */
-    .mobile-menu-drawer::-webkit-scrollbar {
-      width: 4px;
+    /* Ultra-Clean Collapsed Logo-Only Icon Button */
+    #navbar-placeholder {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .mobile-menu-drawer::-webkit-scrollbar-track {
-      background: rgba(15, 23, 42, 0.5);
+    #navbar-placeholder.portal-nav-collapsed {
+      position: fixed;
+      top: 0.85rem;
+      left: 0.85rem;
+      z-index: 1000;
+      width: auto !important;
+      max-width: none !important;
+      pointer-events: auto;
     }
-    .mobile-menu-drawer::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
+    #navbar-placeholder.portal-nav-collapsed #navbar-container {
+      max-width: fit-content !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border-radius: 1.25rem !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    #navbar-placeholder.portal-nav-collapsed #navbar-container .nav-expanded-content {
+      display: none !important;
+    }
+    #navbar-placeholder.portal-nav-collapsed #navbar-container .nav-collapsed-content {
+      display: block !important;
+    }
+    .nav-collapsed-content {
+      display: none;
+      cursor: pointer;
+    }
+    .nav-collapsed-icon-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 1.15rem;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.22), 0 0 18px rgba(99, 102, 241, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      position: relative;
+    }
+    body[data-theme="dark"] .nav-collapsed-icon-btn,
+    .dark .nav-collapsed-icon-btn {
+      background: rgba(15, 23, 42, 0.92);
+      border-color: rgba(129, 140, 248, 0.4);
+      box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.55), 0 0 18px rgba(129, 140, 248, 0.35);
+    }
+    .nav-collapsed-icon-btn:hover {
+      transform: scale(1.12);
+      box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.3), 0 0 25px rgba(99, 102, 241, 0.65);
+      border-color: rgba(99, 102, 241, 0.85);
+    }
+    .nav-collapsed-icon-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0.85rem;
+    }
+    .nav-expanded-content {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
   `;
   document.head.appendChild(styleEl);
@@ -118,14 +259,14 @@
     { name: "Dashboard", href: "dashboard.html", icon: "fa-chart-pie", color: "text-indigo-400" },
     { name: "Admin Panel", href: "admin.html", icon: "fa-shield-halved", color: "text-rose-400" },
     {
-      name: "Teachers & School",
+      name: "Teacher & School",
       icon: "fa-chalkboard-user",
       color: "text-emerald-400",
       items: [
-        { name: "Regular Teachers / ಖಾಯಂ ಶಿಕ್ಷಕರು", href: "teachers.html" },
-        { name: "Guest Teachers / ಅತಿಥಿ ಶಿಕ್ಷಕರು (KDP)", href: "GuestTeachers.html" },
-        { name: "SDMC Committee / SDMC ಸಮಿತಿ (KDP)", href: "SdmcManagement.html" },
-        { name: "About School & Facilities / ಶಾಲಾ ಸೌಲಭ್ಯಗಳು (KDP)", href: "AboutSchool.html" }
+        { name: "Teacher", href: "teachers.html" },
+        { name: "Guest Teacher", href: "GuestTeachers.html" },
+        { name: "SDMC Management", href: "SdmcManagement.html" },
+        { name: "About School", href: "AboutSchool.html" }
       ]
     },
     {
@@ -138,10 +279,9 @@
         { name: "View Students", href: "StudentList.html" },
         { name: "Update Details", href: "StudentUpdate.html" },
         { name: "Aadhar Update", href: "ApaarModule.html" },
-        { name: "Certificates Dashboard / ಪ್ರಮಾಣ ಪತ್ರಗಳ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", href: "certificates.html" },
-        { name: "Transfer Certificate / ಟಿಸಿ", href: "tc.html" },
-        { name: "Recycle Bin / ಮರುಬಳಕೆ ಬುಟ್ಟಿ 🗑️", href: "RecycleBin.html" },
-        { name: "Marks Card / ಅಂಕಪಟ್ಟಿ", href: "marks_card.html" }
+        { name: "Certificates / ಪ್ರಮಾಣ ಪತ್ರಗಳು (10 Types)", href: "certificates.html" },
+        { name: "Bin & TC Out Register / ಮರುಬಳಕೆ ಬುಟ್ಟಿ", href: "RecycleBin.html" },
+        { name: "SATS & Portal Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" }
       ]
     },
     {
@@ -155,15 +295,29 @@
       ]
     },
     {
+      name: "SATS / STS",
+      icon: "fa-id-card",
+      color: "text-indigo-400",
+      items: [
+        { name: "SATS Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" },
+        { name: "STS Student List / ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ", href: "StudentList.html" },
+        { name: "Missing STS Check / ಅಲಭ್ಯ STS ತಪಾಸಣೆ", href: "StudentList.html?sts_check=missing" },
+        { name: "STS Verified List / ಪರಿಶೀಲಿಸಿದ STS ಪಟ್ಟಿ", href: "StudentList.html?sts_check=has_sts" },
+        { name: "SATS / STS Portal", href: "https://sts.karnataka.gov.in", external: true }
+      ]
+    },
+    {
       name: "Academic",
       icon: "fa-book-open",
       color: "text-pink-400",
       items: [
         { name: "Bridge Course", href: "BridgeCourse.html" },
         { name: "CCE Assessment", href: "CceAssessmet.html" },
+        { name: "CCE Consolidated Report / ಸಿಸಿಇ ಸಂಯೋಜಿತ ವರದಿ", href: "CceConsolidatedReport.html" },
+        { name: "CCE Part-B Entry / ಭಾಗ-ಬಿ ದಾಖಲಿಸುವ ಪೇಜ್", href: "CcePartB.html" },
         { name: "LBA Assessment", href: "LbaAssessment.html" },
         { name: "FLN Assessment", href: "FlnAssessment.html" },
-        { name: "Attendance Management", href: "Attendance.html" }
+        { name: "Attendance Management / ಹಾಜರಾತಿ ನಿರ್ವಹಣೆ", href: "Attendance.html" }
       ]
     },
     { name: "Custom Reports", href: "custom_reports.html", icon: "fa-file-invoice", color: "text-purple-400" },
@@ -181,19 +335,13 @@
       ]
     },
     {
-      name: "Attendance",
-      icon: "fa-calendar-check",
-      color: "text-orange-400",
-      items: [
-        { name: "Manage Attendance", href: "Attendance.html" }
-      ]
-    },
-    {
       name: "Finance",
       icon: "fa-wallet",
-      color: "text-rose-400",
+      color: "text-emerald-400",
       items: [
-        { name: "Exam Fee Collection", href: "#" }
+        { name: "Finance Dashboard / ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", href: "Finance.html?tab=dashboard" },
+        { name: "Fee Collection / ಶುಲ್ಕ ಸಂಗ್ರಹಣೆ", href: "Finance.html?tab=collection" },
+        { name: "Fee Settings / ಶುಲ್ಕ ಸೆಟ್ಟಿಂಗ್ಸ್", href: "Finance.html?tab=settings" }
       ]
     },
     {
@@ -274,6 +422,12 @@
                 </select>
               </div>
 
+              <!-- Version Badge Button -->
+              <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm animate-pulse" title="Version 2.5.0 - Click to view What's New">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[10px]"></i>
+                <span>v2.5.0</span>
+              </button>
+
               <!-- User Badge Capsule -->
               <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-2.5 py-1 shadow-inner">
                 <i class="fa-solid fa-user-circle text-indigo-500 text-xs"></i>
@@ -304,61 +458,77 @@
       headerHtml = `
         <div id="navbar-container" class="no-print">
           <!-- Desktop Left Sidebar (screens >= 1024px) -->
-          <aside class="hidden lg:flex fixed top-0 left-0 bottom-0 w-[260px] h-screen bg-slate-950/60 border-r border-white/10 backdrop-blur-2xl flex flex-col justify-between text-white z-50 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+          <aside class="hidden lg:flex fixed top-0 left-0 bottom-0 w-[270px] h-screen bg-slate-950 border-r border-slate-800/80 flex flex-col justify-between text-white z-50 shadow-[4px_0_30px_rgba(0,0,0,0.5)]">
+            <!-- Top Radium Gradient Line -->
+            <div class="h-1 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+
             <!-- Brand & User Profile -->
-            <div class="p-5 flex flex-col gap-4 border-b border-white/10">
+            <div class="p-4 flex flex-col gap-3 border-b border-slate-800/80 bg-slate-900/60">
               <div class="flex items-center gap-3">
-                <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 object-contain rounded-xl border border-white/20 bg-white/5 p-1 shadow-md">
-                <div>
-                  <h1 class="text-[11px] font-extrabold uppercase tracking-wider bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent school-title-short truncate max-w-[150px]">GHPS Marched</h1>
-                  <p class="text-[8px] text-indigo-300/70 font-semibold tracking-wider school-title-kn truncate max-w-[150px]">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
+                <img src="${logoUrl}" alt="School Logo" class="h-14 w-14 object-contain rounded-xl border border-indigo-500/40 bg-white/10 p-1 shadow-lg shadow-indigo-500/20">
+                <div class="min-w-0 flex-1">
+                  <h1 class="text-xs font-black uppercase tracking-wider text-white school-title-short truncate drop-shadow-sm">GHPS Marched</h1>
+                  <p class="text-[9px] text-sky-300 font-extrabold tracking-wide school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
                 </div>
               </div>
               
-              <!-- User Badge -->
-              <div class="flex items-center gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-xl px-3 py-2 shadow-inner">
-                <i class="fa-solid fa-user-circle text-lg text-indigo-400"></i>
-                <div class="flex flex-col min-w-0">
-                  <span id="headerUser" class="font-bold text-slate-200 text-xs truncate max-w-[140px]">User</span>
+              <!-- User Badge Capsule -->
+              <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-2 shadow-inner">
+                <div class="flex items-center gap-2 min-w-0">
+                  <div class="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                    <i class="fa-solid fa-user-shield"></i>
+                  </div>
+                  <div class="flex flex-col min-w-0">
+                    <span id="headerUser" class="font-bold text-slate-100 text-xs truncate max-w-[120px]">User</span>
+                    <span class="text-[8px] font-extrabold uppercase text-indigo-400 font-mono tracking-wider">${userRole}</span>
+                  </div>
                 </div>
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" title="System Online"></span>
               </div>
+
+              <!-- Version Badge Button -->
+              <button type="button" onclick="window.openWhatsNewModal()" class="flex items-center justify-between w-full bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/40 text-emerald-300 font-extrabold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-xs" title="Version 2.5.0 - What's New?">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xs"></i> What's New?</span>
+                <span class="px-1.5 py-0.5 bg-emerald-500/30 text-emerald-300 rounded-full text-[9px] font-mono font-bold">v2.5.0</span>
+              </button>
             </div>
 
             <!-- Sidebar Nav Links -->
-            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto mobile-menu-drawer" id="desktopNav">
+            <nav class="flex-1 px-3 py-3 space-y-1.5 overflow-y-auto mobile-menu-drawer" id="desktopNav">
               <!-- Vertical menu items will be injected here -->
             </nav>
 
             <!-- Bottom Controls -->
-            <div class="p-4 border-t border-slate-800/60 bg-slate-950/50 space-y-3">
-              <div class="flex items-center justify-between bg-black/40 border border-slate-800/80 rounded-xl px-3 py-2">
-                <span id="liveDate" class="text-[9px] text-slate-400 font-bold uppercase"></span>
+            <div class="p-3.5 border-t border-slate-800 bg-slate-900/90 space-y-2.5">
+              <div class="flex items-center justify-between bg-black/60 border border-slate-800 rounded-xl px-3 py-1.5">
+                <span id="liveDate" class="text-[9px] text-slate-300 font-extrabold uppercase tracking-wider"></span>
                 <span id="liveClock" class="font-mono font-black text-emerald-400 text-xs glow-text-emerald"></span>
               </div>
               
               <!-- Layout Selector -->
-              <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">
-                <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-table-columns text-indigo-455 mr-1"></i> Layout:</span>
-                <select id="layoutSelector" onchange="window.applyNavLayout(this.value)" class="bg-transparent text-white border-0 text-xs font-bold focus:outline-none cursor-pointer">
-                  <option class="bg-slate-900 text-white" value="default_top">Default Top</option>
-                  <option class="bg-slate-900 text-white" value="modern_top">Modern Top</option>
-                  <option class="bg-slate-900 text-white" value="side">Left Sidebar</option>
-                  <option class="bg-slate-900 text-white" value="compact_top">Compact Top</option>
+              <div class="flex items-center justify-between bg-slate-800/80 border border-slate-700/80 rounded-xl px-2.5 py-1">
+                <span class="text-slate-300 font-extrabold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-table-columns text-indigo-400 mr-1"></i> Layout:</span>
+                <select id="layoutSelector" onchange="window.applyNavLayout(this.value)" class="bg-slate-900 text-white border border-slate-700 rounded-lg text-xs font-bold focus:outline-none cursor-pointer py-0.5 px-1">
+                  <option value="default_top">Default Top</option>
+                  <option value="modern_top">Modern Top</option>
+                  <option value="side">Left Sidebar</option>
+                  <option value="compact_top">Compact Top</option>
                 </select>
               </div>
 
-              <div class="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-3 py-1.5">
-                <span class="text-slate-400 font-bold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-400 mr-1"></i> Theme:</span>
-                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-white border-0 text-xs font-bold focus:outline-none cursor-pointer">
-                  <option class="bg-slate-900 text-white" value="light">Light</option>
-                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                  <option class="bg-slate-900 text-white" value="green">Green</option>
+              <!-- Theme Selector -->
+              <div class="flex items-center justify-between bg-slate-800/80 border border-slate-700/80 rounded-xl px-2.5 py-1">
+                <span class="text-slate-300 font-extrabold text-[9px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-400 mr-1"></i> Theme:</span>
+                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-slate-900 text-white border border-slate-700 rounded-lg text-xs font-bold focus:outline-none cursor-pointer py-0.5 px-1">
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="gray">Gray</option>
+                  <option value="blue">Blue</option>
+                  <option value="green">Green</option>
                 </select>
               </div>
               
-              <button onclick="handleLogout()" class="w-full bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-400 hover:text-white py-2 rounded-xl text-xs font-bold transition duration-300 flex items-center justify-center gap-1.5 shadow-sm glow-shadow-red-hover">
+              <button type="button" onclick="handleLogout()" class="w-full bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white py-2 rounded-xl text-xs font-extrabold transition-all duration-300 flex items-center justify-center gap-2 shadow-md cursor-pointer border-0">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
               </button>
             </div>
@@ -414,76 +584,47 @@
           </div>
         </div>
       `;
-    } else if (layout === 'modern_top') {
+    } else if (layout === 'modern_top' || layout === 'default_top') {
       headerHtml = `
-        <div id="navbar-container" class="mx-auto mt-3 mb-2 max-w-[98%] rounded-3xl border border-slate-900/10 backdrop-blur-2xl bg-white/50 shadow-[0_12px_40px_rgba(0,0,0,0.12)] text-slate-900 no-print flex flex-col flex-shrink-0">
+        <div id="navbar-container" class="mx-auto mt-2 mb-2 max-w-[98%] rounded-3xl border border-slate-900/10 dark:border-slate-800 backdrop-blur-2xl bg-white/60 dark:bg-slate-900/60 shadow-[0_12px_40px_rgba(0,0,0,0.12)] text-slate-900 dark:text-slate-100 no-print flex flex-col flex-shrink-0 transition-all duration-300">
           <!-- Top Neon Radium Gradient line -->
-          <div class="h-[3px] w-full bg-gradient-to-r from-purple-500 via-indigo-500 to-emerald-500 rounded-t-3xl"></div>
+          <div class="h-[3px] w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 rounded-t-3xl"></div>
           
-          <!-- Top Row (Logo, School Name, Controls) -->
-          <div class="w-full px-6 py-4 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-            <!-- Left Logo -->
-            <div class="flex items-center gap-3 shrink-0">
-              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 lg:h-20 lg:w-20 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
-            </div>
-
-            <!-- Center Brand Name -->
-            <div class="flex-1 text-center min-w-0 px-2 sm:px-4">
-              <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
-              <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
-            </div>
-
-            <!-- Right Status & Controls -->
-            <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
-              <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
-                <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
-                <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
+          <!-- COLLAPSED STATE (SHOW ONLY THE LOGO ICON) -->
+          <div class="nav-collapsed-content" onclick="window.togglePortalNav(false)" title="ಕ್ಲಿಕ್ ಮಾಡಿ ನ್ಯಾವಿಗೇಷನ್ ತೆರೆಯಿರಿ (Click to Open Menu)">
+            <div class="nav-collapsed-icon-btn group">
+              <img src="${logoUrl}" alt="School Logo" class="group-hover:scale-105 transition-transform">
+              <div class="absolute -bottom-1 -right-1 bg-indigo-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow-sm border border-white dark:border-slate-800">
+                <i class="fa-solid fa-bars"></i>
               </div>
-
-              <!-- Theme Selector -->
-              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-lg px-2 py-1 shadow-sm">
-                <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
-                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-[10px] font-bold focus:outline-none cursor-pointer py-0">
-                  <option class="bg-slate-900 text-white" value="light">Light</option>
-                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                  <option class="bg-slate-900 text-white" value="green">Green</option>
-                </select>
-              </div>
-
-              <!-- User Badge Capsule -->
-              <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-2.5 py-0.5 shadow-inner">
-                <i class="fa-solid fa-user-circle text-indigo-500 text-[10px]"></i>
-                <span id="headerUser" class="font-bold text-slate-850 text-[10px] truncate max-w-[70px] sm:max-w-[100px]">User</span>
-              </div>
-
-              <!-- Logout Button -->
-              <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-600 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition duration-300 cursor-pointer flex items-center gap-1 shadow-sm glow-shadow-red-hover">
-                <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
-              </button>
-
-              <!-- Hamburger menu button -->
-              <button id="mobileMenuBtn" class="flex lg:hidden items-center justify-center p-1 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                <i class="fa-solid fa-bars text-xs"></i>
-              </button>
             </div>
           </div>
 
-          <!-- Bottom Row: Navigation menu -->
-          <nav class="hidden lg:flex w-full bg-slate-900/[0.01] text-slate-900 px-6 pb-4 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-b-3xl" id="desktopNav">
-            <!-- Desktop menu items will be injected here -->
-          </nav>
+          <!-- EXPANDED FULL HEADER -->
+          <div class="nav-expanded-content flex flex-col w-full">
+            <!-- Top Row (Logo, School Name, Tagline, Controls, Collapse Button) -->
+            <div class="w-full px-6 py-3.5 flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
+              <!-- Left Logo & Brand with Tagline -->
+              <div class="flex items-center gap-3 shrink-0 cursor-pointer group" onclick="window.togglePortalNav(true)" title="ಕ್ಲಿಕ್ ಮಾಡಿ ಕುಗ್ಗಿಸಿ (Click to Collapse Navigation)">
+                <img src="${logoUrl}" alt="School Logo" class="h-14 w-14 md:h-16 md:w-16 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 dark:border-white/10 bg-white/40 dark:bg-slate-800 p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:shadow-indigo-500/20">
+                <div class="flex flex-col">
+                  <h1 class="text-sm sm:text-base md:text-lg font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
+                  <p class="text-[10px] md:text-xs text-indigo-800 dark:text-indigo-300 font-extrabold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್ <span class="text-slate-500 dark:text-slate-400 font-medium normal-case tracking-normal">• Smart Digital School Portal</span></p>
+                </div>
+              </div>
 
-          <!-- Mobile Menu Drawer (screens < 1024px) -->
-          <div id="mobileMenuPanel" class="hidden lg:hidden w-full bg-white border-t border-slate-250 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-35 rounded-b-3xl shadow-lg">
-            <div class="px-4 py-3 space-y-1.5 text-sm font-semibold" id="mobileNav">
-              <!-- Mobile navigation menu items will be injected here -->
-              <div class="flex items-center justify-between pt-4 border-t border-slate-200 mt-3 sm:hidden">
-                <div class="flex items-center gap-1 bg-slate-900/5 px-2 py-0.5 rounded-xl border border-slate-900/10">
-                  <span class="text-slate-500 text-[9px] font-bold uppercase"><i class="fa-solid fa-palette text-indigo-500 mr-1"></i>Theme:</span>
-                  <select id="themeSelectorMobile" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-xs focus:outline-none">
+              <!-- Right Status & Controls -->
+              <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
+                <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
+                  <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                  <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
+                  <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
+                </div>
+
+                <!-- Theme Selector -->
+                <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/10 rounded-lg px-2 py-1 shadow-sm transition-all duration-300">
+                  <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
+                  <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 dark:text-white border-0 rounded text-[10px] font-bold focus:outline-none cursor-pointer py-0">
                     <option class="bg-slate-900 text-white" value="light">Light</option>
                     <option class="bg-slate-900 text-white" value="dark">Dark</option>
                     <option class="bg-slate-900 text-white" value="gray">Gray</option>
@@ -491,96 +632,61 @@
                     <option class="bg-slate-900 text-white" value="green">Green</option>
                   </select>
                 </div>
-                <div class="flex flex-col text-right font-medium">
-                  <span id="liveDateMobile" class="text-[9px] text-slate-500"></span>
-                  <span id="liveClockMobile" class="font-bold text-emerald-600 text-xs"></span>
+                
+                <!-- Version Badge Button -->
+                <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm animate-pulse" title="Version 2.5.1 - Click to view What's New">
+                  <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[10px]"></i>
+                  <span>v2.5.1</span>
+                </button>
+
+                <!-- User Badge Capsule -->
+                <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-2.5 py-0.5 shadow-inner transition-all duration-300 group">
+                  <i class="fa-solid fa-user-circle text-[10px] text-indigo-500 group-hover:scale-105 transition-transform"></i>
+                  <span id="headerUser" class="font-bold text-slate-850 dark:text-slate-200 text-[10px] truncate max-w-[70px] md:max-w-[100px]">User</span>
                 </div>
+
+                <!-- Collapse Toggle Button -->
+                <button type="button" onclick="window.togglePortalNav(true)" class="flex items-center gap-1 bg-slate-900/5 hover:bg-indigo-600 hover:text-white dark:bg-white/10 dark:hover:bg-indigo-600 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-full text-[10px] font-bold transition-all duration-200 cursor-pointer shadow-xs group" title="ಕ್ಲಿಕ್ ಮಾಡಿ ನ್ಯಾವಿಗೇಷನ್ ಕುಗ್ಗಿಸಿ (Collapse Navigation)">
+                  <i class="fa-solid fa-compress text-indigo-500 group-hover:text-white transition-colors"></i>
+                  <span class="hidden sm:inline">ಕುಗ್ಗಿಸಿ</span>
+                </button>
+
+                <!-- Logout Button -->
+                <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-650 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
+                  <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
+                </button>
+
+                <!-- Hamburger menu button -->
+                <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-1.5 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
+                  <i class="fa-solid fa-bars text-xs"></i>
+                </button>
               </div>
             </div>
-          </div>
-        </div>
-      `;
-    } else {
-      // default_top
-      headerHtml = `
-        <div id="navbar-container" class="mx-auto mt-3 mb-2 max-w-[98%] rounded-3xl border border-slate-900/10 backdrop-blur-2xl bg-white/50 shadow-[0_12px_40px_rgba(0,0,0,0.12)] text-slate-900 no-print flex flex-col flex-shrink-0">
-          <!-- Top Neon Radium Gradient line -->
-          <div class="h-[3px] w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-t-3xl"></div>
-          
-          <!-- Top Row (Logo, School Name, Controls) -->
-          <div class="w-full px-6 py-4 flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
-            <!-- Left Logo -->
-            <div class="flex items-center gap-3 shrink-0">
-              <img src="${logoUrl}" alt="School Logo" class="h-16 w-16 md:h-20 md:w-20 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 bg-white/40 p-1.5 transition-all duration-300 hover:scale-105">
-            </div>
 
-            <!-- Center Brand Name -->
-            <div class="flex-1 text-center min-w-0 px-2 md:px-4">
-              <h1 class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
-              <p class="text-[9px] md:text-[10px] lg:text-xs text-indigo-900/80 font-bold tracking-widest uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
-            </div>
+            <!-- Bottom Row: Navigation menu -->
+            <nav class="hidden md:flex w-full bg-slate-900/[0.01] text-slate-900 px-6 pb-3.5 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-b-3xl" id="desktopNav">
+              <!-- Navigation menu items will be injected here -->
+            </nav>
 
-            <!-- Right Status & Controls -->
-            <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
-              <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
-                <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
-                <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
-              </div>
-
-              <!-- Theme Selector -->
-              <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 border border-slate-900/10 rounded-lg px-2 py-1 shadow-sm transition-all duration-300">
-                <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
-                <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 rounded text-[10px] font-bold focus:outline-none cursor-pointer py-0">
-                  <option class="bg-slate-900 text-white" value="light">Light</option>
-                  <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                  <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                  <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                  <option class="bg-slate-900 text-white" value="green">Green</option>
-                </select>
-              </div>
-              
-              <!-- User Badge -->
-              <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-2.5 py-0.5 shadow-inner transition-all duration-300 group">
-                <i class="fa-solid fa-user-circle text-[10px] text-indigo-500 group-hover:scale-105 transition-transform"></i>
-                <span id="headerUser" class="font-bold text-slate-850 text-[10px] truncate max-w-[70px] md:max-w-[100px]">User</span>
-              </div>
-
-              <!-- Logout Button -->
-              <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-650 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
-                <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
-              </button>
-
-              <!-- Hamburger menu button -->
-              <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-1.5 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                <i class="fa-solid fa-bars text-xs"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Bottom Row: Navigation menu -->
-          <nav class="hidden md:flex w-full bg-slate-900/[0.01] text-slate-900 px-6 pb-4 justify-start items-center gap-2 gap-y-2.5 z-40 flex-wrap rounded-b-3xl" id="desktopNav">
-            <!-- Navigation menu items will be injected here -->
-          </nav>
-
-          <!-- Mobile Menu Panel -->
-          <div id="mobileMenuPanel" class="hidden md:hidden w-full bg-white border-t border-slate-250 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-30 rounded-b-3xl shadow-lg">
-            <div class="px-4 py-3 space-y-1.5 text-sm font-semibold" id="mobileNav">
-              <!-- Mobile navigation menu items will be injected here -->
-              <div class="flex items-center gap-2 pt-4 border-t border-slate-200 mt-3 sm:hidden justify-between">
-                <div class="flex items-center gap-1 bg-slate-900/5 px-2.5 py-1 rounded-xl border border-slate-900/10">
-                  <span class="text-slate-500 text-[10px] font-bold uppercase"><i class="fa-solid fa-palette text-indigo-500 mr-1"></i>Theme:</span>
-                  <select id="themeSelectorMobile" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 border-0 text-xs focus:outline-none">
-                    <option class="bg-slate-900 text-white" value="light">Light</option>
-                    <option class="bg-slate-900 text-white" value="dark">Dark</option>
-                    <option class="bg-slate-900 text-white" value="gray">Gray</option>
-                    <option class="bg-slate-900 text-white" value="blue">Blue</option>
-                    <option class="bg-slate-900 text-white" value="green">Green</option>
-                  </select>
-                </div>
-                <div class="flex flex-col text-right font-medium">
-                  <span id="liveDateMobile" class="text-[10px] text-slate-500"></span>
-                  <span id="liveClockMobile" class="font-bold text-emerald-600 text-xs"></span>
+            <!-- Mobile Menu Panel -->
+            <div id="mobileMenuPanel" class="hidden md:hidden w-full bg-white dark:bg-slate-900 border-t border-slate-250 dark:border-slate-800 max-h-[75vh] overflow-y-auto mobile-menu-drawer transition-all duration-300 z-30 rounded-b-3xl shadow-lg">
+              <div class="px-4 py-3 space-y-1.5 text-sm font-semibold" id="mobileNav">
+                <!-- Mobile navigation menu items will be injected here -->
+                <div class="flex items-center gap-2 pt-4 border-t border-slate-200 dark:border-slate-800 mt-3 sm:hidden justify-between">
+                  <div class="flex items-center gap-1 bg-slate-900/5 px-2.5 py-1 rounded-xl border border-slate-900/10">
+                    <span class="text-slate-500 text-[10px] font-bold uppercase"><i class="fa-solid fa-palette text-indigo-500 mr-1"></i>Theme:</span>
+                    <select id="themeSelectorMobile" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 dark:text-white border-0 text-xs focus:outline-none">
+                      <option class="bg-slate-900 text-white" value="light">Light</option>
+                      <option class="bg-slate-900 text-white" value="dark">Dark</option>
+                      <option class="bg-slate-900 text-white" value="gray">Gray</option>
+                      <option class="bg-slate-900 text-white" value="blue">Blue</option>
+                      <option class="bg-slate-900 text-white" value="green">Green</option>
+                    </select>
+                  </div>
+                  <div class="flex flex-col text-right font-medium">
+                    <span id="liveDateMobile" class="text-[10px] text-slate-500"></span>
+                    <span id="liveClockMobile" class="font-bold text-emerald-600 text-xs"></span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -627,6 +733,9 @@
       'TextbookDistribution.html': 'incentives',
       'UniformDistribution.html': 'incentives',
       'teachers.html': 'teachers_directory',
+      'GuestTeachers.html': 'teachers_directory',
+      'SdmcManagement.html': 'teachers_directory',
+      'AboutSchool.html': 'teachers_directory',
       'certificates.html': 'student_list',
       'tc.html': 'student_list',
       'marks_card.html': 'student_list'
@@ -690,8 +799,8 @@
       let activeClassDesktop = '';
       if (layout === 'side') {
         activeClassDesktop = active 
-          ? 'bg-gradient-to-r from-indigo-500/15 to-purple-500/15 border-l-4 border-indigo-500 text-indigo-400 font-bold shadow-inner' 
-          : 'text-slate-350 hover:bg-white/5 hover:text-white border-l-4 border-transparent';
+          ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-extrabold shadow-lg shadow-indigo-500/25 border-l-4 border-indigo-400 scale-[1.02]' 
+          : 'text-slate-100 hover:bg-slate-800/80 hover:text-white border-l-4 border-transparent font-bold';
       } else if (layout === 'compact_top') {
         activeClassDesktop = active 
           ? 'bg-indigo-650 text-white font-extrabold px-2.5 py-1 text-[10px] rounded-lg shadow-sm border border-indigo-700' 
@@ -725,14 +834,14 @@
                 </span>
                 <i id="${sidebarCollapseId}-arrow" class="fa-solid fa-chevron-right text-[9px] opacity-70 transition-transform duration-200 ${!isCollapsed ? 'rotate-90' : ''}"></i>
               </button>
-              <div id="${sidebarCollapseId}" class="${isCollapsed ? 'hidden' : ''} pl-6 pr-2 py-1 space-y-0.5 mt-1 border-l border-slate-800 ml-5">
+              <div id="${sidebarCollapseId}" class="${isCollapsed ? 'hidden' : ''} pl-5 pr-1 py-1 space-y-1 mt-1 border-l border-slate-800 ml-4">
                 ${item.items.map(sub => {
                   const subActive = sub.href === currentPath || sub.href.split('?')[0] === currentPath;
                   return `
-                    <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="block py-2 px-2.5 text-xs font-bold rounded-lg transition-all duration-200 ${
+                    <a href="${sub.href}" ${sub.external ? 'target="_blank"' : ''} class="block py-1.5 px-3 text-xs font-bold rounded-lg transition-all duration-200 ${
                       subActive 
-                        ? 'text-indigo-400 bg-indigo-950/30 shadow-inner' 
-                        : 'text-slate-400 hover:text-white hover:bg-slate-900/50'
+                        ? 'text-sky-300 bg-indigo-950/70 font-extrabold border-l-2 border-sky-400 pl-3.5 shadow-inner' 
+                        : 'text-slate-200 hover:text-white hover:bg-slate-800/70'
                     }">
                       ${sub.name}
                       ${sub.external ? '<i class="fa-solid fa-arrow-up-right-from-square text-[8px] opacity-50 ml-1"></i>' : ''}
@@ -849,6 +958,18 @@
       });
     }
 
+    // Restore Collapsed State (Default to collapsed if not explicitly set)
+    const storedState = localStorage.getItem('portal_nav_collapsed');
+    const isCollapsed = storedState === null ? true : storedState === 'true';
+    if (isCollapsed) {
+      placeholder.classList.add('portal-nav-collapsed');
+    } else {
+      placeholder.classList.remove('portal-nav-collapsed');
+    }
+
+    // Attach Hover Auto-Expand & Auto-Collapse Listeners
+    initHoverAutoExpandCollapse();
+
     // Sync theme
     const savedTheme = localStorage.getItem('portal_theme') || 'light';
     const sel = document.getElementById('themeSelector');
@@ -867,11 +988,57 @@
     applyLanguagePreference();
   }
 
-  async function initSessionAndUser() {
-    let client = window.supabaseClient;
-    if (!client && window.supabase) {
-      client = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+  let navHoverCollapseTimer = null;
+
+  function initHoverAutoExpandCollapse() {
+    const placeholder = document.getElementById('navbar-placeholder');
+    if (!placeholder) return;
+
+    // Hover over collapsed Icon / Nav Area -> Auto-Expand immediately
+    placeholder.addEventListener('mouseenter', () => {
+      if (navHoverCollapseTimer) {
+        clearTimeout(navHoverCollapseTimer);
+        navHoverCollapseTimer = null;
+      }
+      if (placeholder.classList.contains('portal-nav-collapsed')) {
+        placeholder.classList.remove('portal-nav-collapsed');
+      }
+    });
+
+    // Mouse leaves Nav Area -> Auto-Collapse smoothly after 350ms
+    placeholder.addEventListener('mouseleave', () => {
+      if (navHoverCollapseTimer) clearTimeout(navHoverCollapseTimer);
+      navHoverCollapseTimer = setTimeout(() => {
+        const ph = document.getElementById('navbar-placeholder');
+        if (ph && !ph.classList.contains('portal-nav-collapsed')) {
+          ph.classList.add('portal-nav-collapsed');
+          localStorage.setItem('portal_nav_collapsed', 'true');
+        }
+      }, 350);
+    });
+  }
+
+  // Global Toggle Function for Collapsing / Expanding Top Navbar
+  window.togglePortalNav = function(forceState) {
+    if (navHoverCollapseTimer) {
+      clearTimeout(navHoverCollapseTimer);
+      navHoverCollapseTimer = null;
     }
+    const placeholder = document.getElementById('navbar-placeholder') || document.body;
+    const isCurrentlyCollapsed = placeholder.classList.contains('portal-nav-collapsed');
+    const newState = (forceState !== undefined) ? !!forceState : !isCurrentlyCollapsed;
+
+    if (newState) {
+      placeholder.classList.add('portal-nav-collapsed');
+      localStorage.setItem('portal_nav_collapsed', 'true');
+    } else {
+      placeholder.classList.remove('portal-nav-collapsed');
+      localStorage.setItem('portal_nav_collapsed', 'false');
+    }
+  };
+
+  async function initSessionAndUser() {
+    let client = window.getPortalSupabase();
     if (!client) return;
 
     try {
@@ -959,7 +1126,7 @@
           });
         }
 
-        // Fetch db config to check layout consistency
+        // Fetch db config to check layout consistency on first load
         if (profile && profile.school_id) {
           const { data: configData } = await client
             .from('school_settings')
@@ -969,13 +1136,15 @@
             .maybeSingle();
 
           if (configData && configData.settings_value) {
-            const dbLayout = configData.settings_value.nav_layout || 'default_top';
-            const cachedLayout = localStorage.getItem('school_nav_layout') || 'default_top';
-            const dbLogo = configData.settings_value.logo_url || '';
-            const cachedLogo = localStorage.getItem('school_logo_url') || '';
-            if (dbLayout !== cachedLayout || dbLogo !== cachedLogo) {
+            const dbLayout = configData.settings_value.nav_layout;
+            const cachedLayout = localStorage.getItem('school_nav_layout');
+            const dbLogo = configData.settings_value.logo_url || configData.settings_value.logoUrl || '';
+            const cachedLogo = localStorage.getItem('school_logo_url');
+            
+            // Only initialize from DB if no local layout choice exists yet
+            if (!cachedLayout && dbLayout) {
               localStorage.setItem('school_nav_layout', dbLayout);
-              localStorage.setItem('school_logo_url', dbLogo);
+              if (dbLogo) localStorage.setItem('school_logo_url', dbLogo);
               renderNavbar();
               return;
             }
@@ -1040,6 +1209,9 @@
               'TextbookDistribution.html': 'incentives',
               'UniformDistribution.html': 'incentives',
               'teachers.html': 'teachers_directory',
+              'GuestTeachers.html': 'teachers_directory',
+              'SdmcManagement.html': 'teachers_directory',
+              'AboutSchool.html': 'teachers_directory',
               'certificates.html': 'student_list',
               'tc.html': 'student_list',
               'marks_card.html': 'student_list'
@@ -1133,10 +1305,7 @@
   };
 
   window.handleLogout = async function() {
-    let client = window.supabaseClient;
-    if (!client && window.supabase) {
-      client = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
-    }
+    let client = window.getPortalSupabase();
     if (client) {
       await client.auth.signOut();
     }
@@ -1178,10 +1347,36 @@
     }
   };
 
-  window.applyNavLayout = function(layout, logoUrl) {
+  window.applyNavLayout = async function(layout, logoUrl) {
     if (layout) localStorage.setItem('school_nav_layout', layout);
     if (logoUrl !== undefined) localStorage.setItem('school_logo_url', logoUrl);
     renderNavbar();
+
+    // Persist layout to Supabase DB if logged in
+    try {
+      let client = window.supabaseClient;
+      if (!client && window.supabase) {
+        client = window.supabase.createClient("https://gsayvnnnfrrkwdfwocbu.supabase.co", "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS");
+      }
+      if (client) {
+        const schoolId = localStorage.getItem('school_id');
+        if (schoolId) {
+          await client
+            .from('school_settings')
+            .upsert({
+              school_id: schoolId,
+              settings_key: 'web_design',
+              settings_value: {
+                nav_layout: layout,
+                logo_url: localStorage.getItem('school_logo_url') || ''
+              },
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'school_id,settings_key' });
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to persist layout to DB:", err);
+    }
   };
 
   // Global Barcode Scan Event Listeners & Handler
@@ -1380,10 +1575,9 @@
     if (developerInput) {
       developerInput.value = localStorage.getItem('developer_name') || 'Antigravity AI';
     }
-
+    
     // Toggle student-specific UI sections
     const isTeachers = config.type === 'teachers';
-    const isWebpageOnly = config.useWebpageColumnsOnly === true || config.type === 'student_list';
     
     const studentNameModeCont = document.getElementById('pdStudentNameModeContainer');
     const parentsNameModeCont = document.getElementById('pdParentsNameModeContainer');
@@ -1392,12 +1586,12 @@
     const columnsTitle = document.getElementById('pdColumnsTitle');
     const sigTeacherLabel = document.getElementById('pdSigTeacherLabel');
     
-    if (studentNameModeCont) studentNameModeCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'flex';
-    if (parentsNameModeCont) parentsNameModeCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'grid';
-    if (genderCheckboxCont) genderCheckboxCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'flex';
-    if (otherCheckboxesCont) otherCheckboxesCont.style.display = (isTeachers || isWebpageOnly) ? 'none' : 'grid';
+    if (studentNameModeCont) studentNameModeCont.style.display = isTeachers ? 'none' : 'flex';
+    if (parentsNameModeCont) parentsNameModeCont.style.display = isTeachers ? 'none' : 'grid';
+    if (genderCheckboxCont) genderCheckboxCont.style.display = isTeachers ? 'none' : 'flex';
+    if (otherCheckboxesCont) otherCheckboxesCont.style.display = isTeachers ? 'none' : 'grid';
     if (columnsTitle) {
-      columnsTitle.innerText = (isTeachers || isWebpageOnly) ? 'ವರದಿ ಬಣ್ಣ ಮತ್ತು ಕಾಲಮ್‌ಗಳು / Theme & Columns' : 'ವರದಿ ಬಣ್ಣ ಮತ್ತು ಕಾಲಮ್‌ಗಳು / Theme & Student Columns';
+      columnsTitle.innerText = isTeachers ? '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3 / Report Theme' : '\u0CB5\u0CB0\u0CA6\u0CBF\u0020\u0CAC\u0CA3\u0CCD\u0CA3\u0020\u0CAE\u0CA4\u0CCD\u0CA4\u0CC1\u0020\u0C95\u0CBE\u0CB2\u0CAE\u0CCD\u0C97\u0CB3\u0CC1 / Theme & Student Columns';
     }
     if (sigTeacherLabel) {
       sigTeacherLabel.innerText = isTeachers ? 'Teacher Signature' : 'Class Teacher';
@@ -1407,27 +1601,49 @@
     const table = document.getElementById(config.tableId);
     if (table) {
       const leaves = getTableLeafHeaders(table);
+      const skipKeywords = isTeachers 
+        ? ['sl.no', 'sl no', 'teacher id', 'teacher name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 't. id', 'teacher']
+        : ['sl.no', 'sl no', 'sts', 'student name', 'father name', 'mother name', 'actions', '\u0C95\u0CCD\u0CB0\u0CBF\u0CAF\u0CC6\u0C97\u0CB3\u0CC1', '\u0C95\u0CCD\u0CB0\u0CAE\u0020\u0CB8\u0C82\u0C96\u0CCD\u0CAF\u0CC6', '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0C82\u0CA6\u0CC6\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CA4\u0CBE\u0CAF\u0CBF\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', '\u0CB5\u0CBF\u0CB5\u0CB0', '\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1', 'name', 'sex', 'gender', 'caste', '\u0CB2\u0CBF\u0C82\u0C97', '\u0C9C\u0CBE\u0CA4\u0CBF'];
+      
+      const grid = getTableHeadersGrid(table);
       const reportColsHtml = [];
-
+      
       leaves.forEach((th, cIdx) => {
-        if (th.classList.contains('no-print')) return;
-        const text = th.innerText.replace(/[\n\r]+/g, ' ').trim();
-        if (text) {
+        if (isTeachers && cIdx === 0) return;
+        // Find label path
+        const path = [];
+        for (let r = 0; r < grid.length; r++) {
+          const cell = grid[r][cIdx];
+          if (cell) {
+            const text = cell.innerText.trim();
+            if (text && !path.includes(text)) {
+              path.push(text);
+            }
+          }
+        }
+        const fullLabel = path.join(' - ');
+        const cleanText = fullLabel.toLowerCase();
+        
+        // Skip standard columns
+        const shouldSkip = skipKeywords.some(k => cleanText.includes(k));
+        
+        if (!shouldSkip) {
+          const displayName = path[path.length - 1]; // Just show the leaf name
+          const categoryName = path.slice(0, -1).join(' - ');
+          const displayLabel = categoryName ? `${categoryName} (${displayName})` : displayName;
+          
           reportColsHtml.push(`
             <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-600 cursor-pointer hover:text-slate-900">
               <input type="checkbox" class="print-col-checkbox rounded border-slate-350 text-indigo-600 focus:ring-indigo-500" value="${cIdx}" checked>
-              <span class="truncate" title="${text}">${text}</span>
+              <span class="truncate" title="${displayLabel}">${displayLabel}</span>
             </label>
           `);
         }
       });
       
-      const container = document.getElementById('printDrawerReportColsContainer');
-      if (container) {
-        container.innerHTML = reportColsHtml.join('') || '<p class="text-[10px] text-slate-500 col-span-full text-center">No columns</p>';
-      }
+      document.getElementById('printDrawerReportColsContainer').innerHTML = reportColsHtml.join('') || '<p class="text-[10px] text-slate-500 col-span-full text-center">No other columns</p>';
     }
-
+    
     const drawer = document.getElementById('globalPrintSettingsDrawer');
     if (drawer) {
       drawer.classList.remove('hidden');
@@ -1468,29 +1684,30 @@
         return;
       }
       
-      // 1. Gather all checkbox values
-      const printNameMode = document.querySelector('input[name="pdNameMode"]:checked') ? document.querySelector('input[name="pdNameMode"]:checked').value : 'both';
-      const printFatherMode = document.getElementById('pdFatherMode').value;
-      const printMotherMode = document.getElementById('pdMotherMode').value;
-      const printGender = document.getElementById('pdGenderCheck').checked;
-      const printCaste = document.getElementById('pdCasteCheck').checked;
-      const printAadhaar = document.getElementById('pdAadhaarCheck').checked;
-      const printRemarks = document.getElementById('pdRemarksCheck').checked;
-      const printColorMode = document.getElementById('pdColorMode') ? document.getElementById('pdColorMode').value : 'color';
+      // 1. Gather all checkbox values safely with optional chaining
+      const printNameModeEl = document.querySelector('input[name="pdNameMode"]:checked');
+      const printNameMode = printNameModeEl ? printNameModeEl.value : 'both';
+      const printFatherMode = document.getElementById('pdFatherMode')?.value || 'both';
+      const printMotherMode = document.getElementById('pdMotherMode')?.value || 'both';
+      const printGender = document.getElementById('pdGenderCheck')?.checked || false;
+      const printCaste = document.getElementById('pdCasteCheck')?.checked || false;
+      const printAadhaar = document.getElementById('pdAadhaarCheck')?.checked || false;
+      const printRemarks = document.getElementById('pdRemarksCheck')?.checked || false;
+      const printColorMode = document.getElementById('pdColorMode')?.value || 'color';
       const isBW = printColorMode === 'bw';
-      const printBarcode = document.getElementById('pdBarcodeCheck') ? document.getElementById('pdBarcodeCheck').checked : true;
-      const printEmblem = document.getElementById('pdEmblemCheck') ? document.getElementById('pdEmblemCheck').checked : true;
-      const printFooter = document.getElementById('pdFooterCheck') ? document.getElementById('pdFooterCheck').checked : true;
-      const gridStyle = document.getElementById('pdGridStyle') ? document.getElementById('pdGridStyle').value : 'classic';
-      const watermarkText = document.getElementById('pdWatermark') ? document.getElementById('pdWatermark').value : 'none';
+      const printBarcode = document.getElementById('pdBarcodeCheck')?.checked ?? true;
+      const printEmblem = document.getElementById('pdEmblemCheck')?.checked ?? true;
+      const printFooter = document.getElementById('pdFooterCheck')?.checked ?? true;
+      const gridStyle = document.getElementById('pdGridStyle')?.value || 'classic';
+      const watermarkText = document.getElementById('pdWatermark')?.value || 'none';
       
-      const developerName = document.getElementById('pdSigDeveloperName') ? document.getElementById('pdSigDeveloperName').value.trim() : 'Antigravity AI';
+      const developerName = (document.getElementById('pdSigDeveloperName')?.value || '').trim() || 'Antigravity AI';
       localStorage.setItem('developer_name', developerName);
       
       // Signature custom names
-      const teacherName = document.getElementById('pdSigTeacherName') ? document.getElementById('pdSigTeacherName').value.trim() : '';
-      const crpName = document.getElementById('pdSigCrpName') ? document.getElementById('pdSigCrpName').value.trim() : '';
-      const hmName = document.getElementById('pdSigHmName') ? document.getElementById('pdSigHmName').value.trim() : '';
+      const teacherName = (document.getElementById('pdSigTeacherName')?.value || '').trim();
+      const crpName = (document.getElementById('pdSigCrpName')?.value || '').trim();
+      const hmName = (document.getElementById('pdSigHmName')?.value || '').trim();
       const schoolLogoUrl = localStorage.getItem('school_logo_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
       
       // Selected report columns indices
@@ -1498,10 +1715,10 @@
       const checkedReportColIndices = checkedReportColCheckboxes.map(cb => parseInt(cb.value));
       
       // Layout and titles
-      const fontSizeVal = document.getElementById('pdFontSize').value;
-      const rotateHeaders = document.getElementById('pdRotateCheck').checked;
-      const customTitle = document.getElementById('pdCustomTitle').value.trim() || config.title;
-      const pageBreakFreq = document.getElementById('pdPageBreakFreq') ? document.getElementById('pdPageBreakFreq').value : 'auto';
+      const fontSizeVal = document.getElementById('pdFontSize')?.value || '9pt';
+      const rotateHeaders = document.getElementById('pdRotateCheck')?.checked || false;
+      const customTitle = (document.getElementById('pdCustomTitle')?.value || '').trim() || config.title;
+      const pageBreakFreq = document.getElementById('pdPageBreakFreq')?.value || 'auto';
       
       let preventSplitCss = '';
       const preventSplitCheck = document.getElementById('pdPreventSplitCheck');
@@ -1612,354 +1829,263 @@
       }
       
       const printThead = document.createElement('thead');
-      const isWebpageOnly = config.useWebpageColumnsOnly === true || config.type === 'student_list';
-
-      if (isWebpageOnly) {
-        // 1:1 Webpage Column Mode: Print EXACTLY visible webpage table columns in 1:1 order
-        const theadTr = document.createElement('tr');
-        theadTr.style.cssText = gridStyle === 'classic' 
+      
+      // Columns configuration map
+      const printColIndices = [];
+      printColIndices.push({ type: 'sl' });
+      printColIndices.push({ type: 'sts' });
+      printColIndices.push({ type: 'name' });
+      
+      const isTeachers = config.type === 'teachers';
+      if (!isTeachers) {
+        if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
+        if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
+        if (printGender) printColIndices.push({ type: 'gender' });
+        if (printCaste) printColIndices.push({ type: 'caste' });
+        if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+      }
+      
+      checkedReportColIndices.forEach(idx => {
+        printColIndices.push({ type: 'report', idx: idx });
+      });
+      if (printRemarks) printColIndices.push({ type: 'remarks' });
+      
+      const numHeaderRows = originalTheadRows.length;
+      const originalHeaderGrid = getTableHeadersGrid(originalTable);
+      
+      const printHeadRows = [];
+      for (let r = 0; r < numHeaderRows; r++) {
+        const tr = document.createElement('tr');
+        tr.style.cssText = gridStyle === 'classic' 
           ? 'background-color: #f1f5f9; font-weight: bold; border-bottom: 1.5px solid #000000;'
           : 'background-color: #f8fafc; font-weight: bold;';
-
-        const originalThs = getTableLeafHeaders(originalTable);
-
-        checkedReportColIndices.forEach(cIdx => {
-          const originalTh = originalThs[cIdx];
-          if (originalTh && !originalTh.classList.contains('no-print')) {
+        printHeadRows.push(tr);
+      }
+      
+      const addedOriginalThs = new Set();
+      
+      printColIndices.forEach(col => {
+        if (col.type !== 'report') {
+          // Standard metadata column
+          const th = document.createElement('th');
+          th.style.cssText = getGridCellStyle(true);
+          th.setAttribute('rowspan', numHeaderRows);
+          
+          if (col.type === 'sl') {
+            th.innerText = 'Sl.No';
+          } else if (col.type === 'sts') {
+            th.innerText = isTeachers ? 'T. ID / Teacher ID' : 'SATS / STS No';
+            th.style.width = '80px';
+            th.style.minWidth = '80px';
+            th.style.maxWidth = '80px';
+          } else if (col.type === 'name') {
+            th.innerText = isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB9\u0CB5\u0CB8\u0CB0\u0CC1 / Teacher Name' : '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Student Name';
+            th.style.width = '125px';
+            th.style.minWidth = '125px';
+            th.style.maxWidth = '125px';
+          } else if (col.type === 'father') {
+            th.innerText = '\u0CA4\u0C82\u0CA6\u0CC6\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Father Name';
+            th.style.width = '100px';
+            th.style.minWidth = '100px';
+            th.style.maxWidth = '100px';
+          } else if (col.type === 'mother') {
+            th.innerText = '\u0CA4\u0CBE\u0CAF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Mother Name';
+            th.style.width = '100px';
+            th.style.minWidth = '100px';
+            th.style.maxWidth = '100px';
+          } else if (col.type === 'gender') {
+            th.innerText = '\u0CB2\u0CBF\u0C82\u0C97 / Gender';
+          } else if (col.type === 'caste') {
+            th.innerText = '\u0C9C\u0CBE\u0CA4\u0CBF / Caste';
+          } else if (col.type === 'aadhaar') {
+            th.innerText = '\u0C86\u0CA0\u0CBE\u0CB0\u0CCD / Aadhaar';
+          } else if (col.type === 'remarks') {
+            th.innerText = '\u0CB0\u0CBF\u0CAE\u0CBE\u0CE5\u0C9F\u0CCD\u0CB8\u0020/ Remarks';
+            th.style.width = '80px';
+          }
+          
+          printHeadRows[0].appendChild(th);
+        } else {
+          // Report column mapping from grid
+          for (let r = 0; r < numHeaderRows; r++) {
+            const originalTh = originalHeaderGrid[r] ? originalHeaderGrid[r][col.idx] : null;
+            if (!originalTh) continue;
+            if (addedOriginalThs.has(originalTh)) continue;
+            
+            addedOriginalThs.add(originalTh);
+            
             const thClone = originalTh.cloneNode(true);
             thClone.classList.remove('hidden');
-            const cleanText = originalTh.innerText.replace(/[\n\r]+/g, ' ').trim();
-            thClone.innerText = cleanText;
             thClone.style.cssText = getGridCellStyle(true);
-            theadTr.appendChild(thClone);
-          }
-        });
-        printThead.appendChild(theadTr);
-        printTable.appendChild(printThead);
-
-        // Build 1:1 Body
-        const printTbody = document.createElement('tbody');
-        const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
-
-        originalRows.forEach((origRow, rIdx) => {
-          const origCells = Array.from(origRow.children);
-          const tr = document.createElement('tr');
-          if (gridStyle === 'zebra') {
-            tr.style.backgroundColor = rIdx % 2 === 1 ? '#f8fafc' : '#ffffff';
-          }
-          tr.style.cssText += gridStyle === 'classic' ? 'border-bottom: 1px solid #000000;' : 'border-bottom: 1px solid #e2e8f0;';
-
-          checkedReportColIndices.forEach(cIdx => {
-            if (origCells[cIdx] && !origCells[cIdx].classList.contains('no-print')) {
-              const cellClone = origCells[cIdx].cloneNode(true);
-              cellClone.classList.remove('hidden');
-              cellClone.style.cssText = getGridCellStyle(false);
-
-              cellClone.querySelectorAll('input, select, button').forEach(el => {
-                const span = document.createElement('span');
-                span.style.fontWeight = 'bold';
-                if (el.tagName === 'SELECT') {
-                  span.innerText = el.value || '-';
-                } else if (el.type === 'checkbox') {
-                  span.innerText = el.checked ? '✓' : '✗';
-                } else {
-                  span.innerText = el.value !== undefined ? el.value : el.innerText;
-                }
-                if (el.parentNode) el.parentNode.replaceChild(span, el);
-              });
-
-              tr.appendChild(cellClone);
+            
+            const originalColspan = parseInt(originalTh.getAttribute('colspan')) || 1;
+            
+            // Find start column offset of this TH
+            let startC = col.idx;
+            while (startC > 0 && originalHeaderGrid[r][startC - 1] === originalTh) {
+              startC--;
             }
-          });
-
-          if (pageBreakFreq !== 'auto') {
-            const limit = parseInt(pageBreakFreq);
-            if (rIdx > 0 && rIdx % limit === 0) {
-              tr.style.pageBreakBefore = 'always';
-              tr.style.breakBefore = 'always';
+            
+            // Count how many checked column indices are within range of this header cell
+            let spanCount = 0;
+            checkedReportColIndices.forEach(idx => {
+              if (idx >= startC && idx < startC + originalColspan) {
+                spanCount++;
+              }
+            });
+            
+            if (spanCount > 0) {
+              thClone.setAttribute('colspan', spanCount);
+              printHeadRows[r].appendChild(thClone);
             }
           }
-
-          printTbody.appendChild(tr);
-        });
-        printTable.appendChild(printTbody);
-      } else {
-        // Columns configuration map (Legacy/Standard mode)
-        const printColIndices = [];
-        printColIndices.push({ type: 'sl' });
-        printColIndices.push({ type: 'sts' });
-        printColIndices.push({ type: 'name' });
+        }
+      });
+      
+      printHeadRows.forEach(row => printThead.appendChild(row));
+      printTable.appendChild(printThead);
+      
+      // Build Body
+      const printTbody = document.createElement('tbody');
+      const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
+      
+      originalRows.forEach((origRow, rIdx) => {
+        const sId = origRow.getAttribute('data-student-id');
+        const student = config.students ? config.students.find(s => s.id === sId) : null;
+        const origCells = Array.from(origRow.children);
         
-        const isTeachers = config.type === 'teachers';
-        if (!isTeachers) {
-          if (printFatherMode !== 'none') printColIndices.push({ type: 'father' });
-          if (printMotherMode !== 'none') printColIndices.push({ type: 'mother' });
-          if (printGender) printColIndices.push({ type: 'gender' });
-          if (printCaste) printColIndices.push({ type: 'caste' });
-          if (printAadhaar) printColIndices.push({ type: 'aadhaar' });
+        const tr = document.createElement('tr');
+        if (gridStyle === 'zebra') {
+          if (rIdx % 2 === 1) {
+            tr.style.backgroundColor = '#f8fafc';
+          } else {
+            tr.style.backgroundColor = '#ffffff';
+          }
+        }
+        if (gridStyle === 'classic') {
+          tr.style.cssText = 'border-bottom: 1px solid #000000;';
+        } else {
+          tr.style.cssText = 'border-bottom: 1px solid #e2e8f0;';
         }
         
+        // Sl No
+        const tdSl = document.createElement('td');
+        tdSl.innerText = rIdx + 1;
+        tdSl.style.cssText = getGridCellStyle(false);
+        tr.appendChild(tdSl);
+        
+        // STS No (Mandatory)
+        const tdSts = document.createElement('td');
+        const stsVal = isTeachers ? (origCells[2] ? origCells[2].innerText.trim() : '-') : (student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-'));
+        tdSts.innerText = stsVal;
+        tdSts.style.cssText = getGridCellStyle(false) + ' font-family: monospace; font-weight: bold; width: 80px; min-width: 80px; max-width: 80px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+        tr.appendChild(tdSts);
+        
+        // Student Name
+        const tdName = document.createElement('td');
+        tdName.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 125px; min-width: 125px; max-width: 125px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+        if (isTeachers) {
+          tdName.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
+        } else {
+          if (student) {
+            const nameEn = (student.name_english || '').trim().toUpperCase();
+            const nameKn = (student.student_name || student.student_name_kn || '').trim();
+            if (printNameMode === 'both' && nameEn && nameKn) {
+              tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
+            } else if (printNameMode === 'kn') {
+              tdName.innerText = nameKn || nameEn || '-';
+            } else {
+              tdName.innerText = nameEn || nameKn || '-';
+            }
+          } else {
+            tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
+          }
+        }
+        tr.appendChild(tdName);
+        
+        // Father Name
+        if (!isTeachers && printFatherMode !== 'none') {
+          const tdFather = document.createElement('td');
+          tdFather.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+          if (student) {
+            const fatherEn = (student.father_name_az || student.father_name || '').trim().toUpperCase();
+            const fatherKn = (student.father_name_kn || student.fatherName || '').trim();
+            if (printFatherMode === 'both' && fatherEn && fatherKn) {
+              tdFather.innerHTML = `<div style="font-weight: bold;">${fatherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${fatherKn}</div>`;
+            } else if (printFatherMode === 'kn') {
+              tdFather.innerText = fatherKn || fatherEn || '-';
+            } else {
+              tdFather.innerText = fatherEn || fatherKn || '-';
+            }
+          } else {
+            tdFather.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
+          }
+          tr.appendChild(tdFather);
+        }
+        
+        // Mother Name
+        if (!isTeachers && printMotherMode !== 'none') {
+          const tdMother = document.createElement('td');
+          tdMother.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
+          if (student) {
+            const motherEn = (student.mother_name_az || student.mother_name || '').trim().toUpperCase();
+            const motherKn = (student.mother_name_kn || student.motherName || '').trim();
+            if (printMotherMode === 'both' && motherEn && motherKn) {
+              tdMother.innerHTML = `<div style="font-weight: bold;">${motherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${motherKn}</div>`;
+            } else if (printMotherMode === 'kn') {
+              tdMother.innerText = motherKn || motherEn || '-';
+            } else {
+              tdMother.innerText = motherEn || motherKn || '-';
+            }
+          } else {
+            tdMother.innerText = '-';
+          }
+          tr.appendChild(tdMother);
+        }
+        
+        // Gender
+        if (!isTeachers && printGender) {
+          const tdGen = document.createElement('td');
+          tdGen.innerText = student ? (student.gender || '-') : '-';
+          tdGen.style.cssText = getGridCellStyle(false);
+          tr.appendChild(tdGen);
+        }
+        
+        // Caste
+        if (!isTeachers && printCaste) {
+          const tdCaste = document.createElement('td');
+          tdCaste.innerText = student ? (student.caste || '-') : '-';
+          tdCaste.style.cssText = getGridCellStyle(false);
+          tr.appendChild(tdCaste);
+        }
+        
+        // Aadhaar
+        if (!isTeachers && printAadhaar) {
+          const tdAadhaar = document.createElement('td');
+          tdAadhaar.innerText = student ? (student.aadhaar || student.student_aadhaar || '-') : '-';
+          tdAadhaar.style.cssText = getGridCellStyle(false) + ' font-family: monospace;';
+          tr.appendChild(tdAadhaar);
+        }
+        
+        // Report Columns Cells
         checkedReportColIndices.forEach(idx => {
-          printColIndices.push({ type: 'report', idx: idx });
-        });
-        if (printRemarks) printColIndices.push({ type: 'remarks' });
-        
-        const numHeaderRows = originalTheadRows.length;
-        const originalHeaderGrid = getTableHeadersGrid(originalTable);
-        
-        const printHeadRows = [];
-        for (let r = 0; r < numHeaderRows; r++) {
-          const tr = document.createElement('tr');
-          tr.style.cssText = gridStyle === 'classic' 
-            ? 'background-color: #f1f5f9; font-weight: bold; border-bottom: 1.5px solid #000000;'
-            : 'background-color: #f8fafc; font-weight: bold;';
-          printHeadRows.push(tr);
-        }
-        
-        const addedOriginalThs = new Set();
-        
-        printColIndices.forEach(col => {
-          if (col.type !== 'report') {
-            const th = document.createElement('th');
-            th.style.cssText = getGridCellStyle(true);
-            th.setAttribute('rowspan', numHeaderRows);
+          if (origCells[idx]) {
+            const cellClone = origCells[idx].cloneNode(true);
+            cellClone.classList.remove('hidden');
+            cellClone.style.cssText = getGridCellStyle(false);
             
-            if (col.type === 'sl') {
-              th.innerText = 'Sl.No';
-            } else if (col.type === 'sts') {
-              th.innerText = isTeachers ? 'T. ID / Teacher ID' : 'SATS / STS No';
-              th.style.width = '80px';
-              th.style.minWidth = '80px';
-              th.style.maxWidth = '80px';
-            } else if (col.type === 'name') {
-              th.innerText = isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB9\u0CB5\u0CB8\u0CB0\u0CC1 / Teacher Name' : '\u0CB5\u0CBF\u0CA6\u0CCD\u0CAF\u0CBE\u0CB0\u0CCD\u0CA5\u0CBF\u0020\u0CB9\u0CC6\u0CB8\u0CB0\u0CC1 / Student Name';
-              th.style.width = '125px';
-              th.style.minWidth = '125px';
-              th.style.maxWidth = '125px';
-            } else if (col.type === 'father') {
-              th.innerText = 'ತಂದೆಯ ಹೆಸರು / Father Name';
-              th.style.width = '100px';
-              th.style.minWidth = '100px';
-              th.style.maxWidth = '100px';
-            } else if (col.type === 'mother') {
-              th.innerText = 'ತಾಯಿಯ ಹೆಸರು / Mother Name';
-              th.style.width = '100px';
-              th.style.minWidth = '100px';
-              th.style.maxWidth = '100px';
-            } else if (col.type === 'gender') {
-              th.innerText = 'ಲಿಂಗ / Sex';
-            } else if (col.type === 'caste') {
-              th.innerText = 'ಜಾತಿ / Caste';
-            } else if (col.type === 'aadhaar') {
-              th.innerText = 'ಆಧಾರ್ ಸಂಖ್ಯೆ / Aadhaar No';
-            } else if (col.type === 'remarks') {
-              th.innerText = 'ಷರಾ / Remarks';
-            }
-            
-            printHeadRows[0].appendChild(th);
-          } else {
-            for (let r = 0; r < numHeaderRows; r++) {
-              const originalTh = originalHeaderGrid[r] ? originalHeaderGrid[r][col.idx] : null;
-              if (!originalTh) continue;
-              if (addedOriginalThs.has(originalTh)) continue;
-              
-              addedOriginalThs.add(originalTh);
-              
-              const thClone = originalTh.cloneNode(true);
-              thClone.classList.remove('hidden');
-              thClone.style.cssText = getGridCellStyle(true);
-              
-              const originalColspan = parseInt(originalTh.getAttribute('colspan')) || 1;
-              
-              let startC = col.idx;
-              while (startC > 0 && originalHeaderGrid[r][startC - 1] === originalTh) {
-                startC--;
-              }
-              
-              let spanCount = 0;
-              checkedReportColIndices.forEach(idx => {
-                if (idx >= startC && idx < startC + originalColspan) {
-                  spanCount++;
-                }
-              });
-              
-              if (spanCount > 0) {
-                thClone.setAttribute('colspan', spanCount);
-                printHeadRows[r].appendChild(thClone);
-              }
-            }
-          }
-        });
-        
-        printHeadRows.forEach(row => printThead.appendChild(row));
-        printTable.appendChild(printThead);
-        
-        // Build Body
-        const printTbody = document.createElement('tbody');
-        const originalRows = Array.from(originalTable.querySelectorAll('tbody tr'));
-        
-        originalRows.forEach((origRow, rIdx) => {
-          const sId = origRow.getAttribute('data-student-id');
-          const student = config.students ? config.students.find(s => s.id === sId) : null;
-          const origCells = Array.from(origRow.children);
-          
-          const tr = document.createElement('tr');
-          if (gridStyle === 'zebra') {
-            if (rIdx % 2 === 1) {
-              tr.style.backgroundColor = '#f8fafc';
-            } else {
-              tr.style.backgroundColor = '#ffffff';
-            }
-          }
-          if (gridStyle === 'classic') {
-            tr.style.cssText = 'border-bottom: 1px solid #000000;';
-          } else {
-            tr.style.cssText = 'border-bottom: 1px solid #e2e8f0;';
-          }
-          
-          // Sl No
-          const tdSl = document.createElement('td');
-          tdSl.innerText = rIdx + 1;
-          tdSl.style.cssText = getGridCellStyle(false);
-          tr.appendChild(tdSl);
-          
-          // STS No (Mandatory)
-          const tdSts = document.createElement('td');
-          const stsVal = isTeachers ? (origCells[2] ? origCells[2].innerText.trim() : '-') : (student ? (student.adminNo || student.app_no || student.id || '-') : (origCells[1] ? origCells[1].innerText.trim() : '-'));
-          tdSts.innerText = stsVal;
-          tdSts.style.cssText = getGridCellStyle(false) + ' font-family: monospace; font-weight: bold; width: 80px; min-width: 80px; max-width: 80px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-          tr.appendChild(tdSts);
-          
-          // Student Name
-          const tdName = document.createElement('td');
-          tdName.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 125px; min-width: 125px; max-width: 125px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-          if (isTeachers) {
-            tdName.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
-          } else {
-            if (student) {
-              const nameEn = (student.name_english || '').trim().toUpperCase();
-              const nameKn = (student.student_name || student.student_name_kn || '').trim();
-              if (printNameMode === 'both' && nameEn && nameKn) {
-                tdName.innerHTML = `<div style="font-weight: bold;">${nameEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${nameKn}</div>`;
-              } else if (printNameMode === 'kn') {
-                tdName.innerText = nameKn || nameEn || '-';
+            // Replace inputs/selects in cloned cells
+            cellClone.querySelectorAll('input, select, button').forEach(el => {
+              const span = document.createElement('span');
+              span.style.fontWeight = 'bold';
+              if (el.tagName === 'SELECT') {
+                span.innerText = el.value || '-';
+              } else if (el.type === 'checkbox') {
+                span.innerText = el.checked ? '✓' : '✗';
               } else {
-                tdName.innerText = nameEn || nameKn || '-';
+                span.innerText = el.value !== undefined ? el.value : el.innerText;
               }
-            } else {
-              tdName.innerHTML = origCells[2] ? origCells[2].innerHTML : '-';
-            }
-          }
-          tr.appendChild(tdName);
-          
-          // Father Name
-          if (!isTeachers && printFatherMode !== 'none') {
-            const tdFather = document.createElement('td');
-            tdFather.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-            if (student) {
-              const fatherEn = (student.father_name_az || '').trim().toUpperCase();
-              const fatherKn = (student.father_name_kn || '').trim();
-              if (printFatherMode === 'both' && fatherEn && fatherKn) {
-                tdFather.innerHTML = `<div style="font-weight: bold;">${fatherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${fatherKn}</div>`;
-              } else if (printFatherMode === 'kn') {
-                tdFather.innerText = fatherKn || fatherEn || '-';
-              } else {
-                tdFather.innerText = fatherEn || fatherKn || '-';
-              }
-            } else {
-              tdFather.innerHTML = origCells[3] ? origCells[3].innerHTML : '-';
-            }
-            tr.appendChild(tdFather);
-          }
-          
-          // Mother Name
-          if (!isTeachers && printMotherMode !== 'none') {
-            const tdMother = document.createElement('td');
-            tdMother.style.cssText = getGridCellStyle(false) + ' text-align: left; padding: 5px 6px; width: 100px; min-width: 100px; max-width: 100px; word-wrap: break-word; white-space: normal; overflow-wrap: break-word;';
-            if (student) {
-              const motherEn = (student.mother_name_az || '').trim().toUpperCase();
-              const motherKn = (student.mother_name_kn || '').trim();
-              if (printMotherMode === 'both' && motherEn && motherKn) {
-                tdMother.innerHTML = `<div style="font-weight: bold;">${motherEn}</div><div style="font-size: 85%; color: #334155; margin-top: 1px;">${motherKn}</div>`;
-              } else if (printMotherMode === 'kn') {
-                tdMother.innerText = motherKn || motherEn || '-';
-              } else {
-                tdMother.innerText = motherEn || motherKn || '-';
-              }
-            } else {
-              tdMother.innerText = '-';
-            }
-            tr.appendChild(tdMother);
-          }
-          
-          // Gender
-          if (!isTeachers && printGender) {
-            const tdGen = document.createElement('td');
-            tdGen.innerText = student ? (student.gender || '-') : '-';
-            tdGen.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdGen);
-          }
-          
-          // Caste
-          if (!isTeachers && printCaste) {
-            const tdCaste = document.createElement('td');
-            tdCaste.innerText = student ? (student.caste || '-') : '-';
-            tdCaste.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdCaste);
-          }
-          
-          // Aadhaar
-          if (!isTeachers && printAadhaar) {
-            const tdAadhaar = document.createElement('td');
-            tdAadhaar.innerText = student ? (student.aadhaar || student.student_aadhaar || '-') : '-';
-            tdAadhaar.style.cssText = getGridCellStyle(false) + ' font-family: monospace;';
-            tr.appendChild(tdAadhaar);
-          }
-          
-          // Report Columns Cells
-          checkedReportColIndices.forEach(idx => {
-            if (origCells[idx]) {
-              const cellClone = origCells[idx].cloneNode(true);
-              cellClone.classList.remove('hidden');
-              cellClone.style.cssText = getGridCellStyle(false);
-              
-              // Replace inputs/selects in cloned cells
-              cellClone.querySelectorAll('input, select, button').forEach(el => {
-                const span = document.createElement('span');
-                span.style.fontWeight = 'bold';
-                if (el.tagName === 'SELECT') {
-                  span.innerText = el.value || '-';
-                } else if (el.type === 'checkbox') {
-                  span.innerText = el.checked ? '✓' : '✗';
-                } else {
-                  span.innerText = el.value !== undefined ? el.value : el.innerText;
-                }
-                el.parentNode.replaceChild(span, el);
-              });
-              
-              tr.appendChild(cellClone);
-            }
-          });
-          
-          // Remarks
-          if (printRemarks) {
-            const tdRem = document.createElement('td');
-            tdRem.style.cssText = getGridCellStyle(false);
-            tr.appendChild(tdRem);
-          }
-          
-          if (pageBreakFreq !== 'auto') {
-            const limit = parseInt(pageBreakFreq);
-            if (rIdx > 0 && rIdx % limit === 0) {
-              tr.style.pageBreakBefore = 'always';
-              tr.style.breakBefore = 'always';
-            }
-          }
-          
-          printTbody.appendChild(tr);
-        });
-        printTable.appendChild(printTbody);
-      }ld(span, el);
+              el.parentNode.replaceChild(span, el);
             });
             
             tr.appendChild(cellClone);
@@ -1984,13 +2110,14 @@
         printTbody.appendChild(tr);
       });
       printTable.appendChild(printTbody);
-    }
       
       // Update printable Area
-      const printArea = document.getElementById('printArea');
+      let printArea = document.getElementById('printArea');
       if (!printArea) {
-        alert("Print area element not found in DOM.");
-        return;
+        printArea = document.createElement('div');
+        printArea.id = 'printArea';
+        printArea.className = 'hidden print:block';
+        document.body.appendChild(printArea);
       }
       
       // Set flag to prevent beforeprint duplicate barcode injection
@@ -2109,7 +2236,7 @@
       sigRow.style.cssText = 'margin-top: 55px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: bold; color: #000000;';
       
       let sigsHtml = '';
-      if (document.getElementById('pdSigTeacherCheck').checked) {
+      if (document.getElementById('pdSigTeacherCheck')?.checked) {
         sigsHtml += `
           <div style="text-align: center; display: flex; flex-direction: column; align-items: center; min-width: 140px;">
             <span>${isTeachers ? '\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB8\u0CB9\u0CBF / Teacher Signature' : '\u0CA4\u0CB0\u0C97\u0CA4\u0CBF\u0020\u0CB6\u0CBF\u0C95\u0CCD\u0CB7\u0C95\u0CB0\u0020\u0CB8\u0CB9\u0CBF / Class Teacher Signature'}</span>
@@ -2117,7 +2244,7 @@
           </div>
         `;
       }
-      if (document.getElementById('pdSigCrpCheck').checked) {
+      if (document.getElementById('pdSigCrpCheck')?.checked) {
         sigsHtml += `
           <div style="text-align: center; display: flex; flex-direction: column; align-items: center; min-width: 140px;">
             <span>CRP ಸಹಿ / CRP Signature</span>
@@ -2125,7 +2252,7 @@
           </div>
         `;
       }
-      if (document.getElementById('pdSigHmCheck').checked) {
+      if (document.getElementById('pdSigHmCheck')?.checked) {
         sigsHtml += `
           <div style="text-align: center; display: flex; flex-direction: column; align-items: center; min-width: 140px;">
             <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
@@ -2147,7 +2274,7 @@
         const originalTitle = document.title;
         const cleanTitle = (customTitle || "Report").trim().replace(/[^a-zA-Z0-9\u0C80-\u0CFF\s_-]/g, '').replace(/\s+/g, '_');
         document.title = cleanTitle + "_" + new Date().toLocaleDateString('kn-IN').replace(/\//g, '-');
-        alert("To download as a high-quality PDF:\\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\\n2. Click 'Save'.\\n\\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
+        alert("To download as a high-quality PDF:\n1. In the print dialog, set 'Destination' to 'Save as PDF'.\n2. Click 'Save'.\n\nಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು:\n1. ಪ್ರಿಂಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ನಲ್ಲಿ 'Destination' ಅನ್ನು 'Save as PDF' ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.\n2. 'Save' ಕ್ಲಿಕ್ ಮಾಡಿ.");
         window.print();
         document.title = originalTitle;
       } else {
@@ -2486,16 +2613,217 @@
   
   window.applyLanguagePreference = applyLanguagePreference;
 
+  window.openWhatsNewModal = function() {
+    let modal = document.getElementById('whats-new-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'whats-new-modal';
+      modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-all duration-300';
+      modal.innerHTML = `
+        <div class="bg-white dark:bg-slate-900 border border-indigo-500/30 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200 text-left">
+          <!-- Header -->
+          <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 p-5 text-white flex justify-between items-center border-b border-indigo-500/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-amber-400 text-lg shadow-inner">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+              </div>
+              <div>
+                <h2 class="text-base font-black uppercase tracking-wider flex items-center gap-2 m-0 text-white">
+                  <span>Portal Release Version 2.5.0</span>
+                  <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] rounded-full font-bold">LATEST BUILD</span>
+                </h2>
+                <p class="text-xs text-indigo-200/80 font-medium m-0 mt-0.5">ಅಪ್‌ಡೇಟ್ ಮಾಹಿತಿ ಹಾಗೂ ನೂತನ ವೈಶಿಷ್ಟ್ಯಗಳ ವಿವರ (July 2026 Release)</p>
+              </div>
+            </div>
+            <button onclick="window.closeWhatsNewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border-0 cursor-pointer transition">
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Content Body -->
+          <div class="p-6 max-h-[70vh] overflow-y-auto space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-200">
+
+            <!-- Cache Warning Note -->
+            <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-900/60 p-3.5 rounded-2xl flex items-start gap-3">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0 mt-0.5"></i>
+              <div>
+                <div class="font-extrabold text-amber-900 dark:text-amber-200 text-xs">ಹೊಸ ಆವೃತ್ತಿಯನ್ನು ಗುರುತಿಸುವುದು ಹೇಗೆ? (How to verify new version):</div>
+                <div class="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed mt-0.5">
+                  ಪ್ರಸ್ತುತ ವೆಬ್‌ಸೈಟ್‌ ಹೆಡರ್‌ನಲ್ಲಿ <strong class="text-indigo-600 dark:text-indigo-400 font-extrabold">v2.5.0</strong> ಬ್ಯಾಡ್ಜ್ ಕಾಣಿಸುತ್ತಿದ್ದರೆ ನೀವು ನೂತನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ. ಹಳೆಯ ಲೇಔಟ್ ಅಥವಾ ಬ್ಯಾಕಪ್ ಫೈಲ್ ತೆರೆದಿದ್ದರೆ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <strong>Ctrl + Shift + R</strong> ಅಥವಾ <strong>Ctrl + F5</strong> ಒತ್ತುವ ಮೂಲಕ Cache ಕ್ಲಿಯರ್ ಮಾಡಿ.
+                </div>
+              </div>
+            </div>
+
+            <!-- Feature Cards Grid -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-black uppercase text-slate-800 dark:text-slate-100 tracking-wider flex items-center gap-1.5 pt-1">
+                <i class="fa-solid fa-rocket text-indigo-500"></i>
+                <span>v2.5.0 ನಲ್ಲಿ ಸೇರಿಸಲಾದ ನೂತನ ಫೀಚರ್‌ಗಳು (New Features in Version 2.5.0):</span>
+              </h3>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                
+                <!-- Card 1 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-right-left text-sky-500"></i>
+                    <span>SATS Compare Studio (SatsCompare.html)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">SATS ಎಕ್ಸೆಲ್ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ, ಪೋರ್ಟಲ್ ಡೇಟಾದೊಂದಿಗೆ ಪಕ್ಕದಲ್ಲೇ (Side-by-Side) ಹೋಲಿಸಿ 1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ ಆಟೋ-ಸಿಂಕ್ ಮಾಡಿ.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-file-invoice text-rose-500"></i>
+                    <span>SATS 25-Field Official TC Format</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಅಧಿಕೃತ 25-ಫೀಲ್ಡ್ SATS TC ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ ಮುದ್ರಿಸಿ (certificates.html).</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-shield-check text-emerald-500"></i>
+                    <span>Duplicate TC Auto-Header</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಈಗಾಗಲೇ TC ಪಡೆದವರಿಗೆ ಪುನಃ TC ನೀಡುವಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ "DUPLICATE TC" ಹೆಡರ್ ಬರುತ್ತದೆ.</p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-clock-rotate-left text-purple-500"></i>
+                    <span>Re-Admitted Register (RecycleBin.html)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಮರು-ಪ್ರವೇಶ ಪಡೆದ ವಿದ್ಯಾರ್ಥಿಗಳ 4ನೇ ಇತಿಹಾಸ ಟ್ಯಾಬ್ ಮತ್ತು ಅನಂತ ಬಾರಿಯ TC-Out Cycle ಬೆಂಬಲ.</p>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Footer -->
+          <div class="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
+            <span class="text-[10px] text-slate-400 font-bold uppercase">System Version: v2.5.0 (Build 2026.07.27)</span>
+            <button onclick="window.closeWhatsNewModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs transition border-0 cursor-pointer shadow-sm">
+              Got It! / ಅರ್ಥವಾಯಿತು
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+    modal.classList.remove('hidden');
+  };
+
+  window.closeWhatsNewModal = function() {
+    const modal = document.getElementById('whats-new-modal');
+    if (modal) modal.classList.add('hidden');
+  };
+
+  // Auto Version Sync & Notification Engine
+  function checkVersionAutoUpdate() {
+    const CURRENT_VERSION = window.PORTAL_VERSION || "2.5.1";
+    const installedVersion = localStorage.getItem('portal_installed_version');
+
+    if (installedVersion !== CURRENT_VERSION) {
+      localStorage.setItem('portal_installed_version', CURRENT_VERSION);
+      // Auto open Release Notes modal on new version update
+      setTimeout(() => {
+        if (typeof window.openWhatsNewModal === 'function') {
+          window.openWhatsNewModal();
+        }
+      }, 800);
+    }
+  }
+
+  window.loadAndApplySchoolConfig = async function() {
+    let udiseCode = localStorage.getItem('school_udise') || '2909709801';
+    let schoolNameEn = localStorage.getItem('school_name_en') || 'GHPS MARCHED';
+    let schoolNameKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
+    let govLogo = localStorage.getItem('school_gov_logo') || 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg';
+    let schoolLogo = localStorage.getItem('school_logo_url') || 'https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png';
+
+    const supabaseClient = window.getPortalSupabase();
+    if (supabaseClient) {
+      try {
+        const schoolId = localStorage.getItem('school_id');
+        let sch = null;
+        if (schoolId) {
+          const { data } = await supabaseClient.from('schools').select('*').eq('id', schoolId).maybeSingle();
+          sch = data;
+        }
+        if (!sch) {
+          const { data: schs } = await supabaseClient.from('schools').select('*').limit(1);
+          if (schs && schs.length > 0) sch = schs[0];
+        }
+        if (sch) {
+          if (sch.udise_code) udiseCode = sch.udise_code;
+          if (sch.school_name_en) schoolNameEn = sch.school_name_en;
+          if (sch.school_name_kn) schoolNameKn = sch.school_name_kn;
+        }
+
+        const { data: settings } = await supabaseClient
+          .from('school_settings')
+          .select('settings_value')
+          .eq('settings_key', 'web_design');
+        if (settings && settings.length > 0) {
+          const val = settings[settings.length - 1].settings_value || {};
+          if (val.gov_logo_url) govLogo = val.gov_logo_url;
+          if (val.logo_url) schoolLogo = val.logo_url;
+        }
+      } catch (e) {
+        console.warn("Dynamic school config load error:", e);
+      }
+    }
+
+    localStorage.setItem('school_name_en', schoolNameEn);
+    localStorage.setItem('school_name_kn', schoolNameKn);
+    localStorage.setItem('school_udise', udiseCode);
+    localStorage.setItem('school_gov_logo', govLogo);
+    localStorage.setItem('school_logo_url', schoolLogo);
+
+    // Apply dynamically to DOM elements on all certificate pages & headers
+    document.querySelectorAll('.school-name-primary, .canvasVal-school_name_en, .school-name-en').forEach(el => {
+      el.innerText = schoolNameEn;
+    });
+
+    document.querySelectorAll('.school-name-secondary, .canvasVal-school_name_kn, .school-name-kn').forEach(el => {
+      el.innerText = schoolNameKn;
+    });
+
+    document.querySelectorAll('.canvasVal-school_code, .canvasVal-udise_code, #tc_school_code_display, .school-udise-display').forEach(el => {
+      if (el.tagName === 'INPUT') el.value = udiseCode;
+      else el.innerText = udiseCode;
+    });
+
+    document.querySelectorAll('.cert-gov-logo-img').forEach(img => {
+      img.src = govLogo;
+    });
+
+    document.querySelectorAll('.cert-school-logo-img').forEach(img => {
+      img.src = schoolLogo;
+    });
+
+    return { schoolNameEn, schoolNameKn, udiseCode, govLogo, schoolLogo };
+  };
+
   // Run on Document Load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       renderNavbar();
       startNavbarClock();
       injectPrintDrawerHTML();
+      checkVersionAutoUpdate();
+      window.loadAndApplySchoolConfig();
     });
   } else {
     renderNavbar();
     startNavbarClock();
     injectPrintDrawerHTML();
+    checkVersionAutoUpdate();
+    window.loadAndApplySchoolConfig();
   }
 })();

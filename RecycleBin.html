@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recycle Bin / ಮರುಬಳಕೆ ಬುಟ್ಟಿ - GHPS MARCHED</title>
+  <title>Bin & Transferred Students Register - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
@@ -29,67 +29,80 @@
           <span class="p-3 bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-2xl border border-rose-200 dark:border-rose-900">
             <i class="fa-solid fa-trash-arrow-up"></i>
           </span>
-          ಮರುಬಳಕೆ ಬುಟ್ಟಿ / Recycle Bin Portal
+          ವರ್ಗಾಯಿತ & ನಿಸ್ಸರಣಗೊಂಡ ವಿದ್ಯಾರ್ಥಿಗಳ ರಿಜಿಸ್ಟರ್ / Bin & TC Out Register
         </h1>
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          ತಾತ್ಕಾಲಿಕವಾಗಿ ಡೆಲಿಟ್ ಮಾಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ. HM/Admin ಅನುಮತಿಯೊಂದಿಗೆ ಇವರನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪಿಸಬಹುದು (Restore).
+          TC ಪಡೆದು ಹೊರಹೋದವರು, ಶಾಲೆ ಬಿಟ್ಟವರು ಹಾಗೂ ಡೆಲಿಟ್ ಮಾಡಿದ ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲೆಗಳು. ಇವರನ್ನು 1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ ಮರಳಿ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಪುನಃ ದಾಖಲಿಸಬಹುದು (Re-Admit).
         </p>
       </div>
 
       <div class="flex items-center gap-3">
-        <button onclick="exportRecycleBinExcel()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
-          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        <button onclick="exportBinExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow transition flex items-center gap-2 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel / CSV ರಫ್ತು
         </button>
       </div>
     </div>
 
-    <!-- Filters Bar -->
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Category Tabs Bar -->
+    <div class="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <button id="tab-btn-tcout" onclick="switchBinTab('TC_OUT')" class="px-4 py-2 rounded-xl text-xs font-black bg-rose-600 text-white shadow-sm border-0 cursor-pointer flex items-center gap-2">
+          <i class="fa-solid fa-door-open"></i> 📜 1. TC ಪಡೆದವರು (TC Out)
+        </button>
+        <button id="tab-btn-removed" onclick="switchBinTab('REMOVED')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 border-0 cursor-pointer flex items-center gap-2">
+          <i class="fa-solid fa-user-minus"></i> ⚠️ 2. ಶಾಲೆ ಬಿಟ್ಟವರು (Removed)
+        </button>
+        <button id="tab-btn-deleted" onclick="switchBinTab('DELETED')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 border-0 cursor-pointer flex items-center gap-2">
+          <i class="fa-solid fa-trash-can"></i> 🗑️ 3. ಡೆಲಿಟ್ ಮಾಡಿದವರು (Deleted)
+        </button>
+        <button id="tab-btn-readmitted" onclick="switchBinTab('READMITTED')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 border-0 cursor-pointer flex items-center gap-2">
+          <i class="fa-solid fa-user-check"></i> 🔄 4. ಪುನಃ ಪ್ರವೇಶ ಪಡೆದವರು (Re-Admitted)
+        </button>
+      </div>
+
       <div class="flex items-center gap-3 w-full sm:w-auto">
-        <label class="text-xs font-bold text-slate-600 dark:text-slate-300">ತರಗತಿ ಫಿಲ್ಟರ್ / Class:</label>
-        <select id="recycleClassFilter" onchange="filterRecycleBin()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none cursor-pointer">
+        <select id="classFilter" onchange="renderCurrentTabTable()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold outline-none cursor-pointer">
           <option value="ALL">ಎಲ್ಲಾ ತರಗತಿಗಳು / All Classes</option>
           <option value="LKG">LKG</option>
           <option value="UKG">UKG</option>
-          <option value="1">1st Class</option>
-          <option value="2">2nd Class</option>
-          <option value="3">3rd Class</option>
-          <option value="4">4th Class</option>
-          <option value="5">5th Class</option>
-          <option value="6">6th Class</option>
-          <option value="7">7th Class</option>
-          <option value="8">8th Class</option>
-          <option value="9">9th Class</option>
-          <option value="10">10th Class</option>
+          <option value="1">Class 1</option>
+          <option value="2">Class 2</option>
+          <option value="3">Class 3</option>
+          <option value="4">Class 4</option>
+          <option value="5">Class 5</option>
+          <option value="6">Class 6</option>
+          <option value="7">Class 7</option>
+          <option value="8">Class 8</option>
+          <option value="9">Class 9</option>
+          <option value="10">Class 10</option>
         </select>
+        <input type="text" id="binSearchInput" onkeyup="renderCurrentTabTable()" placeholder="ಹೆಸರು / STS ID / TC No..." class="w-full sm:w-64 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold outline-none">
       </div>
-
-      <input type="text" id="recycleSearch" onkeyup="filterRecycleBin()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು ಅಥವಾ SATS ID ಹುಡುಕಿ..." class="w-full sm:w-72 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold outline-none">
     </div>
 
-    <!-- Trashed Students Directory -->
+    <!-- Trashed & Transferred Directory Table -->
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-      <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
-        <i class="fa-solid fa-trash-can text-rose-600"></i> ಡೆಲಿಟ್ ಮಾಡಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿ / Trashed Student Directory
+      <h3 id="binDirectoryTitle" class="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+        <i class="fa-solid fa-folder-open text-rose-600"></i> ವರ್ಗಾಯಿತ ಮತ್ತು ಬಿಡುಗಡೆಗೊಂಡ ವಿದ್ಯಾರ್ಥಿಗಳ ರಿಜಿಸ್ಟರ್
       </h3>
 
       <div class="overflow-x-auto">
         <table class="w-full text-xs text-left border-collapse">
           <thead>
             <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
-              <th class="p-3 text-center w-12">ಕ್ರ.ಸಂ</th>
+              <th class="p-3 text-center w-12">#</th>
               <th class="p-3">ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / Student Name</th>
-              <th class="p-3 text-center">SATS ID</th>
+              <th class="p-3 text-center">STS / Admission No</th>
               <th class="p-3 text-center">ತರಗತಿ / Class</th>
               <th class="p-3">ತಂದೆಯ ಹೆಸರು / Father Name</th>
-              <th class="p-3 text-center">ಮೊಬೈಲ್ / Mobile</th>
-              <th class="p-3 text-center">ಡೆಲಿಟ್ ದಿನಾಂಕ / Date</th>
-              <th class="p-3 text-center w-48">ಕ್ರಿಯೆ / Actions</th>
+              <th class="p-3 text-center">TC ಸಂಖ್ಯೆ / TC Details</th>
+              <th class="p-3 text-center">ಸ್ಥಿತಿ / Status</th>
+              <th class="p-3 text-center w-48">ಕ್ರಿಯೆ / Action</th>
             </tr>
           </thead>
-          <tbody id="recycleBinTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
+          <tbody id="binTbody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold text-slate-700 dark:text-slate-300">
             <tr>
-              <td colspan="8" class="p-6 text-center text-slate-400">ಮರುಬಳಕೆ ಬುಟ್ಟಿಯ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</td>
+              <td colspan="8" class="p-6 text-center text-slate-400 font-bold">ದಾಖಲೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... (Loading Records)</td>
             </tr>
           </tbody>
         </table>
@@ -99,129 +112,295 @@
   </main>
 
   <script>
-    let trashedStudents = [];
-    const SUPABASE_URL = 'https://wqlxydgysyoslkyvwsrh.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxbHh5ZGd5c3lvc2xreXZ3c3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEyMTkwNjAsImV4cCI6MjA1Njc5NTA2MH0.2lZ7S7V6c7J66PZ4g2H69j4B78J-wZ7y8g4x8-k8K8k';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let allBinStudents = [];
+    let activeTab = 'TC_OUT';
+    let supabaseClient = null;
 
-    window.onload = function() {
-      loadRecycleBin();
+    window.onload = async function() {
+      setupSupabase();
+      await fetchBinStudents();
     };
 
-    function isRoleAllowed(actionType) {
-      const userRole = localStorage.getItem('user_role') || 'teacher';
-      if (['admin', 'hm', 'headmaster', 'developer'].includes(userRole.toLowerCase())) {
-        return true;
+    function setupSupabase() {
+      if (window.supabase) {
+        const url = localStorage.getItem('supabase_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+        const key = localStorage.getItem('supabase_key') || "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+        supabaseClient = window.supabase.createClient(url, key);
       }
-      if (actionType === 'restore') {
-        return localStorage.getItem('admin_allow_teacher_restore') === 'true';
-      }
-      if (actionType === 'permanent_delete') {
-        return localStorage.getItem('admin_allow_teacher_perm_delete') === 'true';
-      }
-      return false;
     }
 
-    async function loadRecycleBin() {
-      const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
-      trashedStudents = localTrashed;
-      renderRecycleBinTable(trashedStudents);
+    async function fetchBinStudents() {
+      try {
+        let session = null;
+        try {
+          if (supabaseClient && supabaseClient.auth) {
+            const { data } = await supabaseClient.auth.getSession();
+            if (data && data.session) session = data.session;
+          }
+        } catch (e) {}
+
+        const schoolId = session?.user?.user_metadata?.school_id || localStorage.getItem('school_id');
+        let data = null;
+
+        if (schoolId && supabaseClient) {
+          try {
+            const { data: res1, error: err1 } = await supabaseClient.from('admissions').select('*').eq('school_id', schoolId);
+            if (!err1 && res1 && res1.length > 0) {
+              data = res1;
+            }
+          } catch (e) {}
+        }
+
+        if ((!data || data.length === 0) && supabaseClient) {
+          try {
+            const { data: res2, error: err2 } = await supabaseClient.from('admissions').select('*');
+            if (!err2 && res2) {
+              data = res2;
+            }
+          } catch (e) {}
+        }
+
+        if (!data) data = [];
+
+        // DB Data + Local Storage Fallback Data
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const tcLogs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]').filter(l => (l.type || '').toLowerCase() === 'tc');
+        
+        const dbBin = (data || []).filter(s => s.status === 'TC_OUT' || s.status === 'REMOVED' || s.status === 'DELETED');
+        
+        // Merge DB bin & local trashed
+        const mergedMap = new Map();
+        dbBin.forEach(s => mergedMap.set(String(s.id || s.app_no), s));
+        
+        localTrashed.forEach(s => {
+          const key = String(s.id || s.app_no || s.student_sts);
+          if (!mergedMap.has(key)) {
+            s.status = s.status || 'TC_OUT';
+            mergedMap.set(key, s);
+          }
+        });
+
+        // Also merge TC print logs for students missing in map
+        tcLogs.forEach((log, idx) => {
+          const stsNum = log.sts || `tc_log_${idx}`;
+          const existsInMap = Array.from(mergedMap.values()).some(s => String(s.app_no || s.student_sts || s.sts_no || '') === String(log.sts));
+          if (!existsInMap) {
+            mergedMap.set(`log_${stsNum}`, {
+              id: `log_${stsNum}`,
+              student_name: log.name,
+              name_english: log.name,
+              app_no: log.sts,
+              enroll_class: log.enrollClass || 'Class 7',
+              transfer_no: log.tcNo,
+              transfer_date: log.date,
+              status: 'TC_OUT'
+            });
+          }
+        });
+
+        // Also merge Re-Admitted history records
+        const readmittedHistory = JSON.parse(localStorage.getItem('readmitted_students_history') || '[]');
+        readmittedHistory.forEach((rh, idx) => {
+          const key = `readmit_${rh.id || rh.app_no}_${idx}`;
+          mergedMap.set(key, { ...rh, status: 'READMITTED' });
+        });
+
+        allBinStudents = Array.from(mergedMap.values());
+        renderCurrentTabTable();
+      } catch (err) {
+        console.error("Failed to load Bin students:", err);
+      }
     }
 
-    function renderRecycleBinTable(list) {
-      const tbody = document.getElementById('recycleBinTbody');
-      tbody.innerHTML = '';
+    function switchBinTab(tab) {
+      activeTab = tab;
+      const btnTc = document.getElementById('tab-btn-tcout');
+      const btnRemoved = document.getElementById('tab-btn-removed');
+      const btnDeleted = document.getElementById('tab-btn-deleted');
+      const btnReadmitted = document.getElementById('tab-btn-readmitted');
+      const title = document.getElementById('binDirectoryTitle');
 
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">ಮರುಬಳಕೆ ಬುಟ್ಟಿಯಲ್ಲಿ ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳಿಲ್ಲ. (Recycle Bin is empty)</td></tr>`;
+      const activeClass = "px-4 py-2 rounded-xl text-xs font-black bg-rose-600 text-white shadow-sm border-0 cursor-pointer flex items-center gap-2";
+      const inactiveClass = "px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 border-0 cursor-pointer flex items-center gap-2";
+
+      btnTc.className = (tab === 'TC_OUT') ? activeClass : inactiveClass;
+      btnRemoved.className = (tab === 'REMOVED') ? activeClass : inactiveClass;
+      btnDeleted.className = (tab === 'DELETED') ? activeClass : inactiveClass;
+      if (btnReadmitted) btnReadmitted.className = (tab === 'READMITTED') ? activeClass : inactiveClass;
+
+      if (tab === 'TC_OUT') {
+        title.innerHTML = `<i class="fa-solid fa-door-open text-rose-600"></i> 📜 1. TC ಪಡೆದು ಶಾಲೆಯಿಂದ ನಿರ್ಗಮಿಸಿದ ವಿದ್ಯಾರ್ಥಿಗಳು (TC Out Register)`;
+      } else if (tab === 'REMOVED') {
+        title.innerHTML = `<i class="fa-solid fa-user-minus text-amber-600"></i> ⚠️ 2. ಶಾಲೆಯಿಂದ ಹೆಸರು ತೆಗೆದುಹಾಕಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳು (Removed Register)`;
+      } else if (tab === 'DELETED') {
+        title.innerHTML = `<i class="fa-solid fa-trash-can text-slate-600"></i> 🗑️ 3. ಡೆಲಿಟ್ ಮಾಡಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳು (Deleted Register)`;
+      } else if (tab === 'READMITTED') {
+        title.innerHTML = `<i class="fa-solid fa-user-check text-emerald-600"></i> 🔄 4. ಪುನಃ ಪ್ರವೇಶ ಪಡೆದ ವಿದ್ಯಾರ್ಥಿಗಳ ಇತಿಹಾಸ (Re-Admitted Register)`;
+      }
+
+      renderCurrentTabTable();
+    }
+
+    function renderCurrentTabTable() {
+      const tbody = document.getElementById('binTbody');
+      if (!tbody) return;
+
+      const clsFilter = document.getElementById('classFilter')?.value || 'ALL';
+      const searchQuery = (document.getElementById('binSearchInput')?.value || '').toLowerCase().trim();
+
+      const filtered = allBinStudents.filter(s => {
+        const matchTab = (s.status || 'DELETED').toUpperCase() === activeTab;
+        let matchClass = true;
+        if (clsFilter !== 'ALL') {
+          matchClass = String(s.enroll_class || s.standard || s.class_name || '').toLowerCase().includes(clsFilter.toLowerCase());
+        }
+
+        const nameEn = (s.name_english || s.student_name || s.name || '').toLowerCase();
+        const nameKn = (s.student_name_kn || s.student_name || '').toLowerCase();
+        const sts = (s.app_no || s.sats_no || s.sats_number || '').toLowerCase();
+        const tcNo = (s.transfer_no || s.tc_no || s.previous_tc_no || '').toLowerCase();
+
+        const matchSearch = nameEn.includes(searchQuery) || nameKn.includes(searchQuery) || sts.includes(searchQuery) || tcNo.includes(searchQuery);
+
+        return matchTab && matchClass && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400 font-bold">ಈ ವಿಭಾಗದಲ್ಲಿ ಯಾವುದೇ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ. (No records found)</td></tr>`;
         return;
       }
 
-      const canRestore = isRoleAllowed('restore');
-      const canPermDelete = isRoleAllowed('permanent_delete');
-
-      list.forEach((s, idx) => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800";
-        tr.innerHTML = `
-          <td class="p-3 text-center font-bold">${idx + 1}</td>
-          <td class="p-3 font-extrabold text-slate-900 dark:text-white">${s.student_name || s.name || '-'}</td>
-          <td class="p-3 text-center font-mono font-bold text-indigo-600">${s.sats_number || s.sats_id || '-'}</td>
-          <td class="p-3 text-center font-bold">${s.class_name || s.standard || '-'}</td>
-          <td class="p-3">${s.father_name || '-'}</td>
-          <td class="p-3 text-center font-mono">${s.mobile_number || s.phone || '-'}</td>
-          <td class="p-3 text-center font-mono text-[10px] text-slate-400">${s.deleted_at || new Date().toLocaleDateString('kn-IN')}</td>
-          <td class="p-3 text-center space-x-2">
-            ${canRestore ? `<button onclick="restoreStudent('${s.id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer"><i class="fa-solid fa-rotate-left"></i> Restore</button>` : `<span class="text-[10px] text-slate-400 font-bold" title="HM/Admin Only">No Access</span>`}
-            ${canPermDelete ? `<button onclick="permanentlyDeleteStudent('${s.id}')" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-0 cursor-pointer"><i class="fa-solid fa-trash"></i> Delete</button>` : ''}
-          </td>
+      tbody.innerHTML = filtered.map((s, idx) => {
+        let badgeColor = "bg-rose-50 text-rose-700 border-rose-200";
+        let statusLabel = "TC OUT";
+        let actionButtonHtml = `
+          <button onclick="reAdmitStudent('${s.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] px-3 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm transition flex items-center gap-1.5 mx-auto">
+            <i class="fa-solid fa-user-plus"></i>
+            <span>🔄 RE-ADMIT (ಪುನಃ ಪ್ರವೇಶ)</span>
+          </button>
         `;
-        tbody.appendChild(tr);
-      });
+
+        if (s.status === 'REMOVED') {
+          badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+          statusLabel = "REMOVED";
+        } else if (s.status === 'DELETED') {
+          badgeColor = "bg-slate-100 text-slate-700 border-slate-300";
+          statusLabel = "DELETED";
+        } else if (s.status === 'READMITTED') {
+          badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+          statusLabel = "RE-ADMITTED";
+          actionButtonHtml = `
+            <span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-[11px] bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-900">
+              <i class="fa-solid fa-circle-check"></i> ಸಕ್ರಿಯವಾಗಿದೆ (Active)
+            </span>
+          `;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-100 dark:border-slate-800">
+            <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
+            <td class="p-3 font-extrabold text-slate-900 dark:text-white">
+              <div>${s.student_name || s.name_english || s.name || 'N/A'}</div>
+              <div class="text-[10px] text-slate-400 font-normal">${s.father_name_az || s.father_name || ''}</div>
+            </td>
+            <td class="p-3 text-center font-mono font-bold text-indigo-600">${s.app_no || s.sats_no || s.sats_number || s.enrolment_no || '--'}</td>
+            <td class="p-3 text-center font-bold"><span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md">Class ${s.enroll_class || s.standard || s.class_name || ''}</span></td>
+            <td class="p-3 font-semibold">${s.father_name_az || s.father_name || '--'}</td>
+            <td class="p-3 text-center font-mono font-bold text-rose-600">
+              ${s.transfer_no || s.tc_no || s.previous_tc_no || '--'}
+              ${s.transfer_date || s.readmit_date ? `<div class="text-[9px] text-slate-400 font-normal">${s.transfer_date || s.readmit_date}</div>` : ''}
+            </td>
+            <td class="p-3 text-center">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black border ${badgeColor}">${statusLabel}</span>
+            </td>
+            <td class="p-3 text-center">
+              ${actionButtonHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    function restoreStudent(id) {
-      if (!isRoleAllowed('restore')) {
-        alert("ನಿಮಗೆ ಈ ಕಾರ್ಯ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
+    async function reAdmitStudent(id) {
+      const student = allBinStudents.find(s => String(s.id) === String(id));
+      if (!student) return;
+
+      const name = student.student_name || student.name_english || student.name || 'Student';
+      const stsNum = student.app_no || student.sats_no || student.sats_number || student.enrolment_no || '';
+
+      const confirmReAdmit = confirm(`ವಿದ್ಯಾರ್ಥಿ: ${name} (${stsNum})\n\nಈ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಗೆ (StudentList) ಪುನಃ ದಾಖಲಿಸಿಕೊಳ್ಳಬೇಕೇ (Re-Admit)?`);
+      if (!confirmReAdmit) return;
+
+      try {
+        const studentRealId = student.realId || student.id;
+        if (supabaseClient && studentRealId && !String(studentRealId).startsWith('log_')) {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update({
+              status: 'ACTIVE',
+              transfer_no: null,
+              transfer_date: null
+            })
+            .eq('id', studentRealId);
+
+          if (error) console.error("Error re-admitting student in DB:", error);
+        }
+
+        // 1. Save entry to Re-Admitted History Register
+        const readmittedHistory = JSON.parse(localStorage.getItem('readmitted_students_history') || '[]');
+        readmittedHistory.unshift({
+          id: student.id || studentRealId,
+          student_name: name,
+          name_english: student.name_english || name,
+          app_no: stsNum,
+          enroll_class: student.enroll_class || student.standard || '',
+          father_name: student.father_name_az || student.father_name || '',
+          previous_tc_no: student.transfer_no || student.tc_no || '--',
+          readmit_date: new Date().toLocaleDateString('en-GB') + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+          status: 'READMITTED'
+        });
+        localStorage.setItem('readmitted_students_history', JSON.stringify(readmittedHistory));
+
+        // 2. Remove from local trash & tc_print_logs so student becomes fully active in StudentList
+        let localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        localTrashed = localTrashed.filter(s => String(s.id) !== String(id) && String(s.app_no || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
+        localStorage.setItem('trashed_students_list', JSON.stringify(localTrashed));
+
+        let tcLogs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
+        tcLogs = tcLogs.filter(l => String(l.sts || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
+        localStorage.setItem('tc_print_logs', JSON.stringify(tcLogs));
+
+        alert(`ವಿದ್ಯಾರ್ಥಿ "${name}" ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಪುನಃ ದಾಖಲಾಗಿದ್ದಾರೆ (Re-Admitted Successfully)!\nದಾಖಲೆಯು 4ನೇ ಟ್ಯಾಬ್ "Re-Admitted Register" ನಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ.`);
+        await fetchBinStudents();
+      } catch (e) {
+        console.error("Re-admit failed:", e);
+        alert("Re-admission processing failed.");
+      }
+    }
+
+    function exportBinExcel() {
+      if (allBinStudents.length === 0) {
+        alert("ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಯಾವುದೇ ದಾಖಲೆಗಳಿಲ್ಲ.");
         return;
       }
-      const st = trashedStudents.find(s => s.id == id);
-      if (!st) return;
+      
+      const filtered = allBinStudents.filter(s => (s.status || 'DELETED').toUpperCase() === activeTab);
+      
+      const exportData = filtered.map((s, idx) => ({
+        "SL NO": idx + 1,
+        "STUDENT NAME": s.student_name || s.name_english || s.name || '',
+        "STS NUMBER": s.app_no || s.sats_no || s.sats_number || '',
+        "CLASS": s.enroll_class || s.standard || '',
+        "FATHER NAME": s.father_name_az || s.father_name || '',
+        "TC NUMBER": s.transfer_no || s.tc_no || '',
+        "TRANSFER DATE": s.transfer_date || '',
+        "STATUS": s.status || activeTab
+      }));
 
-      if (!confirm(`ನಿಜವಾಗಿಯೂ ${st.student_name || st.name} ಅವರನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪಿಸಬೇಕೆ?`)) return;
-
-      // Remove from trash
-      trashedStudents = trashedStudents.filter(s => s.id != id);
-      localStorage.setItem('trashed_students_list', JSON.stringify(trashedStudents));
-
-      // Add back to active student list
-      const activeList = JSON.parse(localStorage.getItem('student_list_cache') || '[]');
-      st.status = 'Active';
-      activeList.push(st);
-      localStorage.setItem('student_list_cache', JSON.stringify(activeList));
-
-      renderRecycleBinTable(trashedStudents);
-      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಮರುಸ್ಥಾಪನೆಯಾಗಿದೆ!");
-    }
-
-    function permanentlyDeleteStudent(id) {
-      if (!isRoleAllowed('permanent_delete')) {
-        alert("ನಿಮಗೆ ಈ ಕಾರ್ಯ ಮಾಡಲು ಅನುಮತಿಯಿಲ್ಲ! (HM/Admin/Developer Only)");
-        return;
-      }
-      const st = trashedStudents.find(s => s.id == id);
-      if (!st) return;
-
-      if (!confirm(`⚠️ ಎಚ್ಚರಿಕೆ! ${st.student_name || st.name} ಅವರ ವಿವರವನ್ನು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲಾಗುತ್ತದೆ! ಈ ಕಾರ್ಯವನ್ನು ಹಿಂತಿರುಗಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಮುಂದುವರಿಸಬೇಕೆ?`)) return;
-
-      trashedStudents = trashedStudents.filter(s => s.id != id);
-      localStorage.setItem('trashed_students_list', JSON.stringify(trashedStudents));
-      renderRecycleBinTable(trashedStudents);
-      alert("ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲ್ಪಟ್ಟಿದೆ.");
-    }
-
-    function filterRecycleBin() {
-      const cls = document.getElementById('recycleClassFilter').value;
-      const q = document.getElementById('recycleSearch').value.toLowerCase();
-
-      let filtered = trashedStudents.filter(s => {
-        const matchesClass = cls === 'ALL' || (s.class_name || s.standard || '').toString().toLowerCase() === cls.toLowerCase();
-        const matchesSearch = (s.student_name || s.name || '').toLowerCase().includes(q) || (s.sats_number || s.sats_id || '').toLowerCase().includes(q);
-        return matchesClass && matchesSearch;
-      });
-
-      renderRecycleBinTable(filtered);
-    }
-
-    function exportRecycleBinExcel() {
-      const rows = [["Sl No", "Student Name", "SATS ID", "Class", "Father Name", "Mobile", "Deleted Date"]];
-      trashedStudents.forEach((s, i) => {
-        rows.push([i+1, s.student_name || s.name, s.sats_number || s.sats_id, s.class_name || s.standard, s.father_name, s.mobile_number, s.deleted_at]);
-      });
-      const ws = XLSX.utils.aoa_to_sheet(rows);
+      const ws = XLSX.utils.json_to_sheet(exportData);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "RecycleBin");
-      XLSX.writeFile(wb, "Trashed_Students_List.xlsx");
+      XLSX.utils.book_append_sheet(wb, ws, activeTab);
+      XLSX.writeFile(wb, `BIN_${activeTab}_REGISTER_${new Date().toISOString().slice(0,10)}.xlsx`);
     }
   </script>
   <script src="navbar.js"></script>

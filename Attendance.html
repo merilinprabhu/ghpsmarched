@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Attendance Management - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="chart.umd.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -61,6 +61,34 @@
       box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.4), 0 0 20px 2px rgba(99, 102, 241, 0.2) !important;
     }
 
+    /* Sticky Table Header & Scroll Styles */
+    .sticky-table-container {
+      max-height: 68vh;
+      overflow: auto !important;
+      position: relative;
+    }
+    .sticky-table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      width: 100%;
+    }
+    .sticky-table thead th {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 30 !important;
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    }
+    .sticky-table tfoot td {
+      position: sticky !important;
+      bottom: 0 !important;
+      z-index: 25 !important;
+      background-color: #1e293b !important;
+      color: #ffffff !important;
+      box-shadow: 0 -2px 6px -1px rgba(0, 0, 0, 0.25);
+    }
+
     body[data-theme="dark"] .radiant-card-emerald {
       background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%) !important;
       border-color: rgba(16, 185, 129, 0.3) !important;
@@ -81,6 +109,23 @@
     body[data-theme="dark"] .radiant-card-amber:hover {
       border-color: rgba(245, 158, 11, 0.7) !important;
       box-shadow: 0 12px 30px -4px rgba(245, 158, 11, 0.4), 0 0 20px 2px rgba(245, 158, 11, 0.2) !important;
+    }
+
+    @media print {
+      body, body[data-theme="light"], body[data-theme="dark"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
+      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
+      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
+      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
     }
 
     /* Theme override helper classes */
@@ -319,9 +364,11 @@
             <i class="fa-solid fa-user-pen text-indigo-550"></i> ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Attendance Matrix
           </h2>
           <!-- Batch Actions for Daily Attendance -->
-          <div id="daily-batch-actions" class="flex gap-2 text-[10px] font-bold">
-            <button onclick="setAllAttendance('present')" class="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/50 text-emerald-700 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-check-double"></i> All Present</button>
-            <button onclick="setAllAttendance('absent')" class="bg-rose-50 hover:bg-rose-100 border border-rose-200/50 text-rose-700 px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-ban"></i> All Absent</button>
+          <div id="daily-batch-actions" class="flex flex-wrap items-center gap-2 text-[10px] font-bold">
+            <button type="button" onclick="setAllAttendance('present')" class="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-check-double"></i> All Present / ಎಲ್ಲರೂ ಹಾಜರು</button>
+            <button type="button" onclick="setAllAttendance('absent')" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 border border-rose-200/50 dark:border-rose-800/50 text-rose-700 dark:text-rose-300 px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-ban"></i> All Absent / ಎಲ್ಲರೂ ಗೈರು</button>
+            <button type="button" onclick="invertAllAttendance()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 border border-indigo-200/50 dark:border-indigo-800/50 text-indigo-700 dark:text-indigo-300 px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-arrows-rotate"></i> Invert / ವಿಪರ್ಯಾಸ</button>
+            <button type="button" onclick="openWhatsAppModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5 border-0"><i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp ಗೈರು ಸೂಚನೆ</button>
           </div>
         </div>
 
@@ -330,10 +377,10 @@
           <p class="text-xs font-bold text-slate-500 dark:text-slate-450">ವಿದ್ಯಾರ್ಥಿ ವಿವರ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
         </div>
 
-        <div id="entry-grid-container" class="hidden overflow-x-auto border border-slate-200/60 dark:border-slate-800/60 rounded-xl custom-scrollbar bg-slate-50/20">
-          <table class="w-full text-xs text-left border-collapse whitespace-nowrap">
+        <div id="entry-grid-container" class="hidden sticky-table-container border border-slate-200/80 dark:border-slate-800 rounded-2xl custom-scrollbar shadow-inner bg-slate-50/20">
+          <table class="sticky-table w-full text-xs text-left whitespace-nowrap">
             <thead>
-              <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 font-extrabold text-slate-700 dark:text-slate-200 text-center">
+              <tr class="bg-slate-900 text-white font-extrabold text-center">
                 <th class="p-3 text-left w-16">Sl.No</th>
                 <th class="p-3 text-left w-36">STS Number / ಎಸ್‌ಟಿಎಸ್ ಸಂ.</th>
                 <th class="p-3 text-left">Student Name (English / ಕನ್ನಡ)</th>
@@ -404,10 +451,10 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-800/60 rounded-xl custom-scrollbar bg-slate-50/10 max-h-[600px]">
-          <table id="matrix-report-table" class="w-full text-[11px] text-left border-collapse whitespace-nowrap">
+        <div class="sticky-table-container border border-slate-200/80 dark:border-slate-800 rounded-2xl custom-scrollbar shadow-inner bg-slate-50/10">
+          <table id="matrix-report-table" class="sticky-table w-full text-[11px] text-left whitespace-nowrap">
             <thead>
-              <tr class="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 font-extrabold text-slate-700 dark:text-slate-200 text-center">
+              <tr class="bg-slate-900 text-white font-extrabold text-center">
                 <th class="p-3 text-left w-12">Sl</th>
                 <th class="p-3 text-left w-20">Class</th>
                 <th class="p-3 text-left w-24">STS No</th>
@@ -435,8 +482,29 @@
             </tfoot>
           </table>
         </div>
+  <!-- WhatsApp Absent Notice Modal -->
+  <div id="whatsapp-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[95] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh] overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <div>
+          <h3 class="text-sm font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
+            <i class="fa-brands fa-whatsapp text-emerald-500 text-lg"></i> ಗೈರು ಹಾಜರಿ ವಾಟ್ಸಾಪ್ ಸಂದೇಶ / Absentee WhatsApp Alert
+          </h3>
+          <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-semibold">ಗೈರಾದ ವಿದ್ಯಾರ್ಥಿಗಳ ಪೋಷಕರಿಗೆ ನೇರವಾಗಿ ವಾಟ್ಸಾಪ್ ಸಂದೇಶ ಕಳುಹಿಸಿ.</p>
+        </div>
+        <button type="button" onclick="closeWhatsAppModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white text-lg border-0 bg-transparent cursor-pointer p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
-    </div>
+
+      <div class="p-6 overflow-y-auto custom-scrollbar flex flex-col gap-3" id="whatsapp-absent-list">
+        <!-- Dynamically filled -->
+      </div>
+
+      <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+        <button type="button" onclick="closeWhatsAppModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2 px-5 rounded-xl transition text-xs border-0 cursor-pointer">ಮುಚ್ಚು / Close</button>
+      </div>
+  </div>
 
   </main>
 
@@ -528,24 +596,36 @@
 
     window.onload = async function() {
       await initUserAndTheme();
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) {
-        window.location.href = "index.html";
-        return;
+
+      let session = null;
+      try {
+        const { data } = await supabaseClient.auth.getSession();
+        session = data?.session || null;
+      } catch (e) {
+        console.warn("Auth session get error:", e);
       }
 
-      const user = session.user;
-      currentSchoolId = user.user_metadata?.school_id || localStorage.getItem('school_id');
+      if (!session) {
+        const localSchool = localStorage.getItem('school_id');
+        if (!localSchool) {
+          window.location.href = "index.html";
+          return;
+        }
+      }
+
+      const user = session?.user || null;
+      currentSchoolId = user?.user_metadata?.school_id || localStorage.getItem('school_id');
 
       // Set default dates
       const today = new Date().toISOString().split('T')[0];
-      document.getElementById('entry-date-picker').value = today;
+      const datePicker = document.getElementById('entry-date-picker');
+      if (datePicker) datePicker.value = today;
+
       const currentMonth = new Date().toISOString().substring(0, 7);
-      document.getElementById('entry-month-picker').value = currentMonth;
+      const monthPicker = document.getElementById('entry-month-picker');
+      if (monthPicker) monthPicker.value = currentMonth;
 
       await checkAttendanceTable();
-      
-      // Load initial students & dashboard stats
       await fetchStudents();
       
       if (allStudents.length > 0) {
@@ -557,36 +637,59 @@
             defaultClass = c;
             break;
           }
+        }
+        const select = document.getElementById('entry-class-select');
+        if (select) select.value = defaultClass;
       }
 
       // Check query parameters
       const urlParams = new URLSearchParams(window.location.search);
       const paramClass = urlParams.get('class');
       if (paramClass) {
-        document.getElementById('entry-class-select').value = paramClass;
-        loadStudentsForEntry();
+        const select = document.getElementById('entry-class-select');
+        if (select) select.value = paramClass;
       }
-
+      
+      await loadStudentsForEntry();
       await loadDashboardStats();
     };
 
     async function fetchStudents() {
       try {
-        let query = supabaseClient.from('admissions').select('id, name_english, student_name, enroll_class, gender, is_admitted, app_no');
+        let data = null;
         if (currentSchoolId) {
-          query = query.eq('school_id', currentSchoolId);
+          try {
+            const { data: res1, error: err1 } = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .eq('school_id', currentSchoolId);
+            if (!err1 && res1 && res1.length > 0) {
+              data = res1;
+            }
+          } catch (e) {}
         }
-        const { data, error } = await query;
-        if (error) throw error;
+
+        if (!data || data.length === 0) {
+          try {
+            const { data: res2, error: err2 } = await supabaseClient
+              .from('admissions')
+              .select('*');
+            if (!err2 && res2) {
+              data = res2;
+            }
+          } catch (e) {}
+        }
 
         allStudents = (data || [])
           .filter(s => s.is_admitted !== false && s.is_admitted !== 'false')
           .map(student => {
             const g = (student.gender || '').toString().toLowerCase().trim();
-            const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು');
-            const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು');
-            const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : student.gender);
-            return { ...student, gender };
+            const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು') || g === 'm' || g === 'b';
+            const isGirl = g.includes('girl') || g.includes('female') || g.includes('ಹೆಣ್ಣು') || g === 'f' || g === 'g';
+            const gender = isBoy ? 'Boy' : (isGirl ? 'Girl' : (student.gender || '-'));
+            const parentPhone = student.father_mobile || student.mobile_no || student.phone_no || student.mobile || '';
+            const fatherName = student.father_name_kn || student.father_name_az || student.father_name || '';
+            return { ...student, gender, parentPhone, fatherName };
           });
       } catch (err) {
         console.error("Failed to load students:", err);
@@ -750,8 +853,14 @@
       container.classList.add('hidden');
       actions.classList.add('hidden');
 
-      // Filter students in active class
-      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
+      // Filter students in active class & sort alphabetically (A to Z)
+      const classStudents = allStudents
+        .filter(s => normalizeClass(s.enroll_class) === entryClass)
+        .sort((a, b) => {
+          const nameA = (a.name_english || a.student_name || '').toString().trim();
+          const nameB = (b.name_english || b.student_name || '').toString().trim();
+          return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+        });
       
       if (classStudents.length === 0) {
         loader.classList.add('hidden');
@@ -879,6 +988,73 @@
           setRowStatus(student.id, status === 'present' ? 1 : 0);
         }
       });
+    }
+
+    function invertAllAttendance() {
+      const entryClass = document.getElementById('entry-class-select').value;
+      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
+      classStudents.forEach(student => {
+        const input = document.getElementById(`input-present-${student.id}`);
+        if (input) {
+          const currentVal = parseInt(input.value) || 0;
+          setRowStatus(student.id, currentVal === 1 ? 0 : 1);
+        }
+      });
+    }
+
+    function openWhatsAppModal() {
+      const entryClass = document.getElementById('entry-class-select').value;
+      const dateVal = document.getElementById('entry-date-picker').value || new Date().toISOString().split('T')[0];
+      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
+      
+      const absentList = [];
+      classStudents.forEach(student => {
+        const input = document.getElementById(`input-present-${student.id}`);
+        if (input && parseInt(input.value) === 0) {
+          absentList.push(student);
+        }
+      });
+
+      const modal = document.getElementById('whatsapp-modal');
+      const container = document.getElementById('whatsapp-absent-list');
+      if (!container || !modal) return;
+
+      container.innerHTML = '';
+      if (absentList.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-500 dark:text-slate-400 font-bold"><i class="fa-solid fa-circle-check text-emerald-500 text-xl block mb-2 mx-auto"></i>ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳು ಹಾಜರಾಗಿದ್ದಾರೆ! ಗೈರುಹಾಜರಿ ಇಲ್ಲ. / All students present!</div>`;
+      } else {
+        const schoolNameEn = localStorage.getItem('school_name_en') || "GHPS MARCHED";
+        absentList.forEach((s, idx) => {
+          const phone = (s.parentPhone || '').toString().replace(/[^0-9]/g, '');
+          const msgKn = `ಪ್ರೀತಿಯ ಪೋಷಕರೇ, ನಿಮ್ಮ ಮಗು ${s.student_name || s.name_english} (ತರಗತಿ: ${entryClass}) ಇಂದು (${dateVal}) ಶಾಲೆಗೆ ಗೈರುಹಾಜರಾಗಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ಕಾರಣ ತಿಳಿಸಿ. - ${schoolNameEn}`;
+          const encodedMsg = encodeURIComponent(msgKn);
+          const waUrl = phone ? `https://wa.me/91${phone}?text=${encodedMsg}` : '#';
+
+          const card = document.createElement('div');
+          card.className = "flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/60";
+          card.innerHTML = `
+            <div>
+              <h4 class="font-extrabold text-slate-800 dark:text-white text-xs">${idx + 1}. ${s.name_english || s.student_name}</h4>
+              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-semibold">STS: ${s.app_no || '-'} | ತಂದೆ: ${s.fatherName || '-'} | Phone: ${s.parentPhone || 'ಲಭ್ಯವಿಲ್ಲ'}</p>
+            </div>
+            ${phone ? `
+              <a href="${waUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 no-underline transition shadow-xs">
+                <i class="fa-brands fa-whatsapp text-sm"></i> ಕಳುಹಿಸಿ
+              </a>
+            ` : `
+              <span class="text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-800">Phone Na</span>
+            `}
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeWhatsAppModal() {
+      const modal = document.getElementById('whatsapp-modal');
+      if (modal) modal.classList.add('hidden');
     }
 
     function validateRowAttendance(studentId) {
@@ -1177,6 +1353,7 @@
 
       filtered.forEach((student, index) => {
         const tr = document.createElement('tr');
+        tr.setAttribute('data-student-id', student.id);
         tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition border-b border-slate-100 dark:border-slate-850 text-center text-[10px]';
         const cls = normalizeClass(student.enroll_class);
 
@@ -1255,13 +1432,27 @@
 
     function printMatrixReport() {
       const acadYear = document.getElementById('report-academic-year').value;
+      const classFilter = document.getElementById('report-class-filter').value;
+      const q = document.getElementById('report-search').value.trim().toUpperCase();
+
+      const filtered = processedMatrixStudents.filter(s => {
+        const nameEn = (s.name_english || '').toUpperCase();
+        const nameKn = (s.student_name || '').toUpperCase();
+        const sts = (s.app_no || '').toUpperCase();
+        const matchesQuery = !q || nameEn.includes(q) || nameKn.includes(q) || sts.includes(q);
+
+        const cls = normalizeClass(s.enroll_class);
+        const matchesClass = !classFilter || cls === classFilter;
+        return matchesQuery && matchesClass;
+      });
+
       window.openPrintDrawer({
         tableId: 'matrix-report-table',
         title: `ಹಾಜರಾತಿ ವರದಿ / Student Attendance Report - AY ${acadYear}`,
-        class: 'All',
+        class: classFilter || 'All',
         exam: '',
         subject: '',
-        students: []
+        students: filtered
       });
     }
 
@@ -1454,5 +1645,6 @@
     }
   </script>
   <script src="navbar.js"></script>
+  <div id="printArea"></div>
 </body>
 </html>

@@ -1,13 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>List of All New Admission - GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Kannada:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -142,7 +143,6 @@
       color: #1e293b !important;
     }
     body[data-theme="gray"] .bg-white,
-    body[data-theme="gray"] aside,
     body[data-theme="gray"] main,
     body[data-theme="gray"] .form-container,
     body[data-theme="gray"] .section-block {
@@ -156,7 +156,6 @@
       color: #0c4a6e !important;
     }
     body[data-theme="blue"] .bg-white,
-    body[data-theme="blue"] aside,
     body[data-theme="blue"] main,
     body[data-theme="blue"] .form-container,
     body[data-theme="blue"] .section-block {
@@ -170,7 +169,6 @@
       color: #14532d !important;
     }
     body[data-theme="green"] .bg-white,
-    body[data-theme="green"] aside,
     body[data-theme="green"] main,
     body[data-theme="green"] .form-container,
     body[data-theme="green"] .section-block {
@@ -212,12 +210,26 @@
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200 no-print">
           <!-- Left: Search & Filter Panel -->
           <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            <!-- Text Search -->
-            <div class="relative w-full sm:w-60">
+            <!-- Text Search with Barcode / QR Reader -->
+            <div class="relative w-full sm:w-64">
               <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
               </span>
-              <input type="text" id="roster-search" oninput="applyFilters()" placeholder="Search Name, ID, Father..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white">
+              <input type="text" id="roster-search" oninput="applyFilters()" onkeydown="handleSearchKeydown(event)" placeholder="Search Name, ID, Barcode..." class="w-full pl-9 pr-9 py-2 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white">
+              <button type="button" onclick="openBarcodeScannerModal()" title="ಬಾರ್‌ಕೋಡ್ / ಕ್ಯೂಆರ್ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ (Scan Barcode/QR)" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-sky-600 hover:text-sky-700 dark:text-sky-400 border-0 bg-transparent cursor-pointer transition active:scale-95">
+                <i class="fa-solid fa-barcode text-sm"></i>
+              </button>
+            </div>
+
+            <!-- Academic Year Filter -->
+            <div class="w-full sm:w-44">
+              <select id="academic-year-filter" onchange="applyFilters()" class="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 font-semibold cursor-pointer">
+                <option value="">-- Academic Year / ವರ್ಷ --</option>
+                <option value="2026-27">2026-27</option>
+                <option value="2025-26">2025-26</option>
+                <option value="2024-25">2024-25</option>
+                <option value="2023-24">2023-24</option>
+              </select>
             </div>
 
             <!-- Class Filter -->
@@ -322,10 +334,22 @@
           </div>
         </div>
 
-        <!-- 4 Statistics Cards -->
+        <!-- Active Filter Chips Bar -->
+        <div id="active-filters-bar" class="hidden flex flex-wrap items-center justify-between gap-2 bg-sky-50/70 dark:bg-slate-800/60 border border-sky-200/80 dark:border-slate-700/80 px-4 py-2.5 rounded-2xl no-print mb-4 transition-all">
+          <div class="flex flex-wrap items-center gap-2" id="active-filter-chips-list">
+            <span class="text-xs font-bold text-sky-800 dark:text-sky-300 flex items-center gap-1.5 mr-1">
+              <i class="fa-solid fa-filter text-sky-500"></i> ಸಕ್ರಿಯ ಫಿಲ್ಟರ್‌ಗಳು / Active Filters:
+            </span>
+          </div>
+          <button onclick="resetAllFilters()" class="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/40 px-3 py-1 rounded-xl transition border border-rose-200 dark:border-rose-800/60 bg-white dark:bg-slate-900 cursor-pointer flex items-center gap-1 shadow-sm">
+            <i class="fa-solid fa-rotate-left text-[10px]"></i> ಫಿಲ್ಟರ್ ತೆರವುಗೊಳಿಸಿ / Reset All
+          </button>
+        </div>
+
+        <!-- 4 Statistics Cards (Interactive Click-to-Filter) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 no-print">
           <!-- Card 1 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <div id="card-total-pending" onclick="toggleCardFilter('Pending')" title="Click to filter Pending applications" class="stat-card-btn group relative overflow-hidden bg-gradient-to-br from-sky-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-sky-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer select-none">
             <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-file-invoice"></i>
             </div>
@@ -339,7 +363,7 @@
           </div>
           
           <!-- Card 2 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-indigo-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <div id="card-boys" onclick="toggleCardFilter('Boy')" title="Click to filter Boys applications" class="stat-card-btn group relative overflow-hidden bg-gradient-to-br from-indigo-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-indigo-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer select-none">
             <div class="absolute -right-4 -bottom-4 text-indigo-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-mars"></i>
             </div>
@@ -353,7 +377,7 @@
           </div>
           
           <!-- Card 3 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-pink-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-pink-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <div id="card-girls" onclick="toggleCardFilter('Girl')" title="Click to filter Girls applications" class="stat-card-btn group relative overflow-hidden bg-gradient-to-br from-pink-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-pink-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer select-none">
             <div class="absolute -right-4 -bottom-4 text-pink-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-venus"></i>
             </div>
@@ -367,7 +391,7 @@
           </div>
           
           <!-- Card 4 -->
-          <div class="group relative overflow-hidden bg-gradient-to-br from-amber-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-amber-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+          <div id="card-cwsn" onclick="toggleCardFilter('CWSN')" title="Click to filter CWSN applications" class="stat-card-btn group relative overflow-hidden bg-gradient-to-br from-amber-50/80 to-white/90 dark:from-slate-800/80 dark:to-slate-900/90 border border-amber-100 dark:border-slate-700/50 p-5 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer select-none">
             <div class="absolute -right-4 -bottom-4 text-amber-100 dark:text-slate-800 text-7xl opacity-50 group-hover:scale-110 transition-transform duration-300">
               <i class="fa-solid fa-wheelchair"></i>
             </div>
@@ -522,21 +546,18 @@
 
   <!-- Manage Columns Modal -->
   <div id="manage-columns-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 flex flex-col max-h-[85vh] overflow-hidden">
-      <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh] overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 class="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0">
           <i class="fa-solid fa-sliders text-sky-600"></i> ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns
         </h3>
-        <button onclick="closeManageColumnsModal()" class="text-slate-400 hover:text-slate-600 text-lg border-0 bg-transparent cursor-pointer">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
       </div>
-      <div class="flex-grow overflow-y-auto p-6 bg-white custom-scrollbar space-y-4">
-        <p class="text-xs text-slate-500 font-medium">ಇಲ್ಲಿ ನೀವು ಪಟ್ಟಿಯಲ್ಲಿ ಯಾವ ಕಾಲಮ್‌ಗಳು ಕಾಣಿಸಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು. / Toggle column visibility here:</p>
+      <div class="flex-grow overflow-y-auto p-6 bg-white dark:bg-slate-900 custom-scrollbar space-y-4">
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">ಇಲ್ಲಿ ನೀವು ಪಟ್ಟಿಯಲ್ಲಿ ಯಾವ ಕಾಲಮ್‌ಗಳು ಕಾಣಿಸಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು. / Toggle column visibility here:</p>
         
         <!-- Column Search Space -->
         <div class="relative no-print">
-          <input type="text" id="column-search-input" placeholder="ಹುಡುಕಿ / Search columns..." oninput="filterColumnSettingsList(this.value)" class="w-full text-xs px-3 py-2 pl-9 rounded-xl border border-slate-200/80 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/25 transition">
+          <input type="text" id="column-search-input" placeholder="ಹುಡುಕಿ / Search columns..." oninput="filterColumnSettingsList(this.value)" class="w-full text-xs px-3 py-2 pl-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500/25 transition text-slate-800 dark:text-white">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
         </div>
 
@@ -545,8 +566,10 @@
           <!-- Checkbox items will be rendered dynamically -->
         </div>
       </div>
-      <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 text-xs font-bold">
-        <button onclick="closeManageColumnsModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-5 rounded-xl transition border-0 cursor-pointer">Close</button>
+      <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 text-xs font-bold">
+        <button onclick="saveColumnSettingsAndClose()" class="bg-sky-600 hover:bg-sky-500 text-white py-2 px-5 rounded-xl transition border-0 cursor-pointer flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-floppy-disk"></i> 💾 Save & Close / ಉಳಿಸಿ ಮತ್ತು ಮುಚ್ಚಿ
+        </button>
       </div>
     </div>
   </div>
@@ -602,6 +625,68 @@
           </button>
           <button onclick="closeStudentDetailModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-xl transition border-0 cursor-pointer">Close</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barcode & QR Code Reader Modal -->
+  <div id="barcode-scanner-modal" onclick="if (event.target === this) closeBarcodeScannerModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[3000] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+      <div class="px-5 py-3.5 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 class="text-xs font-bold text-slate-800 dark:text-white flex items-center gap-2 m-0 uppercase tracking-wide">
+          <i class="fa-solid fa-barcode text-sky-600 text-base"></i> ಬಾರ್‌ಕೋಡ್/ಕ್ಯೂಆರ್ ಸ್ಕ್ಯಾನರ್ / Barcode & QR Reader
+        </h3>
+        <button type="button" onclick="closeBarcodeScannerModal()" class="text-slate-400 hover:text-slate-650 dark:hover:text-slate-200 text-lg border-0 bg-transparent cursor-pointer p-1">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      
+      <div class="p-5 flex flex-col gap-4">
+        <!-- Tabs: Camera / Image File -->
+        <div class="flex border-b border-slate-200 dark:border-slate-700 text-xs font-bold">
+          <button id="scanner-tab-cam" onclick="switchScannerTab('cam')" class="py-2 px-4 border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 cursor-pointer">
+            <i class="fa-solid fa-camera mr-1"></i> Live Camera / ಕ್ಯಾಮೆರಾ
+          </button>
+          <button id="scanner-tab-file" onclick="switchScannerTab('file')" class="py-2 px-4 border-b-2 border-transparent text-slate-400 hover:text-slate-600 cursor-pointer">
+            <i class="fa-solid fa-file-image mr-1"></i> Upload Image / ಚಿತ್ರ ಅಪ್‌ಲೋಡ್
+          </button>
+        </div>
+
+        <!-- Camera Panel -->
+        <div id="scanner-cam-panel" class="flex flex-col gap-3">
+          <select id="barcode-cam-select" onchange="onBarcodeCamChanged()" class="w-full p-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none">
+            <option value="">ಕ್ಯಾಮೆರಾ ಆಯ್ಕೆ ಮಾಡಿ / Select Camera...</option>
+          </select>
+          <div class="relative w-full h-64 bg-slate-950 rounded-xl overflow-hidden flex items-center justify-center border border-slate-800">
+            <div id="barcode-reader-viewfinder" class="w-full h-full"></div>
+          </div>
+          <p class="text-[11px] text-slate-500 text-center font-medium m-0">ವಿದ್ಯಾರ್ಥಿ ಕಾರ್ಡ್/ಸರ್ಟಿಫಿಕೇಟ್‌ನ ಬಾರ್‌ಕೋಡ್ ಅಥವಾ ಕ್ಯೂಆರ್ ಕೋಡ್ ಅನ್ನು ಕ್ಯಾಮೆರಾ ಮುಂಭಾಗದಲ್ಲಿ ಹಿಡಿಯಿರಿ.<br><span class="text-[10px] text-slate-400">Hold student ID/certificate barcode or QR code in front of camera.</span></p>
+        </div>
+
+        <!-- File Upload Panel -->
+        <div id="scanner-file-panel" class="hidden flex flex-col gap-3">
+          <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 text-center hover:bg-slate-50 dark:hover:bg-slate-800/40 transition cursor-pointer" onclick="document.getElementById('barcode-file-input').click()">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl text-sky-500 mb-2"></i>
+            <p class="text-xs font-bold text-slate-700 dark:text-slate-200 m-0">ಚಿತ್ರವನ್ನು ಇಲ್ಲಿ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ / Upload Barcode Image</p>
+            <p class="text-[10px] text-slate-400 mt-1 m-0">PNG, JPG, JPEG, WEBP ಬೆಂಬಲಿತವಾಗಿದೆ.</p>
+          </div>
+          <input type="file" id="barcode-file-input" accept="image/*" class="hidden" onchange="handleBarcodeFileSelected(this)">
+        </div>
+        
+        <!-- Scan Result Alert -->
+        <div id="barcode-scan-result" class="hidden p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-xs font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-circle-check text-emerald-600 text-base"></i>
+          <div>
+            <div>ಗುರುತಿಸಲಾಗಿದೆ / Decoded Text:</div>
+            <span id="barcode-scan-val" class="font-bold font-mono text-sm text-slate-900"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
+        <button type="button" onclick="closeBarcodeScannerModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-1.5 px-4 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
+          <i class="fa-solid fa-xmark mr-1"></i> ರದ್ದುಗೊಳಿಸಿ / Cancel
+        </button>
       </div>
     </div>
   </div>
@@ -1196,6 +1281,61 @@ function loadColumnOrder() {
       buildTableHeader();
       fetchStudentsDatabase();
 
+      // Pro Keyboard Shortcuts (Feature 5)
+      document.addEventListener("keydown", function(e) {
+        if ((e.key === '/' || (e.ctrlKey && (e.key === 'f' || e.key === 'F'))) && 
+            document.activeElement.tagName !== 'INPUT' && 
+            document.activeElement.tagName !== 'SELECT' && 
+            document.activeElement.tagName !== 'TEXTAREA') {
+          e.preventDefault();
+          const searchInput = document.getElementById('roster-search');
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+          return;
+        }
+        if (e.key === 'Escape') {
+          const detailModal = document.getElementById('student-detail-modal');
+          if (detailModal && !detailModal.classList.contains('hidden')) {
+            closeStudentDetailModal();
+            return;
+          }
+          const editModal = document.getElementById('mass-edit-modal');
+          if (editModal && !editModal.classList.contains('hidden')) {
+            closeMassEditModal();
+            return;
+          }
+          const colsModal = document.getElementById('manage-columns-modal');
+          if (colsModal && !colsModal.classList.contains('hidden')) {
+            closeManageColumnsModal();
+            return;
+          }
+          const csvModal = document.getElementById('csv-preview-modal');
+          if (csvModal && !csvModal.classList.contains('hidden')) {
+            closeCSVPreviewModal();
+            return;
+          }
+          const searchInput = document.getElementById('roster-search');
+          if (searchInput && (document.activeElement === searchInput || searchInput.value.length > 0)) {
+            searchInput.value = '';
+            applyFilters();
+            searchInput.blur();
+          }
+          return;
+        }
+        const detailModal = document.getElementById('student-detail-modal');
+        if (detailModal && !detailModal.classList.contains('hidden')) {
+          if (e.key === 'ArrowLeft') {
+            const prevBtn = document.getElementById('modal-prev-btn');
+            if (prevBtn) prevBtn.click();
+          } else if (e.key === 'ArrowRight') {
+            const nextBtn = document.getElementById('modal-next-btn');
+            if (nextBtn) nextBtn.click();
+          }
+        }
+      });
+
       // Event delegation for double click inline editing (WOW Spreadsheet style!)
       document.getElementById('students-table-body')?.addEventListener('dblclick', function(event) {
         const td = event.target.closest('td');
@@ -1392,7 +1532,12 @@ function loadColumnOrder() {
       const mediumParam = urlParams.get('medium');
       const categoryParam = urlParams.get('category');
       const statusParam = urlParams.get('status');
+      const academicYearParam = urlParams.get('academic_year') || urlParams.get('academicYear') || urlParams.get('year');
       
+      if (academicYearParam) {
+        const ayFilter = document.getElementById('academic-year-filter');
+        if (ayFilter) ayFilter.value = academicYearParam;
+      }
       if (classParam) {
         const classFilter = document.getElementById('class-filter');
         if (classFilter) classFilter.value = normalizeClass(classParam);
@@ -1516,6 +1661,7 @@ function loadColumnOrder() {
           return mapped;
         });
 
+        populateAcademicYears();
         applyUrlParameters();
         applyFilters();
       } catch (err) {
@@ -1597,13 +1743,148 @@ function loadColumnOrder() {
       return val.toString().toUpperCase().trim();
     }
 
+    function populateAcademicYears() {
+      const aySelect = document.getElementById('academic-year-filter');
+      if (!aySelect) return;
+      const currentVal = aySelect.value;
+      
+      const defaultYears = ['2026-27', '2025-26', '2024-25', '2023-24'];
+      const dataYears = (allStudentsData || [])
+        .map(s => (s.academic_year || '').trim())
+        .filter(Boolean);
+        
+      const uniqueYears = Array.from(new Set([...defaultYears, ...dataYears])).sort().reverse();
+      
+      let html = '<option value="">-- Academic Year / ವರ್ಷ --</option>';
+      uniqueYears.forEach(year => {
+        html += `<option value="${year}" ${year === currentVal ? 'selected' : ''}>${year}</option>`;
+      });
+      aySelect.innerHTML = html;
+    }
+
+    let activeCardFilter = null;
+
+    function toggleCardFilter(type) {
+      if (activeCardFilter === type) {
+        activeCardFilter = null;
+      } else {
+        activeCardFilter = type;
+      }
+      updateCardVisualStates();
+      applyFilters();
+    }
+
+    function updateCardVisualStates() {
+      const cards = {
+        'Pending': document.getElementById('card-total-pending'),
+        'Boy': document.getElementById('card-boys'),
+        'Girl': document.getElementById('card-girls'),
+        'CWSN': document.getElementById('card-cwsn')
+      };
+      
+      for (const key in cards) {
+        const el = cards[key];
+        if (!el) continue;
+        if (activeCardFilter === key) {
+          el.classList.add('ring-2', 'ring-sky-500', 'shadow-md', 'scale-[1.02]');
+        } else {
+          el.classList.remove('ring-2', 'ring-sky-500', 'shadow-md', 'scale-[1.02]');
+        }
+      }
+    }
+
+    function updateActiveFilterChips() {
+      const bar = document.getElementById('active-filters-bar');
+      const chipsContainer = document.getElementById('active-filter-chips-list');
+      if (!bar || !chipsContainer) return;
+      
+      const q = document.getElementById('roster-search')?.value.trim();
+      const ay = document.getElementById('academic-year-filter')?.value;
+      const cls = document.getElementById('class-filter')?.value;
+      const gender = document.getElementById('gender-filter')?.value;
+      const medium = document.getElementById('medium-filter')?.value;
+      const category = document.getElementById('category-filter')?.value;
+      const status = document.getElementById('status-filter')?.value;
+      
+      const chips = [];
+      
+      if (q) {
+        chips.push({ id: 'search', label: `Search: "${q}"`, reset: () => { document.getElementById('roster-search').value = ''; } });
+      }
+      if (ay) {
+        chips.push({ id: 'ay', label: `Year: ${ay}`, reset: () => { document.getElementById('academic-year-filter').value = ''; } });
+      }
+      if (cls) {
+        chips.push({ id: 'class', label: `Class: ${cls}`, reset: () => { document.getElementById('class-filter').value = ''; } });
+      }
+      if (gender) {
+        chips.push({ id: 'gender', label: `Gender: ${gender}`, reset: () => { document.getElementById('gender-filter').value = ''; } });
+      }
+      if (medium) {
+        chips.push({ id: 'medium', label: `Medium: ${medium}`, reset: () => { document.getElementById('medium-filter').value = ''; } });
+      }
+      if (category) {
+        chips.push({ id: 'category', label: `Category: ${category}`, reset: () => { document.getElementById('category-filter').value = ''; } });
+      }
+      if (status && status !== 'Pending') {
+        chips.push({ id: 'status', label: `Status: ${status}`, reset: () => { document.getElementById('status-filter').value = 'Pending'; } });
+      }
+      if (activeCardFilter) {
+        chips.push({ id: 'cardFilter', label: `Quick Filter: ${activeCardFilter}`, reset: () => { activeCardFilter = null; updateCardVisualStates(); } });
+      }
+      
+      if (chips.length === 0) {
+        bar.classList.add('hidden');
+        return;
+      }
+      
+      bar.classList.remove('hidden');
+      let html = '<span class="text-xs font-bold text-sky-800 dark:text-sky-300 flex items-center gap-1.5 mr-1"><i class="fa-solid fa-filter text-sky-500"></i> ಸಕ್ರಿಯ ಫಿಲ್ಟರ್‌ಗಳು / Active Filters:</span>';
+      chips.forEach((c) => {
+        html += `
+          <span class="inline-flex items-center gap-1.5 bg-white dark:bg-slate-900 text-sky-750 dark:text-sky-300 text-xs font-bold px-3 py-1 rounded-full border border-sky-200 dark:border-slate-700 shadow-sm">
+            ${c.label}
+            <button onclick="removeIndividualFilter('${c.id}')" class="text-slate-400 hover:text-rose-500 font-black text-sm ml-0.5 border-0 bg-transparent cursor-pointer transition">&times;</button>
+          </span>
+        `;
+      });
+      chipsContainer.innerHTML = html;
+      window._currentActiveChips = chips;
+    }
+
+    function removeIndividualFilter(chipId) {
+      if (window._currentActiveChips) {
+        const chip = window._currentActiveChips.find(c => c.id === chipId);
+        if (chip && typeof chip.reset === 'function') {
+          chip.reset();
+          applyFilters();
+        }
+      }
+    }
+
+    function resetAllFilters() {
+      const searchEl = document.getElementById('roster-search'); if (searchEl) searchEl.value = '';
+      const ay = document.getElementById('academic-year-filter'); if (ay) ay.value = '';
+      const cls = document.getElementById('class-filter'); if (cls) cls.value = '';
+      const g = document.getElementById('gender-filter'); if (g) g.value = '';
+      const m = document.getElementById('medium-filter'); if (m) m.value = '';
+      const c = document.getElementById('category-filter'); if (c) c.value = '';
+      const st = document.getElementById('status-filter'); if (st) st.value = 'Pending';
+      activeCardFilter = null;
+      updateCardVisualStates();
+      applyFilters();
+    }
+
     function applyFilters() {
       const q = document.getElementById('roster-search').value.trim().toUpperCase();
+      const selectedAcademicYear = document.getElementById('academic-year-filter')?.value || '';
       const selectedClass = document.getElementById('class-filter').value;
       const selectedGender = document.getElementById('gender-filter').value;
       const selectedMedium = document.getElementById('medium-filter').value;
       const selectedCategory = document.getElementById('category-filter').value;
       const selectedStatus = document.getElementById('status-filter').value;
+
+      updateActiveFilterChips();
 
       const filtered = allStudentsData.filter(student => {
         let searchMatch = true;
@@ -1622,6 +1903,9 @@ function loadColumnOrder() {
                    (student.className || '').toUpperCase().includes(token);
           });
         }
+
+        const ayMatch = !selectedAcademicYear || 
+          (student.academic_year || '').trim().toLowerCase() === selectedAcademicYear.trim().toLowerCase();
 
         let classMatch = !selectedClass;
         if (selectedClass) {
@@ -1648,6 +1932,17 @@ function loadColumnOrder() {
           statusMatch = (student.isAdmitted === true || student.isAdmitted === 'true');
         }
 
+        let cardMatch = true;
+        if (activeCardFilter === 'Pending') {
+          cardMatch = (student.isAdmitted === false || student.isAdmitted === 'false');
+        } else if (activeCardFilter === 'Boy') {
+          cardMatch = (student.gender === 'Boy');
+        } else if (activeCardFilter === 'Girl') {
+          cardMatch = (student.gender === 'Girl');
+        } else if (activeCardFilter === 'CWSN') {
+          cardMatch = (student.specialNeed && student.specialNeed !== 'NONE' && student.specialNeed !== 'ಯಾವುದೂ ಇಲ್ಲ');
+        }
+
         // Check Excel filter matches
         let excelFiltersMatch = true;
         for (const colId in activeExcelFilters) {
@@ -1661,7 +1956,7 @@ function loadColumnOrder() {
           }
         }
 
-        return searchMatch && classMatch && genderMatch && mediumMatch && categoryMatch && statusMatch && excelFiltersMatch;
+        return searchMatch && ayMatch && classMatch && genderMatch && mediumMatch && categoryMatch && statusMatch && cardMatch && excelFiltersMatch;
       });
 
       renderTable(filtered);
@@ -1733,6 +2028,7 @@ function loadColumnOrder() {
           <input type="checkbox" id="select-all-checkbox" onchange="toggleSelectAll(this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-350 cursor-pointer">
         </th>
         <th class="p-3 text-center w-12 font-bold text-[11px] whitespace-nowrap text-white">Sl.No</th>
+        <th class="p-3 text-center w-24 font-bold text-[11px] whitespace-nowrap text-white no-print">Actions / ಕ್ರಿಯೆಗಳು</th>
       `;
       
       standardColumns.forEach(col => {
@@ -1770,7 +2066,50 @@ function loadColumnOrder() {
       const escapedTokens = tokens.map(t => t.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
       const pattern = `(${escapedTokens.join('|')})`;
       const regex = new RegExp(pattern, 'gi');
-      return str.replace(regex, '<mark class="bg-yellow-250 text-slate-950 font-bold px-[2px] py-[1px] rounded shadow-sm">$1</mark>');
+      return str.replace(regex, '<mark class="bg-amber-200 dark:bg-amber-800/80 text-slate-900 dark:text-amber-100 font-bold px-[2px] py-[1px] rounded shadow-sm">$1</mark>');
+    }
+
+    async function quickApproveStudent(studentId, studentName, event) {
+      if (event) event.stopPropagation();
+      if (!confirm(`ನಿಜವಾಗಿಯೂ ${studentName} ಅವರನ್ನು ಶಾಲೆಗೆ ದಾಖಲಿಸಿಕೊಳ್ಳಲು ಬಯಸುವಿರಾ?\nAre you sure you want to approve & admit ${studentName}?`)) {
+        return;
+      }
+      try {
+        const { error } = await supabaseClient
+          .from('admissions')
+          .update({ is_admitted: true })
+          .eq('id', studentId);
+          
+        if (error) throw error;
+        
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", `${studentName} ದಾಖಲಾತಿ ಯಶಸ್ವಿಯಾಗಿದೆ.`, "success");
+        const student = allStudentsData.find(s => s.realId === studentId);
+        if (student) student.isAdmitted = true;
+        applyFilters();
+      } catch (err) {
+        showToast("ದೋಷ: ಅನುಮೋದಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+      }
+    }
+
+    function quickWhatsAppStudent(studentId, event) {
+      if (event) event.stopPropagation();
+      const student = allStudentsData.find(s => s.realId === studentId);
+      if (!student) return;
+      
+      const phone = (student.mobile || student.mobile_number || '').toString().replace(/\D/g, '');
+      if (!phone || phone.length < 10) {
+        showToast("ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ಲಭ್ಯವಿಲ್ಲ / Mobile number not available", "error");
+        return;
+      }
+      
+      const formattedPhone = phone.length === 10 ? '91' + phone : phone;
+      const name = student.name_english || student.student_name_kn || 'Student';
+      const appNo = student.app_no || student.id || '';
+      const cls = student.className || student.enroll_class || '';
+      
+      const text = `ನಮಸ್ಕಾರ! GHPS MARCHED ಶಾಲೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಗು ${name} (ಅರ್ಜಿ ಸಂಖ್ಯೆ: ${appNo}, ತರಗತಿ: ${cls}) ಅವರ ದಾಖಲಾತಿ ಅರ್ಜಿಯನ್ನು ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ಧನ್ಯವಾದಗಳು!`;
+      const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
     }
 
     function renderTable(students) {
@@ -1799,7 +2138,7 @@ function loadColumnOrder() {
       document.getElementById('cwsn-count').textContent = cwsn;
 
       const visibility = getColumnVisibility();
-      let colCount = 2; // Checkbox + Sl.No
+      let colCount = 3; // Checkbox + Sl.No + Actions
       standardColumns.forEach(c => {
         if (visibility[c.id] !== false) colCount++;
       });
@@ -1815,11 +2154,28 @@ function loadColumnOrder() {
 
       let rowsHtml = "";
       students.forEach((s, index) => {
+        const isAdmitted = (s.isAdmitted === true || s.isAdmitted === 'true' || s.is_admitted === true || s.is_admitted === 'true');
+        const cleanName = (s.name_english || s.student_name_kn || 'Student').replace(/'/g, "\\'");
+        
         let cellsHtml = `
           <td class="p-3 text-center no-print">
             <input type="checkbox" class="student-checkbox w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 cursor-pointer" data-id="${s.realId}" onchange="updateSelectedCount()">
           </td>
           <td class="p-3 font-semibold text-slate-500 font-mono text-center">${index + 1}</td>
+          <td class="p-2 text-center whitespace-nowrap no-print">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openStudentDetailModal('${s.realId}')" title="ವಿವರ ನೋಡಿ / View Profile" class="w-7 h-7 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-600 dark:bg-sky-950/40 dark:hover:bg-sky-900/60 dark:text-sky-400 flex items-center justify-center transition border border-sky-200 dark:border-sky-800 cursor-pointer shadow-sm active:scale-95">
+                <i class="fa-solid fa-eye text-[11px]"></i>
+              </button>
+              ${!isAdmitted ? `
+              <button onclick="quickApproveStudent('${s.realId}', '${cleanName}', event)" title="ಅನುಮೋದಿಸಿ / Quick Approve" class="w-7 h-7 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 dark:text-emerald-400 flex items-center justify-center transition border border-emerald-200 dark:border-emerald-800 cursor-pointer shadow-sm active:scale-95">
+                <i class="fa-solid fa-check text-[11px]"></i>
+              </button>` : ''}
+              <button onclick="quickWhatsAppStudent('${s.realId}', event)" title="ವಾಟ್ಸಾಪ್ ರಸೀದಿ / WhatsApp Receipt" class="w-7 h-7 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-600 dark:bg-teal-950/40 dark:hover:bg-teal-900/60 dark:text-teal-400 flex items-center justify-center transition border border-teal-200 dark:border-teal-800 cursor-pointer shadow-sm active:scale-95">
+                <i class="fa-brands fa-whatsapp text-xs"></i>
+              </button>
+            </div>
+          </td>
         `;
         
         standardColumns.forEach(col => {
@@ -1830,7 +2186,23 @@ function loadColumnOrder() {
             } else if (col.id === 'gender') {
               cellsHtml += `<td class="p-3 text-center">${val === 'Boy' ? 'Boy / ಗಂಡು' : 'Girl / ಹೆಣ್ಣು'}</td>`;
             } else if (col.id === 'is_admitted') {
-              cellsHtml += `<td class="p-3 text-center">${val === true || val === 'true' ? 'Admitted' : 'Pending'}</td>`;
+              if (isAdmitted) {
+                cellsHtml += `
+                  <td class="p-3 text-center">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/50 shadow-sm">
+                      <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i> Admitted
+                    </span>
+                  </td>
+                `;
+              } else {
+                cellsHtml += `
+                  <td class="p-3 text-center">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/50 shadow-sm">
+                      <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Pending
+                    </span>
+                  </td>
+                `;
+              }
             } else if (col.id === 'app_no') {
               cellsHtml += `<td class="p-3 font-semibold text-slate-500 font-mono text-left">${highlightMatch(s.app_no || '-', q)}</td>`;
             } else if (col.id === 'student_name') {
@@ -1839,11 +2211,11 @@ function loadColumnOrder() {
               const photoUrl = s.student_photo || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23cbd5e1'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/></svg>";
               if (nameEn && nameKn) {
                 cellsHtml += `
-                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 group" onclick="openStudentDetailModal('${s.realId}')" title="Click to view detailed profile">
+                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 group" onclick="openStudentDetailModal('${s.realId}')" title="Click to view detailed profile">
                     <div class="flex items-center gap-2">
                       <img src="${photoUrl}" class="w-8 h-8 rounded-full border border-slate-200 object-cover flex-shrink-0">
                       <div>
-                        <div class="font-bold text-slate-800 text-[11px] group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn, q)}</div>
+                        <div class="font-bold text-slate-800 dark:text-slate-100 text-[11px] group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn, q)}</div>
                         <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(nameKn, q)}</div>
                       </div>
                     </div>
@@ -1851,10 +2223,10 @@ function loadColumnOrder() {
                 `;
               } else {
                 cellsHtml += `
-                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 group" onclick="openStudentDetailModal('${s.realId}')" title="Click to view detailed profile">
+                  <td class="p-3 text-left cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 group" onclick="openStudentDetailModal('${s.realId}')" title="Click to view detailed profile">
                     <div class="flex items-center gap-2">
                       <img src="${photoUrl}" class="w-8 h-8 rounded-full border border-slate-200 object-cover flex-shrink-0">
-                      <div class="font-semibold text-slate-800 text-[11px] text-left group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn || nameKn || '-', q)}</div>
+                      <div class="font-semibold text-slate-800 dark:text-slate-100 text-[11px] text-left group-hover:text-sky-600 transition-colors">${highlightMatch(nameEn || nameKn || '-', q)}</div>
                     </div>
                   </td>
                 `;
@@ -1867,12 +2239,12 @@ function loadColumnOrder() {
               if (fatherEn && fatherKn) {
                 cellsHtml += `
                   <td class="p-3 text-left">
-                    <div class="font-bold text-slate-800 text-[11px]">${highlightMatch(fatherEn, q)}</div>
+                    <div class="font-bold text-slate-800 dark:text-slate-100 text-[11px]">${highlightMatch(fatherEn, q)}</div>
                     <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(fatherKn, q)}</div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${highlightMatch(fatherEn || fatherKn || '-', q)}</td>`;
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 dark:text-slate-100 text-[11px] text-left">${highlightMatch(fatherEn || fatherKn || '-', q)}</td>`;
               }
             } else if (col.id === 'mother_name_kn') {
               const motherEn = (s.mother_name_az || '').trim().toUpperCase();
@@ -1880,12 +2252,12 @@ function loadColumnOrder() {
               if (motherEn && motherKn) {
                 cellsHtml += `
                   <td class="p-3 text-left">
-                    <div class="font-bold text-slate-800 text-[11px]">${highlightMatch(motherEn, q)}</div>
+                    <div class="font-bold text-slate-800 dark:text-slate-100 text-[11px]">${highlightMatch(motherEn, q)}</div>
                     <div class="text-[10px] text-slate-500 font-medium">${highlightMatch(motherKn, q)}</div>
                   </td>
                 `;
               } else {
-                cellsHtml += `<td class="p-3 font-semibold text-slate-800 text-[11px] text-left">${highlightMatch(motherEn || motherKn || '-', q)}</td>`;
+                cellsHtml += `<td class="p-3 font-semibold text-slate-800 dark:text-slate-100 text-[11px] text-left">${highlightMatch(motherEn || motherKn || '-', q)}</td>`;
               }
             } else if (col.id === 'student_aadhaar') {
               cellsHtml += `<td class="p-3 font-mono text-center">${highlightMatch(s.aadhaar || '-', q)}</td>`;
@@ -1920,7 +2292,7 @@ function loadColumnOrder() {
               }
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(displayRel || '-', q)}</td>`;
             } else if (col.id === 'dob' || col.id === 'transfer_date' || col.id === 'enrolment_date' || col.id === 'form_date') {
-              cellsHtml += `<td class="p-3 text-center font-semibold font-mono text-slate-700">${highlightMatch(formatReadableDate(val) || '-', q)}</td>`;
+              cellsHtml += `<td class="p-3 text-center font-semibold font-mono text-slate-700 dark:text-slate-300">${highlightMatch(formatReadableDate(val) || '-', q)}</td>`;
             } else {
               cellsHtml += `<td class="p-3 text-center">${highlightMatch(val || '-', q)}</td>`;
             }
@@ -1928,7 +2300,7 @@ function loadColumnOrder() {
         });
 
         rowsHtml += `
-          <tr data-student-id="${s.realId}" class="hover:bg-slate-50 transition-colors text-center">
+          <tr data-student-id="${s.realId}" class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors text-center">
             ${cellsHtml}
           </tr>
         `;
@@ -2085,8 +2457,7 @@ function loadColumnOrder() {
           if (error) throw error;
         }
 
-        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", `${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲಾತಿ ಯಶಸ್ವಿಯಾಗಿದೆ.`, "success");
-        
+        showToast("ಯಶಸ್ವಿಯಾಗಿದೆ / Success", `${selectedIds.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅನುಮೋದಿಸಿ ಮುಖ್ಯ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ. <a href="StudentList.html" class="underline text-amber-300 font-bold ml-1">StudentList ವೀಕ್ಷಿಸಿ ➔</a>`, "success");
         fetchStudentsDatabase();
       } catch (err) {
         alert("ದಾಖಲಿಸಲು ವಿಫಲವಾಗಿದೆ / Failed to admit: " + err.message);
@@ -2387,10 +2758,14 @@ function loadColumnOrder() {
 
     function printSelectedStudents() {
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      if (!checkedBoxes || checkedBoxes.length === 0) {
+        showToast("ಆಯ್ಕೆ ಮಾಡಿ / Select Students", "ದಯವಿಟ್ಟು ಕನಿಷ್ಠ ಒಬ್ಬ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ. / Please select at least one student.", "error");
+        return;
+      }
       const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
-      if (selectedIds.length === 0) return;
 
       const printWin = window.open('', '_blank');
+      if (!printWin) return;
       
       let styleHtml = `
         <style>
@@ -2408,25 +2783,42 @@ function loadColumnOrder() {
       `;
 
       const originalTable = document.querySelector('table');
+      if (!originalTable) return;
       const clonedTable = originalTable.cloneNode(true);
       
       const tbody = clonedTable.querySelector('tbody');
-      tbody.innerHTML = '';
+      if (tbody) tbody.innerHTML = '';
       
       const originalRows = originalTable.querySelectorAll('tbody tr');
       let printIdx = 1;
       originalRows.forEach(row => {
+        if (!row) return;
         const cb = row.querySelector('.student-checkbox');
         if (cb && cb.checked) {
           const rowClone = row.cloneNode(true);
-          const slNoCell = rowClone.cells[1];
+          const slNoCell = rowClone.cells ? rowClone.cells[1] : null;
           if (slNoCell) slNoCell.innerText = printIdx++;
-          tbody.appendChild(rowClone);
+          if (tbody) tbody.appendChild(rowClone);
         }
       });
       
-      clonedTable.querySelectorAll('.no-print').forEach(el => el.parentNode.removeChild(el));
-      clonedTable.querySelectorAll('.hidden.print\\:table-cell').forEach(el => el.classList.remove('hidden', 'print:table-cell'));
+      clonedTable.querySelectorAll('input').forEach(input => {
+        if (!input || !input.parentNode) return;
+        const span = document.createElement('span');
+        if (input.type === 'checkbox') {
+          span.innerText = input.checked ? '✓' : '';
+        } else {
+          span.innerText = input.value || '-';
+        }
+        input.parentNode.replaceChild(span, input);
+      });
+
+      clonedTable.querySelectorAll('.no-print').forEach(el => {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      });
+      clonedTable.querySelectorAll('.hidden.print\\:table-cell').forEach(el => {
+        if (el) el.classList.remove('hidden', 'print:table-cell');
+      });
 
       let bodyHtml = `
         <div class="header">
@@ -2913,6 +3305,27 @@ function loadColumnOrder() {
       document.getElementById('manage-columns-modal').classList.add('hidden');
     }
 
+    function saveColumnSettingsAndClose() {
+      closeManageColumnsModal();
+      buildTableHeader();
+      applyFilters();
+    }
+
+    function filterColumnSettingsList(query) {
+      const q = (query || '').toLowerCase().trim();
+      const container = document.getElementById("columns-list-container");
+      if (!container) return;
+      const items = container.children;
+      for (let i = 0; i < items.length; i++) {
+        const text = items[i].textContent.toLowerCase();
+        if (!q || text.includes(q)) {
+          items[i].style.display = "flex";
+        } else {
+          items[i].style.display = "none";
+        }
+      }
+    }
+
     let draggedIdx = null;
 
     function handleDragStart(e, idx) {
@@ -3299,17 +3712,30 @@ function loadColumnOrder() {
       `;
 
       const originalTable = document.querySelector('table');
+      if (!originalTable) {
+        showToast("ದೋಷ", "ಪಟ್ಟಿಯ ಟೇಬಲ್ ಸಿಗಲಿಲ್ಲ.", "error");
+        return;
+      }
       const tableClone = originalTable.cloneNode(true);
       tableClone.classList.remove('hidden');
       
       tableClone.querySelectorAll('input').forEach(input => {
+        if (!input || !input.parentNode) return;
         const span = document.createElement('span');
-        span.innerText = input.value || '-';
+        if (input.type === 'checkbox') {
+          span.innerText = input.checked ? '✓' : '';
+        } else {
+          span.innerText = input.value || '-';
+        }
         input.parentNode.replaceChild(span, input);
       });
 
-      tableClone.querySelectorAll('.no-print').forEach(el => el.parentNode.removeChild(el));
-      tableClone.querySelectorAll('.hidden.print\\:table-cell').forEach(el => el.classList.remove('hidden', 'print:table-cell'));
+      tableClone.querySelectorAll('.no-print').forEach(el => {
+        if (el && el.parentNode) el.parentNode.removeChild(el);
+      });
+      tableClone.querySelectorAll('.hidden.print\\:table-cell').forEach(el => {
+        if (el) el.classList.remove('hidden', 'print:table-cell');
+      });
 
       const bodyHtml = `
         <div class="header">
@@ -4196,6 +4622,196 @@ function loadColumnOrder() {
       } catch (err) {
         console.error("Delete error:", err);
         alert("ದಾಖಲೆಯನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+      }
+    }
+
+    // --- BARCODE & QR CODE READER SYSTEM ---
+    let html5QrcodeScannerInstance = null;
+
+    async function openBarcodeScannerModal() {
+      const modal = document.getElementById('barcode-scanner-modal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      switchScannerTab('cam');
+      await startBarcodeCameraScanner();
+    }
+
+    function closeBarcodeScannerModal() {
+      const modal = document.getElementById('barcode-scanner-modal');
+      if (modal) modal.classList.add('hidden');
+      const resBox = document.getElementById('barcode-scan-result');
+      if (resBox) resBox.classList.add('hidden');
+      
+      stopBarcodeCameraScanner();
+    }
+
+    async function stopBarcodeCameraScanner() {
+      if (html5QrcodeScannerInstance) {
+        const instance = html5QrcodeScannerInstance;
+        html5QrcodeScannerInstance = null;
+        try {
+          if (instance.isScanning) {
+            await instance.stop();
+          }
+          await instance.clear();
+        } catch (err) {
+          console.warn("Scanner stop info:", err);
+        }
+      }
+    }
+
+    function switchScannerTab(tab) {
+      const camBtn = document.getElementById('scanner-tab-cam');
+      const fileBtn = document.getElementById('scanner-tab-file');
+      const camPanel = document.getElementById('scanner-cam-panel');
+      const filePanel = document.getElementById('scanner-file-panel');
+
+      if (tab === 'cam') {
+        if (camBtn) camBtn.className = "py-2 px-4 border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 cursor-pointer";
+        if (fileBtn) fileBtn.className = "py-2 px-4 border-b-2 border-transparent text-slate-400 hover:text-slate-600 cursor-pointer";
+        if (camPanel) camPanel.classList.remove('hidden');
+        if (filePanel) filePanel.classList.add('hidden');
+        startBarcodeCameraScanner();
+      } else {
+        if (fileBtn) fileBtn.className = "py-2 px-4 border-b-2 border-sky-600 text-sky-600 dark:text-sky-400 cursor-pointer";
+        if (camBtn) camBtn.className = "py-2 px-4 border-b-2 border-transparent text-slate-400 hover:text-slate-600 cursor-pointer";
+        if (filePanel) filePanel.classList.remove('hidden');
+        if (camPanel) camPanel.classList.add('hidden');
+        stopBarcodeCameraScanner();
+      }
+    }
+
+    async function startBarcodeCameraScanner(cameraId = null) {
+      try {
+        if (typeof Html5Qrcode === 'undefined') {
+          showToast("Scanner library not loaded", "error");
+          return;
+        }
+        
+        stopBarcodeCameraScanner();
+
+        const camSelect = document.getElementById('barcode-cam-select');
+        let selectedCam = cameraId || (camSelect ? camSelect.value : null);
+
+        if (!selectedCam) {
+          const cameras = await Html5Qrcode.getCameras();
+          if (cameras && cameras.length > 0) {
+            if (camSelect) {
+              camSelect.innerHTML = '';
+              cameras.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.text = c.label || `Camera ${c.id}`;
+                camSelect.appendChild(opt);
+              });
+            }
+            const backCam = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment') || c.label.toLowerCase().includes('rear'));
+            selectedCam = backCam ? backCam.id : cameras[0].id;
+            if (camSelect) camSelect.value = selectedCam;
+          } else {
+            showToast("No camera detected on this device", "error");
+            return;
+          }
+        }
+
+        html5QrcodeScannerInstance = new Html5Qrcode("barcode-reader-viewfinder");
+        const config = { fps: 15, qrbox: { width: 250, height: 180 } };
+
+        await html5QrcodeScannerInstance.start(
+          selectedCam,
+          config,
+          (decodedText) => onBarcodeSuccessfullyScanned(decodedText),
+          (errorMessage) => {}
+        );
+      } catch (err) {
+        console.warn("Camera scanner start error:", err);
+      }
+    }
+
+    function onBarcodeCamChanged() {
+      const camSelect = document.getElementById('barcode-cam-select');
+      if (camSelect && camSelect.value) {
+        startBarcodeCameraScanner(camSelect.value);
+      }
+    }
+
+    function stopBarcodeCameraScanner() {
+      if (html5QrcodeScannerInstance) {
+        html5QrcodeScannerInstance.stop().then(() => {
+          html5QrcodeScannerInstance.clear();
+          html5QrcodeScannerInstance = null;
+        }).catch(err => {
+          html5QrcodeScannerInstance = null;
+        });
+      }
+    }
+
+    function onBarcodeSuccessfullyScanned(decodedText) {
+      if (!decodedText) return;
+      
+      const cleanVal = decodedText.trim();
+      
+      const resBox = document.getElementById('barcode-scan-result');
+      const resVal = document.getElementById('barcode-scan-val');
+      if (resBox && resVal) {
+        resVal.textContent = cleanVal;
+        resBox.classList.remove('hidden');
+      }
+
+      const searchInput = document.getElementById('roster-search');
+      if (searchInput) {
+        searchInput.value = cleanVal;
+        applyFilters();
+      }
+
+      showToast("ಸ್ಕ್ಯಾನ್ ಯಶಸ್ವಿಯಾಗಿದೆ! / Barcode Scanned", `Decoded: ${cleanVal}`, "success");
+      
+      const matchedStudent = (allStudentsData || []).find(s => {
+        const appNo = (s.app_no || s.id || '').toString().trim().toUpperCase();
+        const sts = (s.student_sts || '').toString().trim().toUpperCase();
+        const realId = (s.realId || '').toString().trim().toUpperCase();
+        const aadhaar = (s.aadhaar || '').toString().trim().toUpperCase();
+        const search = cleanVal.toUpperCase();
+        return appNo === search || sts === search || realId === search || aadhaar === search;
+      });
+
+      if (matchedStudent) {
+        setTimeout(() => {
+          closeBarcodeScannerModal();
+          openStudentDetailModal(matchedStudent.realId);
+        }, 500);
+      }
+    }
+
+    async function handleBarcodeFileSelected(input) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      
+      try {
+        const html5Qrcode = new Html5Qrcode("barcode-reader-viewfinder");
+        const decodedText = await html5Qrcode.scanFile(file, true);
+        onBarcodeSuccessfullyScanned(decodedText);
+      } catch (err) {
+        showToast("ಚಿತ್ರದಲ್ಲಿ ಬಾರ್‌ಕೋಡ್ ಪತ್ತೆಯಾಗಲಿಲ್ಲ / No Barcode/QR code found in image", "error");
+      }
+    }
+
+    function handleSearchKeydown(event) {
+      if (event.key === 'Enter') {
+        const val = event.target.value.trim().toUpperCase();
+        if (!val) return;
+        
+        const matched = (allStudentsData || []).find(s => {
+          const appNo = (s.app_no || s.id || '').toString().trim().toUpperCase();
+          const sts = (s.student_sts || '').toString().trim().toUpperCase();
+          const realId = (s.realId || '').toString().trim().toUpperCase();
+          const aadhaar = (s.aadhaar || '').toString().trim().toUpperCase();
+          return appNo === val || sts === val || realId === val || aadhaar === val;
+        });
+
+        if (matched) {
+          openStudentDetailModal(matched.realId);
+        }
       }
     }
   </script>

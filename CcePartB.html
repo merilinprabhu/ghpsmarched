@@ -1,0 +1,499 @@
+﻿<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCE Part-B Entry Studio - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Kannada', 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; transition: background-color 0.3s ease, color 0.3s ease; }
+    
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.2); border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.45); }
+
+    .sticky-table-container {
+      max-height: 72vh;
+      overflow: auto !important;
+      position: relative;
+    }
+    .sticky-table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      width: 100%;
+    }
+    .sticky-table thead th {
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 30 !important;
+      background-color: #0f172a !important;
+      color: #ffffff !important;
+      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+    }
+
+    .grade-select {
+      font-weight: 800;
+      text-align: center;
+      border-radius: 8px;
+      padding: 4px 6px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 11px;
+    }
+
+    .grade-select[data-val="A+"] { background-color: #d1fae5; color: #065f46; border: 1.5px solid #10b981; }
+    .grade-select[data-val="A"]  { background-color: #ecfdf5; color: #047857; border: 1.5px solid #34d399; }
+    .grade-select[data-val="B+"] { background-color: #e0f2fe; color: #0369a1; border: 1.5px solid #38bdf8; }
+    .grade-select[data-val="B"]  { background-color: #eff6ff; color: #1d4ed8; border: 1.5px solid #60a5fa; }
+    .grade-select[data-val="C+"] { background-color: #fef3c7; color: #92400e; border: 1.5px solid #f59e0b; }
+    .grade-select[data-val="C"]  { background-color: #ffe4e6; color: #9f1239; border: 1.5px solid #fb7185; }
+    .grade-select[data-val="NE"] { background-color: #f1f5f9; color: #64748b; border: 1.5px solid #cbd5e1; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 dark:text-slate-100 dark:bg-slate-950">
+
+  <!-- NAVBAR PLACEHOLDER -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow p-3 sm:p-5 max-w-[1600px] w-full mx-auto space-y-4">
+    
+    <!-- BANNER HEADER -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-900 via-slate-900 to-indigo-950 p-6 text-white shadow-xl border border-amber-500/20">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30 mb-2">
+            <i class="fa-solid fa-award"></i>
+            <span>CCE Non-Scholastic Assessment Studio</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2.5">
+            <i class="fa-solid fa-star text-amber-400"></i>
+            ಭಾಗ-ಬಿ ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್ ದಾಖಲಿಸುವ ವಹಿ (PART B - Entry)
+          </h1>
+          <p class="text-xs text-slate-300 max-w-2xl leading-relaxed mt-1">
+            ಬೋಧಕರು ಪ್ರಥಮ (SA1) ಹಾಗೂ ದ್ವಿತೀಯ (SA2) ಸೆಮಿಸ್ಟರ್‌ನ 7 ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಇಲ್ಲಿ ನಮೂದಿಸಿ ಡೇಟಾಬೇಸ್‌ಗೆ ಸೇವ್ ಮಾಡಬಹುದು.
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-2 flex-wrap">
+          <a href="CceConsolidatedReport.html" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-indigo-400/30 flex items-center gap-2 shadow-sm no-underline">
+            <i class="fa-solid fa-table"></i> Marks Register Log
+          </a>
+          <a href="certificates.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-emerald-400/30 flex items-center gap-2 shadow-sm no-underline">
+            <i class="fa-solid fa-certificate"></i> Marks Card (Progress Report)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS & FILTER CARD -->
+    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        
+        <!-- Dropdowns Group -->
+        <div class="flex flex-wrap items-center gap-3">
+          
+          <!-- Class Selector -->
+          <div class="w-36">
+            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              <i class="fa-solid fa-chalkboard-user text-indigo-500 mr-1"></i>ತರಗತಿ / Class
+            </label>
+            <select id="dd-class" onchange="loadPartBData()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
+              <option value="1">Class 1</option>
+              <option value="2">Class 2</option>
+              <option value="3">Class 3</option>
+              <option value="4">Class 4</option>
+              <option value="5">Class 5</option>
+              <option value="6">Class 6</option>
+              <option value="7" selected>Class 7</option>
+              <option value="8">Class 8</option>
+              <option value="9">Class 9</option>
+              <option value="10">Class 10</option>
+            </select>
+          </div>
+
+          <!-- Semester Selector -->
+          <div class="w-52">
+            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              <i class="fa-solid fa-calendar-check text-amber-500 mr-1"></i>ಸೆಮಿಸ್ಟರ್ / Semester
+            </label>
+            <select id="dd-semester" onchange="loadPartBData()" class="w-full bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-xl px-3 py-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
+              <option value="SEM1" selected>ಪ್ರಥಮ ಸೆಮಿಸ್ಟರ್ / 1st Sem (SA1)</option>
+              <option value="SEM2">ದ್ವಿತೀಯ ಸೆಮಿಸ್ಟರ್ / 2nd Sem (SA2)</option>
+            </select>
+          </div>
+
+          <!-- Search Input -->
+          <div class="w-full sm:w-64">
+            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              <i class="fa-solid fa-magnifying-glass text-sky-500 mr-1"></i>ಹುಡುಕಿ / Search Student
+            </label>
+            <input type="text" id="input-search" oninput="renderTable()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಅಥವಾ SATS ಸಂಖ್ಯೆ..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40">
+          </div>
+
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Batch Preset Buttons -->
+          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 px-1.5 uppercase">Set All:</span>
+            <button onclick="setAllPartBGrades('A+')" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A+</button>
+            <button onclick="setAllPartBGrades('A')"  class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A</button>
+            <button onclick="setAllPartBGrades('B+')" class="px-2 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B+</button>
+            <button onclick="setAllPartBGrades('B')"  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B</button>
+          </div>
+
+          <!-- Save Button -->
+          <button id="btn-save-partb" onclick="savePartBGradesBatch()" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-black px-5 py-2.5 rounded-xl transition shadow-md border-0 cursor-pointer flex items-center gap-2">
+            <i class="fa-solid fa-floppy-disk text-sm"></i>
+            <span>ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಉಳಿಸಿ / Save Part B</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden relative">
+      
+      <!-- Loading Overlay -->
+      <div id="loading-state" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50 transition-all duration-300">
+        <div class="text-center p-6">
+          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-3xl mb-3 block mx-auto"></i>
+          <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">ವಿವರಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Please wait while student records load.</p>
+        </div>
+      </div>
+
+      <div class="sticky-table-container custom-scrollbar">
+        <table class="sticky-table text-xs">
+          <thead>
+            <tr>
+              <th class="w-10 text-center py-3">ಕ್ರ.ಸಂ.</th>
+              <th class="min-w-[200px] text-left px-3 py-3">ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ / Student Details</th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಭಾವನಾತ್ಮಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">EMOTIONAL SOCIAL</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸಾಂಸ್ಥಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">ORGANIZATIONAL</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ವೈಜ್ಞಾನಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">SCIENTIFIC SKILLS</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಲಲಿತ ಕಲೆ<br><span class="text-[9px] font-normal">FINE ART</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸೃಜನಶೀಲತೆ<br><span class="text-[9px] font-normal">CREATIVITY</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮನೋಧರ್ಮ<br><span class="text-[9px] font-normal">TEMPERAMENT</span></th>
+              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮೌಲ್ಯಗಳು<br><span class="text-[9px] font-normal">VALUES</span></th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
+            <!-- Dynamically Rendered -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-3 text-center text-xs text-slate-400 mt-auto">
+    <p class="font-medium">Designed & Developed for <span class="text-slate-700 dark:text-slate-300 font-semibold">GHPS Marched</span></p>
+  </footer>
+
+  <!-- Toast system -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900/95 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+    <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white" id="toast-icon">
+      <i class="fa-solid fa-check text-sm"></i>
+    </div>
+    <div>
+      <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Record saved successfully.</p>
+    </div>
+  </div>
+
+  <script src="navbar.js"></script>
+  <script>
+    const supabaseUrl = "https://gsayvnnnfrrkwdfwocbu.supabase.co";
+    const supabaseKey = "sb_publishable_Q92Byh3WyIwhrsJ0YNKO4w_sqx3tHMS";
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    window.supabaseClient = supabaseClient;
+
+    let currentStudents = [];
+    let partBData = {}; // Key: studentId -> { emotional: 'A+', org: 'A', ... }
+    const partBKeys = ['emotional', 'org', 'sci', 'art', 'creative', 'temp', 'value'];
+
+    const defaultGradesSem1 = { emotional: 'A', org: 'A', sci: 'A+', art: 'B+', creative: 'A', temp: 'A', value: 'A+' };
+    const defaultGradesSem2 = { emotional: 'A', org: 'A+', sci: 'B+', art: 'A+', creative: 'A', temp: 'A+', value: 'B+' };
+
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      if (!toast) return;
+
+      toastTitle.innerText = title;
+      toastMsg.innerText = message;
+
+      if (type === 'success') {
+        toastIcon.className = "w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = `<i class="fa-solid fa-check text-sm"></i>`;
+      } else {
+        toastIcon.className = "w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center text-white";
+        toastIcon.innerHTML = `<i class="fa-solid fa-xmark text-sm"></i>`;
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+
+    function normalizeClass(classStr) {
+      if (!classStr) return "7";
+      const clean = classStr.toString().trim();
+      const match = clean.match(/\d+/);
+      return match ? match[0] : clean;
+    }
+
+    window.onload = async function() {
+      await loadPartBData();
+    };
+
+    async function loadPartBData() {
+      document.getElementById('loading-state').classList.remove('hidden');
+      const cls = document.getElementById('dd-class').value;
+      const sem = document.getElementById('dd-semester').value; // SEM1 or SEM2
+      const evalKey = `PART_B_${sem}`;
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+
+      // 1. Fetch Students
+      currentStudents = [];
+      try {
+        let q = supabaseClient.from('admissions').select('*').neq('is_admitted', false);
+        if (schoolId) q = q.eq('school_id', schoolId);
+        const { data, error } = await q;
+
+        if (!error && data && data.length > 0) {
+          const matched = data.filter(s => normalizeClass(s.enroll_class || s.standard || s.class) === normalizeClass(cls));
+          if (matched.length > 0) {
+            currentStudents = matched.map(s => ({
+              id: s.id,
+              name: s.student_name || s.name || s.name_english || '',
+              father: s.father_name_kn || s.father_name || s.father || '',
+              sts_no: s.app_no || s.sts_no || s.adminNo || s.id,
+              gender: s.gender || 'Boy'
+            }));
+          }
+        }
+      } catch(e) {
+        console.error("Error loading students:", e);
+      }
+
+      // Fallback: LocalStorage student cache
+      if (currentStudents.length === 0) {
+        try {
+          const localSt = JSON.parse(localStorage.getItem(`students_class_${cls}`) || localStorage.getItem("students") || "[]");
+          const matchedLocal = localSt.filter(s => normalizeClass(s.enrollClass || s.standard || s.class || cls) === normalizeClass(cls));
+          if (matchedLocal.length > 0) {
+            currentStudents = matchedLocal.map(s => ({
+              id: s.id,
+              name: s.name || s.student_name || '',
+              father: s.father || s.father_name || '',
+              sts_no: s.adminNo || s.sts_no || s.id,
+              gender: s.gender || 'Boy'
+            }));
+          }
+        } catch(e) {}
+      }
+
+      // Sort Alphabetically A-Z
+      currentStudents.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'kn'));
+
+      // 2. Fetch Part B Evaluations for Selected Semester
+      partBData = {};
+      
+      // A. Supabase Query
+      try {
+        let q = supabaseClient.from('cce_evaluations').select('*').eq('exam_type', evalKey);
+        if (schoolId) q = q.eq('school_id', schoolId);
+        const { data: dbData } = await q;
+
+        if (dbData && dbData.length > 0) {
+          dbData.forEach(row => {
+            if (row.student_id && row.marks) {
+              partBData[row.student_id] = row.marks;
+            }
+          });
+        }
+      } catch(e) {}
+
+      // B. LocalStorage Fallback
+      try {
+        const mockKey = `cce_mock_cce_${cls}_${evalKey}`;
+        const localMock = JSON.parse(localStorage.getItem(mockKey) || "{}");
+        Object.keys(localMock).forEach(sId => {
+          if (!partBData[sId]) {
+            partBData[sId] = localMock[sId];
+          }
+        });
+      } catch(e) {}
+
+      document.getElementById('loading-state').classList.add('hidden');
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('table-body');
+      if (!tbody) return;
+
+      const sem = document.getElementById('dd-semester').value;
+      const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
+      const searchVal = (document.getElementById('input-search')?.value || '').trim().toLowerCase();
+
+      const filtered = currentStudents.filter(s => {
+        if (!searchVal) return true;
+        const name = (s.name || '').toLowerCase();
+        const father = (s.father || '').toLowerCase();
+        const sts = (s.sts_no || s.id || '').toLowerCase();
+        return name.includes(searchVal) || father.includes(searchVal) || sts.includes(searchVal);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-12 text-center text-slate-400 font-bold">
+              <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300 block"></i>
+              <p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಲಭ್ಯವಿಲ್ಲ / No matching student records found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((s, idx) => {
+        const sId = s.id;
+        const studentGrades = partBData[sId] || {};
+
+        html += `<tr class="hover:bg-slate-50 dark:hover:bg-slate-850 transition">
+          <td class="text-center font-bold text-slate-500 py-3">${idx + 1}</td>
+          <td class="px-3 py-2">
+            <div class="font-extrabold text-slate-800 dark:text-slate-100 text-xs">${s.name}</div>
+            <div class="text-[10px] text-slate-500 font-semibold mt-0.5">
+              ತಂದೆ: ${s.father || '-'} | SATS: <span class="font-mono font-bold text-indigo-600 dark:text-indigo-400">${s.sts_no || '-'}</span>
+            </div>
+          </td>`;
+
+        partBKeys.forEach(subKey => {
+          const val = studentGrades[subKey] || defaultGrades[subKey] || 'NE';
+
+          html += `<td class="text-center p-2">
+            <select id="select_${sId}_${subKey}" 
+                    data-val="${val}"
+                    onchange="onGradeChange('${sId}', '${subKey}', this.value)"
+                    class="grade-select w-full">
+              <option value="A+" ${val === 'A+' ? 'selected' : ''}>A+</option>
+              <option value="A"  ${val === 'A' ? 'selected' : ''}>A</option>
+              <option value="B+" ${val === 'B+' ? 'selected' : ''}>B+</option>
+              <option value="B"  ${val === 'B' ? 'selected' : ''}>B</option>
+              <option value="C+" ${val === 'C+' ? 'selected' : ''}>C+</option>
+              <option value="C"  ${val === 'C' ? 'selected' : ''}>C</option>
+              <option value="NE" ${val === 'NE' ? 'selected' : ''}>NE</option>
+            </select>
+          </td>`;
+        });
+
+        html += `</tr>`;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function onGradeChange(sId, subKey, val) {
+      if (!partBData[sId]) partBData[sId] = {};
+      partBData[sId][subKey] = val;
+
+      const el = document.getElementById(`select_${sId}_${subKey}`);
+      if (el) el.setAttribute('data-val', val);
+    }
+
+    function setAllPartBGrades(gradeVal) {
+      currentStudents.forEach(s => {
+        const sId = s.id;
+        if (!partBData[sId]) partBData[sId] = {};
+        partBKeys.forEach(k => {
+          partBData[sId][k] = gradeVal;
+          const el = document.getElementById(`select_${sId}_${k}`);
+          if (el) {
+            el.value = gradeVal;
+            el.setAttribute('data-val', gradeVal);
+          }
+        });
+      });
+      showToast("ಗ್ರೇಡ್ ಬ್ಯಾಚ್ ಅಪ್‌ಡೇಟ್", `ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ${gradeVal} ಎಂದು ಬದಲಾಯಿಸಲಾಗಿದೆ.`);
+    }
+
+    async function savePartBGradesBatch() {
+      const cls = document.getElementById('dd-class').value;
+      const sem = document.getElementById('dd-semester').value; // SEM1 or SEM2
+      const evalKey = `PART_B_${sem}`;
+      const mockKey = `cce_mock_cce_${cls}_${evalKey}`;
+
+      const saveBtn = document.getElementById('btn-save-partb');
+      saveBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>ಉಳಿಸಲಾಗುತ್ತಿದೆ / Saving...</span>`;
+      saveBtn.disabled = true;
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+
+      const upsertPayloads = [];
+      const localMock = JSON.parse(localStorage.getItem(mockKey) || "{}");
+
+      currentStudents.forEach(student => {
+        const sId = student.id;
+        const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
+        const gradesObj = partBData[sId] || defaultGrades;
+
+        upsertPayloads.push({
+          school_id: schoolId,
+          student_id: sId,
+          exam_type: evalKey,
+          marks: gradesObj,
+          updated_at: new Date().toISOString()
+        });
+
+        localMock[sId] = gradesObj;
+        if (student.sts_no) {
+          localMock[student.sts_no] = gradesObj;
+          localMock[String(student.sts_no).replace(/\s+/g, '')] = gradesObj;
+        }
+      });
+
+      // Save to LocalStorage
+      localStorage.setItem(mockKey, JSON.stringify(localMock));
+
+      // Save to Supabase cce_evaluations
+      if (typeof supabaseClient !== 'undefined' && supabaseClient && upsertPayloads.length > 0) {
+        try {
+          const { error } = await supabaseClient
+            .from('cce_evaluations')
+            .upsert(upsertPayloads, { onConflict: 'student_id,exam_type' });
+
+          if (error) console.warn("Supabase upsert warning, cached locally:", error);
+        } catch(e) {
+          console.error("Supabase Part B save error:", e);
+        }
+      }
+
+      saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i> <span>ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಉಳಿಸಿ / Save Part B</span>`;
+      saveBtn.disabled = false;
+
+      showToast("ಯಶಸ್ವಿಯಾಗಿದೆ! / Success", `ತರಗತಿ ${cls} (${sem}) ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ!`, "success");
+    }
+  </script>
+</body>
+</html>
