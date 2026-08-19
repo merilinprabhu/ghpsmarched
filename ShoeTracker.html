@@ -6,6 +6,7 @@
   <title>ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್ - Shoe Management Tracker | GHPS MARCHED</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="supabase.js"></script>
+  <script src="navbar.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -47,103 +48,154 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
 
+  <!-- Shared Global School Portal Navbar -->
+  <div id="navbar-placeholder"></div>
+
   <!-- Printable Header (Only in Print) -->
   <div id="printHeader" class="hidden p-4 text-center border-b-2 border-black mb-4">
-    <h2 class="text-base font-black uppercase">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮಾರ್ಚೇಡ್ (GHPS MARCHED)</h2>
-    <h3 class="text-sm font-bold">ಶಾಲಾ ಮಕ್ಕಳ ಶೂ & ಸಾಕ್ಸ್ ಅಳತೆ ಪಟ್ಟಿ (Shoe Size Procurement Roster) - 2026-27</h3>
+    <div class="flex items-center justify-center gap-4 mb-2">
+      <img id="printGovLogo" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" class="w-14 h-14 object-contain" alt="Govt Logo">
+      <div>
+        <h2 class="text-base font-black uppercase text-slate-900" id="printSchoolNameKn">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮಾರ್ಚೇಡ್</h2>
+        <h3 class="text-xs font-bold uppercase text-slate-700" id="printSchoolNameEn">GOVERNMENT HIGHER PRIMARY SCHOOL MARCHED</h3>
+        <p class="text-[11px] font-mono text-slate-600 font-bold" id="printSchoolUdise">UDISE: 29060709801</p>
+      </div>
+      <img id="printSchoolLogo" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" onerror="this.style.display='none'" class="w-14 h-14 object-contain" alt="School Logo">
+    </div>
+    <h3 class="text-sm font-black border-t border-dashed border-slate-400 pt-1.5 mt-1">ಶಾಲಾ ಮಕ್ಕಳ ಶೂ & ಸಾಕ್ಸ್ ಅಳತೆ ಪಟ್ಟಿ (Shoe Size Procurement Roster) - 2026-27</h3>
     <p class="text-xs text-slate-600 font-semibold" id="printSubTitle">ತರಗತಿ: ಎಲ್ಲಾ | ದಿನಾಂಕ: <span id="printDate"></span></p>
   </div>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 lg:p-7 space-y-4">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-2.5 sm:p-4 lg:p-5 space-y-3">
 
-    <!-- Header Banner -->
-    <div id="topBanner" class="glass-card rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-indigo-100 dark:border-indigo-900/40 bg-gradient-to-r from-indigo-50/70 via-white to-sky-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30">
-      <div>
+    <!-- 1. Header Banner (Optimized Space - Image 1) -->
+    <div id="topBanner" class="glass-card rounded-2xl p-3 sm:p-4 shadow-xs border border-indigo-100 dark:border-indigo-900/40 bg-gradient-to-r from-indigo-50/70 via-white to-sky-50/50 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/30">
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+        <!-- Left Side: Logo & School & Developer Info (Continuous Line) -->
         <div class="flex items-center gap-3">
-          <span class="p-3 bg-indigo-600 text-white rounded-2xl shadow-md flex items-center justify-center">
-            <i class="fa-solid fa-shoe-prints text-xl"></i>
-          </span>
-          <div>
+          <div class="relative flex-shrink-0">
+            <img id="topSchoolLogo" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg'" class="w-12 h-12 sm:w-13 sm:h-13 object-contain rounded-xl p-1 bg-white dark:bg-slate-800 shadow-xs border border-slate-200 dark:border-slate-700" alt="School Logo">
+          </div>
+          <div class="space-y-0.5">
+            <!-- Title in Continuous Line -->
             <div class="flex items-center gap-2 flex-wrap">
-              <h1 class="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+              <i class="fa-solid fa-shoe-prints text-indigo-600 text-sm"></i>
+              <h1 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                 ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್ / Shoe Management Tracker
               </h1>
-              <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-200 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-300">
-                <i class="fa-solid fa-globe mr-1"></i> ಸಾರ್ವಜನಿಕ ಲೈವ್ ಸಿಂಕ್ (Public Access)
+            </div>
+            <!-- Live Sync Badge & School Subtitle -->
+            <div class="flex items-center gap-2 flex-wrap text-xs text-slate-600 dark:text-slate-300 font-semibold">
+              <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-200 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-300 inline-flex items-center gap-1">
+                <i class="fa-solid fa-globe"></i> ಸಾರ್ವಜನಿಕ ಲೈವ್ ಸಿಂಕ್
+              </span>
+              <span class="text-[11px]">
+                <span id="topSchoolNameKn">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್</span> (<span id="topSchoolNameEn">government higher primary school, marched</span>)
               </span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-              GHPS Marched - ಶಿಕ್ಷಕರು ತರಗತಿವಾರು ಮಕ್ಕಳ ಶೂ ಅಳತೆಯನ್ನು (ಸೆಂ.ಮೀ / CM) ಇಲ್ಲಿ ದಾಖಲಿಸಬಹುದು
-            </p>
+            <!-- Developer Badge -->
+            <div class="text-[10px] text-slate-500 dark:text-slate-400">
+              <span class="inline-flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-mono font-bold border border-slate-200 dark:border-slate-700">
+                <i class="fa-solid fa-code text-indigo-500"></i> Developer: <strong class="text-indigo-600 dark:text-indigo-400">Merilin Prabhu</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Action Buttons in 2 Clean Rows (Image 1) -->
+        <div class="flex flex-col gap-1.5 items-start xl:items-end text-xs font-bold no-print flex-shrink-0">
+          <!-- Row 1: All 5 Primary Action Buttons in Single Clean Row -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button onclick="syncWithGoogleSheet()" id="syncSheetBtn" class="bg-emerald-700 hover:bg-emerald-600 active:scale-95 text-white py-1.5 px-2.5 rounded-xl shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]" title="Google Sheet ನಿಂದ ಹೊಸ ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ತಕ್ಷಣ ಸಿಂಕ್ ಮಾಡಿ">
+              <i class="fa-solid fa-arrows-rotate text-[10px]"></i> <span>ಶೀಟ್‌ನಿಂದ ಸಿಂಕ್</span>
+            </button>
+            <button onclick="copyShareableLink()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white py-1.5 px-2.5 rounded-xl shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]" title="ಯಾವುದೇ ಲಾಗಿನ್ ಇಲ್ಲದೆ ತೆರೆಯಬಹುದಾದ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ">
+              <i class="fa-solid fa-share-nodes text-[10px]"></i> <span>ಲಿಂಕ್ ಶೇರ್</span>
+            </button>
+            <button onclick="shareViaWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white py-1.5 px-2.5 rounded-xl shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]" title="WhatsApp ಮೂಲಕ ಶಿಕ್ಷಕರಿಗೆ ಕಳುಹಿಸಿ">
+              <i class="fa-brands fa-whatsapp text-xs"></i> <span>WhatsApp</span>
+            </button>
+            <button onclick="toggleSizeMatrix()" class="bg-amber-600 hover:bg-amber-500 active:scale-95 text-white py-1.5 px-2.5 rounded-xl shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]">
+              <i class="fa-solid fa-chart-pie text-[10px]"></i> <span>ಸೈಜ್ ಸಾರಾಂಶ</span>
+            </button>
+            <button onclick="openSizeGuideModal()" class="bg-indigo-700 hover:bg-indigo-600 active:scale-95 text-white py-1.5 px-2.5 rounded-xl shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]" title="Plaeto UK Size & MM Scale Chart">
+              <i class="fa-solid fa-ruler-combined text-[10px]"></i> <span>Plaeto Scale Chart</span>
+            </button>
+          </div>
+
+          <!-- Row 2: Print & Excel Export Buttons -->
+          <div class="flex items-center gap-1.5 self-start xl:self-end">
+            <button onclick="window.print()" class="bg-slate-900 hover:bg-slate-800 active:scale-95 text-white py-1 px-3 rounded-lg shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]">
+              <i class="fa-solid fa-print text-[10px]"></i> <span>ಮುದ್ರಿಸಿ (Print)</span>
+            </button>
+            <button onclick="exportToExcel()" class="bg-teal-700 hover:bg-teal-600 active:scale-95 text-white py-1 px-3 rounded-lg shadow-xs transition flex items-center gap-1 border-0 cursor-pointer text-[11px]">
+              <i class="fa-solid fa-file-excel text-[10px]"></i> <span>Excel</span>
+            </button>
           </div>
         </div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="flex items-center gap-2 flex-wrap text-xs font-bold no-print">
-        <!-- Share Link -->
-        <button onclick="copyShareableLink()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer" title="ಯಾವುದೇ ಲಾಗಿನ್ ಇಲ್ಲದೆ ತೆರೆಯಬಹುದಾದ ಲಿಂಕ್ ಕಾಪಿ ಮಾಡಿ">
-          <i class="fa-solid fa-share-nodes"></i> ಲಿಂಕ್ ಶೇರ್ ಮಾಡಿ
-        </button>
-
-        <!-- WhatsApp Share -->
-        <button onclick="shareViaWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer" title="WhatsApp ಮೂಲಕ ಶಿಕ್ಷಕರಿಗೆ ಕಳುಹಿಸಿ">
-          <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
-        </button>
-
-        <!-- Toggle Size Matrix -->
-        <button onclick="toggleSizeMatrix()" class="bg-amber-500 hover:bg-amber-400 active:scale-95 text-white py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
-          <i class="fa-solid fa-chart-pie"></i> ಸೈಜ್ ಸಾರಾಂಶ
-        </button>
-
-        <!-- Print -->
-        <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 active:scale-95 text-white py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
-          <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ (Print A4)
-        </button>
-
-        <!-- Export Excel -->
-        <button onclick="exportToExcel()" class="bg-teal-600 hover:bg-teal-500 active:scale-95 text-white py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
-          <i class="fa-solid fa-file-excel"></i> Excel
-        </button>
-      </div>
     </div>
 
-    <!-- Live Metric Cards -->
-    <div id="analyticsDashboard" class="grid grid-cols-2 sm:grid-cols-5 gap-3 no-print">
-      <!-- 1. Total Students -->
-      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-indigo-200 dark:border-indigo-800 bg-indigo-50/40 dark:bg-indigo-950/20">
-        <div class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">🎯 ಒಟ್ಟು ಮಕ್ಕಳು</div>
-        <div id="statTotalStudents" class="text-2xl sm:text-3xl font-black text-indigo-900 dark:text-indigo-100">0</div>
-        <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">Total Students</div>
+    <!-- 2. UNIFIED SPACE MANAGEMENT CARD: Select Class (Left) + Mini Metrics (Right) - Image 2 -->
+    <div class="glass-card rounded-2xl p-3 sm:p-4 shadow-xs border border-slate-200 dark:border-slate-800 no-print space-y-3">
+      <!-- Top Grid: 5 Sleek Metric Cards (Image 2) -->
+      <div id="analyticsDashboard" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <!-- 1. Total Students -->
+        <div class="p-2.5 rounded-xl text-center space-y-0.5 border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/50 dark:bg-indigo-950/20">
+          <div class="text-[9px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i class="fa-solid fa-bullseye text-[9px]"></i> ಒಟ್ಟು ಮಕ್ಕಳು
+          </div>
+          <div id="statTotalStudents" class="text-xl sm:text-2xl font-black text-indigo-900 dark:text-indigo-100">0</div>
+          <div class="text-[9px] text-indigo-600 dark:text-indigo-400 font-bold">Total Students</div>
+        </div>
+
+        <!-- 2. Measured / Completed -->
+        <div class="p-2.5 rounded-xl text-center space-y-0.5 border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/50 dark:bg-emerald-950/20">
+          <div class="text-[9px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i class="fa-solid fa-circle-check text-[9px]"></i> ಅಳತೆ ದಾಖಲಾದವರು
+          </div>
+          <div id="statMeasuredCount" class="text-xl sm:text-2xl font-black text-emerald-900 dark:text-emerald-100">0</div>
+          <div id="statMeasuredPercent" class="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">0% Completed</div>
+        </div>
+
+        <!-- 3. Pending Measurement -->
+        <div class="p-2.5 rounded-xl text-center space-y-0.5 border border-amber-200 dark:border-amber-800/60 bg-amber-50/50 dark:bg-amber-950/20">
+          <div class="text-[9px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i class="fa-solid fa-clock text-[9px]"></i> ಅಳತೆ ಬಾಕಿ ಇರುವವರು
+          </div>
+          <div id="statPendingCount" class="text-xl sm:text-2xl font-black text-amber-900 dark:text-amber-100">0</div>
+          <div class="text-[9px] text-amber-600 dark:text-amber-400 font-bold">Pending Entry</div>
+        </div>
+
+        <!-- 4. Boys Shoes -->
+        <div class="p-2.5 rounded-xl text-center space-y-0.5 border border-sky-200 dark:border-sky-800/60 bg-sky-50/50 dark:bg-sky-950/20">
+          <div class="text-[9px] font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i class="fa-solid fa-mars text-[9px]"></i> ಬಾಲಕರ ಶೂ (BOYS)
+          </div>
+          <div id="statBoysCount" class="text-xl sm:text-2xl font-black text-sky-900 dark:text-sky-100">0</div>
+          <div class="text-[9px] text-sky-600 dark:text-sky-400 font-bold">Boys Shoes Demand</div>
+        </div>
+
+        <!-- 5. Girls Shoes -->
+        <div class="p-2.5 rounded-xl text-center space-y-0.5 border border-pink-200 dark:border-pink-800/60 bg-pink-50/50 dark:bg-pink-950/20 col-span-2 sm:col-span-1">
+          <div class="text-[9px] font-bold text-pink-700 dark:text-pink-300 uppercase tracking-wider flex items-center justify-center gap-1">
+            <i class="fa-solid fa-venus text-[9px]"></i> ಬಾಲಕಿಯರ ಶೂ (GIRLS)
+          </div>
+          <div id="statGirlsCount" class="text-xl sm:text-2xl font-black text-pink-900 dark:text-pink-100">0</div>
+          <div class="text-[9px] text-pink-600 dark:text-pink-400 font-bold">Girls Shoes Demand</div>
+        </div>
       </div>
 
-      <!-- 2. Measured / Completed -->
-      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20">
-        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">🟢 ಅಳತೆ ದಾಖಲಾದವರು</div>
-        <div id="statMeasuredCount" class="text-2xl sm:text-3xl font-black text-emerald-900 dark:text-emerald-100">0</div>
-        <div id="statMeasuredPercent" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">0% Completed</div>
-      </div>
-
-      <!-- 3. Pending Measurement -->
-      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-amber-200 dark:border-amber-800 bg-amber-50/40 dark:bg-amber-950/20">
-        <div class="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">🔴 ಅಳತೆ ಬಾಕಿ ಇರುವವರು</div>
-        <div id="statPendingCount" class="text-2xl sm:text-3xl font-black text-amber-900 dark:text-amber-100">0</div>
-        <div class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Pending Entry</div>
-      </div>
-
-      <!-- 4. Boys Shoes -->
-      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-sky-200 dark:border-sky-800 bg-sky-50/40 dark:bg-sky-950/20">
-        <div class="text-[10px] font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider">👦 ಬಾಲಕರ ಶೂ (Boys)</div>
-        <div id="statBoysCount" class="text-2xl sm:text-3xl font-black text-sky-900 dark:text-sky-100">0</div>
-        <div class="text-[10px] text-sky-600 dark:text-sky-400 font-bold">Boys Shoes Demand</div>
-      </div>
-
-      <!-- 5. Girls Shoes -->
-      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-pink-200 dark:border-pink-800 bg-pink-50/40 dark:bg-pink-950/20 col-span-2 sm:col-span-1">
-        <div class="text-[10px] font-bold text-pink-700 dark:text-pink-300 uppercase tracking-wider">👧 ಬಾಲಕಿಯರ ಶೂ (Girls)</div>
-        <div id="statGirlsCount" class="text-2xl sm:text-3xl font-black text-pink-900 dark:text-pink-100">0</div>
-        <div class="text-[10px] text-pink-600 dark:text-pink-400 font-bold">Girls Shoes Demand</div>
+      <!-- Bottom: Class-by-Class Navigation Pills (Image 2) -->
+      <div id="classNavPills" class="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-indigo-600 text-sm"></i>
+          <span>ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ (Select Class):</span>
+        </div>
+        <div id="classPillsContainer" class="flex flex-wrap items-center gap-1.5">
+          <!-- Rendered Dynamically -->
+        </div>
       </div>
     </div>
 
@@ -152,7 +204,7 @@
       <div class="flex items-center justify-between pb-2 border-b border-amber-200 dark:border-amber-900/40">
         <div class="flex items-center gap-2">
           <span class="p-1.5 bg-amber-600 text-white rounded-lg text-xs"><i class="fa-solid fa-table-cells-large"></i></span>
-          <h3 class="text-sm font-black text-slate-800 dark:text-slate-100">ಶೂ ಸೈಜ್‌ವಾರು ಒಟ್ಟು ಬೇಡಿಕೆ ಪಟ್ಟಿ (Shoe Size Distribution & Order Breakdown)</h3>
+          <h3 class="text-sm font-black text-slate-800 dark:text-slate-100">Plaeto UK ಸೈಜ್‌ವಾರು ಒಟ್ಟು ಬೇಡಿಕೆ ಪಟ್ಟಿ (Plaeto UK Size Distribution & Demand)</h3>
         </div>
         <button onclick="toggleSizeMatrix()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1">
           <i class="fa-solid fa-xmark text-sm"></i>
@@ -163,8 +215,8 @@
         <table class="w-full text-xs text-center border-collapse">
           <thead>
             <tr class="bg-amber-800 text-white font-bold text-[11px]">
-              <th class="p-2 text-left rounded-tl-xl">ಅಳತೆ (ಸೆಂ.ಮೀ / CM)</th>
-              <th class="p-2">ಭಾರತೀಯ ಸೈಜ್ (Bata/India Size)</th>
+              <th class="p-2 text-left rounded-tl-xl">ಪಾದದ ಉದ್ದ (Foot Length in MM)</th>
+              <th class="p-2">Plaeto UK Size</th>
               <th class="p-2">👦 ಬಾಲಕರು (Boys)</th>
               <th class="p-2">👧 ಬಾಲಕಿಯರು (Girls)</th>
               <th class="p-2 font-black rounded-tr-xl">🎯 ಒಟ್ಟು ಜೋಡಿ ಶೂಗಳು (Total Pairs)</th>
@@ -177,51 +229,72 @@
       </div>
     </div>
 
-    <!-- Class-by-Class Navigation Pills -->
-    <div id="classNavPills" class="glass-card p-3 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-2 border border-slate-200 dark:border-slate-800 no-print">
-      <div class="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-        <i class="fa-solid fa-layer-group text-indigo-600"></i>
-        <span>ತರಗತಿ ಆಯ್ಕೆಮಾಡಿ (Select Class):</span>
-      </div>
-      <div id="classPillsContainer" class="flex flex-wrap items-center gap-1.5">
-        <!-- Rendered Dynamically -->
-      </div>
-    </div>
+    <!-- 3. Search & Filter & Sort Toolbar (Image 3) -->
+    <div id="filterBar" class="glass-card p-3 sm:p-3.5 rounded-2xl shadow-xs space-y-2.5 text-xs no-print border border-slate-200 dark:border-slate-800">
+      <!-- Line 1: Search Bar & View Switcher (Image 3 - Top Line) -->
+      <div class="flex items-center justify-between gap-2.5">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="searchInput" oninput="renderStudentsTable()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು, STS ಸಂಖ್ಯೆ ಹುಡುಕಿ..." class="w-full pl-9 pr-4 py-2 text-xs border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-xs">
+        </div>
 
-    <!-- Search & Filter Toolbar -->
-    <div id="filterBar" class="glass-card p-3.5 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs no-print">
-      <div class="flex items-center gap-2 flex-1 max-w-md">
-        <div class="relative w-full">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-          <input type="text" id="searchInput" oninput="renderStudentsTable()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು, STS ಸಂಖ್ಯೆ ಹುಡುಕಿ..." class="w-full pl-8 pr-3 py-2 text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+        <!-- View Mode Switcher (Cards vs Table) -->
+        <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <button type="button" onclick="setViewMode('cards')" id="btnViewCards" class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900" title="ಮೊಬೈಲ್ ಕಾರ್ಡ್ ವ್ಯೂ">
+            <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ (Cards)</span>
+          </button>
+          <button type="button" onclick="setViewMode('table')" id="btnViewTable" class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 text-white shadow-xs" title="ಟೇಬಲ್ ವ್ಯೂ">
+            <i class="fa-solid fa-table"></i> <span>ಟೇಬಲ್ (Table)</span>
+          </button>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 flex-wrap">
-        <!-- Gender Filter -->
-        <select id="genderFilter" onchange="renderStudentsTable()" class="p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
-          <option value="">-- ಎಲ್ಲಾ ಲಿಂಗ (All Genders) --</option>
-          <option value="Boy">👦 ಬಾಲಕರು (Boys)</option>
-          <option value="Girl">👧 ಬಾಲಕಿಯರು (Girls)</option>
-        </select>
+      <!-- Line 2: Filters in a Clean Single Line (Image 3 - Bottom Line) -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 dark:border-slate-800">
+        <!-- Filters Left -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Sort Dropdown -->
+          <div class="flex items-center gap-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1.5 shadow-xs">
+            <i class="fa-solid fa-arrow-down-short-wide text-indigo-600 text-xs"></i>
+            <select id="sortSelect" onchange="onSortSelectChange()" class="bg-transparent border-0 text-xs font-bold focus:outline-none cursor-pointer text-slate-700 dark:text-slate-200">
+              <option value="sr_asc">🔢 ಶೀಟ್ ಕ್ರಮಸಂಖ್ಯೆ (Sr. No)</option>
+              <option value="name_asc">🔤 ಹೆಸರು (Name: A → Z)</option>
+              <option value="name_desc">🔤 ಹೆಸರು (Name: Z → A)</option>
+              <option value="sts_asc">🆔 STS ಸಂಖ್ಯೆ (STS No)</option>
+              <option value="class_asc">🏫 ತರಗತಿ (Class)</option>
+              <option value="size_asc">👟 Plaeto ಸೈಜ್ (ಸಣ್ಣದು → ದೊಡ್ಡದು)</option>
+              <option value="size_desc">👟 Plaeto ಸೈಜ್ (ದೊಡ್ಡದು → ಸಣ್ಣದು)</option>
+              <option value="status_pending">🔴 ಬಾಕಿ ಇರುವವರು ಮೊದಲು</option>
+              <option value="status_completed">🟢 ಭರ್ತಿಯಾದವರು ಮೊದಲು</option>
+            </select>
+          </div>
 
-        <!-- Status Filter -->
-        <select id="statusFilter" onchange="renderStudentsTable()" class="p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer">
-          <option value="">-- ಎಲ್ಲಾ ಸ್ಥಿತಿ (All Status) --</option>
-          <option value="completed">🟢 ಭರ್ತಿಯಾದವರು (Measured)</option>
-          <option value="pending">🔴 ಭರ್ತಿ ಮಾಡಬೇಕಾದವರು (Pending)</option>
-        </select>
+          <!-- Gender Filter -->
+          <select id="genderFilter" onchange="renderStudentsTable()" class="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-xs">
+            <option value="">-- ಎಲ್ಲಾ ಲಿಂಗ (All Genders) --</option>
+            <option value="Boy">👦 ಬಾಲಕರು (Boys)</option>
+            <option value="Girl">👧 ಬಾಲಕಿಯರು (Girls)</option>
+          </select>
+
+          <!-- Status Filter -->
+          <select id="statusFilter" onchange="renderStudentsTable()" class="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer shadow-xs">
+            <option value="">-- ಎಲ್ಲಾ ಸ್ಥಿತಿ (All Status) --</option>
+            <option value="completed">🟢 ಭರ್ತಿಯಾದವರು (Measured)</option>
+            <option value="pending">🔴 ಬಾಕಿ ಇರುವವರು (Pending)</option>
+          </select>
+        </div>
 
         <!-- Save All Button -->
-        <button onclick="saveAllMeasurements()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-black py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
-          <i class="fa-solid fa-floppy-disk"></i> ಎಲ್ಲವನ್ನೂ ಉಳಿಸಿ (Save All)
+        <button onclick="saveAllMeasurements()" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-black py-1.5 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5 text-xs">
+          <i class="fa-solid fa-floppy-disk"></i> <span>ಎಲ್ಲವನ್ನೂ ಉಳಿಸಿ (Save All)</span>
         </button>
       </div>
     </div>
 
-    <!-- Students Measurement Table Grid -->
-    <div class="glass-card rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-      <div class="flex items-center justify-between text-xs font-bold pb-2 border-b border-slate-100 dark:border-slate-800">
+    <!-- Students Measurement View Container -->
+    <div class="glass-card rounded-2xl p-3 sm:p-5 shadow-sm space-y-3">
+      <div class="flex items-center justify-between text-xs font-bold pb-2 border-b border-slate-100 dark:border-slate-800 flex-wrap gap-2">
         <div class="flex items-center gap-2">
           <span id="currentClassTitle" class="text-sm font-black text-indigo-700 dark:text-indigo-400">ತರಗತಿ: 1 ನೇ ತರಗತಿ</span>
           <span id="tableRecordCount" class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-slate-600 dark:text-slate-300 text-[11px]">0 ಮಕ್ಕಳು</span>
@@ -232,33 +305,46 @@
         </div>
       </div>
 
-      <div class="table-container max-h-[650px] overflow-x-auto overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl relative bg-white dark:bg-slate-900 shadow-inner">
-        <table class="w-full text-xs text-left border-collapse min-w-[950px]">
+      <!-- 1. MOBILE-FRIENDLY CARD VIEW (Default on mobile) -->
+      <div id="studentsCardContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered Dynamically -->
+      </div>
+
+      <!-- 2. DESKTOP & LANDSCAPE TABLE VIEW -->
+      <div id="studentsTableContainer" class="hidden table-container max-h-[650px] overflow-x-auto overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl relative bg-white dark:bg-slate-900 shadow-inner">
+        <table class="w-full text-xs text-left border-collapse min-w-[900px]">
           <thead class="sticky-header">
             <tr class="font-bold border-b border-slate-700 text-slate-200 select-none bg-slate-900">
-              <th class="p-3 text-center w-12 bg-slate-900">#</th>
-              <th class="p-3 bg-slate-900 min-w-[120px]">STS ಸಂಖ್ಯೆ</th>
-              <th class="p-3 bg-slate-900 min-w-[170px]">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (English)</th>
+              <th onclick="toggleSort('sr')" class="p-3 text-center w-12 bg-slate-900 cursor-pointer hover:bg-slate-800">
+                # <i id="sortIcon-sr" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
+              <th onclick="toggleSort('sts')" class="p-3 bg-slate-900 min-w-[120px] cursor-pointer hover:bg-slate-800">
+                STS ಸಂಖ್ಯೆ <i id="sortIcon-sts" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
+              <th onclick="toggleSort('name')" class="p-3 bg-slate-900 min-w-[170px] cursor-pointer hover:bg-slate-800">
+                ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (English) <i id="sortIcon-name" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
               <th class="p-3 bg-slate-900 min-w-[150px]">ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಕನ್ನಡ)</th>
-              <th class="p-3 text-center bg-slate-900 w-24">ತರಗತಿ</th>
-              <th class="p-3 text-center bg-slate-900 w-24">ಲಿಂಗ</th>
-              <th class="p-3 text-center bg-indigo-950/90 text-indigo-200 font-black min-w-[200px] border-x border-indigo-800">
-                👟 ಶೂ ಅಳತೆ (ಸೆಂ.ಮೀ / CM)
+              <th onclick="toggleSort('class')" class="p-3 text-center bg-slate-900 w-24 cursor-pointer hover:bg-slate-800">
+                ತರಗತಿ <i id="sortIcon-class" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
+              <th onclick="toggleSort('gender')" class="p-3 text-center bg-slate-900 w-20 cursor-pointer hover:bg-slate-800">
+                ಲಿಂಗ <i id="sortIcon-gender" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
+              <th onclick="toggleSort('size')" class="p-3 text-center bg-indigo-950/90 text-indigo-200 font-black min-w-[200px] border-x border-indigo-800 cursor-pointer hover:bg-indigo-900">
+                👟 ಪಾದದ ಅಳತೆ (MM/CM) <i id="sortIcon-size" class="fa-solid fa-sort ml-1 text-[10px]"></i>
               </th>
               <th class="p-3 text-center bg-indigo-950/80 text-indigo-200 font-black min-w-[130px]">
-                ಸೈಜ್ ನಂ (Bata/India)
+                Plaeto UK Size
               </th>
-              <th class="p-3 bg-slate-900 min-w-[160px]">ಷರಾ / Remarks</th>
-              <th class="p-3 text-center bg-slate-900 w-28">ಸ್ಥಿತಿ (Status)</th>
+              <th class="p-3 bg-slate-900 min-w-[150px]">ಷರಾ / Remarks</th>
+              <th onclick="toggleSort('status')" class="p-3 text-center bg-slate-900 w-24 cursor-pointer hover:bg-slate-800">
+                ಸ್ಥಿತಿ <i id="sortIcon-status" class="fa-solid fa-sort ml-1 text-[10px] text-slate-400"></i>
+              </th>
             </tr>
           </thead>
           <tbody id="studentsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold bg-white dark:bg-slate-900">
-            <tr>
-              <td colspan="10" class="p-12 text-center text-slate-400 font-bold">
-                <i class="fa-solid fa-circle-notch animate-spin text-2xl text-indigo-600 mb-2"></i>
-                <p>ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</p>
-              </td>
-            </tr>
+            <!-- Rendered Dynamically -->
           </tbody>
         </table>
       </div>
@@ -266,38 +352,86 @@
 
   </main>
 
-  <!-- Quick Size Measurement Reference Tool Modal -->
-  <div id="sizeGuideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
-    <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
-      <div class="flex items-center justify-between border-b pb-2">
-        <h3 class="font-black text-sm text-slate-800 dark:text-slate-100 flex items-center gap-2">
-          <i class="fa-solid fa-ruler-combined text-indigo-600"></i> ಶೂ ಅಳತೆ ಕೋಷ್ಟಕ (CM to Size Guide)
-        </h3>
-        <button onclick="closeSizeGuideModal()" class="text-slate-400 hover:text-slate-600 border-0 bg-transparent cursor-pointer">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-      <div class="text-xs space-y-2 text-slate-600 dark:text-slate-300">
-        <p class="font-bold text-slate-800 dark:text-slate-200">ಪಾದದ ಉದ್ದ (CM) &rightarrow; ಶೂ ಸೈಜ್ ನಂಬರ್:</p>
-        <div class="grid grid-cols-2 gap-2 text-[11px] font-mono bg-slate-50 dark:bg-slate-800 p-3 rounded-xl">
-          <div>14.5 - 15.2 cm &rightarrow; <strong>Size 7</strong></div>
-          <div>15.3 - 16.0 cm &rightarrow; <strong>Size 8</strong></div>
-          <div>16.1 - 17.0 cm &rightarrow; <strong>Size 9</strong></div>
-          <div>17.1 - 18.0 cm &rightarrow; <strong>Size 10</strong></div>
-          <div>18.1 - 19.0 cm &rightarrow; <strong>Size 11</strong></div>
-          <div>19.1 - 20.0 cm &rightarrow; <strong>Size 12</strong></div>
-          <div>20.1 - 21.0 cm &rightarrow; <strong>Size 13</strong></div>
-          <div>21.1 - 22.0 cm &rightarrow; <strong>Size 1 (Big)</strong></div>
-          <div>22.1 - 23.0 cm &rightarrow; <strong>Size 2</strong></div>
-          <div>23.1 - 24.0 cm &rightarrow; <strong>Size 3</strong></div>
-          <div>24.1 - 25.0 cm &rightarrow; <strong>Size 4</strong></div>
-          <div>25.1 - 26.0 cm &rightarrow; <strong>Size 5</strong></div>
-          <div>26.1 - 27.0 cm &rightarrow; <strong>Size 6</strong></div>
-          <div>27.1 - 28.0 cm &rightarrow; <strong>Size 7 (Adult)</strong></div>
+  <!-- Plaeto UK Size Measurement Scale Chart Modal (Editable) -->
+  <div id="sizeGuideModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-3 sm:p-4 no-print overflow-y-auto">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-6 space-y-4 my-6">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 flex-wrap gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black">
+            <i class="fa-solid fa-ruler-vertical"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-base text-slate-900 dark:text-white">Plaeto UK Size & Foot Length Chart</h3>
+            <p class="text-xs text-slate-500 font-semibold">ಪ್ಲೇಟೋ ಶೂ ಅಳತೆ ಕೋಷ್ಟಕ (MM ನಿಂದ Plaeto UK Size)</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <!-- Toggle Edit Mode -->
+          <button type="button" onclick="toggleScaleChartEditMode()" id="btnToggleChartEdit" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-white transition flex items-center gap-1 border-0 cursor-pointer shadow-sm">
+            <i class="fa-solid fa-pen-to-square"></i> <span>ಕೋಷ್ಟಕ ತಿದ್ದುಪಡಿ (Edit Chart)</span>
+          </button>
+          <!-- Reset to Default -->
+          <button type="button" onclick="resetScaleChartToDefault()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition flex items-center gap-1 border-0 cursor-pointer" title="ಮೂಲ ಪ್ಲೇಟೋ ಕೋಷ್ಟಕಕ್ಕೆ ಮರುಹೊಂದಿಸಿ">
+            <i class="fa-solid fa-rotate-left"></i>
+          </button>
+          <!-- Close Modal -->
+          <button type="button" onclick="closeSizeGuideModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg border-0 bg-transparent cursor-pointer p-1">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
       </div>
-      <button onclick="closeSizeGuideModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl border-0 cursor-pointer">
-        ಸರಿ / OK
+
+      <!-- Quick Guidance Banner -->
+      <div class="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+        <div class="font-black flex items-center justify-between flex-wrap gap-2">
+          <span class="flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-info text-indigo-600"></i> ಅಳತೆ ವಿವರಣೆ ಮತ್ತು ಕೋಷ್ಟಕ ನಿಯಂತ್ರಣ:
+          </span>
+          <span id="chartModeBadge" class="text-[10px] bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full font-bold">
+            ವೀಕ್ಷಣೆ ಮೋಡ್ (View Mode)
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-600 dark:text-slate-300">
+          ಪ್ಲೇಟೋ ಸ್ಕೇಲ್‌ನಲ್ಲಿ ಬರುವ ಮಿಲಿಮೀಟರ್ (MM) ಅಳತೆಗೆ ತಕ್ಕಂತೆ Plaeto UK Size ನಿಗದಿಪಡಿಸಲಾಗಿದೆ. ಬೇಕಿದ್ದರೆ 'ಕೋಷ್ಟಕ ತಿದ್ದುಪಡಿ' ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ ಅಳತೆಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು ಅಥವಾ ಹೊಸ ಸೈಜ್ ಸೇರಿಸಬಹುದು.
+        </p>
+      </div>
+
+      <!-- Plaeto Scale Official Table (Dynamic View & Edit) -->
+      <div class="max-h-[380px] overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
+        <table class="w-full text-xs text-center border-collapse">
+          <thead class="sticky top-0 bg-slate-900 text-white font-black z-10">
+            <tr>
+              <th class="p-2.5 bg-slate-900 text-amber-400 font-black">Plaeto UK Size</th>
+              <th class="p-2.5 bg-slate-900 text-white">Foot Length MM (ಮಿ.ಮೀ ವ್ಯಾಪ್ತಿ)</th>
+              <th class="p-2.5 bg-slate-900 text-slate-300">Approx. in CM (ಸೆಂ.ಮೀ)</th>
+              <th class="p-2.5 bg-slate-900 text-emerald-400">ವಿಭಾಗ (Category)</th>
+              <th id="chartActionHeader" class="p-2.5 bg-slate-900 text-rose-400 hidden w-14">ಕ್ರಮ</th>
+            </tr>
+          </thead>
+          <tbody id="scaleChartTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-semibold bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
+            <!-- Rendered Dynamically via renderScaleChartModal() -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Edit Mode Action Buttons -->
+      <div id="chartEditActions" class="hidden flex items-center justify-between pt-1 flex-wrap gap-2 border-t border-slate-100 dark:border-slate-800">
+        <button type="button" onclick="addScaleChartRow()" class="bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold px-3 py-2 rounded-xl text-xs border border-indigo-200 dark:border-indigo-800 transition cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-indigo-600"></i> ಹೊಸ ಸೈಜ್ ಸಾಲು ಸೇರಿಸಿ (Add Size Row)
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="toggleScaleChartEditMode(false)" class="bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold px-3.5 py-2 rounded-xl text-xs border-0 cursor-pointer">
+            ರದ್ದು (Cancel)
+          </button>
+          <button type="button" onclick="saveScaleChartChanges()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs border-0 cursor-pointer shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-floppy-disk"></i> ಕೋಷ್ಟಕ ಉಳಿಸಿ (Save Chart)
+          </button>
+        </div>
+      </div>
+
+      <button id="btnCloseGuideModalBtn" onclick="closeSizeGuideModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl border-0 cursor-pointer text-xs">
+        ಸರಿ / ಮುಚ್ಚಿ (Close)
       </button>
     </div>
   </div>
@@ -313,36 +447,335 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="mt-8 py-4 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 font-semibold no-print space-y-1">
+    <p><span id="footerSchoolName">GHPS MARCHED</span> &bull; ಶಾಲಾ ನಿರ್ವಹಣಾ ತಂತ್ರಾಂಶ 2026-27</p>
+    <p class="text-[11px]">ವಿನ್ಯಾಸ & ಅಭಿವೃದ್ಧಿ (Designed & Developed by): <strong class="text-indigo-600 dark:text-indigo-400">Merilin Prabhu</strong></p>
+  </footer>
+
   <!-- JavaScript Implementation -->
   <script>
     const SCHOOL_ID = 'f592831e-69a8-4138-b82d-69649cb46605';
+    const DEFAULT_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1awYBM024orzUascz9uTYIeXg6rN55sbSJj7hIrhMWp8/edit?gid=1852377268#gid=1852377268";
+
+    // Default Plaeto Foot Measuring Scale
+    const DEFAULT_PLAETO_SCALE = [
+      { size: '7C', minMm: 150, maxMm: 155, approxCm: '15.0 - 15.5 cm', category: 'Pre-Primary (LKG)' },
+      { size: '8C', minMm: 160, maxMm: 162, approxCm: '16.0 cm', category: 'Pre-Primary (UKG)' },
+      { size: '9C', minMm: 165, maxMm: 170, approxCm: '16.5 - 17.0 cm', category: 'Class 1' },
+      { size: '10C', minMm: 175, maxMm: 178, approxCm: '17.5 cm', category: 'Class 1 - 2' },
+      { size: '11C', minMm: 180, maxMm: 185, approxCm: '18.0 - 18.5 cm', category: 'Class 2 - 3' },
+      { size: '12C', minMm: 190, maxMm: 195, approxCm: '19.0 - 19.5 cm', category: 'Class 3 - 4' },
+      { size: '13C', minMm: 200, maxMm: 202, approxCm: '20.0 cm', category: 'Class 4 - 5' },
+      { size: '1', minMm: 205, maxMm: 210, approxCm: '20.5 - 21.0 cm', category: 'Class 5 - 6' },
+      { size: '2', minMm: 215, maxMm: 218, approxCm: '21.5 cm', category: 'Class 6' },
+      { size: '3', minMm: 220, maxMm: 225, approxCm: '22.0 - 22.5 cm', category: 'Class 6 - 7' },
+      { size: '4', minMm: 230, maxMm: 235, approxCm: '23.0 - 23.5 cm', category: 'Class 7 - 8' },
+      { size: '5', minMm: 240, maxMm: 242, approxCm: '24.0 cm', category: 'Class 8' },
+      { size: '6', minMm: 245, maxMm: 250, approxCm: '24.5 - 25.0 cm', category: 'Class 8 - 9' },
+      { size: '7', minMm: 255, maxMm: 258, approxCm: '25.5 cm', category: 'Class 9 - 10' },
+      { size: '8', minMm: 260, maxMm: 265, approxCm: '26.0 - 26.5 cm', category: 'Class 9 - 10' },
+      { size: '9', minMm: 270, maxMm: 275, approxCm: '27.0 - 27.5 cm', category: 'Class 10 / Senior' },
+      { size: '10', minMm: 280, maxMm: 282, approxCm: '28.0 cm', category: 'Senior' },
+      { size: '11', minMm: 285, maxMm: 290, approxCm: '28.5 - 29.0 cm', category: 'Senior' },
+      { size: '12', minMm: 295, maxMm: 350, approxCm: '29.5 cm+', category: 'Senior' }
+    ];
+
+    let plaetoScaleChart = JSON.parse(JSON.stringify(DEFAULT_PLAETO_SCALE));
+    let isChartEditing = false;
+
     let supabaseClient = null;
-    let allStudentsList = [];
-    let shoeMeasurementsMap = {}; // { [studentId]: { size_cm: 18.5, size_no: '10', remarks: '', updated_at: '' } }
+    let allStudentsList = []; // 520 students from Google Spreadsheet
+    let shoeMeasurementsMap = {}; // { [studentId/STS]: { size_cm: 185, size_no: '11C', remarks: '', updated_at: '' } }
     let currentClass = '1';
 
-    // Standard Shoe Size Conversion Table (CM to Indian/Bata Size)
-    function cmToShoeSizeNo(cmVal) {
-      const cm = parseFloat(cmVal);
-      if (isNaN(cm) || cm <= 0) return '-';
-      if (cm <= 13.5) return '5 (Kids)';
-      if (cm <= 14.4) return '6 (Kids)';
-      if (cm <= 15.2) return '7 (Kids)';
-      if (cm <= 16.0) return '8 (Kids)';
-      if (cm <= 17.0) return '9 (Kids)';
-      if (cm <= 18.0) return '10 (Kids)';
-      if (cm <= 19.0) return '11 (Kids)';
-      if (cm <= 20.0) return '12 (Kids)';
-      if (cm <= 21.0) return '13 (Kids)';
-      if (cm <= 22.0) return 'Size 1';
-      if (cm <= 23.0) return 'Size 2';
-      if (cm <= 24.0) return 'Size 3';
-      if (cm <= 25.0) return 'Size 4';
-      if (cm <= 26.0) return 'Size 5';
-      if (cm <= 27.0) return 'Size 6';
-      if (cm <= 28.0) return 'Size 7';
-      if (cm <= 29.0) return 'Size 8';
-      return 'Size 9+';
+    // Dynamic Plaeto UK Size Conversion (Uses Active Custom/Default Scale Chart)
+    function mmToPlaetoUKSize(val) {
+      if (val === null || val === undefined || val === '') return '-';
+      let num = parseFloat(val);
+      if (isNaN(num) || num <= 0) return '-';
+
+      // If user inputs in CM (e.g. 15.0 to 35.0 cm), auto-convert to MM (150 to 350 mm)
+      if (num < 40) {
+        num = num * 10;
+      }
+
+      if (!plaetoScaleChart || plaetoScaleChart.length === 0) {
+        plaetoScaleChart = JSON.parse(JSON.stringify(DEFAULT_PLAETO_SCALE));
+      }
+
+      // Check against defined ranges in scale chart
+      for (const row of plaetoScaleChart) {
+        const min = parseFloat(row.minMm);
+        const max = parseFloat(row.maxMm);
+        if (!isNaN(min) && !isNaN(max)) {
+          if (num >= min && num <= max) {
+            return row.size;
+          }
+        }
+      }
+
+      // If lower than the lowest range
+      const firstRow = plaetoScaleChart[0];
+      if (firstRow && num < parseFloat(firstRow.minMm)) {
+        return `Below ${firstRow.size}`;
+      }
+
+      // If higher than the highest range
+      const lastRow = plaetoScaleChart[plaetoScaleChart.length - 1];
+      if (lastRow && num > parseFloat(lastRow.maxMm)) {
+        return lastRow.size;
+      }
+
+      return '-';
+    }
+
+    // --- SCALE CHART MANAGEMENT (EDITABLE MODAL) ---
+    async function loadScaleChart() {
+      try {
+        // 1. From LocalStorage
+        const localChart = localStorage.getItem('plaeto_scale_chart');
+        if (localChart) {
+          plaetoScaleChart = JSON.parse(localChart);
+        }
+
+        // 2. From Supabase Cloud Database (school_settings)
+        if (!supabaseClient) initSupabaseClient();
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', SCHOOL_ID)
+            .eq('settings_key', 'plaeto_scale_chart')
+            .maybeSingle();
+
+          if (!error && data && data.settings_value) {
+            let dbChart = data.settings_value;
+            if (typeof dbChart === 'string') dbChart = JSON.parse(dbChart);
+            if (Array.isArray(dbChart) && dbChart.length > 0) {
+              plaetoScaleChart = dbChart;
+              localStorage.setItem('plaeto_scale_chart', JSON.stringify(plaetoScaleChart));
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load custom scale chart, using default:", err);
+      }
+      renderScaleChartModal();
+    }
+
+    function renderScaleChartModal() {
+      const tbody = document.getElementById('scaleChartTableBody');
+      const actionHeader = document.getElementById('chartActionHeader');
+      const editActions = document.getElementById('chartEditActions');
+      const toggleBtn = document.getElementById('btnToggleChartEdit');
+      const badge = document.getElementById('chartModeBadge');
+
+      if (!tbody) return;
+
+      if (isChartEditing) {
+        if (actionHeader) actionHeader.classList.remove('hidden');
+        if (editActions) editActions.classList.remove('hidden');
+        if (badge) {
+          badge.innerText = '✏️ ತಿದ್ದುಪಡಿ ಮೋಡ್ (Edit Mode)';
+          badge.className = 'text-[10px] bg-amber-100 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 px-2 py-0.5 rounded-full font-bold border border-amber-300';
+        }
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<i class="fa-solid fa-eye"></i> <span>ವೀಕ್ಷಣೆ ಮೋಡ್ (View Mode)</span>';
+          toggleBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-700 hover:bg-slate-600 text-white transition flex items-center gap-1 border-0 cursor-pointer shadow-sm';
+        }
+
+        tbody.innerHTML = plaetoScaleChart.map((row, idx) => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/80 transition border-b border-slate-100 dark:border-slate-800">
+            <td class="p-2">
+              <input type="text" value="${row.size || ''}" onchange="updateScaleRow(${idx}, 'size', this.value)" class="w-20 p-1.5 text-xs text-center font-black font-mono border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-slate-900 rounded-lg text-indigo-700 dark:text-indigo-300">
+            </td>
+            <td class="p-2">
+              <div class="flex items-center justify-center gap-1">
+                <input type="number" value="${row.minMm || ''}" placeholder="Min" onchange="updateScaleRow(${idx}, 'minMm', this.value)" class="w-16 p-1.5 text-xs text-center font-bold font-mono border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg">
+                <span class="text-slate-400 font-bold">-</span>
+                <input type="number" value="${row.maxMm || ''}" placeholder="Max" onchange="updateScaleRow(${idx}, 'maxMm', this.value)" class="w-16 p-1.5 text-xs text-center font-bold font-mono border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg">
+                <span class="text-[10px] text-slate-400 font-bold">mm</span>
+              </div>
+            </td>
+            <td class="p-2">
+              <input type="text" value="${row.approxCm || ''}" placeholder="15.0 cm" onchange="updateScaleRow(${idx}, 'approxCm', this.value)" class="w-28 p-1.5 text-xs text-center font-mono border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg">
+            </td>
+            <td class="p-2">
+              <input type="text" value="${row.category || ''}" placeholder="Class / Category" onchange="updateScaleRow(${idx}, 'category', this.value)" class="w-full p-1.5 text-xs border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-lg">
+            </td>
+            <td class="p-2 text-center">
+              <button type="button" onclick="deleteScaleChartRow(${idx})" class="text-rose-500 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-950/40 border-0 bg-transparent cursor-pointer" title="ಸಾಲು ತೆಗೆಯಿರಿ">
+                <i class="fa-solid fa-trash-can text-sm"></i>
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } else {
+        if (actionHeader) actionHeader.classList.add('hidden');
+        if (editActions) editActions.classList.add('hidden');
+        if (badge) {
+          badge.innerText = 'ವೀಕ್ಷಣೆ ಮೋಡ್ (View Mode)';
+          badge.className = 'text-[10px] bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full font-bold';
+        }
+        if (toggleBtn) {
+          toggleBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> <span>ಕೋಷ್ಟಕ ತಿದ್ದುಪಡಿ (Edit Chart)</span>';
+          toggleBtn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-white transition flex items-center gap-1 border-0 cursor-pointer shadow-sm';
+        }
+
+        tbody.innerHTML = plaetoScaleChart.map((row) => `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            <td class="p-2 font-black text-indigo-600 font-mono text-sm bg-indigo-50/50 dark:bg-indigo-950/30">${row.size}</td>
+            <td class="p-2 font-bold font-mono">${row.minMm}${row.maxMm && row.maxMm !== row.minMm ? ` - ${row.maxMm}` : ''} mm</td>
+            <td class="p-2 text-slate-500 font-mono">${row.approxCm || '-'}</td>
+            <td class="p-2 text-xs font-bold text-slate-700 dark:text-slate-300">${row.category || '-'}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function toggleScaleChartEditMode(forceState) {
+      isChartEditing = forceState !== undefined ? forceState : !isChartEditing;
+      renderScaleChartModal();
+    }
+
+    function updateScaleRow(index, field, value) {
+      if (plaetoScaleChart[index]) {
+        plaetoScaleChart[index][field] = value;
+      }
+    }
+
+    function addScaleChartRow() {
+      plaetoScaleChart.push({
+        size: 'New',
+        minMm: 300,
+        maxMm: 310,
+        approxCm: '30.0 cm',
+        category: 'Senior'
+      });
+      renderScaleChartModal();
+    }
+
+    function deleteScaleChartRow(index) {
+      if (confirm("ಈ ಸೈಜ್ ಸಾಲನ್ನು ಕೋಷ್ಟಕದಿಂದ ತೆಗೆದುಹಾಕಬೇಕೇ?")) {
+        plaetoScaleChart.splice(index, 1);
+        renderScaleChartModal();
+      }
+    }
+
+    async function saveScaleChartChanges() {
+      localStorage.setItem('plaeto_scale_chart', JSON.stringify(plaetoScaleChart));
+      
+      try {
+        if (!supabaseClient) initSupabaseClient();
+        if (supabaseClient) {
+          await supabaseClient.from('school_settings').upsert({
+            school_id: SCHOOL_ID,
+            settings_key: 'plaeto_scale_chart',
+            settings_value: JSON.stringify(plaetoScaleChart)
+          }, { onConflict: 'school_id,settings_key' });
+        }
+      } catch (e) {
+        console.warn("Could not cloud sync scale chart:", e);
+      }
+
+      showToast("ಕೋಷ್ಟಕ ಉಳಿಸಲಾಗಿದೆ!", "Plaeto ಶೂ ಅಳತೆ ಕೋಷ್ಟಕ ಯಶಸ್ವಿಯಾಗಿ ನವೀಕರಣಗೊಂಡಿದೆ.", "success");
+      toggleScaleChartEditMode(false);
+
+      // Recompute size display in all student tables & cards
+      renderStudentsTable();
+      updateMetrics();
+    }
+
+    async function resetScaleChartToDefault() {
+      if (confirm("ಪ್ಲೇಟೋ ಅಳತೆ ಕೋಷ್ಟಕವನ್ನು ಮೂಲ ಡೀಫಾಲ್ಟ್ ಸೆಟ್ಟಿಂಗ್ಸ್‌ಗೆ ಮರುಹೊಂದಿಸಬೇಕೇ?")) {
+        plaetoScaleChart = JSON.parse(JSON.stringify(DEFAULT_PLAETO_SCALE));
+        localStorage.removeItem('plaeto_scale_chart');
+        try {
+          if (!supabaseClient) initSupabaseClient();
+          if (supabaseClient) {
+            await supabaseClient.from('school_settings').delete().eq('school_id', SCHOOL_ID).eq('settings_key', 'plaeto_scale_chart');
+          }
+        } catch (e) {}
+        showToast("ಮರುಹೊಂದಿಸಲಾಗಿದೆ", "ಡೀಫಾಲ್ಟ್ ಪ್ಲೇಟೋ ಅಳತೆ ಕೋಷ್ಟಕವನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ.", "success");
+        renderScaleChartModal();
+        renderStudentsTable();
+        updateMetrics();
+      }
+    }
+
+    // --- AUTO-FETCH SCHOOL PROFILE FROM ADMIN / SETTINGS ---
+    async function loadSchoolProfileInfo() {
+      try {
+        // 1. From LocalStorage
+        const nameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮಾರ್ಚೇಡ್";
+        const nameEn = localStorage.getItem('school_name_en') || "GHPS MARCHED";
+        const udise = localStorage.getItem('school_udise') || "29060709801";
+        const logoUrl = localStorage.getItem('school_logo_url') || "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+        const govLogoUrl = localStorage.getItem('school_gov_logo') || "https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg";
+
+        applySchoolProfileToUI({ nameKn, nameEn, udise, logoUrl, govLogoUrl });
+
+        // 2. From Supabase Cloud Database (schools table / school_settings)
+        if (!supabaseClient) initSupabaseClient();
+        if (supabaseClient) {
+          const { data: schData } = await supabaseClient
+            .from('schools')
+            .select('*')
+            .eq('id', SCHOOL_ID)
+            .maybeSingle();
+
+          if (schData) {
+            const profile = {
+              nameKn: schData.school_name_kn || schData.name_kn || nameKn,
+              nameEn: schData.school_name_en || schData.name || nameEn,
+              udise: schData.udise_code || schData.udise || udise,
+              logoUrl: schData.logo_url || logoUrl,
+              govLogoUrl: schData.gov_logo_url || govLogoUrl
+            };
+            localStorage.setItem('school_name_kn', profile.nameKn);
+            localStorage.setItem('school_name_en', profile.nameEn);
+            localStorage.setItem('school_udise', profile.udise);
+            if (profile.logoUrl) localStorage.setItem('school_logo_url', profile.logoUrl);
+            applySchoolProfileToUI(profile);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic school info:", err);
+      }
+    }
+
+    function applySchoolProfileToUI(profile) {
+      if (!profile) return;
+      
+      // Top Site Header & Banner
+      const navSchool = document.getElementById('navSchoolName');
+      const topNameKn = document.getElementById('topSchoolNameKn');
+      const topNameEn = document.getElementById('topSchoolNameEn');
+      const topLogo = document.getElementById('topSchoolLogo');
+      const footerSchool = document.getElementById('footerSchoolName');
+
+      if (navSchool) navSchool.innerText = `${profile.nameEn || 'GHPS MARCHED'} • ಶಾಲಾ ಪೋರ್ಟಲ್`;
+      if (topNameKn) topNameKn.innerText = profile.nameKn;
+      if (topNameEn) topNameEn.innerText = profile.nameEn;
+      if (footerSchool) footerSchool.innerText = profile.nameEn;
+      if (topLogo && profile.logoUrl) topLogo.src = profile.logoUrl;
+
+      // Printable Header
+      const printNameKn = document.getElementById('printSchoolNameKn');
+      const printNameEn = document.getElementById('printSchoolNameEn');
+      const printUdise = document.getElementById('printSchoolUdise');
+      const printLogo = document.getElementById('printSchoolLogo');
+      const printGov = document.getElementById('printGovLogo');
+
+      if (printNameKn) printNameKn.innerText = profile.nameKn;
+      if (printNameEn) printNameEn.innerText = profile.nameEn;
+      if (printUdise) printUdise.innerText = `UDISE: ${profile.udise}`;
+      if (printLogo && profile.logoUrl) {
+        printLogo.src = profile.logoUrl;
+        printLogo.style.display = 'block';
+      }
+      if (printGov && profile.govLogoUrl) printGov.src = profile.govLogoUrl;
     }
 
     function normalizeClass(classStr) {
@@ -356,8 +789,10 @@
       clean = clean.trim();
       if (clean.includes("lkg") || clean.includes("kg1")) return "LKG";
       if (clean.includes("ukg") || clean.includes("kg2")) return "UKG";
-      const numMatch = clean.match(/\d+/);
+      const numMatch = clean.match(/\b(10|[1-9])\b/);
       if (numMatch) return numMatch[0];
+      const digits = clean.match(/\d+/);
+      if (digits) return digits[0];
       return classStr.toString().trim();
     }
 
@@ -375,7 +810,12 @@
         currentClass = normalizeClass(paramClass);
       }
 
+      // Initialize View Mode based on device screen
+      setViewMode(window.innerWidth < 768 ? 'cards' : 'table');
+
       initSupabaseClient();
+      await loadSchoolProfileInfo();
+      await loadScaleChart();
       await loadShoeMeasurements();
       await fetchStudentsList();
     });
@@ -423,55 +863,258 @@
       }
     }
 
-    // --- 3. FETCH STUDENTS ---
+    // --- 3. FETCH STUDENTS EXCLUSIVELY FROM SATS GOOGLE SPREADSHEET ---
     async function fetchStudentsList() {
+      // 1. Load cached sheet students first for instantaneous display
+      const cached = localStorage.getItem('shoe_tracker_sheet_students');
+      if (cached) {
+        try {
+          allStudentsList = JSON.parse(cached);
+          renderClassPills();
+          updateMetrics();
+          renderStudentsTable();
+        } catch (e) {}
+      }
+
+      // 2. Fetch live data from Google Spreadsheet
+      await syncWithGoogleSheet(true);
+    }
+
+    // Parse SATS Spreadsheet Rows into 520 Students
+    function parseSatsSheetData(jsonRows) {
+      if (!jsonRows || jsonRows.length === 0) return [];
+
+      let headerIdx = -1;
+      for (let r = 0; r < Math.min(jsonRows.length, 15); r++) {
+        const row = jsonRows[r];
+        if (row && row.some(cell => {
+          const s = String(cell || '').toLowerCase();
+          return s.includes('enrollment') || s.includes('student name') || s.includes('sts') || s.includes('standard') || s.includes('sr. no');
+        })) {
+          headerIdx = r;
+          break;
+        }
+      }
+      if (headerIdx === -1) headerIdx = 0;
+
+      const headers = jsonRows[headerIdx].map(h => String(h || '').trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+      
+      const findCol = (...names) => {
+        for (const n of names) {
+          const target = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = headers.findIndex(h => h === target || h.includes(target) || h.startsWith(target));
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+
+      const cSr = findCol('srno', 'slno', 'sno');
+      const cSts = findCol('enrollmentno', 'enrollment', 'stsnumber', 'stsno', 'appno', 'sts');
+      const cName = findCol('studentname', 'studentsname', 'name');
+      const cFather = findCol('fathername', 'father');
+      const cDob = findCol('dateofbirth', 'dob');
+      const cCaste = findCol('socialcategory', 'caste', 'category');
+      const cClass = findCol('standard', 'std', 'class', 'grade');
+      const cGender = findCol('gender', 'sex');
+      const cMedium = findCol('medium');
+      let cNameKn = findCol('studentsnamekannada', 'studentnamekannada', 'namekn');
+      let cFatherKn = findCol('fathernameinkannada', 'fathernamekannada', 'fatherkn');
+
+      if (cNameKn === -1 && jsonRows[headerIdx].length > 10) cNameKn = 10;
+      if (cFatherKn === -1 && jsonRows[headerIdx].length > 11) cFatherKn = 11;
+
+      const parsed = [];
+      for (let i = headerIdx + 1; i < jsonRows.length; i++) {
+        const row = jsonRows[i];
+        if (!row || row.length === 0) continue;
+
+        const rawSr = cSr !== -1 ? parseInt(String(row[cSr] || '0').trim(), 10) || 0 : (i - headerIdx);
+        const rawSts = cSts !== -1 ? String(row[cSts] || '').trim() : '';
+        const rawName = cName !== -1 ? String(row[cName] || '').trim() : '';
+
+        if (!rawSts && !rawName) continue;
+        if (rawName.toLowerCase().includes('total') || rawName.toLowerCase().includes('student name')) continue;
+
+        const cleanSts = rawSts.replace(/[\s\-_.]/g, '');
+        const formattedSts = cleanSts.length === 9 ? `${cleanSts.substr(0,3)} ${cleanSts.substr(3,3)} ${cleanSts.substr(6,3)}` : (rawSts || `ST_${i}`);
+
+        let rawClass = cClass !== -1 ? String(row[cClass] || '').trim() : '';
+        let cls = normalizeClass(rawClass);
+
+        // If Standard is blank in sheet (Pre-Primary rows 1-60 at the bottom of sheet)
+        if (!cls) {
+          if (rawSr >= 1 && rawSr <= 25) cls = 'LKG';
+          else if (rawSr >= 26 && rawSr <= 60) cls = 'UKG';
+          else cls = 'LKG';
+        }
+
+        const gen = (cGender !== -1 ? String(row[cGender] || '') : '').toLowerCase();
+        const isGirl = gen.includes('girl') || gen.includes('female') || gen.includes('ಹೆಣ್ಣು');
+        const gender = isGirl ? 'Girl' : 'Boy';
+
+        const nameEn = rawName;
+        let nameKn = cNameKn !== -1 ? String(row[cNameKn] || '').trim() : '';
+        if (!nameKn || nameKn === '#N/A' || nameKn.startsWith('?')) nameKn = nameEn;
+
+        let fatherEn = cFather !== -1 ? String(row[cFather] || '').trim() : '-';
+        if (fatherEn === '#N/A') fatherEn = '-';
+        let fatherKn = cFatherKn !== -1 ? String(row[cFatherKn] || '').trim() : fatherEn;
+        if (!fatherKn || fatherKn === '#N/A' || fatherKn.startsWith('?')) fatherKn = fatherEn;
+
+        parsed.push({
+          id: cleanSts || formattedSts,
+          sr_no: rawSr,
+          app_no: formattedSts,
+          student_sts: formattedSts,
+          enrolment_no: formattedSts,
+          name_english: nameEn,
+          student_name: nameKn,
+          father_name_az: fatherEn,
+          father_name_kn: fatherKn,
+          enroll_class: cls,
+          className: cls,
+          gender: gender,
+          dob: cDob !== -1 ? String(row[cDob] || '') : '',
+          caste: cCaste !== -1 ? String(row[cCaste] || '') : 'OTHERS',
+          medium: cMedium !== -1 ? String(row[cMedium] || 'English') : 'English'
+        });
+      }
+
+      return parsed;
+    }
+
+    // --- LIVE GOOGLE SATS SHEET FETCH & SYNC ---
+    async function syncWithGoogleSheet(isSilent = false) {
+      const btn = document.getElementById('syncSheetBtn');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn && !isSilent) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ಶೀಟ್ ಸಿಂಕ್ ಆಗುತ್ತಿದೆ...`;
+      }
+
       try {
-        if (!supabaseClient) initSupabaseClient();
-        let records = [];
+        const rawUrl = localStorage.getItem('sats_spreadsheet_url') || DEFAULT_SPREADSHEET_URL;
+        const idMatch = rawUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+        const sheetId = idMatch ? idMatch[1] : '1awYBM024orzUascz9uTYIeXg6rN55sbSJj7hIrhMWp8';
+        const gidMatch = rawUrl.match(/gid=([0-9]+)/);
+        const gid = gidMatch ? gidMatch[1] : '1852377268';
 
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient
-            .from('admissions')
-            .select('*')
-            .or(`school_id.eq.${SCHOOL_ID},school_id.is.null`)
-            .range(0, 5000);
+        let jsonRows = null;
 
-          if (!error && data && data.length > 0) {
-            records = data;
+        // Method 1: HTML Table Export (Extracts all 520 rows 100% complete)
+        try {
+          const htmlUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:html&gid=${gid}&_nocache=${Date.now()}`;
+          const res = await fetch(htmlUrl);
+          if (res.ok) {
+            const htmlText = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            const table = doc.querySelector('table');
+            if (table && table.rows.length > 5) {
+              jsonRows = Array.from(table.rows).map(tr => 
+                Array.from(tr.cells).map(td => td.textContent.replace(/\u00a0/g, ' ').trim())
+              );
+            }
+          }
+        } catch (e) {
+          console.warn("HTML table fetch failed:", e);
+        }
+
+        // Method 2: CSV Export fallback
+        if (!jsonRows || jsonRows.length === 0) {
+          try {
+            const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_nocache=${Date.now()}`;
+            const res2 = await fetch(csvUrl);
+            if (res2.ok) {
+              const text = await res2.text();
+              const wb = XLSX.read(text, { type: 'string' });
+              const sheet = wb.Sheets[wb.SheetNames[0]];
+              jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            }
+          } catch (e2) {
+            console.warn("CSV export failed:", e2);
           }
         }
 
-        // Fallback to local students list if offline
-        if (records.length === 0) {
-          const localStudents = localStorage.getItem('site_students_cache') || localStorage.getItem('admissions_data');
-          if (localStudents) {
-            try { records = JSON.parse(localStudents); } catch (e) {}
+        // Method 3: JSONP fallback
+        if (!jsonRows || jsonRows.length === 0) {
+          try {
+            jsonRows = await fetchGoogleSheetJsonp(sheetId, gid);
+          } catch (e3) {
+            console.warn("JSONP fallback failed:", e3);
           }
         }
 
-        // Filter active students only (exclude TC_OUT, DELETED)
-        allStudentsList = (records || []).filter(s => {
-          const isOut = s.status === 'TC_OUT' || s.status === 'DELETED' || s.status === 'REMOVED';
-          return !isOut;
-        });
+        if (!jsonRows || jsonRows.length === 0) {
+          throw new Error("Google Spreadsheet ನಿಂದ ಡೇಟಾ ಓದಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.");
+        }
 
-        // Cache for offline
-        localStorage.setItem('site_students_cache', JSON.stringify(allStudentsList));
-
-        // Sort alphabetically by English/Kannada Name
-        allStudentsList.sort((a, b) => {
-          const nameA = (a.name_english || a.student_name || '').toLowerCase();
-          const nameB = (b.name_english || b.student_name || '').toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
+        allStudentsList = parseSatsSheetData(jsonRows);
+        localStorage.setItem('shoe_tracker_sheet_students', JSON.stringify(allStudentsList));
 
         renderClassPills();
         updateMetrics();
         renderStudentsTable();
+
+        if (!isSilent) {
+          showToast("ಸಿಂಕ್ ಯಶಸ್ವಿ!", `Google Sheet ನಿಂದ ನಿಖರವಾಗಿ ${allStudentsList.length} ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ!`, "success");
+        }
       } catch (err) {
-        console.error("Error fetching students:", err);
-        showToast("ದೋಷ", "ವಿದ್ಯಾರ್ಥಿಗಳ ಪಟ್ಟಿಯನ್ನು ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.", "error");
+        console.error("Sheet sync error:", err);
+        if (!isSilent) {
+          showToast("ಸಿಂಕ್ ದೋಷ", "ಶೀಟ್ ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message, "error");
+        }
+      } finally {
+        if (btn && !isSilent) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       }
+    }
+
+    function fetchGoogleSheetJsonp(sheetId, gid) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gviz_shoe_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=responseHandler:${callbackName}&gid=${gid || 0}&_nocache=${Date.now()}`;
+
+        const script = document.createElement('script');
+        const cleanup = () => {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error("Google Sheets timeout"));
+        }, 12000);
+
+        window[callbackName] = function(response) {
+          clearTimeout(timeoutId);
+          cleanup();
+          if (response && response.status === 'ok' && response.table) {
+            const table = response.table;
+            const headers = table.cols.map(c => (c ? (c.label || c.id || '') : ''));
+            const rows = table.rows.map(r => {
+              if (!r || !r.c) return [];
+              return r.c.map(cell => {
+                if (!cell) return '';
+                return cell.f !== undefined ? cell.f : (cell.v !== undefined ? cell.v : '');
+              });
+            });
+            resolve([headers, ...rows]);
+          } else {
+            reject(new Error("Invalid response format"));
+          }
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Script load failed"));
+        };
+
+        script.src = url;
+        document.head.appendChild(script);
+      });
     }
 
     // --- 4. CLASS NAVIGATION PILLS ---
@@ -479,19 +1122,21 @@
       const container = document.getElementById('classPillsContainer');
       if (!container) return;
 
-      const classes = ['ALL', '1', '2', '3', '4', '5', '6', '7', '8', 'LKG', 'UKG'];
+      const classes = ['ALL', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'LKG', 'UKG'];
 
       container.innerHTML = classes.map(cls => {
         const isActive = (cls === 'ALL' && currentClass === 'ALL') || (currentClass === cls);
         const classStudents = cls === 'ALL' 
           ? allStudentsList 
-          : allStudentsList.filter(s => normalizeClass(s.enroll_class || s.className) === cls);
+          : allStudentsList.filter(s => normalizeClass(s.enroll_class || s.className || s.standard || s.class) === cls);
 
         const totalInCls = classStudents.length;
         let measuredInCls = 0;
         classStudents.forEach(s => {
           const studentId = s.id || s.app_no || s.student_sts;
-          if (shoeMeasurementsMap[studentId] && shoeMeasurementsMap[studentId].size_cm) {
+          const cleanId = String(studentId || '').replace(/\s+/g, '');
+          const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId];
+          if (entry && entry.size_cm) {
             measuredInCls++;
           }
         });
@@ -524,21 +1169,109 @@
       renderStudentsTable();
     }
 
-    // --- 5. RENDER MEASUREMENT TABLE ---
+    let currentViewMode = window.innerWidth < 768 ? 'cards' : 'table';
+    let sortField = 'sr';
+    let sortAsc = true;
+
+    function setViewMode(mode) {
+      currentViewMode = mode;
+      const cardContainer = document.getElementById('studentsCardContainer');
+      const tableContainer = document.getElementById('studentsTableContainer');
+      const btnCards = document.getElementById('btnViewCards');
+      const btnTable = document.getElementById('btnViewTable');
+
+      if (mode === 'cards') {
+        if (cardContainer) cardContainer.classList.remove('hidden');
+        if (tableContainer) tableContainer.classList.add('hidden');
+        if (btnCards) {
+          btnCards.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 text-white shadow-sm';
+        }
+        if (btnTable) {
+          btnTable.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900';
+        }
+      } else {
+        if (cardContainer) cardContainer.classList.add('hidden');
+        if (tableContainer) tableContainer.classList.remove('hidden');
+        if (btnCards) {
+          btnCards.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900';
+        }
+        if (btnTable) {
+          btnTable.className = 'px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer flex items-center gap-1 bg-indigo-600 text-white shadow-sm';
+        }
+      }
+      renderStudentsTable();
+    }
+
+    function toggleSort(field) {
+      if (sortField === field) {
+        sortAsc = !sortAsc;
+      } else {
+        sortField = field;
+        sortAsc = true;
+      }
+
+      // Sync with dropdown
+      const sortSelect = document.getElementById('sortSelect');
+      if (sortSelect) {
+        const optionVal = `${field}_${sortAsc ? 'asc' : 'desc'}`;
+        if (sortSelect.querySelector(`option[value="${optionVal}"]`)) {
+          sortSelect.value = optionVal;
+        } else if (sortSelect.querySelector(`option[value="${field}_asc"]`)) {
+          sortSelect.value = `${field}_asc`;
+        }
+      }
+
+      updateSortIcons();
+      renderStudentsTable();
+    }
+
+    function onSortSelectChange() {
+      const val = document.getElementById('sortSelect')?.value || 'sr_asc';
+      if (val === 'sr_asc') { sortField = 'sr'; sortAsc = true; }
+      else if (val === 'name_asc') { sortField = 'name'; sortAsc = true; }
+      else if (val === 'name_desc') { sortField = 'name'; sortAsc = false; }
+      else if (val === 'sts_asc') { sortField = 'sts'; sortAsc = true; }
+      else if (val === 'class_asc') { sortField = 'class'; sortAsc = true; }
+      else if (val === 'size_asc') { sortField = 'size'; sortAsc = true; }
+      else if (val === 'size_desc') { sortField = 'size'; sortAsc = false; }
+      else if (val === 'status_pending') { sortField = 'status'; sortAsc = true; }
+      else if (val === 'status_completed') { sortField = 'status'; sortAsc = false; }
+
+      updateSortIcons();
+      renderStudentsTable();
+    }
+
+    function updateSortIcons() {
+      const fields = ['sr', 'sts', 'name', 'class', 'gender', 'size', 'status'];
+      fields.forEach(f => {
+        const icon = document.getElementById(`sortIcon-${f}`);
+        if (icon) {
+          if (sortField === f) {
+            icon.className = sortAsc ? 'fa-solid fa-sort-up ml-1 text-xs text-indigo-400' : 'fa-solid fa-sort-down ml-1 text-xs text-indigo-400';
+          } else {
+            icon.className = 'fa-solid fa-sort ml-1 text-[10px] text-slate-500';
+          }
+        }
+      });
+    }
+
+    // --- 5. RENDER MEASUREMENT TABLE & CARDS ---
     function renderStudentsTable() {
       const tbody = document.getElementById('studentsTableBody');
+      const cardContainer = document.getElementById('studentsCardContainer');
       const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
       const genFilter = document.getElementById('genderFilter')?.value || '';
       const statusFilter = document.getElementById('statusFilter')?.value || '';
 
       let filtered = allStudentsList.filter(s => {
-        const sClass = normalizeClass(s.enroll_class || s.className);
+        const sClass = normalizeClass(s.enroll_class || s.className || s.standard || s.class);
         if (currentClass !== 'ALL' && sClass !== currentClass) return false;
 
         if (genFilter && s.gender !== genFilter) return false;
 
         const studentId = s.id || s.app_no || s.student_sts;
-        const entry = shoeMeasurementsMap[studentId];
+        const cleanId = String(studentId || '').replace(/\s+/g, '');
+        const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId];
         const isMeasured = !!(entry && entry.size_cm);
 
         if (statusFilter === 'completed' && !isMeasured) return false;
@@ -554,121 +1287,262 @@
         return true;
       });
 
+      // Apply Sorting
+      filtered.sort((a, b) => {
+        let comp = 0;
+        const studentIdA = a.id || a.app_no || a.student_sts;
+        const cleanIdA = String(studentIdA || '').replace(/\s+/g, '');
+        const entryA = shoeMeasurementsMap[cleanIdA] || shoeMeasurementsMap[studentIdA] || {};
+
+        const studentIdB = b.id || b.app_no || b.student_sts;
+        const cleanIdB = String(studentIdB || '').replace(/\s+/g, '');
+        const entryB = shoeMeasurementsMap[cleanIdB] || shoeMeasurementsMap[studentIdB] || {};
+
+        if (sortField === 'sr') {
+          comp = (a.sr_no || 0) - (b.sr_no || 0);
+        } else if (sortField === 'name') {
+          const nameA = (a.name_english || a.student_name || '').toLowerCase();
+          const nameB = (b.name_english || b.student_name || '').toLowerCase();
+          comp = nameA.localeCompare(nameB);
+        } else if (sortField === 'sts') {
+          const stsA = cleanIdA;
+          const stsB = cleanIdB;
+          comp = stsA.localeCompare(stsB);
+        } else if (sortField === 'class') {
+          const clsA = normalizeClass(a.enroll_class || a.className || a.standard || '');
+          const clsB = normalizeClass(b.enroll_class || b.className || b.standard || '');
+          const rank = c => (c === 'LKG' ? -2 : c === 'UKG' ? -1 : parseInt(c, 10) || 0);
+          comp = rank(clsA) - rank(clsB);
+        } else if (sortField === 'gender') {
+          comp = (a.gender || '').localeCompare(b.gender || '');
+        } else if (sortField === 'size') {
+          const sizeA = parseFloat(entryA.size_cm || 0);
+          const sizeB = parseFloat(entryB.size_cm || 0);
+          comp = sizeA - sizeB;
+        } else if (sortField === 'status') {
+          const isA = !!(entryA && entryA.size_cm);
+          const isB = !!(entryB && entryB.size_cm);
+          comp = (isA === isB) ? 0 : (isA ? 1 : -1);
+        }
+
+        return sortAsc ? comp : -comp;
+      });
+
       const countEl = document.getElementById('tableRecordCount');
       if (countEl) countEl.innerText = `${filtered.length} ಮಕ್ಕಳು`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="10" class="p-12 text-center text-slate-400 font-bold">
-              <i class="fa-solid fa-shoe-prints text-3xl text-indigo-400 mb-2"></i>
-              <p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ (No student records found).</p>
-            </td>
-          </tr>
+        const noDataHtml = `
+          <div class="col-span-full p-12 text-center text-slate-400 font-bold">
+            <i class="fa-solid fa-shoe-prints text-3xl text-indigo-400 mb-2"></i>
+            <p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಕಂಡುಬಂದಿಲ್ಲ (No student records found).</p>
+          </div>
         `;
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="10" class="p-12 text-center text-slate-400 font-bold">${noDataHtml}</td></tr>`;
+        }
+        if (cardContainer) {
+          cardContainer.innerHTML = noDataHtml;
+        }
         return;
       }
 
-      tbody.innerHTML = filtered.map((s, idx) => {
-        const studentId = s.id || s.app_no || s.student_sts;
-        const entry = shoeMeasurementsMap[studentId] || {};
-        const sizeCm = entry.size_cm || '';
-        const sizeNo = sizeCm ? cmToShoeSizeNo(sizeCm) : '-';
-        const remarks = entry.remarks || '';
-        const isMeasured = !!sizeCm;
+      // 1. Render Mobile-Friendly Cards View
+      if (cardContainer) {
+        cardContainer.innerHTML = filtered.map((s, idx) => {
+          const studentId = s.id || s.app_no || s.student_sts;
+          const cleanId = String(studentId || '').replace(/\s+/g, '');
+          const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId] || {};
+          const sizeVal = entry.size_cm !== undefined && entry.size_cm !== null ? entry.size_cm : '';
+          const sizeNo = sizeVal !== '' ? mmToPlaetoUKSize(sizeVal) : '-';
+          const remarks = entry.remarks || '';
+          const isMeasured = sizeVal !== '';
 
-        const sClass = s.enroll_class || s.className || '-';
-        const sNameEn = s.name_english || s.student_name || '-';
-        const sNameKn = s.student_name || sNameEn;
-        const sSts = s.student_sts || s.app_no || s.enrolment_no || '-';
-        const isBoy = s.gender === 'Boy';
+          const sClass = normalizeClass(s.enroll_class || s.className || s.standard || s.class) || '-';
+          const sNameEn = s.name_english || s.student_name || s.name || '-';
+          const sNameKn = (s.student_name && s.student_name !== '#N/A' && !s.student_name.startsWith('?')) ? s.student_name : (s.name_kannada || sNameEn);
+          const sSts = s.student_sts || s.app_no || s.enrolment_no || '-';
+          const isBoy = (s.gender === 'Boy' || s.gender === 'BOY' || s.gender === 'Male' || s.gender === 'ಗಂಡು');
 
-        return `
-          <tr class="hover:bg-indigo-50/40 dark:hover:bg-slate-800/60 transition border-b border-slate-100 dark:border-slate-800 group">
-            <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
-            <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-300">${sSts}</td>
-            <td class="p-3 font-black text-slate-900 dark:text-white">${sNameEn}</td>
-            <td class="p-3 text-slate-700 dark:text-slate-200 font-semibold">${sNameKn}</td>
-            <td class="p-3 text-center">
-              <span class="px-2 py-0.5 rounded-lg text-[11px] font-black bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border">
-                Class ${sClass}
-              </span>
-            </td>
-            <td class="p-3 text-center font-semibold ${isBoy ? 'text-sky-600' : 'text-pink-600'}">
-              <i class="fa-solid ${isBoy ? 'fa-mars' : 'fa-venus'} mr-1"></i>${isBoy ? 'Boy' : 'Girl'}
-            </td>
-
-            <!-- Shoe Size in CM Input -->
-            <td class="p-2.5 text-center bg-indigo-50/30 dark:bg-indigo-950/20 border-x border-indigo-100 dark:border-indigo-900/50">
-              <div class="flex items-center justify-center gap-1.5">
-                <input 
-                  type="number" 
-                  step="0.1" 
-                  min="10" 
-                  max="35" 
-                  value="${sizeCm}" 
-                  placeholder="ಉದಾ: 18.5"
-                  onchange="updateStudentShoeSize('${studentId}', this.value)"
-                  class="w-24 p-1.5 text-xs text-center font-black font-mono border ${isMeasured ? 'border-emerald-400 bg-emerald-50/50 text-emerald-900 font-black' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'} rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-                >
-                <span class="text-[11px] font-bold text-slate-500">CM</span>
-
-                <!-- Quick Quick-fill buttons -->
-                <div class="hidden md:flex items-center gap-0.5">
-                  <button type="button" onclick="quickSetSize('${studentId}', 17)" class="px-1 py-0.5 text-[9px] font-bold bg-slate-200 hover:bg-slate-300 rounded" title="17 cm">17</button>
-                  <button type="button" onclick="quickSetSize('${studentId}', 18)" class="px-1 py-0.5 text-[9px] font-bold bg-slate-200 hover:bg-slate-300 rounded" title="18 cm">18</button>
-                  <button type="button" onclick="quickSetSize('${studentId}', 19)" class="px-1 py-0.5 text-[9px] font-bold bg-slate-200 hover:bg-slate-300 rounded" title="19 cm">19</button>
-                  <button type="button" onclick="quickSetSize('${studentId}', 20)" class="px-1 py-0.5 text-[9px] font-bold bg-slate-200 hover:bg-slate-300 rounded" title="20 cm">20</button>
-                  <button type="button" onclick="quickSetSize('${studentId}', 21)" class="px-1 py-0.5 text-[9px] font-bold bg-slate-200 hover:bg-slate-300 rounded" title="21 cm">21</button>
+          return `
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border ${isMeasured ? 'border-emerald-400 dark:border-emerald-700 shadow-sm' : 'border-slate-200 dark:border-slate-800'} p-3.5 space-y-3 transition hover:shadow-md relative">
+              <!-- Card Header -->
+              <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-black flex items-center justify-center">${idx + 1}</span>
+                  <div>
+                    <h4 class="text-sm font-black text-slate-900 dark:text-white leading-tight">${sNameEn}</h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 font-semibold">${sNameKn}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    Class ${sClass}
+                  </span>
+                  <span class="px-1.5 py-0.5 rounded-lg text-[10px] font-bold ${isBoy ? 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300' : 'bg-pink-50 text-pink-700 dark:bg-pink-950 dark:text-pink-300'}">
+                    <i class="fa-solid ${isBoy ? 'fa-mars' : 'fa-venus'}"></i>
+                  </span>
                 </div>
               </div>
-            </td>
 
-            <!-- Computed Bata/India Shoe Size No -->
-            <td class="p-3 text-center font-bold text-indigo-700 dark:text-indigo-300 font-mono print-size-cell" id="sizeNo-${studentId}">
-              ${sizeNo}
-            </td>
+              <!-- STS Number & Status -->
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-mono text-slate-600 dark:text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">
+                  STS: ${sSts}
+                </span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-black ${isMeasured ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300'} inline-flex items-center gap-1">
+                  <i class="fa-solid ${isMeasured ? 'fa-circle-check text-emerald-600' : 'fa-clock text-amber-600'}"></i>
+                  ${isMeasured ? 'ಭರ್ತಿಯಾಗಿದೆ' : 'ಬಾಕಿ ಇದೆ'}
+                </span>
+              </div>
 
-            <!-- Remarks Input -->
-            <td class="p-2">
-              <input 
-                type="text" 
-                value="${remarks}" 
-                placeholder="ಷರಾ..." 
-                onchange="updateStudentRemarks('${studentId}', this.value)"
-                class="w-full p-1.5 text-[11px] border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-              >
-            </td>
+              <!-- Shoe Measurement Input Area -->
+              <div class="bg-indigo-50/50 dark:bg-indigo-950/30 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/50 space-y-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <label class="text-xs font-black text-indigo-900 dark:text-indigo-200">
+                    👟 ಪಾದದ ಅಳತೆ (Foot Length):
+                  </label>
+                  <div class="flex items-center gap-1">
+                    <input 
+                      type="number" 
+                      step="any" 
+                      min="10" 
+                      max="350" 
+                      value="${sizeVal}" 
+                      placeholder="ಉದಾ: 185 ಅಥವಾ 18.5"
+                      onchange="updateStudentShoeSize('${studentId}', this.value)"
+                      class="w-28 p-1.5 text-xs text-center font-black font-mono border ${isMeasured ? 'border-emerald-500 bg-white dark:bg-slate-900 text-emerald-900 font-black ring-1 ring-emerald-400' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'} rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+                    >
+                    <span class="text-[11px] font-bold text-slate-500">MM</span>
+                  </div>
+                </div>
 
-            <!-- Status -->
-            <td class="p-3 text-center">
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${isMeasured ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300'} shadow-sm inline-flex items-center gap-1">
-                <i class="fa-solid ${isMeasured ? 'fa-circle-check text-emerald-600' : 'fa-clock text-amber-600'}"></i>
-                ${isMeasured ? 'ಭರ್ತಿಯಾಗಿದೆ' : 'ಬಾಕಿ ಇದೆ'}
-              </span>
-            </td>
-          </tr>
-        `;
-      }).join('');
+                <!-- Computed Plaeto UK Size Display -->
+                <div class="flex items-center justify-between pt-1.5 border-t border-indigo-100 dark:border-indigo-900/60 text-xs">
+                  <span class="text-slate-700 dark:text-slate-300 font-bold">Plaeto UK Size:</span>
+                  <span class="font-black font-mono text-sm text-indigo-800 dark:text-indigo-200 px-3 py-0.5 bg-white dark:bg-slate-900 rounded-lg border border-indigo-200 dark:border-indigo-800 shadow-sm" id="sizeNo-card-${studentId}">
+                    ${sizeNo}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Remarks -->
+              <div>
+                <input 
+                  type="text" 
+                  value="${remarks}" 
+                  placeholder="ಷರಾ / Remarks ಬರೆಯಿರಿ..." 
+                  onchange="updateStudentRemarks('${studentId}', this.value)"
+                  class="w-full p-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 2. Render Full Table View
+      if (tbody) {
+        tbody.innerHTML = filtered.map((s, idx) => {
+          const studentId = s.id || s.app_no || s.student_sts;
+          const cleanId = String(studentId || '').replace(/\s+/g, '');
+          const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId] || {};
+          const sizeVal = entry.size_cm !== undefined && entry.size_cm !== null ? entry.size_cm : '';
+          const sizeNo = sizeVal !== '' ? mmToPlaetoUKSize(sizeVal) : '-';
+          const remarks = entry.remarks || '';
+          const isMeasured = sizeVal !== '';
+
+          const sClass = normalizeClass(s.enroll_class || s.className || s.standard || s.class) || '-';
+          const sNameEn = s.name_english || s.student_name || s.name || '-';
+          const sNameKn = (s.student_name && s.student_name !== '#N/A' && !s.student_name.startsWith('?')) ? s.student_name : (s.name_kannada || sNameEn);
+          const sSts = s.student_sts || s.app_no || s.enrolment_no || '-';
+          const isBoy = (s.gender === 'Boy' || s.gender === 'BOY' || s.gender === 'Male' || s.gender === 'ಗಂಡು');
+
+          return `
+            <tr class="hover:bg-indigo-50/40 dark:hover:bg-slate-800/60 transition border-b border-slate-100 dark:border-slate-800 group">
+              <td class="p-3 text-center font-bold text-slate-400">${idx + 1}</td>
+              <td class="p-3 font-mono font-bold text-slate-700 dark:text-slate-300">${sSts}</td>
+              <td class="p-3 font-black text-slate-900 dark:text-white">${sNameEn}</td>
+              <td class="p-3 text-slate-700 dark:text-slate-200 font-semibold">${sNameKn}</td>
+              <td class="p-3 text-center">
+                <span class="px-2 py-0.5 rounded-lg text-[11px] font-black bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border">
+                  Class ${sClass}
+                </span>
+              </td>
+              <td class="p-3 text-center font-semibold ${isBoy ? 'text-sky-600' : 'text-pink-600'}">
+                <i class="fa-solid ${isBoy ? 'fa-mars' : 'fa-venus'} mr-1"></i>${isBoy ? 'Boy' : 'Girl'}
+              </td>
+
+              <!-- Foot Length Input (MM / CM) -->
+              <td class="p-2.5 text-center bg-indigo-50/30 dark:bg-indigo-950/20 border-x border-indigo-100 dark:border-indigo-900/50">
+                <div class="flex items-center justify-center gap-1.5">
+                  <input 
+                    type="number" 
+                    step="any" 
+                    min="10" 
+                    max="350" 
+                    value="${sizeVal}" 
+                    placeholder="ಉದಾ: 185"
+                    onchange="updateStudentShoeSize('${studentId}', this.value)"
+                    class="w-24 p-1.5 text-xs text-center font-black font-mono border ${isMeasured ? 'border-emerald-500 bg-emerald-50/50 text-emerald-900 font-black' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900'} rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+                  >
+                  <span class="text-[11px] font-bold text-slate-500">MM</span>
+                </div>
+              </td>
+
+              <!-- Computed Plaeto UK Size No -->
+              <td class="p-3 text-center font-black text-indigo-700 dark:text-indigo-300 font-mono text-sm print-size-cell" id="sizeNo-${studentId}">
+                ${sizeNo}
+              </td>
+
+              <!-- Remarks Input -->
+              <td class="p-2">
+                <input 
+                  type="text" 
+                  value="${remarks}" 
+                  placeholder="ಷರಾ..." 
+                  onchange="updateStudentRemarks('${studentId}', this.value)"
+                  class="w-full p-1.5 text-[11px] border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                >
+              </td>
+
+              <!-- Status -->
+              <td class="p-3 text-center">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${isMeasured ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300'} shadow-sm inline-flex items-center gap-1">
+                  <i class="fa-solid ${isMeasured ? 'fa-circle-check text-emerald-600' : 'fa-clock text-amber-600'}"></i>
+                  ${isMeasured ? 'ಭರ್ತಿಯಾಗಿದೆ' : 'ಬಾಕಿ ಇದೆ'}
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
     }
 
     // --- 6. AUTO-SAVE & MEASUREMENT UPDATE HANDLERS ---
-    async function updateStudentShoeSize(studentId, sizeCmVal) {
+    async function updateStudentShoeSize(studentId, sizeVal) {
       if (!studentId) return;
-      const cleanVal = sizeCmVal ? parseFloat(sizeCmVal) : null;
+      const cleanId = String(studentId || '').replace(/\s+/g, '');
+      const cleanVal = (sizeVal !== '' && sizeVal !== null && !isNaN(parseFloat(sizeVal))) ? parseFloat(sizeVal) : null;
 
-      if (!shoeMeasurementsMap[studentId]) {
-        shoeMeasurementsMap[studentId] = {};
-      }
+      const obj = {
+        size_cm: cleanVal,
+        size_no: cleanVal !== null ? mmToPlaetoUKSize(cleanVal) : '-',
+        remarks: (shoeMeasurementsMap[cleanId]?.remarks || shoeMeasurementsMap[studentId]?.remarks || ''),
+        updated_at: new Date().toISOString()
+      };
 
-      shoeMeasurementsMap[studentId].size_cm = cleanVal;
-      shoeMeasurementsMap[studentId].size_no = cleanVal ? cmToShoeSizeNo(cleanVal) : '-';
-      shoeMeasurementsMap[studentId].updated_at = new Date().toISOString();
+      shoeMeasurementsMap[cleanId] = obj;
+      shoeMeasurementsMap[studentId] = obj;
 
-      // Update computed size in table row dynamically
+      // Update computed size in table row & card dynamically
       const sizeNoEl = document.getElementById(`sizeNo-${studentId}`);
       if (sizeNoEl) {
-        sizeNoEl.innerText = shoeMeasurementsMap[studentId].size_no;
+        sizeNoEl.innerText = obj.size_no;
+      }
+      const sizeNoCardEl = document.getElementById(`sizeNo-card-${studentId}`);
+      if (sizeNoCardEl) {
+        sizeNoCardEl.innerText = obj.size_no;
       }
 
       // Save locally
@@ -677,43 +1551,56 @@
       renderClassPills();
 
       // Debounced Cloud Sync
-      await syncMeasurementsToCloud();
-      showToast("ಉಳಿಸಲಾಗಿದೆ", "ಶೂ ಅಳತೆ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
-    }
-
-    function quickSetSize(studentId, sizeCm) {
-      updateStudentShoeSize(studentId, sizeCm);
-      renderStudentsTable();
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಉಳಿಸಲಾಗಿದೆ", "ಶೂ ಅಳತೆ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
+      }
     }
 
     async function updateStudentRemarks(studentId, remarksVal) {
       if (!studentId) return;
-      if (!shoeMeasurementsMap[studentId]) {
-        shoeMeasurementsMap[studentId] = {};
-      }
+      const cleanId = String(studentId || '').replace(/\s+/g, '');
+      if (!shoeMeasurementsMap[cleanId]) shoeMeasurementsMap[cleanId] = {};
+      if (!shoeMeasurementsMap[studentId]) shoeMeasurementsMap[studentId] = {};
+
+      shoeMeasurementsMap[cleanId].remarks = remarksVal || '';
       shoeMeasurementsMap[studentId].remarks = remarksVal || '';
+
       localStorage.setItem('shoe_tracker_measurements', JSON.stringify(shoeMeasurementsMap));
-      await syncMeasurementsToCloud();
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಉಳಿಸಲಾಗಿದೆ", "ಷರಾ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
+      }
     }
 
     async function syncMeasurementsToCloud() {
       try {
         if (!supabaseClient) initSupabaseClient();
         if (supabaseClient) {
-          await supabaseClient.from('school_settings').upsert({
+          const { error } = await supabaseClient.from('school_settings').upsert({
             school_id: SCHOOL_ID,
             settings_key: 'shoe_tracker_measurements',
             settings_value: JSON.stringify(shoeMeasurementsMap)
           }, { onConflict: 'school_id,settings_key' });
+
+          if (error) {
+            console.error("Cloud sync error:", error);
+            return false;
+          }
+          return true;
         }
       } catch (e) {
-        console.warn("Cloud sync warning:", e);
+        console.error("Cloud sync exception:", e);
+        return false;
       }
+      return false;
     }
 
     async function saveAllMeasurements() {
-      await syncMeasurementsToCloud();
-      showToast("ಯಶಸ್ಸು", "ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಅಳತೆ ವಿವರಗಳನ್ನು ಕ್ಲೌಡ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಉಳಿಸಲಾಗಿದೆ!", "success");
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಯಶಸ್ಸು", "ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಅಳತೆ ವಿವರಗಳನ್ನು ಕ್ಲೌಡ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಉಳಿಸಲಾಗಿದೆ!", "success");
+      }
     }
 
     // --- 7. METRICS & PROCUREMENT MATRIX ---
@@ -725,7 +1612,8 @@
 
       allStudentsList.forEach(s => {
         const studentId = s.id || s.app_no || s.student_sts;
-        const entry = shoeMeasurementsMap[studentId];
+        const cleanId = String(studentId || '').replace(/\s+/g, '');
+        const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId];
         if (entry && entry.size_cm) {
           measured++;
           if (s.gender === 'Boy') boysDemand++;
@@ -756,18 +1644,20 @@
       const tbody = document.getElementById('sizeMatrixBody');
       if (!tbody) return;
 
-      const sizeStats = {}; // { [sizeNo]: { cm: '18 cm', sizeNo: '10', boys: 0, girls: 0, total: 0 } }
+      const sizeStats = {};
 
       allStudentsList.forEach(s => {
         const studentId = s.id || s.app_no || s.student_sts;
-        const entry = shoeMeasurementsMap[studentId];
+        const cleanId = String(studentId || '').replace(/\s+/g, '');
+        const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId];
         if (entry && entry.size_cm) {
-          const roundedCm = Math.round(parseFloat(entry.size_cm));
-          const sizeNo = cmToShoeSizeNo(roundedCm);
-          const key = `${roundedCm} cm (${sizeNo})`;
+          const rawVal = parseFloat(entry.size_cm);
+          const mm = rawVal < 40 ? rawVal * 10 : rawVal;
+          const plaetoSize = mmToPlaetoUKSize(mm);
+          const key = plaetoSize;
 
           if (!sizeStats[key]) {
-            sizeStats[key] = { cm: `${roundedCm} cm`, sizeNo: sizeNo, boys: 0, girls: 0, total: 0, numCm: roundedCm };
+            sizeStats[key] = { plaetoSize: plaetoSize, mmText: `${Math.round(mm)} mm`, boys: 0, girls: 0, total: 0, numMm: mm };
           }
           if (s.gender === 'Boy') sizeStats[key].boys++;
           else sizeStats[key].girls++;
@@ -775,7 +1665,12 @@
         }
       });
 
-      const sortedSizes = Object.values(sizeStats).sort((a, b) => a.numCm - b.numCm);
+      const sizeOrder = ['Below 7C', '7C', '8C', '9C', '10C', '11C', '12C', '13C', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+      const sortedSizes = Object.values(sizeStats).sort((a, b) => {
+        const idxA = sizeOrder.indexOf(a.plaetoSize);
+        const idxB = sizeOrder.indexOf(b.plaetoSize);
+        return (idxA !== -1 ? idxA : 99) - (idxB !== -1 ? idxB : 99);
+      });
 
       if (sortedSizes.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400 font-bold">ಯಾವುದೇ ಅಳತೆಗಳು ದಾಖಲಾಗಿಲ್ಲ.</td></tr>`;
@@ -792,8 +1687,8 @@
         totalGirls += item.girls;
         return `
           <tr class="hover:bg-amber-100/50 dark:hover:bg-slate-800 transition border-b border-amber-100 dark:border-slate-800">
-            <td class="p-2.5 text-left font-black text-amber-900 dark:text-amber-100">${item.cm}</td>
-            <td class="p-2.5 font-bold font-mono text-indigo-700 dark:text-indigo-300">${item.sizeNo}</td>
+            <td class="p-2.5 text-left font-black text-amber-900 dark:text-amber-100 font-mono">${item.mmText}</td>
+            <td class="p-2.5 font-black font-mono text-indigo-700 dark:text-indigo-300 text-sm bg-indigo-50/40 dark:bg-indigo-950/40">${item.plaetoSize}</td>
             <td class="p-2.5 font-bold text-sky-600">${item.boys}</td>
             <td class="p-2.5 font-bold text-pink-600">${item.girls}</td>
             <td class="p-2.5 font-black text-slate-900 dark:text-white bg-amber-100/40 dark:bg-amber-950/40">${item.total} ಜೋಡಿ</td>
@@ -825,27 +1720,34 @@
 
     function shareViaWhatsApp() {
       const url = window.location.href;
-      const text = `👟 *GHPS Marched - ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್*\n\nನಮಸ್ಕಾರ ಶಿಕ್ಷಕರೇ, ದಯವಿಟ್ಟು ನಿಮ್ಮ ತರಗತಿಯ ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಅಳತೆಯನ್ನು (CM ನಲ್ಲಿ) ಈ ಕೆಳಗಿನ ಲಿಂಕ್ ಮೂಲಕ ಭರ್ತಿ ಮಾಡಿ:\n👉 ${url}`;
+      const text = `👟 *GHPS Marched - Plaeto ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್*\n\nನಮಸ್ಕಾರ ಶಿಕ್ಷಕರೇ, ದಯವಿಟ್ಟು ನಿಮ್ಮ ತರಗತಿಯ ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಪಾದದ ಅಳತೆಯನ್ನು (MM/CM ನಲ್ಲಿ) ಈ ಕೆಳಗಿನ ಲಿಂಕ್ ಮೂಲಕ ಭರ್ತಿ ಮಾಡಿ:\n👉 ${url}`;
       window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
     }
 
     function openSizeGuideModal() {
       const m = document.getElementById('sizeGuideModal');
-      if (m) m.classList.remove('hidden');
+      if (m) {
+        renderScaleChartModal();
+        m.classList.remove('hidden');
+      }
     }
 
     function closeSizeGuideModal() {
       const m = document.getElementById('sizeGuideModal');
-      if (m) m.classList.add('hidden');
+      if (m) {
+        m.classList.add('hidden');
+        if (isChartEditing) toggleScaleChartEditMode(false);
+      }
     }
 
     // --- 9. EXCEL EXPORT ---
     function exportToExcel() {
       const dataToExport = allStudentsList.map((s, idx) => {
         const studentId = s.id || s.app_no || s.student_sts;
-        const entry = shoeMeasurementsMap[studentId] || {};
-        const sizeCm = entry.size_cm || '';
-        const sizeNo = sizeCm ? cmToShoeSizeNo(sizeCm) : '';
+        const cleanId = String(studentId || '').replace(/\s+/g, '');
+        const entry = shoeMeasurementsMap[cleanId] || shoeMeasurementsMap[studentId] || {};
+        const sizeVal = entry.size_cm !== undefined && entry.size_cm !== null ? entry.size_cm : '';
+        const sizeNo = sizeVal !== '' ? mmToPlaetoUKSize(sizeVal) : '';
 
         return {
           'Sl.No': idx + 1,
@@ -854,17 +1756,17 @@
           'Student Name (Kannada)': s.student_name || s.name_english || '',
           'Class': s.enroll_class || s.className || '',
           'Gender': s.gender || '',
-          'Shoe Size (CM)': sizeCm,
-          'Indian/Bata Size No': sizeNo,
+          'Foot Length (MM/CM)': sizeVal,
+          'Plaeto UK Size': sizeNo,
           'Remarks': entry.remarks || '',
-          'Status': sizeCm ? 'Measured' : 'Pending'
+          'Status': sizeVal !== '' ? 'Measured' : 'Pending'
         };
       });
 
       const ws = XLSX.utils.json_to_sheet(dataToExport);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Shoe_Sizes");
-      XLSX.writeFile(wb, `GHPS_Marched_Shoe_Sizes_${new Date().toISOString().split('T')[0]}.xlsx`);
+      XLSX.utils.book_append_sheet(wb, ws, "Plaeto_Shoe_Sizes");
+      XLSX.writeFile(wb, `GHPS_Marched_Plaeto_Shoe_Sizes_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     // --- 10. TOAST NOTIFICATION ---
