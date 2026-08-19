@@ -103,6 +103,18 @@
       color: #f1f5f9 !important;
     }
 
+    /* Dedicated High-Contrast Share Modal Styling */
+    #shareLinkModal .glass-card {
+      background: #0f172a !important;
+      border-color: #334155 !important;
+      color: #ffffff !important;
+    }
+    #shareLinkModal input {
+      background-color: #020617 !important;
+      color: #ffffff !important;
+      border-color: #475569 !important;
+    }
+
     /* Settings card theme overrides */
     body[data-theme="light"] .settings-card {
       background: #f1f5f9 !important;
@@ -243,21 +255,42 @@
     </div>
 
     <!-- Universal Share Modal for HM -->
-    <div id="shareLinkModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-md hidden flex items-center justify-center z-[2500] p-4">
-      <div class="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 text-white animate-scale-in">
+    <div id="shareLinkModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center z-[2500] p-4">
+      <div class="glass-card bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-2xl space-y-5 text-white animate-scale-in">
+        
+        <!-- Header -->
         <div class="flex items-center justify-between pb-3 border-b border-white/10">
           <div class="flex items-center gap-3">
-            <span class="p-2.5 bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-2xl text-lg">
+            <span class="p-2.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-2xl text-xl shadow-sm">
               <i class="fa-brands fa-whatsapp"></i>
             </span>
             <div>
-              <h3 class="text-base font-black">ಶಿಕ್ಷಕರೊಂದಿಗೆ ಶೇರ್ ಮಾಡಿ (Share Entry Link)</h3>
-              <p class="text-xs text-slate-400 font-medium">ಯಾವುದೇ ಲಾಗಿನ್ / ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲದೆ ನೇರವಾಗಿ ಎಂಟ್ರಿ ಮಾಡಲು ಲಿಂಕ್</p>
+              <h3 class="text-base sm:text-lg font-black text-white">ಶಿಕ್ಷಕರೊಂದಿಗೆ ಶೇರ್ ಮಾಡಿ (Share Entry Link)</h3>
+              <p class="text-xs text-emerald-400 font-bold">ಯಾವುದೇ ಲಾಗಿನ್ / ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲದೆ ನೇರ ನಮೂದು ಲಿಂಕ್</p>
             </div>
           </div>
-          <button onclick="closeShareModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer">
+          <button onclick="closeShareModal()" class="text-slate-400 hover:text-white p-1 cursor-pointer transition">
             <i class="fa-solid fa-xmark text-lg"></i>
           </button>
+        </div>
+
+        <!-- Live Website Domain Configuration (Critical for file:/// vs Live Web) -->
+        <div class="bg-indigo-950/40 border border-indigo-500/30 p-3.5 rounded-2xl space-y-1.5">
+          <div class="flex items-center justify-between text-[11px] font-bold">
+            <label for="liveDomainInput" class="text-indigo-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-globe text-xs"></i> ಶಾಲೆಯ ಲೈವ್ ವೆಬ್‌ಸೈಟ್ ಡೊಮೈನ್ (School Domain):
+            </label>
+            <span id="domainStatusTag" class="text-[9px] px-2 py-0.5 rounded-full font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Online Live</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="liveDomainInput" onchange="saveLiveDomain(this.value)" placeholder="https://yourschool.com" class="w-full bg-slate-950 border border-indigo-500/40 rounded-xl px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:ring-1 focus:ring-indigo-400">
+            <button onclick="saveLiveDomain(document.getElementById('liveDomainInput').value)" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border-0 cursor-pointer shadow shrink-0">
+              ಉಳಿಸಿ
+            </button>
+          </div>
+          <p class="text-[9px] text-slate-400 font-medium">
+            💡 ಶಿಕ್ಷಕರು ಮೊಬೈಲ್‌ನಲ್ಲಿ ತೆರೆಯಲು ನಿಮ್ಮ ಆನ್‌ಲೈನ್ ಸೈಟ್ ಲಿಂಕ್ ಅಗತ್ಯವಿದೆ. (ಲ್ಯಾಪ್‌ಟಾಪ್‌ನ <code>file:///</code> ಬದಲಿಗೆ ಇದು ಕೆಲಸ ಮಾಡುತ್ತದೆ).
+          </p>
         </div>
 
         <!-- 1. All-Class Universal Share Link (Main) -->
@@ -269,14 +302,14 @@
             <span class="text-[10px] text-slate-400">ಯಾವುದೇ ಕ್ಲಾಸ್ ಶಿಕ್ಷಕರೂ ಬಳಸಬಹುದು</span>
           </div>
           <div class="flex items-center gap-2">
-            <input type="text" id="allClassShareUrlInput" readonly class="w-full bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none select-all">
-            <button onclick="copyShareUrl('allClassShareUrlInput')" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl border-0 cursor-pointer shadow flex items-center gap-1 shrink-0">
+            <input type="text" id="allClassShareUrlInput" readonly class="w-full bg-slate-950 border border-white/15 rounded-xl px-3 py-2 text-xs font-mono text-emerald-300 focus:outline-none select-all font-semibold">
+            <button onclick="copyShareUrl('allClassShareUrlInput')" class="bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs px-3.5 py-2 rounded-xl border-0 cursor-pointer shadow flex items-center gap-1 shrink-0 transition">
               <i class="fa-solid fa-copy"></i> ಕಾಪಿ
             </button>
           </div>
           <div class="pt-2">
-            <button onclick="shareViaWhatsApp('ALL')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs py-2.5 px-4 rounded-xl shadow-lg cursor-pointer transition flex items-center justify-center gap-2 border-0">
-              <i class="fa-brands fa-whatsapp text-base"></i>
+            <button onclick="shareViaWhatsApp('ALL')" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-98 text-white font-black text-xs py-3 px-4 rounded-xl shadow-lg cursor-pointer transition flex items-center justify-center gap-2 border-0">
+              <i class="fa-brands fa-whatsapp text-lg"></i>
               <span>WhatsApp ನಲ್ಲಿ ಎಲ್ಲಾ ಶಿಕ್ಷಕರಿಗೆ ಕಳುಹಿಸಿ (Share on WhatsApp)</span>
             </button>
           </div>
@@ -287,48 +320,48 @@
           <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">
             ಅಥವಾ ನಿರ್ದಿಷ್ಟ ತರಗತಿಗೆ ಪ್ರತ್ಯೇಕವಾಗಿ ಕಳುಹಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ:
           </label>
-          <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
-            <button onclick="shareViaWhatsApp('LKG')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>LKG</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <button onclick="shareViaWhatsApp('LKG')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>LKG</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('UKG')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>UKG</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('UKG')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>UKG</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('1')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 1</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('1')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 1</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('2')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 2</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('2')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 2</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('3')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 3</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('3')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 3</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('4')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 4</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('4')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 4</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('5')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 5</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('5')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 5</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('6')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 6</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('6')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 6</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('7')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 7</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('7')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 7</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('8')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 8</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('8')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 8</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('9')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 9</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('9')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 9</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
-            <button onclick="shareViaWhatsApp('10')" class="bg-white/5 hover:bg-indigo-600/30 border border-white/10 hover:border-indigo-500/40 p-2 rounded-xl text-xs font-bold text-slate-200 transition cursor-pointer flex items-center justify-center gap-1">
-              <span>Class 10</span> <i class="fa-brands fa-whatsapp text-emerald-400 text-[10px]"></i>
+            <button onclick="shareViaWhatsApp('10')" class="bg-slate-800 hover:bg-emerald-700/40 border border-slate-700 hover:border-emerald-500 p-2 rounded-xl text-xs font-bold text-white transition cursor-pointer flex items-center justify-center gap-1.5 shadow-sm">
+              <span>Class 10</span> <i class="fa-brands fa-whatsapp text-emerald-400"></i>
             </button>
           </div>
         </div>
 
         <div class="flex justify-end pt-2 border-t border-white/10">
-          <button onclick="closeShareModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl cursor-pointer border-0">ಮುಚ್ಚಿ / Close</button>
+          <button onclick="closeShareModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl cursor-pointer border border-slate-700 transition">ಮುಚ್ಚಿ / Close</button>
         </div>
       </div>
     </div>
@@ -957,9 +990,51 @@
     });
 
     // --- SHARE LINK & WHATSAPP FUNCTIONS ---
+    function getEffectiveDomain() {
+      const isFileProtocol = window.location.protocol === 'file:';
+      const storedDomain = localStorage.getItem('school_live_domain');
+
+      if (storedDomain && storedDomain.startsWith('http')) {
+        return storedDomain.replace(/\/+$/, '');
+      }
+
+      if (!isFileProtocol && window.location.origin) {
+        return window.location.origin;
+      }
+
+      // Default Live School Domain if currently opened from local computer file:///
+      return 'https://ghpsmarched.in';
+    }
+
+    function saveLiveDomain(val) {
+      if (!val) return;
+      let clean = val.trim();
+      if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+        clean = 'https://' + clean;
+      }
+      clean = clean.replace(/\/+$/, '');
+      localStorage.setItem('school_live_domain', clean);
+      initShareLinks();
+      alert("✅ ಲೈವ್ ವೆಬ್‌ಸೈಟ್ ಡೊಮೈನ್ ಉಳಿಸಲಾಗಿದೆ: " + clean);
+    }
+
     function initShareLinks() {
-      const baseUrl = window.location.origin + window.location.pathname;
-      const allClassUrl = `${baseUrl}?mode=entry&public=true`;
+      const domain = getEffectiveDomain();
+      const domainInput = document.getElementById('liveDomainInput');
+      if (domainInput) domainInput.value = domain;
+
+      const tag = document.getElementById('domainStatusTag');
+      if (tag) {
+        if (window.location.protocol === 'file:') {
+          tag.textContent = 'Local File (Using Live Domain)';
+          tag.className = 'text-[9px] px-2 py-0.5 rounded-full font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        } else {
+          tag.textContent = 'Online Live Domain';
+          tag.className = 'text-[9px] px-2 py-0.5 rounded-full font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        }
+      }
+
+      const allClassUrl = `${domain}/ShoeSocksDistribution.html?mode=entry&public=true`;
       const input = document.getElementById('allClassShareUrlInput');
       if (input) input.value = allClassUrl;
     }
@@ -987,16 +1062,16 @@
     }
 
     function shareViaWhatsApp(classVal) {
-      const baseUrl = window.location.origin + window.location.pathname;
-      let targetUrl = `${baseUrl}?mode=entry&public=true`;
-      let classText = "ಎಲ್ಲಾ ತರಗತಿಗಳು";
+      const domain = getEffectiveDomain();
+      let targetUrl = `${domain}/ShoeSocksDistribution.html?mode=entry&public=true`;
+      let classText = "ಎಲ್ಲಾ ತರಗತಿಗಳು (All Classes)";
       
       if (classVal && classVal !== 'ALL') {
         targetUrl += `&class=${encodeURIComponent(classVal)}`;
         classText = (classVal === 'LKG' || classVal === 'UKG') ? classVal : `Class ${classVal}`;
       }
 
-      const message = `🏫 *GHPS MARCHED - ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ಸೈಜ್ ನಮೂದು*\n\nನಮಸ್ಕಾರ ಶಿಕ್ಷಕರೇ,\nದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಲಿಂಕ್ ತೆರೆದು ವಿದ್ಯಾರ್ಥಿಗಳ ಕಾಲಿನ ಅಳತೆ (C.M.) ಮತ್ತು ಶೂ ಸೈಜ್ ನಮೂದಿಸಿ:\n👉 ${targetUrl}\n\n📌 *ತರಗತಿ:* ${classText}\n*(ಯಾವುದೇ Login / Password ಅಗತ್ಯವಿಲ್ಲ)*`;
+      const message = `🏫 *GHPS MARCHED - ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ಸೈಜ್ ನಮೂದು*\n\nನಮಸ್ಕಾರ ಶಿಕ್ಷಕರೇ,\nದಯವಿಟ್ಟು ಈ ಕೆಳಗಿನ ಲಿಂಕ್ ತೆರೆದು ನಿಮ್ಮ ತರಗತಿಯ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಮತ್ತು ಸಾಕ್ಸ್ ಸೈಜ್ ನಮೂದಿಸಿ:\n👉 ${targetUrl}\n\n📌 *ತರಗತಿ:* ${classText}\n*(ಯಾವುದೇ Login / Password ಅಗತ್ಯವಿಲ್ಲ)*`;
 
       const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');

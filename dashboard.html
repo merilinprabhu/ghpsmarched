@@ -1973,13 +1973,17 @@
       }
       
       let categoryParam = casteGroup;
-      if (casteGroup === 'ALL') {
-        categoryParam = selectedCastes.join(',');
+      if (casteGroup === 'ALL' || !casteGroup) {
+        categoryParam = '';
       } else if (casteGroup === 'OBC') {
         categoryParam = 'OBC_GENERAL';
       }
       
-      window.location.href = `StudentList.html?class=${encodeURIComponent(clsLabel)}&gender=${encodeURIComponent(genderParam)}&category=${encodeURIComponent(categoryParam)}`;
+      let genderParamClean = (genderParam === 'ALL' || genderParam.includes(',')) ? '' : genderParam;
+      let url = `StudentList.html?class=${encodeURIComponent(clsLabel)}`;
+      if (genderParamClean) url += `&gender=${encodeURIComponent(genderParamClean)}`;
+      if (categoryParam) url += `&category=${encodeURIComponent(categoryParam)}`;
+      window.location.href = url;
     };
 
     window.redirectToUnassignedEdit = function(clsCode, gender) {

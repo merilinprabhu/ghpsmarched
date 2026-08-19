@@ -281,7 +281,8 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
         { name: "Aadhar Update", href: "ApaarModule.html" },
         { name: "Certificates / ಪ್ರಮಾಣ ಪತ್ರಗಳು (10 Types)", href: "certificates.html" },
         { name: "Bin & TC Out Register / ಮರುಬಳಕೆ ಬುಟ್ಟಿ", href: "RecycleBin.html" },
-        { name: "SATS & Portal Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" }
+        { name: "SATS & Portal Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" },
+        { name: "Shoe Size Tracker / ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್", href: "ShoeTracker.html" }
       ]
     },
     {
@@ -300,6 +301,7 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
       color: "text-indigo-400",
       items: [
         { name: "SATS Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" },
+        { name: "Shoe Size Tracker / ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್", href: "ShoeTracker.html" },
         { name: "STS Student List / ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ", href: "StudentList.html" },
         { name: "Missing STS Check / ಅಲಭ್ಯ STS ತಪಾಸಣೆ", href: "StudentList.html?sts_check=missing" },
         { name: "STS Verified List / ಪರಿಶೀಲಿಸಿದ STS ಪಟ್ಟಿ", href: "StudentList.html?sts_check=has_sts" },

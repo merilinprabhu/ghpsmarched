@@ -344,7 +344,7 @@
 
             <!-- Class Filter -->
             <select id="class-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- All Classes --</option>
+              <option value="">-- All Classes / ಎಲ್ಲಾ ತರಗತಿಗಳು --</option>
               <option value="LKG">LKG/KG1</option>
               <option value="UKG">UKG/KG2</option>
               <option value="1">1</option>
@@ -361,21 +361,21 @@
 
             <!-- Gender Filter -->
             <select id="gender-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- All Genders --</option>
+              <option value="">-- All Genders / ಎಲ್ಲಾ ಲಿಂಗಗಳು --</option>
               <option value="Boy">Boy / ಗಂಡು</option>
               <option value="Girl">Girl / ಹೆಣ್ಣು</option>
             </select>
 
             <!-- Status Filter -->
             <select id="status-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="All" selected>All / ಎಲ್ಲ ವಿದ್ಯಾರ್ಥಿಗಳು</option>
+              <option value="All" selected>-- All Status / ಎಲ್ಲಾ ಸ್ಥಿತಿ --</option>
               <option value="Admitted">Admitted / ದಾಖಲಾದ</option>
               <option value="Pending">Pending / ಬಾಕಿ</option>
             </select>
 
             <!-- Category Filter -->
             <select id="category-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- All Categories --</option>
+              <option value="">-- All Categories / ಎಲ್ಲಾ ಪ್ರವರ್ಗಗಳು --</option>
               <option value="SC">SC</option>
               <option value="ST">ST</option>
               <option value="C1">Category-1</option>
@@ -390,26 +390,19 @@
 
             <!-- Religion Filter -->
             <select id="religion-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- Religions --</option>
+              <option value="">-- All Religions / ಎಲ್ಲಾ ಧರ್ಮಗಳು --</option>
             </select>
 
             <!-- Caste Filter -->
             <select id="caste-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- Castes --</option>
+              <option value="">-- All Castes / ಎಲ್ಲಾ ಜಾತಿಗಳು --</option>
             </select>
 
             <!-- Medium Filter -->
             <select id="medium-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- Mediums --</option>
+              <option value="">-- All Mediums / ಎಲ್ಲಾ ಮಾಧ್ಯಮಗಳು --</option>
               <option value="ಕನ್ನಡ">Kannada / ಕನ್ನಡ</option>
               <option value="English">English / ಇಂಗ್ಲಿಷ್</option>
-            </select>
-
-            <!-- STS Check Filter -->
-            <select id="sts-filter" onchange="applyFilters()" class="w-auto p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700 dark:text-slate-200 font-semibold cursor-pointer shadow-sm">
-              <option value="">-- STS Check / STS ಪರಿಶೀಲನೆ --</option>
-              <option value="has_sts">STS Available / STS ಲಭ್ಯವಿದೆ</option>
-              <option value="missing_sts">STS Missing / STS ಲಭ್ಯವಿಲ್ಲ</option>
             </select>
           </div>
 
@@ -421,8 +414,15 @@
                 <i class="fa-solid fa-sliders text-xs"></i> ಕಾಲಮ್ ನಿರ್ವಹಣೆ / Manage Columns
               </button>
 
+              <!-- Find Duplicates -->
+              <button onclick="openDuplicateFinderModal()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5" title="ನಕಲಿ ದಾಖಲೆಗಳನ್ನು ಗುರುತಿಸಿ ಅಳಿಸಿ">
+                <i class="fa-solid fa-copy text-xs"></i> ನಕಲಿ ದಾಖಲೆಗಳು / Duplicates
+              </button>
+
               <!-- Excel Export -->
               <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
+                <i class="fa-solid fa-file-excel text-xs"></i> Export Excel
+              </button>
                 <i class="fa-solid fa-file-excel text-xs"></i> Export Excel
               </button>
 
@@ -589,6 +589,39 @@
         </div>
         <button type="button" onclick="saveAndCloseManageColumnsModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5">
           <i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save & Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Duplicate Students Finder Modal -->
+  <div id="duplicate-finder-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2000] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[85vh] overflow-hidden">
+      <div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        <h3 class="text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-copy text-rose-600"></i> ನಕಲಿ ದಾಖಲೆಗಳ ನಿರ್ವಹಣೆ / Duplicate Students Manager
+        </h3>
+        <button onclick="closeDuplicateFinderModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg border-0 bg-transparent cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex-grow overflow-y-auto p-6 custom-scrollbar space-y-4">
+        <div id="duplicate-summary-banner" class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 rounded-xl p-3.5 text-xs text-amber-900 dark:text-amber-200 font-semibold flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base"></i>
+            <span id="duplicate-count-text">ನಕಲಿ ದಾಖಲೆಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</span>
+          </div>
+        </div>
+        <div id="duplicate-list-container" class="space-y-4">
+          <!-- Duplicates grouped list will be dynamically rendered here -->
+        </div>
+      </div>
+      <div class="px-6 py-3 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex flex-wrap justify-between items-center text-xs font-bold gap-2">
+        <button type="button" onclick="closeDuplicateFinderModal()" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-4 rounded-xl transition border-0 cursor-pointer">
+          ಮುಚ್ಚಿ / Close
+        </button>
+        <button type="button" id="btn-delete-duplicates" onclick="deleteSelectedDuplicates()" class="bg-rose-600 hover:bg-rose-500 text-white py-2 px-5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5 font-black">
+          <i class="fa-solid fa-trash-can"></i> ಆಯ್ಕೆ ಮಾಡಿದ ನಕಲಿಗಳನ್ನು ಅಳಿಸಿ / Delete Selected Duplicates
         </button>
       </div>
     </div>
@@ -1194,34 +1227,6 @@
     let activeExcelFilters = {};
     let uniqueValuesGlobal = [];
 
-    // Reset columns search text input
-    function openManageColumnsModal() {
-      const searchInput = document.getElementById('column-search-input');
-      if (searchInput) searchInput.value = '';
-      renderColumnSettingsList();
-      document.getElementById('manage-columns-modal').classList.remove('hidden');
-    }
-
-    // Filter Column Settings Checklist based on query
-    function filterColumnSettingsList(query) {
-      const container = document.getElementById("columns-list-container");
-      if (!container) return;
-      const divs = container.children;
-      const q = query.toLowerCase().trim();
-      
-      standardColumns.forEach((col, idx) => {
-        const div = divs[idx];
-        if (!div) return;
-        const textEn = (col.labelEn || '').toLowerCase();
-        const textKn = (col.labelKn || '').toLowerCase();
-        if (textEn.includes(q) || textKn.includes(q)) {
-          div.style.display = "";
-        } else {
-          div.style.display = "none";
-        }
-      });
-    }
-
     // Excel Auto-filter controllers
     function toggleFilterDropdown(event, colId) {
       event.stopPropagation();
@@ -1547,7 +1552,7 @@
       applyFilters();
     }
 
-    function resetDefaultColumns() {
+    async function resetDefaultColumns() {
       const defVisible = ['app_no', 'enrolment_no', 'student_name', 'enroll_class', 'gender', 'dob', 'father_name_kn', 'mother_name_kn', 'student_aadhaar', 'apaar', 'pen', 'mobile_number'];
       const def = {};
       standardColumns.forEach(col => {
@@ -1559,10 +1564,25 @@
       renderColumnSettingsList();
       buildTableHeader();
       applyFilters();
+
+      try {
+        if (!supabaseClient && typeof getPortalSupabase === 'function') {
+          supabaseClient = getPortalSupabase();
+        }
+        const schoolId = localStorage.getItem("school_id") || 'f592831e-69a8-4138-b82d-69649cb46605';
+        if (supabaseClient && schoolId) {
+          await supabaseClient.from('school_settings').delete()
+            .eq('school_id', schoolId)
+            .eq('settings_key', 'student_columns_config');
+        }
+      } catch (e) {}
+
       showToast("ಮರುಹೊಂದಿಸಲಾಗಿದೆ / Reset", "ಕಾಲಮ್‌ಗಳನ್ನು ಪೂರ್ವನಿಯೋಜಿತ ಸ್ಥಿತಿಗೆ ಮರುಹೊಂದಿಸಲಾಗಿದೆ.", "info");
     }
 
     function openManageColumnsModal() {
+      const searchInput = document.getElementById('column-search-input');
+      if (searchInput) searchInput.value = '';
       renderColumnSettingsList();
       const modal = document.getElementById('manage-columns-modal');
       if (modal) modal.classList.remove('hidden');
@@ -1588,13 +1608,51 @@
       });
     }
 
-    function saveAndCloseManageColumnsModal() {
-      const visibility = getColumnVisibility();
-      saveColumnVisibility(visibility);
+    async function saveAndCloseManageColumnsModal() {
+      // 1. Gather all checkboxes from the DOM
+      const container = document.getElementById("columns-list-container");
+      const visibility = {};
+      if (container) {
+        const checkboxes = container.querySelectorAll("input[type='checkbox']");
+        checkboxes.forEach(cb => {
+          const colId = cb.getAttribute('data-col-id') || cb.dataset.colId;
+          if (colId) {
+            visibility[colId] = cb.checked;
+          }
+        });
+      }
+      
+      const activeVisibility = Object.keys(visibility).length > 0 ? visibility : getColumnVisibility();
+      saveColumnVisibility(activeVisibility);
+      
       const orderIds = standardColumns.map(c => c.id);
       localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
       
+      // Re-build table header & re-render table with new columns
+      buildTableHeader();
+      applyFilters();
       closeManageColumnsModal();
+
+      // Persist to Supabase school_settings so preferences survive browser cache clears
+      try {
+        if (!supabaseClient && typeof getPortalSupabase === 'function') {
+          supabaseClient = getPortalSupabase();
+        }
+        const schoolId = localStorage.getItem("school_id") || 'f592831e-69a8-4138-b82d-69649cb46605';
+        if (supabaseClient && schoolId) {
+          await supabaseClient.from('school_settings').upsert({
+            school_id: schoolId,
+            settings_key: 'student_columns_config',
+            settings_value: JSON.stringify({
+              order: orderIds,
+              visibility: activeVisibility
+            })
+          }, { onConflict: 'school_id,settings_key' });
+        }
+      } catch (err) {
+        console.warn("Could not sync columns to Supabase:", err);
+      }
+
       showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", "ನಿಮ್ಮ ಆಯ್ಕೆಯ ಕಾಲಮ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಶಾಶ್ವತವಾಗಿ ಉಳಿಸಲಾಗಿದೆ! / Column preferences saved permanently!", "success");
     }
 
@@ -1688,6 +1746,46 @@
     let allStudentsData = [];
     let parsedCSVStudents = [];
 
+    async function loadSavedColumnConfig() {
+      loadColumnOrder();
+      try {
+        if (!supabaseClient && typeof getPortalSupabase === 'function') {
+          supabaseClient = getPortalSupabase();
+        }
+        const schoolId = localStorage.getItem("school_id") || 'f592831e-69a8-4138-b82d-69649cb46605';
+        if (supabaseClient && schoolId) {
+          const { data, error } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', schoolId)
+            .eq('settings_key', 'student_columns_config')
+            .maybeSingle();
+
+          if (!error && data && data.settings_value) {
+            let config = data.settings_value;
+            if (typeof config === 'string') {
+              try { config = JSON.parse(config); } catch (e) {}
+            }
+            if (config) {
+              if (config.order && Array.isArray(config.order)) {
+                localStorage.setItem('student_columns_order', JSON.stringify(config.order));
+                loadColumnOrder();
+              }
+              if (config.visibility && typeof config.visibility === 'object') {
+                localStorage.setItem('visible_student_columns', JSON.stringify(config.visibility));
+              }
+              buildTableHeader();
+              if (allStudentsData && allStudentsData.length > 0) {
+                applyFilters();
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Could not load cloud column config:", e);
+      }
+    }
+
     async function initApp() {
       try {
         if (typeof initUserAndTheme === 'function') {
@@ -1699,12 +1797,14 @@
       
       try {
         if (typeof initSidebar === 'function') initSidebar();
+        loadColumnOrder();
         buildTableHeader();
       } catch (e) {
         console.error("Header build warning:", e);
       }
       
       fetchStudentsDatabase();
+      loadSavedColumnConfig();
     }
 
     if (document.readyState === "loading") {
@@ -1849,7 +1949,7 @@
         }
       }
       
-      if (classParam) {
+      if (classParam && classParam !== 'ALL') {
         const classFilter = document.getElementById('class-filter');
         if (classFilter) {
           let optionExists = false;
@@ -1859,58 +1959,50 @@
               break;
             }
           }
-          if (!optionExists) {
+          if (!optionExists && !classParam.includes(',')) {
             const opt = document.createElement('option');
             opt.value = classParam;
-            opt.text = classParam.includes(',') ? `Class Group (${classParam})` : `Class ${classParam}`;
+            opt.text = classParam;
             classFilter.appendChild(opt);
+            classFilter.value = classParam;
+          } else if (optionExists) {
+            classFilter.value = classParam;
           }
-          classFilter.value = classParam;
         }
       }
+
       if (genderParam) {
+        const genList = genderParam.split(',').map(g => g.trim().toLowerCase());
         const genderFilter = document.getElementById('gender-filter');
-        if (genderFilter) {
-          let optionExists = false;
-          for (let i = 0; i < genderFilter.options.length; i++) {
-            if (genderFilter.options[i].value === genderParam) {
-              optionExists = true;
-              break;
-            }
-          }
-          if (!optionExists) {
-            const opt = document.createElement('option');
-            opt.value = genderParam;
-            opt.text = genderParam.includes(',') ? `Genders (${genderParam})` : genderParam;
-            genderFilter.appendChild(opt);
-          }
-          genderFilter.value = genderParam;
+        if (genderFilter && genList.length === 1) {
+          if (genList[0] === 'boy' || genList[0] === 'male') genderFilter.value = 'Boy';
+          else if (genList[0] === 'girl' || genList[0] === 'female') genderFilter.value = 'Girl';
         }
       }
+
       if (mediumParam) {
         const mediumFilter = document.getElementById('medium-filter');
         if (mediumFilter) mediumFilter.value = mediumParam;
       }
+
       if (categoryParam) {
+        const catList = categoryParam.split(',').map(c => c.trim().toUpperCase());
         const categoryFilter = document.getElementById('category-filter');
-        if (categoryFilter) {
+        if (categoryFilter && catList.length === 1 && !['ALL', 'ALL CATEGORIES', 'TOTAL'].includes(catList[0])) {
           let optionExists = false;
           for (let i = 0; i < categoryFilter.options.length; i++) {
-            if (categoryFilter.options[i].value.toUpperCase() === categoryParam.toUpperCase()) {
+            if (categoryFilter.options[i].value.toUpperCase() === catList[0]) {
               optionExists = true;
               break;
             }
           }
-          if (!optionExists) {
-            const opt = document.createElement('option');
-            opt.value = categoryParam;
-            opt.text = categoryParam.includes(',') ? `Categories (${categoryParam})` : categoryParam;
-            categoryFilter.appendChild(opt);
+          if (optionExists) {
+            categoryFilter.value = catList[0];
           }
-          categoryFilter.value = categoryParam;
         }
       }
-      if (statusParam) {
+
+      if (statusParam && statusParam !== 'All') {
         const statusFilter = document.getElementById('status-filter');
         if (statusFilter) statusFilter.value = statusParam;
       }
@@ -2009,9 +2101,14 @@
         }
 
         let data = null;
-        if (schoolId) {
+        const targetSchoolId = schoolId || 'f592831e-69a8-4138-b82d-69649cb46605';
+        if (targetSchoolId) {
           try {
-            const { data: res1, error: err1 } = await supabaseClient.from('admissions').select('*').eq('school_id', schoolId);
+            const { data: res1, error: err1 } = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .or(`school_id.eq.${targetSchoolId},school_id.is.null`)
+              .range(0, 5000);
             if (!err1 && res1 && res1.length > 0) {
               data = res1;
             }
@@ -2020,7 +2117,10 @@
 
         if (!data || data.length === 0) {
           try {
-            const { data: res2, error: err2 } = await supabaseClient.from('admissions').select('*');
+            const { data: res2, error: err2 } = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .range(0, 5000);
             if (!err2 && res2) {
               data = res2;
             }
@@ -2156,7 +2256,7 @@
         if (casteSelect && allStudentsData.length > 0) {
           const castes = Array.from(new Set(allStudentsData.map(s => (s.student_caste || s.caste || '').trim()))).filter(Boolean).sort();
           let currentVal = casteSelect.value;
-          let html = '<option value="">-- Castes --</option>';
+          let html = '<option value="">-- All Castes / ಎಲ್ಲಾ ಜಾತಿಗಳು --</option>';
           castes.forEach(c => {
             html += `<option value="${c}" ${c === currentVal ? 'selected' : ''}>${c}</option>`;
           });
@@ -2167,7 +2267,7 @@
         if (religionSelect && allStudentsData.length > 0) {
           const religions = Array.from(new Set(allStudentsData.map(s => (s.religion || '').trim()))).filter(Boolean).sort();
           let currentVal = religionSelect.value;
-          let html = '<option value="">-- Religions --</option>';
+          let html = '<option value="">-- All Religions / ಎಲ್ಲಾ ಧರ್ಮಗಳು --</option>';
           religions.forEach(r => {
             html += `<option value="${r}" ${r === currentVal ? 'selected' : ''}>${r}</option>`;
           });
@@ -3016,6 +3116,140 @@
       }
     }
 
+    // --- Duplicate Finder & Cleanup Manager ---
+    function findDuplicateGroups() {
+      const groups = {};
+
+      allStudentsData.forEach(s => {
+        const stsClean = String(s.app_no || s.student_sts || s.sts_no || '').replace(/\D/g, '');
+        const nameClean = (s.name_english || s.name || s.student_name_kn || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        const fatherClean = (s.father_name_az || s.father_name_kn || s.father || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        const classClean = normalizeClass(s.className || s.enroll_class);
+        const dobClean = (s.dob || '').trim();
+
+        let key = '';
+        if (stsClean && stsClean.length >= 5) {
+          key = 'STS_' + stsClean;
+        } else if (nameClean && fatherClean) {
+          key = 'NAME_' + nameClean + '_' + fatherClean + '_' + classClean;
+        }
+
+        if (key) {
+          if (!groups[key]) groups[key] = [];
+          groups[key].push(s);
+        }
+      });
+
+      const duplicateGroups = Object.entries(groups)
+        .filter(([k, list]) => list.length > 1)
+        .map(([k, list]) => list);
+
+      return duplicateGroups;
+    }
+
+    function openDuplicateFinderModal() {
+      const groups = findDuplicateGroups();
+      const modal = document.getElementById('duplicate-finder-modal');
+      const container = document.getElementById('duplicate-list-container');
+      const bannerText = document.getElementById('duplicate-count-text');
+      const deleteBtn = document.getElementById('btn-delete-duplicates');
+
+      if (!groups || groups.length === 0) {
+        alert("🎉 ಅಭಿನಂದನೆಗಳು! ಯಾವುದೇ ನಕಲಿ (Duplicate) ವಿದ್ಯಾರ್ಥಿ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ!\nNo duplicate student records found in the database.");
+        return;
+      }
+
+      let totalDuplicateRows = 0;
+      groups.forEach(g => { totalDuplicateRows += (g.length - 1); });
+
+      bannerText.innerHTML = `ಒಟ್ಟು <strong>${groups.length}</strong> ಗುಂಪುಗಳಲ್ಲಿ <strong>${totalDuplicateRows}</strong> ನಕಲಿ ದಾಖಲೆಗಳು ಕಂಡುಬಂದಿವೆ. ಉಳಿಯಬೇಕಾದ ದಾಖಲೆಯನ್ನು ಅನ್-ಚೆಕ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಬೇಕಾದ ನಕಲಿಗಳನ್ನು ಚೆಕ್ ಮಾಡಿ:`;
+      if (deleteBtn) deleteBtn.disabled = false;
+
+      let html = '';
+      groups.forEach((group, gIdx) => {
+        html += `
+          <div class="border border-slate-200 dark:border-slate-700 rounded-xl p-4 bg-slate-50/70 dark:bg-slate-800/50 shadow-sm space-y-2">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+              <span class="font-bold text-xs text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-users mr-1"></i> ಗುಂಪು ${gIdx + 1}: ${group[0].name || group[0].student_name_kn} (Class ${group[0].className || '-'})
+              </span>
+              <span class="text-[11px] font-mono text-slate-500">STS: ${group[0].app_no || group[0].student_sts || 'N/A'}</span>
+            </div>
+            <div class="space-y-1.5 pt-1">
+        `;
+
+        group.forEach((s, sIdx) => {
+          // Pre-check duplicates except the first / most complete one
+          const isPreChecked = sIdx > 0;
+          html += `
+            <div class="flex items-center justify-between p-2.5 rounded-lg text-xs ${isPreChecked ? 'bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/60' : 'bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/60'}">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" class="dup-delete-checkbox w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer" data-id="${s.realId}" ${isPreChecked ? 'checked' : ''}>
+                <div>
+                  <span class="font-bold text-slate-800 dark:text-slate-200">${s.name || s.name_english || '-'} (${s.student_name_kn || '-'})</span>
+                  <div class="text-[10px] text-slate-500 flex gap-2 flex-wrap mt-0.5">
+                    <span>ತಂದೆ: ${s.father_name_kn || s.father || '-'}</span>
+                    <span>DOB: ${s.dob || '-'}</span>
+                    <span>ತರಗತಿ: Class ${s.className || '-'}</span>
+                  </div>
+                </div>
+              </div>
+              <span class="text-[10px] font-black px-2 py-0.5 rounded ${isPreChecked ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'}">
+                ${isPreChecked ? 'ನಕಲಿ (Delete)' : 'ಮೂಲ (Keep)'}
+              </span>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeDuplicateFinderModal() {
+      const modal = document.getElementById('duplicate-finder-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function deleteSelectedDuplicates() {
+      const checkboxes = document.querySelectorAll('.dup-delete-checkbox:checked');
+      const idsToDelete = Array.from(checkboxes).map(cb => cb.getAttribute('data-id')).filter(Boolean);
+
+      if (idsToDelete.length === 0) {
+        alert("ಅಳಿಸಲು ಯಾವುದೇ ನಕಲಿ ದಾಖಲೆಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿಲ್ಲ.");
+        return;
+      }
+
+      const ok = confirm(`⚠️ ಎಚ್ಚರಿಕೆ: ಒಟ್ಟು ${idsToDelete.length} ನಕಲಿ ವಿದ್ಯಾರ್ಥಿ ದಾಖಲೆಗಳನ್ನು ಡೇಟಾಬೇಸ್‌ನಿಂದ ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲು ಅನುಮತಿ ನೀಡುತ್ತೀರಾ?`);
+      if (!ok) return;
+
+      try {
+        if (!supabaseClient && typeof getPortalSupabase === 'function') {
+          supabaseClient = getPortalSupabase();
+        }
+
+        const { error } = await supabaseClient
+          .from('admissions')
+          .delete()
+          .in('id', idsToDelete);
+
+        if (error) throw error;
+
+        allStudentsData = allStudentsData.filter(s => !idsToDelete.includes(s.realId));
+        closeDuplicateFinderModal();
+        applyFilters();
+        showToast("ಯಶಸ್ಸು / Success", `${idsToDelete.length} ನಕಲಿ ದಾಖಲೆಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಅಳಿಸಲಾಗಿದೆ!`, "success");
+      } catch (err) {
+        console.error("Duplicate deletion error:", err);
+        alert("ನಕಲಿ ದಾಖಲೆಗಳನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + (err.message || err));
+      }
+    }
+
     const csvColumns = [
       { id: 'academic_year', label: 'Academic Year (ಶೈಕ್ಷಣಿಕ ವರ್ಷ)', default: '2026-27' },
       { id: 'medium', label: 'Medium (ಮಾಧ್ಯಮ)', default: 'Kannada' },
@@ -3449,7 +3683,7 @@
             </div>
             <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 select-none">${col.labelEn}</span>
           </div>
-          <input type="checkbox" ${isChecked ? "checked" : ""} onchange="toggleSingleColumnVisibility('${col.id}', this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 dark:border-slate-600 cursor-pointer" onclick="event.stopPropagation();">
+          <input type="checkbox" data-col-id="${col.id}" ${isChecked ? "checked" : ""} onchange="toggleSingleColumnVisibility('${col.id}', this.checked)" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500 border-slate-300 dark:border-slate-600 cursor-pointer" onclick="event.stopPropagation();">
         `;
         
         div.addEventListener('dragstart', (e) => handleDragStart(e, idx));

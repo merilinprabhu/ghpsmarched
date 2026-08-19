@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -844,34 +844,6 @@
     let activeExcelFilters = {};
     let uniqueValuesGlobal = [];
 
-    // Reset columns search text input
-    function openManageColumnsModal() {
-      const searchInput = document.getElementById('column-search-input');
-      if (searchInput) searchInput.value = '';
-      renderColumnSettingsList();
-      document.getElementById('manage-columns-modal').classList.remove('hidden');
-    }
-
-    // Filter Column Settings Checklist based on query
-    function filterColumnSettingsList(query) {
-      const container = document.getElementById("columns-list-container");
-      if (!container) return;
-      const divs = container.children;
-      const q = query.toLowerCase().trim();
-      
-      standardColumns.forEach((col, idx) => {
-        const div = divs[idx];
-        if (!div) return;
-        const textEn = (col.labelEn || '').toLowerCase();
-        const textKn = (col.labelKn || '').toLowerCase();
-        if (textEn.includes(q) || textKn.includes(q)) {
-          div.style.display = "";
-        } else {
-          div.style.display = "none";
-        }
-      });
-    }
-
     // Excel Auto-filter controllers
     function toggleFilterDropdown(event, colId) {
       event.stopPropagation();
@@ -1278,6 +1250,7 @@ function loadColumnOrder() {
         return;
       }
       initSidebar();
+      loadColumnOrder();
       buildTableHeader();
       fetchStudentsDatabase();
 
@@ -3297,6 +3270,8 @@ function loadColumnOrder() {
 
     // Column Modal Config
     function openManageColumnsModal() {
+      const searchInput = document.getElementById('column-search-input');
+      if (searchInput) searchInput.value = '';
       renderColumnSettingsList();
       document.getElementById('manage-columns-modal').classList.remove('hidden');
     }
@@ -3305,10 +3280,35 @@ function loadColumnOrder() {
       document.getElementById('manage-columns-modal').classList.add('hidden');
     }
 
-    function saveColumnSettingsAndClose() {
+    async function saveColumnSettingsAndClose() {
+      const orderIds = standardColumns.map(col => col.id);
+      localStorage.setItem('student_columns_order', JSON.stringify(orderIds));
+
+      const visibility = getColumnVisibility();
+      saveColumnVisibility(visibility);
+
       closeManageColumnsModal();
       buildTableHeader();
       applyFilters();
+
+      try {
+        if (!supabaseClient && typeof getPortalSupabase === 'function') {
+          supabaseClient = getPortalSupabase();
+        }
+        const schoolId = localStorage.getItem("school_id") || 'f592831e-69a8-4138-b82d-69649cb46605';
+        if (supabaseClient && schoolId) {
+          await supabaseClient.from('school_settings').upsert({
+            school_id: schoolId,
+            settings_key: 'student_columns_config',
+            settings_value: JSON.stringify({
+              order: orderIds,
+              visibility: visibility
+            })
+          }, { onConflict: 'school_id,settings_key' });
+        }
+      } catch (e) {}
+
+      showToast("ಉಳಿಸಲಾಗಿದೆ / Saved", "ನಿಮ್ಮ ಕಾಲಮ್ ಆದ್ಯತೆಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ! / Column settings saved!", "success");
     }
 
     function filterColumnSettingsList(query) {
