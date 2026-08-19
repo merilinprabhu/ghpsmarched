@@ -677,8 +677,10 @@
       renderClassPills();
 
       // Debounced Cloud Sync
-      await syncMeasurementsToCloud();
-      showToast("ಉಳಿಸಲಾಗಿದೆ", "ಶೂ ಅಳತೆ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಉಳಿಸಲಾಗಿದೆ", "ಶೂ ಅಳತೆ ವಿವರ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
+      }
     }
 
     function quickSetSize(studentId, sizeCm) {
@@ -693,27 +695,42 @@
       }
       shoeMeasurementsMap[studentId].remarks = remarksVal || '';
       localStorage.setItem('shoe_tracker_measurements', JSON.stringify(shoeMeasurementsMap));
-      await syncMeasurementsToCloud();
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಉಳಿಸಲಾಗಿದೆ", "ಷರಾ ಯಶಸ್ವಿಯಾಗಿ ಸೇವ್ ಆಗಿದೆ.", "success");
+      }
     }
 
     async function syncMeasurementsToCloud() {
       try {
         if (!supabaseClient) initSupabaseClient();
         if (supabaseClient) {
-          await supabaseClient.from('school_settings').upsert({
+          const { error } = await supabaseClient.from('school_settings').upsert({
             school_id: SCHOOL_ID,
             settings_key: 'shoe_tracker_measurements',
             settings_value: JSON.stringify(shoeMeasurementsMap)
           }, { onConflict: 'school_id,settings_key' });
+
+          if (error) {
+            console.error("Cloud sync error:", error);
+            showToast("ದೋಷ (Error)", "ಡೇಟಾಬೇಸ್ಗೆ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + error.message, "error");
+            return false;
+          }
+          return true;
         }
       } catch (e) {
-        console.warn("Cloud sync warning:", e);
+        console.error("Cloud sync exception:", e);
+        showToast("ದೋಷ (Error)", "ನೆಟ್‌ವರ್ಕ್ ತೊಂದರೆ ಕಂಡುಬಂದಿದೆ.", "error");
+        return false;
       }
+      return false;
     }
 
     async function saveAllMeasurements() {
-      await syncMeasurementsToCloud();
-      showToast("ಯಶಸ್ಸು", "ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಅಳತೆ ವಿವರಗಳನ್ನು ಕ್ಲೌಡ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಉಳಿಸಲಾಗಿದೆ!", "success");
+      const success = await syncMeasurementsToCloud();
+      if (success) {
+        showToast("ಯಶಸ್ಸು", "ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶೂ ಅಳತೆ ವಿವರಗಳನ್ನು ಕ್ಲೌಡ್ ಡೇಟಾಬೇಸ್‌ಗೆ ಉಳಿಸಲಾಗಿದೆ!", "success");
+      }
     }
 
     // --- 7. METRICS & PROCUREMENT MATRIX ---
