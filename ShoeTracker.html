@@ -85,11 +85,17 @@
                 ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್ / Shoe Management Tracker
               </h1>
             </div>
-            <!-- Live Sync Badge & School Subtitle -->
+            <!-- Live Sync Badge & Lock Status & School Subtitle -->
             <div class="flex items-center gap-2 flex-wrap text-xs text-slate-600 dark:text-slate-300 font-semibold">
               <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-200 text-[10px] font-black px-2 py-0.5 rounded-full border border-emerald-300 inline-flex items-center gap-1">
                 <i class="fa-solid fa-globe"></i> ಸಾರ್ವಜನಿಕ ಲೈವ್ ಸಿಂಕ್
               </span>
+              <!-- Kiosk Lock/Unlock Button -->
+              <button id="portalLockStatusBtn" type="button" onclick="promptTogglePortalLock()" class="bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer shadow-xs" title="ಪೋರ್ಟಲ್ ಲಾಕ್ ಸ್ಥಿತಿ (ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ)">
+                <i class="fa-solid fa-lock text-amber-600 dark:text-amber-400" id="portalLockIcon"></i>
+                <span id="portalLockText">ಪೋರ್ಟಲ್ ಲಾಕ್ (Teacher Mode)</span>
+                <span id="portalLockActionBadge" class="bg-amber-600 text-white text-[9px] px-1 py-0.1 rounded font-black">ಅನ್‌ಲಾಕ್</span>
+              </button>
               <span class="text-[11px]">
                 <span id="topSchoolNameKn">ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್</span> (<span id="topSchoolNameEn">government higher primary school, marched</span>)
               </span>
@@ -433,6 +439,56 @@
       <button id="btnCloseGuideModalBtn" onclick="closeSizeGuideModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl border-0 cursor-pointer text-xs">
         ಸರಿ / ಮುಚ್ಚಿ (Close)
       </button>
+    </div>
+  </div>
+
+  <!-- Portal Auth (Lock / Unlock) Modal -->
+  <div id="portalAuthModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[2200] flex items-center justify-center p-4">
+    <div class="glass-card rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span id="authModalIconBox" class="p-2 bg-amber-500 text-white rounded-xl text-sm shadow">
+            <i class="fa-solid fa-lock" id="authModalIcon"></i>
+          </span>
+          <div>
+            <h3 class="text-sm font-black" id="authModalTitle">ಪೋರ್ಟಲ್ ಭದ್ರತೆ (Portal Security)</h3>
+            <p class="text-[10px] text-slate-500 dark:text-slate-400" id="authModalSubtitle">ಮುಂದುವರಿಯಲು ಅಡ್ಮಿನ್ ಲಾಗಿನ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ</p>
+          </div>
+        </div>
+        <button type="button" onclick="closePortalAuthModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1 cursor-pointer">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
+
+      <!-- Alert message -->
+      <div id="authModalAlert" class="hidden p-3 rounded-xl text-xs font-bold border"></div>
+
+      <form id="portalAuthForm" onsubmit="event.preventDefault(); handlePortalAuthSubmit();" class="space-y-3.5">
+        <div class="space-y-1">
+          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Username / ಇಮೇಲ್</label>
+          <div class="relative">
+            <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="authUsername" placeholder="Admin username or email" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-[11px] font-bold text-slate-700 dark:text-slate-300">Password / ಪಾಸ್‌ವರ್ಡ್</label>
+          <div class="relative">
+            <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="password" id="authPassword" placeholder="••••••••" class="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closePortalAuthModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition cursor-pointer border-0">
+            ರದ್ದು (Cancel)
+          </button>
+          <button type="submit" id="authSubmitBtn" class="px-5 py-2 rounded-xl text-xs font-black bg-indigo-600 hover:bg-indigo-500 text-white shadow transition cursor-pointer border-0 flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-check"></i> <span id="authSubmitBtnText">ದೃಢೀಕರಿಸಿ & ಅನ್‌ಲಾಕ್ ಮಾಡಿ</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -814,6 +870,7 @@
       setViewMode(window.innerWidth < 768 ? 'cards' : 'table');
 
       initSupabaseClient();
+      initPortalLockGuard();
       await loadSchoolProfileInfo();
       await loadScaleChart();
       await loadShoeMeasurements();
@@ -1792,6 +1849,188 @@
       setTimeout(() => {
         toast.classList.add('translate-y-20', 'opacity-0');
       }, 3000);
+    }
+
+    // --- 11. KIOSK LOCK & UNLOCK AUTHENTICATION (USERNAME & PASSWORD) ---
+    let isPortalLocked = true; // Default locked: prevents navigating away
+
+    function initPortalLockGuard() {
+      updateLockStatusUI();
+
+      // Intercept any navigation click inside #navbar-placeholder when locked
+      const navContainer = document.getElementById('navbar-placeholder');
+      if (navContainer) {
+        navContainer.addEventListener('click', (e) => {
+          if (!isPortalLocked) return; // Unlocked: allow normal navigation
+
+          const targetLink = e.target.closest('a, button');
+          if (targetLink) {
+            // Allow in-page toggles (like theme toggler or whats-new modal) if needed, but block external page navigation
+            const href = targetLink.getAttribute('href');
+            if (href && !href.startsWith('#') && !href.includes('ShoeTracker.html') && !href.startsWith('javascript:')) {
+              e.preventDefault();
+              e.stopPropagation();
+              promptTogglePortalLock(true);
+            }
+          }
+        }, true);
+      }
+    }
+
+    function updateLockStatusUI() {
+      const btn = document.getElementById('portalLockStatusBtn');
+      const icon = document.getElementById('portalLockIcon');
+      const text = document.getElementById('portalLockText');
+      const badge = document.getElementById('portalLockActionBadge');
+
+      if (!btn || !icon || !text || !badge) return;
+
+      if (isPortalLocked) {
+        btn.className = 'bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer shadow-xs';
+        icon.className = 'fa-solid fa-lock text-amber-600 dark:text-amber-400';
+        text.innerText = 'ಪೋರ್ಟಲ್ ಲಾಕ್ (Teacher Mode)';
+        badge.className = 'bg-amber-600 text-white text-[9px] px-1.5 py-0.2 rounded font-black';
+        badge.innerText = 'ಅನ್‌ಲಾಕ್';
+        btn.title = 'ಪೋರ್ಟಲ್ ಲಾಕ್ ಆಗಿದೆ. ಇತರ ಪುಟಗಳಿಗೆ ಹೋಗಲು ಅನ್‌ಲಾಕ್ ಮಾಡಿ.';
+      } else {
+        btn.className = 'bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700 px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 transition cursor-pointer shadow-xs';
+        icon.className = 'fa-solid fa-lock-open text-emerald-600 dark:text-emerald-400';
+        text.innerText = 'ಅನ್‌ಲಾಕ್ ಆಗಿದೆ (Admin Access)';
+        badge.className = 'bg-slate-800 text-white text-[9px] px-1.5 py-0.2 rounded font-black';
+        badge.innerText = 'ಲಾಕ್ ಮಾಡಿ';
+        btn.title = 'ಪೋರ್ಟಲ್ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಶಿಕ್ಷಕರ ಮೋಡ್‌ಗೆ ಲಾಕ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.';
+      }
+    }
+
+    function promptTogglePortalLock(fromNavClick = false) {
+      const modal = document.getElementById('portalAuthModal');
+      const alertBox = document.getElementById('authModalAlert');
+      const title = document.getElementById('authModalTitle');
+      const subtitle = document.getElementById('authModalSubtitle');
+      const icon = document.getElementById('authModalIcon');
+      const iconBox = document.getElementById('authModalIconBox');
+      const submitBtnText = document.getElementById('authSubmitBtnText');
+
+      if (!modal) return;
+
+      // Clear fields & alerts
+      document.getElementById('authUsername').value = '';
+      document.getElementById('authPassword').value = '';
+      if (alertBox) {
+        alertBox.classList.add('hidden');
+        alertBox.innerText = '';
+      }
+
+      if (isPortalLocked) {
+        // Mode: UNLOCK
+        if (title) title.innerText = 'ಪೋರ್ಟಲ್ ಅನ್‌ಲಾಕ್ ಭದ್ರತೆ (Unlock Portal)';
+        if (subtitle) {
+          subtitle.innerText = fromNavClick 
+            ? '🔒 ಇತರ ಪೇಜ್‌ಗಳಿಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ದಯವಿಟ್ಟು ಅಡ್ಮಿನ್ Username & Password ನಮೂದಿಸಿ'
+            : 'ಪೂರ್ಣ ನ್ಯಾವಿಗೇಷನ್ ಸಕ್ರಿಯಗೊಳಿಸಲು Username & Password ನಮೂದಿಸಿ';
+        }
+        if (icon) icon.className = 'fa-solid fa-lock-open';
+        if (iconBox) iconBox.className = 'p-2 bg-indigo-600 text-white rounded-xl text-sm shadow';
+        if (submitBtnText) submitBtnText.innerText = 'ದೃಢೀಕರಿಸಿ & ಅನ್‌ಲಾಕ್ ಮಾಡಿ';
+      } else {
+        // Mode: LOCK
+        if (title) title.innerText = 'ಪೋರ್ಟಲ್ ಲಾಕ್ ಮಾಡಿ (Lock to Teacher Mode)';
+        if (subtitle) subtitle.innerText = 'ಶಿಕ್ಷಕರ ಸುರಕ್ಷಿತ ಮೋಡ್‌ಗೆ ಲಾಕ್ ಮಾಡಲು ಅಡ್ಮಿನ್ Username & Password ನಮೂದಿಸಿ';
+        if (icon) icon.className = 'fa-solid fa-lock';
+        if (iconBox) iconBox.className = 'p-2 bg-amber-500 text-white rounded-xl text-sm shadow';
+        if (submitBtnText) submitBtnText.innerText = 'ದೃಢೀಕರಿಸಿ & ಲಾಕ್ ಮಾಡಿ';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closePortalAuthModal() {
+      const modal = document.getElementById('portalAuthModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function handlePortalAuthSubmit() {
+      const userInput = document.getElementById('authUsername').value.trim();
+      const pass = document.getElementById('authPassword').value;
+      const alertBox = document.getElementById('authModalAlert');
+      const submitBtn = document.getElementById('authSubmitBtn');
+
+      if (!userInput || !pass) {
+        showAuthModalAlert("ದಯವಿಟ್ಟು Username ಮತ್ತು Password ಎರಡನ್ನೂ ನಮೂದಿಸಿ.", "error");
+        return;
+      }
+
+      const origBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...`;
+      }
+
+      try {
+        if (!supabaseClient) initSupabaseClient();
+        if (!supabaseClient) throw new Error("Supabase Database ಸಂಪರ್ಕ ಲಭ್ಯವಿಲ್ಲ.");
+
+        let email = userInput;
+
+        // If username (without @), lookup profile email
+        if (!userInput.includes('@')) {
+          const { data: profile, error: lookupErr } = await supabaseClient
+            .from('profiles')
+            .select('email, role')
+            .eq('username', userInput)
+            .maybeSingle();
+
+          if (profile && profile.email) {
+            email = profile.email;
+          } else {
+            throw new Error("ಈ Username ಹೊಂದಿರುವ ಬಳಕೆದಾರರು ಕಂಡುಬಂದಿಲ್ಲ. ದಯವಿಟ್ಟು ಸರಿಯಾದ Username/Email ನಮೂದಿಸಿ.");
+          }
+        }
+
+        // Authenticate with Supabase Auth
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: pass
+        });
+
+        if (error) {
+          throw new Error(error.message || "ತಪ್ಪಾದ Username ಅಥವಾ Password.");
+        }
+
+        // Successfully Authenticated!
+        if (isPortalLocked) {
+          // Unlock
+          isPortalLocked = false;
+          updateLockStatusUI();
+          closePortalAuthModal();
+          showToast("ಅನ್‌ಲಾಕ್ ಆಗಿದೆ!", "ಪೋರ್ಟಲ್ ಯಶಸ್ವಿಯಾಗಿ ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಈಗ ನೀವು ಎಲ್ಲಾ ಪೇಜ್‌ಗಳಿಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಬಹುದು.", "success");
+        } else {
+          // Lock
+          isPortalLocked = true;
+          updateLockStatusUI();
+          closePortalAuthModal();
+          showToast("ಲಾಕ್ ಮಾಡಲಾಗಿದೆ!", "ಪೋರ್ಟಲ್ ಅನ್ನು ಶಿಕ್ಷಕರ ಸುರಕ್ಷಿತ ಮೋಡ್‌ಗೆ ಯಶಸ್ವಿಯಾಗಿ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ.", "success");
+        }
+
+      } catch (err) {
+        showAuthModalAlert(err.message || "ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ.", "error");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = origBtnHtml;
+        }
+      }
+    }
+
+    function showAuthModalAlert(msg, type = 'error') {
+      const alertBox = document.getElementById('authModalAlert');
+      if (!alertBox) return;
+
+      alertBox.innerText = msg;
+      alertBox.className = type === 'error'
+        ? 'p-3 rounded-xl text-xs font-bold border bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
+        : 'p-3 rounded-xl text-xs font-bold border bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300';
+      alertBox.classList.remove('hidden');
     }
   </script>
 </body>
