@@ -1,8 +1,30 @@
 // GHPS Marched School Portal Shared Navigation Component
 // Upgraded to ULTRA-MODERN GLASSMORPHIC STYLE with PREMIUM RADIUM ACCENTS
 // Supports three layouts: default_top, modern_top, and side (left sidebar)
-window.PORTAL_VERSION = "2.5.1";
-window.PORTAL_BUILD_DATE = "2026.07.27";
+window.PORTAL_VERSION = "2.5.2";
+
+window.getFormattedPageLastModified = function() {
+  try {
+    const raw = document.lastModified;
+    if (!raw) return new Date().toLocaleDateString('en-GB');
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    const day = String(d.getDate()).padStart(2, '0');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const mon = months[d.getMonth()];
+    const year = d.getFullYear();
+    let hours = d.getHours();
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${day}-${mon}-${year} ${String(hours).padStart(2, '0')}:${mins} ${ampm}`;
+  } catch (e) {
+    return document.lastModified || '2026';
+  }
+};
+
+window.PORTAL_BUILD_DATE = window.getFormattedPageLastModified();
 
 // Shared Supabase Client Singleton Helper
 window.getPortalSupabase = function() {
@@ -421,10 +443,11 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
                 </select>
               </div>
 
-              <!-- Version Badge Button -->
-              <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm animate-pulse" title="Version 2.5.0 - Click to view What's New">
+              <!-- Version Badge Button with Auto Updated Timestamp -->
+              <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm" title="Version ${window.PORTAL_VERSION} • Updated: ${window.getFormattedPageLastModified()} - Click for Details & Force Reload">
                 <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[10px]"></i>
-                <span>v2.5.0</span>
+                <span>v${window.PORTAL_VERSION}</span>
+                <span class="text-[9px] font-mono opacity-85 hidden sm:inline border-l border-emerald-500/30 pl-1.5 text-slate-600 dark:text-slate-300"><i class="fa-regular fa-clock text-[8px] mr-0.5"></i>${window.getFormattedPageLastModified()}</span>
               </button>
 
               <!-- User Badge Capsule -->
@@ -486,9 +509,9 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
               </div>
 
               <!-- Version Badge Button -->
-              <button type="button" onclick="window.openWhatsNewModal()" class="flex items-center justify-between w-full bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/40 text-emerald-300 font-extrabold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-xs" title="Version 2.5.0 - What's New?">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xs"></i> What's New?</span>
-                <span class="px-1.5 py-0.5 bg-emerald-500/30 text-emerald-300 rounded-full text-[9px] font-mono font-bold">v2.5.0</span>
+              <button type="button" onclick="window.openWhatsNewModal()" class="flex items-center justify-between w-full bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/40 text-emerald-300 font-extrabold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-xs" title="Version ${window.PORTAL_VERSION} • Updated: ${window.getFormattedPageLastModified()}">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-400 text-xs"></i> ನೂತನ ಅಪ್‌ಡೇಟ್</span>
+                <span class="px-1.5 py-0.5 bg-emerald-500/30 text-emerald-300 rounded-full text-[9px] font-mono font-bold">v${window.PORTAL_VERSION}</span>
               </button>
             </div>
 
@@ -632,10 +655,11 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
                   </select>
                 </div>
                 
-                <!-- Version Badge Button -->
-                <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm" title="Version 2.5.1">
+                <!-- Version Badge Button with Auto Updated Timestamp -->
+                <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1.5 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2.5 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm" title="Version ${window.PORTAL_VERSION} • Updated: ${window.getFormattedPageLastModified()} - Click for Details & Force Reload">
                   <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[10px]"></i>
-                  <span>v2.5.1</span>
+                  <span>v${window.PORTAL_VERSION}</span>
+                  <span class="text-[9px] font-mono opacity-85 hidden md:inline border-l border-emerald-500/30 pl-1.5 text-slate-600 dark:text-slate-300"><i class="fa-regular fa-clock text-[8px] mr-0.5"></i>${window.getFormattedPageLastModified()}</span>
                 </button>
 
                 <!-- User Badge Capsule -->
@@ -2644,11 +2668,13 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
               </div>
               <div>
-                <h2 class="text-base font-black uppercase tracking-wider flex items-center gap-2 m-0 text-white">
-                  <span>Portal Release Version 2.5.0</span>
-                  <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] rounded-full font-bold">LATEST BUILD</span>
-                </h2>
-                <p class="text-xs text-indigo-200/80 font-medium m-0 mt-0.5">ಅಪ್‌ಡೇಟ್ ಮಾಹಿತಿ ಹಾಗೂ ನೂತನ ವೈಶಿಷ್ಟ್ಯಗಳ ವಿವರ (July 2026 Release)</p>
+                <div class="flex items-center gap-2">
+                  <h2 class="text-base font-black uppercase tracking-wider flex items-center gap-2 m-0 text-white">
+                    <span>Portal Release Version ${window.PORTAL_VERSION}</span>
+                    <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[9px] rounded-full font-bold">LATEST BUILD</span>
+                  </h2>
+                </div>
+                <p class="text-xs text-indigo-200/80 font-medium m-0 mt-0.5">ಪುಟ ಪರಿಷ್ಕೃತ ಸಮಯ / Last Updated: <strong class="text-emerald-300 font-mono">${window.getFormattedPageLastModified()}</strong></p>
               </div>
             </div>
             <button onclick="window.closeWhatsNewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center border-0 cursor-pointer transition">
@@ -2659,13 +2685,29 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
           <!-- Content Body -->
           <div class="p-6 max-h-[70vh] overflow-y-auto space-y-4 text-xs font-semibold text-slate-700 dark:text-slate-200">
 
+            <!-- Live Page & Reload Banner -->
+            <div class="bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-purple-500/10 border border-emerald-500/30 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <div class="font-extrabold text-slate-900 dark:text-white text-xs flex items-center gap-1.5">
+                  <i class="fa-solid fa-file-code text-indigo-500 text-sm"></i>
+                  <span>ಪ್ರಸ್ತುತ ಪುಟ / Current Page: <strong class="text-indigo-600 dark:text-indigo-400 font-mono">${location.pathname.split('/').pop() || 'index.html'}</strong></span>
+                </div>
+                <div class="text-[11px] text-slate-600 dark:text-slate-300 mt-1">
+                  ಕಡತ ನವೀಕರಣ (Updated Date & Time): <strong class="font-mono text-emerald-700 dark:text-emerald-300">${window.getFormattedPageLastModified()}</strong>
+                </div>
+              </div>
+              <button type="button" onclick="window.location.href = window.location.pathname + '?v=' + Date.now()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold border-0 cursor-pointer shadow-sm flex items-center gap-1.5 shrink-0 transition active:scale-95">
+                <i class="fa-solid fa-arrows-rotate"></i> <span>ಕ್ಯಾಶ್ ಕ್ಲಿಯರ್ & ರೀಲೋಡ್</span>
+              </button>
+            </div>
+
             <!-- Cache Warning Note -->
             <div class="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-900/60 p-3.5 rounded-2xl flex items-start gap-3">
               <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0 mt-0.5"></i>
               <div>
                 <div class="font-extrabold text-amber-900 dark:text-amber-200 text-xs">ಹೊಸ ಆವೃತ್ತಿಯನ್ನು ಗುರುತಿಸುವುದು ಹೇಗೆ? (How to verify new version):</div>
                 <div class="text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed mt-0.5">
-                  ಪ್ರಸ್ತುತ ವೆಬ್‌ಸೈಟ್‌ ಹೆಡರ್‌ನಲ್ಲಿ <strong class="text-indigo-600 dark:text-indigo-400 font-extrabold">v2.5.0</strong> ಬ್ಯಾಡ್ಜ್ ಕಾಣಿಸುತ್ತಿದ್ದರೆ ನೀವು ನೂತನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ. ಹಳೆಯ ಲೇಔಟ್ ಅಥವಾ ಬ್ಯಾಕಪ್ ಫೈಲ್ ತೆರೆದಿದ್ದರೆ ಬ್ರೌಸರ್‌ನಲ್ಲಿ <strong>Ctrl + Shift + R</strong> ಅಥವಾ <strong>Ctrl + F5</strong> ಒತ್ತುವ ಮೂಲಕ Cache ಕ್ಲಿಯರ್ ಮಾಡಿ.
+                  ಪ್ರಸ್ತುತ ವೆಬ್‌ಸೈಟ್‌ ಹೆಡರ್‌ನಲ್ಲಿ <strong class="text-indigo-600 dark:text-indigo-400 font-extrabold">v${window.PORTAL_VERSION}</strong> ಮತ್ತು ಅಪ್‌ಡೇಟ್ ದಿನಾಂಕ ಕಾಣಿಸುತ್ತಿದ್ದರೆ ನೀವು ನೂತನ ಆವೃತ್ತಿಯನ್ನು ಬಳಸುತ್ತಿದ್ದೀರಿ. ಹಳೆಯ ಲೇಔಟ್ ಅಥವಾ ಮೊಬೈಲ್ ಕ್ಯಾಶ್ ತೆರೆದಿದ್ದರೆ ಮೇಲಿನ <strong>"ಕ್ಯಾಶ್ ಕ್ಲಿಯರ್ & ರೀಲೋಡ್"</strong> ಬಟನ್ ಕ್ಲಿಕ್ ಮಾಡಿ.
                 </div>
               </div>
             </div>
@@ -2674,7 +2716,7 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
             <div class="space-y-3">
               <h3 class="text-xs font-black uppercase text-slate-800 dark:text-slate-100 tracking-wider flex items-center gap-1.5 pt-1">
                 <i class="fa-solid fa-rocket text-indigo-500"></i>
-                <span>v2.5.0 ನಲ್ಲಿ ಸೇರಿಸಲಾದ ನೂತನ ಫೀಚರ್‌ಗಳು (New Features in Version 2.5.0):</span>
+                <span>v${window.PORTAL_VERSION} ನಲ್ಲಿ ಸೇರಿಸಲಾದ ನೂತನ ಫೀಚರ್‌ಗಳು (New Features in Version ${window.PORTAL_VERSION}):</span>
               </h3>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2682,37 +2724,37 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
                 <!-- Card 1 -->
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
                   <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
-                    <i class="fa-solid fa-right-left text-sky-500"></i>
+                    <i class="fa-solid fa-graduation-cap text-indigo-500"></i>
+                    <span>LBA Assessment Studio (LbaAssessment.html)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಕಲಿಕಾ ಚೇತರಿಕೆ ಘಟಕವಾರು ಅಂಕ ದಾಖಲಾತಿ, Supabase ಕ್ಲೌಡ್ ಆಟೋ-ಸಿಂಕ್ ಮತ್ತು ಎಕ್ಸೆಲ್ ಆಮದು/ರಫ್ತು ಬೆಂಬಲ.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-clock-rotate-left text-sky-500"></i>
+                    <span>ಆಟೋಮ್ಯಾಟಿಕ್ ಆವೃತ್ತಿ & ದಿನಾಂಕ ಟ್ರ್ಯಾಕಿಂಗ್ (Auto Version Stamp)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಪ್ರತಿಯೊಂದು ಪುಟದಲ್ಲೂ ನವೀಕೃತ ದಿನಾಂಕ & ಸಮಯ ಪ್ರದರ್ಶನ ಹಾಗೂ 1-ಕ್ಲಿಕ್ ಕ್ಯಾಶ್ ಕ್ಲಿಯರ್ & ರೀಲೋಡ್ ಸೌಲಭ್ಯ.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
+                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
+                    <i class="fa-solid fa-right-left text-emerald-500"></i>
                     <span>SATS Compare Studio (SatsCompare.html)</span>
                   </div>
                   <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">SATS ಎಕ್ಸೆಲ್ ಫೈಲ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ, ಪೋರ್ಟಲ್ ಡೇಟಾದೊಂದಿಗೆ ಪಕ್ಕದಲ್ಲೇ (Side-by-Side) ಹೋಲಿಸಿ 1-ಕ್ಲಿಕ್‌ನಲ್ಲಿ ಆಟೋ-ಸಿಂಕ್ ಮಾಡಿ.</p>
                 </div>
 
-                <!-- Card 2 -->
+                <!-- Card 4 -->
                 <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
                   <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
                     <i class="fa-solid fa-file-invoice text-rose-500"></i>
                     <span>SATS 25-Field Official TC Format</span>
                   </div>
                   <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಅಧಿಕೃತ 25-ಫೀಲ್ಡ್ SATS TC ಟೆಂಪ್ಲೇಟ್‌ನಲ್ಲಿ ವರ್ಗಾವಣೆ ಪ್ರಮಾಣ ಪತ್ರ ಮುದ್ರಿಸಿ (certificates.html).</p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
-                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
-                    <i class="fa-solid fa-shield-check text-emerald-500"></i>
-                    <span>Duplicate TC Auto-Header</span>
-                  </div>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಈಗಾಗಲೇ TC ಪಡೆದವರಿಗೆ ಪುನಃ TC ನೀಡುವಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ "DUPLICATE TC" ಹೆಡರ್ ಬರುತ್ತದೆ.</p>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
-                  <div class="font-bold text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
-                    <i class="fa-solid fa-clock-rotate-left text-purple-500"></i>
-                    <span>Re-Admitted Register (RecycleBin.html)</span>
-                  </div>
-                  <p class="text-[11px] text-slate-500 dark:text-slate-400 font-normal m-0">ಮರು-ಪ್ರವೇಶ ಪಡೆದ ವಿದ್ಯಾರ್ಥಿಗಳ 4ನೇ ಇತಿಹಾಸ ಟ್ಯಾಬ್ ಮತ್ತು ಅನಂತ ಬಾರಿಯ TC-Out Cycle ಬೆಂಬಲ.</p>
                 </div>
 
               </div>
@@ -2722,8 +2764,11 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
 
           <!-- Footer -->
           <div class="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center">
-            <span class="text-[10px] text-slate-400 font-bold uppercase">System Version: v2.5.0 (Build 2026.07.27)</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase">System: v${window.PORTAL_VERSION} • ${window.getFormattedPageLastModified()}</span>
             <button onclick="window.closeWhatsNewModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-4 py-2 rounded-xl text-xs transition border-0 cursor-pointer shadow-sm">
+              Got It! / ಅರ್ಥವಾಯಿತು
+            </button>
+          </div>
               Got It! / ಅರ್ಥವಾಯಿತು
             </button>
           </div>
@@ -2831,6 +2876,21 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
     return { schoolNameEn, schoolNameKn, udiseCode, govLogo, schoolLogo };
   };
 
+  // Auto-inject page build info into existing footers across all pages
+  function attachFooterBuildStamp() {
+    try {
+      const footers = document.querySelectorAll('footer');
+      footers.forEach(footer => {
+        if (!footer.querySelector('.portal-build-stamp')) {
+          const stamp = document.createElement('div');
+          stamp.className = 'portal-build-stamp text-[10px] text-slate-400 dark:text-slate-500 mt-1.5 font-mono tracking-tight flex items-center justify-center gap-2 flex-wrap';
+          stamp.innerHTML = `<span>ಆವೃತ್ತಿ / Version: <strong class="text-indigo-600 dark:text-indigo-400 font-bold">v${window.PORTAL_VERSION}</strong></span><span>•</span><span>ಪರಿಷ್ಕೃತ ಸಮಯ (Updated): <strong class="text-slate-600 dark:text-slate-300 font-bold">${window.getFormattedPageLastModified()}</strong></span>`;
+          footer.appendChild(stamp);
+        }
+      });
+    } catch(e) {}
+  }
+
   // Run on Document Load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
@@ -2839,6 +2899,7 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
       injectPrintDrawerHTML();
       checkVersionAutoUpdate();
       window.loadAndApplySchoolConfig();
+      setTimeout(attachFooterBuildStamp, 300);
     });
   } else {
     renderNavbar();
@@ -2846,5 +2907,6 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
     injectPrintDrawerHTML();
     checkVersionAutoUpdate();
     window.loadAndApplySchoolConfig();
+    setTimeout(attachFooterBuildStamp, 300);
   }
 })();

@@ -864,7 +864,11 @@
       if (mSubs && mSubs.length > 0) middleSubjects = mSubs;
 
       // Save to localStorage
-      let schoolId = localStorage.getItem("school_id") || "default_school";
+      let rawSchoolId = localStorage.getItem("school_id");
+      let schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) 
+        ? rawSchoolId 
+        : 'f592831e-69a8-4138-b82d-69649cb46605';
+
       localStorage.setItem(`lba_lesson_config_${schoolId}`, JSON.stringify(lessonConfigData));
       localStorage.setItem('lba_lesson_config', JSON.stringify(lessonConfigData));
 
@@ -1003,6 +1007,29 @@
 
       document.getElementById('loading-overlay')?.classList.remove('hidden');
       document.getElementById('empty-state')?.classList.add('hidden');
+
+      // Fetch latest lesson config from Supabase school_settings
+      try {
+        let rawSchoolId = localStorage.getItem("school_id");
+        let targetSchoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) 
+          ? rawSchoolId 
+          : 'f592831e-69a8-4138-b82d-69649cb46605';
+
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          const { data: sSet, error: sErr } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', targetSchoolId)
+            .eq('settings_key', 'lba_lesson_config')
+            .maybeSingle();
+
+          if (!sErr && sSet && sSet.settings_value) {
+            lessonConfigData = sSet.settings_value;
+            localStorage.setItem(`lba_lesson_config_${targetSchoolId}`, JSON.stringify(lessonConfigData));
+            localStorage.setItem('lba_lesson_config', JSON.stringify(lessonConfigData));
+          }
+        }
+      } catch(e) {}
 
       // Resolve currentUnits
       if (lessonConfigData && lessonConfigData[className] && lessonConfigData[className][subjectName] && lessonConfigData[className][subjectName].length > 0) {
@@ -1990,10 +2017,31 @@
       if (bannerEl) bannerEl.innerText = schoolName;
 
       // Load saved lesson config
-      let schoolId = localStorage.getItem("school_id") || "default_school";
+      let rawSchoolId = localStorage.getItem("school_id");
+      let schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) 
+        ? rawSchoolId 
+        : 'f592831e-69a8-4138-b82d-69649cb46605';
+
       const savedConfig = localStorage.getItem(`lba_lesson_config_${schoolId}`) || localStorage.getItem('lba_lesson_config');
       if (savedConfig) {
         try { lessonConfigData = JSON.parse(savedConfig); } catch(e){}
+      }
+
+      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        try {
+          const { data: sSet } = await supabaseClient
+            .from('school_settings')
+            .select('settings_value')
+            .eq('school_id', schoolId)
+            .eq('settings_key', 'lba_lesson_config')
+            .maybeSingle();
+
+          if (sSet && sSet.settings_value) {
+            lessonConfigData = sSet.settings_value;
+            localStorage.setItem(`lba_lesson_config_${schoolId}`, JSON.stringify(lessonConfigData));
+            localStorage.setItem('lba_lesson_config', JSON.stringify(lessonConfigData));
+          }
+        } catch(e) {}
       }
 
       if (classFilter) {
