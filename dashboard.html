@@ -50,7 +50,7 @@
         -webkit-backdrop-filter: none !important;
       }
       
-      html, body {
+      html, body, body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
         background: #ffffff !important;
         background-color: #ffffff !important;
         color: #000000 !important;
@@ -66,6 +66,18 @@
         print-color-adjust: exact !important;
       }
 
+      /* Clean up parent containers to prevent grey borders/shadows/backgrounds */
+      body > div, 
+      body > div > div, 
+      main {
+        background: transparent !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
       body * {
         visibility: hidden !important;
       }
@@ -76,9 +88,9 @@
 
       #summary-table-card {
         position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
-        width: 100% !important;
+        left: 1.5% !important;
+        top: 15px !important;
+        width: 97% !important;
         border: none !important;
         box-shadow: none !important;
         background: #ffffff !important;
@@ -108,9 +120,11 @@
       }
 
       #summary-table-card div.border-2 > div.py-3 {
-        background: #f8fafc !important;
+        background: #ffffff !important;
         border-bottom: 1.2px solid #000000 !important;
         padding: 4px 8px !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       #summary-table-card div.border-2 h2 {
@@ -122,14 +136,14 @@
       }
 
       #summary-table-card div.border-2 h3 {
-        font-size: 8.5px !important;
-        color: #1e293b !important;
+        font-size: 9px !important;
+        color: #000000 !important;
         margin: 0 0 3px 0 !important;
         font-weight: 800 !important;
       }
 
       #summary-table-card div.border-2 div.text-xs {
-        font-size: 8px !important;
+        font-size: 8.5px !important;
         color: #000000 !important;
         font-weight: bold !important;
       }
@@ -137,13 +151,59 @@
       #summary-table-card div.border-2 span {
         color: #000000 !important;
         border-color: #000000 !important;
-        font-size: 8px !important;
+        font-size: 8.5px !important;
+        font-weight: bold !important;
       }
 
-      #summary-table-card div.border-2 div.grid > div {
-        padding: 2.5px 5px !important;
+
+      /* Force grid columns in print for KDP Header */
+      #summary-table-card div.border-2 div.divide-y-2 {
+        display: block !important;
         border-color: #000000 !important;
       }
+      
+      #summary-table-card div.border-2 div.divide-y-2 > div {
+        display: grid !important;
+        border-color: #000000 !important;
+        border-top: 1.2px solid #000000 !important;
+      }
+      #summary-table-card div.border-2 div.divide-y-2 > div:first-child {
+        border-top: none !important;
+      }
+
+      /* Row 1: 2 columns */
+      #summary-table-card div.border-2 div.divide-y-2 > div:nth-child(1) {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      /* Row 2: 4 columns */
+      #summary-table-card div.border-2 div.divide-y-2 > div:nth-child(2) {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      }
+      /* Row 3: 4 columns */
+      #summary-table-card div.border-2 div.divide-y-2 > div:nth-child(3) {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      }
+      /* Row 4: 3 columns */
+      #summary-table-card div.border-2 div.divide-y-2 > div:nth-child(4) {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+      /* Row 5: 3 columns */
+      #summary-table-card div.border-2 div.divide-y-2 > div:nth-child(5) {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+
+      /* Force vertical border divider between cells in each grid row */
+      #summary-table-card div.border-2 div.divide-y-2 > div > div {
+        padding: 2.5px 5px !important;
+        border: none !important;
+        border-right: 1px solid #000000 !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+      #summary-table-card div.border-2 div.divide-y-2 > div > div:last-child {
+        border-right: none !important;
+      }
+
 
       /* Modern Crisp Table for 15-Column Data */
       table {
@@ -162,13 +222,25 @@
         font-size: 8.5px !important;
         line-height: 1.15 !important;
         text-align: center !important;
+        background-color: #ffffff !important;
         background: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      tbody, tr {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       th {
-        background-color: #f1f5f9 !important;
+        background-color: #ffffff !important;
         font-weight: bold !important;
-        color: #0f172a !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
 
       td button {
@@ -179,12 +251,16 @@
 
       /* High visibility shading for subtotals and grand totals in B&W printing */
       tr.bg-amber-100\/50, tr.bg-amber-100\/50 * {
-        background-color: #f8fafc !important;
+        background-color: #ffffff !important;
         font-weight: bold !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       tr.bg-orange-100, tr.bg-orange-100 * {
-        background-color: #e2e8f0 !important;
+        background-color: #ffffff !important;
         font-weight: 900 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
 

@@ -212,12 +212,57 @@
       <!-- MAIN CONTENT VIEW 1: MARKS GRID -->
       <div id="main-grid-view" class="bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
         
-        <!-- Streamlined Single Filter & Action Bar -->
-        <div class="bg-slate-50 dark:bg-slate-850 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
-          <div class="flex flex-wrap items-center justify-between gap-2.5">
-            
-            <!-- Left Group: Class, Subject, Unit, Search -->
+        <!-- Summary Grade Stat Cards (Total, A+, A, B+, B, C+/Others) - Positioned ABOVE toolbar -->
+        <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+          <div class="bg-white dark:bg-slate-850 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl text-indigo-600 dark:text-indigo-400"><i class="fa-solid fa-users text-sm"></i></div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-slate-500 font-bold uppercase tracking-wider truncate">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</div>
+              <div id="stat-total-students" class="text-base font-black text-slate-800 dark:text-slate-200">0</div>
+            </div>
+          </div>
+          <div class="bg-emerald-50/40 dark:bg-emerald-950/20 p-2.5 rounded-2xl border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl text-emerald-700 dark:text-emerald-300 font-black text-xs">A+</div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-emerald-800 dark:text-emerald-300 font-extrabold uppercase tracking-wider truncate">A+ ಶ್ರೇಣಿ</div>
+              <div id="stat-grade-ap" class="text-base font-black text-emerald-800 dark:text-emerald-200">0</div>
+            </div>
+          </div>
+          <div class="bg-teal-50/40 dark:bg-teal-950/20 p-2.5 rounded-2xl border border-teal-200/60 dark:border-teal-900/40 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-teal-100 dark:bg-teal-900/50 rounded-xl text-teal-700 dark:text-teal-300 font-black text-xs">A</div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-teal-800 dark:text-teal-300 font-extrabold uppercase tracking-wider truncate">A ಶ್ರೇಣಿ</div>
+              <div id="stat-grade-a" class="text-base font-black text-teal-800 dark:text-teal-200">0</div>
+            </div>
+          </div>
+          <div class="bg-sky-50/40 dark:bg-sky-950/20 p-2.5 rounded-2xl border border-sky-200/60 dark:border-sky-900/40 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-sky-100 dark:bg-sky-900/50 rounded-xl text-sky-700 dark:sky-300 font-black text-xs">B+</div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-sky-800 dark:text-sky-300 font-extrabold uppercase tracking-wider truncate">B+ ಶ್ರೇಣಿ</div>
+              <div id="stat-grade-bp" class="text-base font-black text-sky-800 dark:text-sky-200">0</div>
+            </div>
+          </div>
+          <div class="bg-indigo-50/40 dark:bg-indigo-950/20 p-2.5 rounded-2xl border border-indigo-200/60 dark:border-indigo-900/40 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl text-indigo-700 dark:text-indigo-300 font-black text-xs">B</div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-indigo-800 dark:text-indigo-300 font-extrabold uppercase tracking-wider truncate">B ಶ್ರೇಣಿ</div>
+              <div id="stat-grade-b" class="text-base font-black text-indigo-800 dark:text-indigo-200">0</div>
+            </div>
+          </div>
+          <div class="bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 shadow-xs flex items-center gap-2.5">
+            <div class="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 font-black text-xs">C+</div>
+            <div class="min-w-0">
+              <div class="text-[9px] text-amber-800 dark:text-amber-300 font-extrabold uppercase tracking-wider truncate">C+ / ಇತರ</div>
+              <div id="stat-grade-others" class="text-base font-black text-amber-800 dark:text-amber-200">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Single Compact Integrated Toolbar (Dropdowns + Action Buttons) -->
+        <div class="bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm no-print">
+          <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-2.5 flex-grow">
+              
               <!-- Class Filter -->
               <div class="w-24 sm:w-28">
                 <label class="block text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">
@@ -249,7 +294,7 @@
                 </select>
               </div>
 
-              <!-- Unit Filter (Requested in point 4) -->
+              <!-- Unit Filter -->
               <div class="w-36 sm:w-44">
                 <label class="block text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">
                   <i class="fa-solid fa-layer-group text-amber-500 mr-0.5"></i>ಘಟಕ / Unit
@@ -259,20 +304,20 @@
                 </select>
               </div>
 
-              <!-- Search Box (Requested in point 5: next to unit DD) -->
-              <div class="w-48 sm:w-60">
+              <!-- Status Filter -->
+              <div class="w-36 sm:w-44">
                 <label class="block text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">
-                  <i class="fa-solid fa-magnifying-glass text-slate-400 mr-0.5"></i>ಹುಡುಕಿ / Search
+                  <i class="fa-solid fa-filter text-sky-500 mr-0.5"></i>ಸ್ಥಿತಿ / Status
                 </label>
-                <div class="relative">
-                  <input type="text" id="search-student-input" oninput="applyFiltersAndRender()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಅಥವಾ STS..." class="w-full pl-3 pr-2 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400 font-semibold shadow-xs">
-                </div>
+                <select id="status-filter" class="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-xs">
+                  <option value="ALL" selected>All Students / ಎಲ್ಲಾ</option>
+                  <option value="UNFILLED">Unfilled / ಬಾಕಿ</option>
+                  <option value="FILLED">Filled / ಪೂರ್ಣ</option>
+                </select>
               </div>
-            </div>
 
-            <!-- Right Group: View Switcher, Gender Filter (point 6), Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2 mt-auto">
-              
+              <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1 hidden lg:block"></div>
+
               <!-- View Switcher -->
               <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl">
                 <button type="button" id="btn-view-cards" onclick="setViewMode('cards')" class="px-2.5 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1 bg-indigo-600 text-white shadow-xs border-0">
@@ -283,78 +328,37 @@
                 </button>
               </div>
 
-              <!-- Gender Filter Buttons (Requested in point 6: shifted in side of card view/table view) -->
-              <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl">
-                <button type="button" onclick="setGenderFilter('ALL')" id="gen-btn-all" class="px-2.5 py-1.5 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer">ಎಲ್ಲಾ</button>
-                <button type="button" onclick="setGenderFilter('Boy')" id="gen-btn-boy" class="px-2 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-slate-700 dark:text-slate-300 border-0 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700">👦 ಬಾಲಕರು</button>
-                <button type="button" onclick="setGenderFilter('Girl')" id="gen-btn-girl" class="px-2 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-slate-700 dark:text-slate-300 border-0 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700">👧 ಬಾಲಕಿಯರು</button>
-              </div>
-
-              <!-- Action Buttons (Print, Export, Import, Template) - Assessment Setting button removed as per point 7 -->
-              <div class="flex items-center gap-1.5">
-                <button onclick="downloadCSVTemplate()" title="CSV ನಮೂನೆ ಡೌನ್‌ಲೋಡ್" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer">
+              <!-- Action Buttons -->
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="downloadCSVTemplate()" title="CSV ನಮೂನೆ ಡೌನ್‌ಲೋಡ್" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer hover:scale-105 active:scale-95">
                   <i class="fa-solid fa-file-arrow-down text-xs"></i>
                 </button>
                 <input type="file" id="csvFileInput" class="hidden" accept=".csv" onchange="handleCSVUpload(event)">
-                <button id="btn-import-csv" onclick="document.getElementById('csvFileInput').click()" title="CSV ಆಮದು" class="bg-white dark:bg-slate-800 hover:bg-amber-50 text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer">
+                <button id="btn-import-csv" onclick="document.getElementById('csvFileInput').click()" title="CSV ಆಮದು" class="bg-white dark:bg-slate-800 hover:bg-amber-50 text-amber-600 dark:text-amber-400 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer hover:scale-105 active:scale-95">
                   <i class="fa-solid fa-file-import text-xs"></i>
                 </button>
-                <button id="btn-export-excel" onclick="exportToExcel()" title="Excel ರಫ್ತು" class="bg-white dark:bg-slate-800 hover:bg-emerald-50 text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer">
+                <button id="btn-export-excel" onclick="exportToExcel()" title="Excel ರಫ್ತು" class="bg-white dark:bg-slate-800 hover:bg-emerald-50 text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer hover:scale-105 active:scale-95">
                   <i class="fa-solid fa-file-excel text-xs"></i>
                 </button>
-                <button id="btn-print-report" onclick="triggerPrint()" title="ಮುದ್ರಿಸು / Print" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer">
+                <button id="btn-print-report" onclick="triggerPrint()" title="ಮುದ್ರಿಸು / Print" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 p-2 rounded-xl transition shadow-xs cursor-pointer hover:scale-105 active:scale-95">
                   <i class="fa-solid fa-print text-xs"></i>
                 </button>
               </div>
 
             </div>
-
           </div>
         </div>
 
-        <!-- Summary Grade Stat Cards -->
-        <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-          <div class="bg-white dark:bg-slate-850 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl text-indigo-600 dark:text-indigo-400"><i class="fa-solid fa-users text-sm"></i></div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-slate-500 font-bold uppercase tracking-wider truncate">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</div>
-              <div id="stat-total-students" class="text-base font-black text-slate-800 dark:text-slate-200">0</div>
-            </div>
+        <!-- Search & Quick Gender Filter Bar (Positioned LAST, just above table/cards) -->
+        <div id="search-filter-bar" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl no-print">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="search-student-input" oninput="applyFiltersAndRender()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಅಥವಾ STS..." class="w-full pl-8 pr-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400 font-semibold shadow-xs">
           </div>
-          <div class="bg-emerald-50/40 dark:bg-emerald-950/20 p-2.5 rounded-2xl border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl text-emerald-700 dark:text-emerald-300 font-black text-xs">A+</div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-emerald-800 dark:text-emerald-300 font-extrabold uppercase tracking-wider truncate">A+ ಶ್ರೇಣಿ</div>
-              <div id="stat-grade-ap" class="text-base font-black text-emerald-800 dark:text-emerald-200">0</div>
-            </div>
-          </div>
-          <div class="bg-teal-50/40 dark:bg-teal-950/20 p-2.5 rounded-2xl border border-teal-200/60 dark:border-teal-900/40 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-teal-100 dark:bg-teal-900/50 rounded-xl text-teal-700 dark:text-teal-300 font-black text-xs">A</div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-teal-800 dark:text-teal-300 font-extrabold uppercase tracking-wider truncate">A ಶ್ರೇಣಿ</div>
-              <div id="stat-grade-a" class="text-base font-black text-teal-800 dark:text-teal-200">0</div>
-            </div>
-          </div>
-          <div class="bg-sky-50/40 dark:bg-sky-950/20 p-2.5 rounded-2xl border border-sky-200/60 dark:border-sky-900/40 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-sky-100 dark:bg-sky-900/50 rounded-xl text-sky-700 dark:text-sky-300 font-black text-xs">B+</div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-sky-800 dark:text-sky-300 font-extrabold uppercase tracking-wider truncate">B+ ಶ್ರೇಣಿ</div>
-              <div id="stat-grade-bp" class="text-base font-black text-sky-800 dark:text-sky-200">0</div>
-            </div>
-          </div>
-          <div class="bg-indigo-50/40 dark:bg-indigo-950/20 p-2.5 rounded-2xl border border-indigo-200/60 dark:border-indigo-900/40 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl text-indigo-700 dark:text-indigo-300 font-black text-xs">B</div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-indigo-800 dark:text-indigo-300 font-extrabold uppercase tracking-wider truncate">B ಶ್ರೇಣಿ</div>
-              <div id="stat-grade-b" class="text-base font-black text-indigo-800 dark:text-indigo-200">0</div>
-            </div>
-          </div>
-          <div class="bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 shadow-xs flex items-center gap-2.5">
-            <div class="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 font-black text-xs">C+</div>
-            <div class="min-w-0">
-              <div class="text-[9px] text-amber-800 dark:text-amber-300 font-extrabold uppercase tracking-wider truncate">C+ / ಇತರ</div>
-              <div id="stat-grade-others" class="text-base font-black text-amber-800 dark:text-amber-200">0</div>
-            </div>
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button type="button" onclick="setGenderFilter('ALL')" id="gen-btn-all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer">ಎಲ್ಲಾ</button>
+            <button type="button" onclick="setGenderFilter('Boy')" id="gen-btn-boy" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👦 ಬಾಲಕರು</button>
+            <button type="button" onclick="setGenderFilter('Girl')" id="gen-btn-girl" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👧 ಬಾಲಕಿಯರು</button>
           </div>
         </div>
 
@@ -588,10 +592,12 @@
     let evaluations = {};
     let currentViewMode = localStorage.getItem('lba_view_mode') || 'cards';
     let currentGenderFilter = 'ALL';
+    let statusFilter = 'ALL';
 
     const classFilter = document.getElementById('class-filter');
     const subjectFilter = document.getElementById('subject-filter');
     const unitFilter = document.getElementById('unit-filter');
+    const statusFilterEl = document.getElementById('status-filter');
 
     function normalizeClass(classStr) {
       if (!classStr && classStr !== 0) return "";
@@ -896,7 +902,7 @@
       }, 700);
     }
 
-    function performSilentSave() {
+    async function performSilentSave() {
       const className = classFilter.value;
       const subjectName = subjectFilter.value;
       if (!className || !subjectName || students.length === 0) return;
@@ -904,34 +910,51 @@
       const mockKey = `lba_eval_${className}_${subjectName}`;
       localStorage.setItem(mockKey, JSON.stringify(evaluations));
 
-      let schoolId = localStorage.getItem("school_id") || null;
+      let schoolId = localStorage.getItem("school_id") || "f592831e-69a8-4138-b82d-69649cb46605";
       const payload = students.map(student => ({
         school_id: schoolId,
         student_id: student.id,
         class_name: className,
         subject_name: subjectName,
-        evaluations: evaluations[student.id] || {}
+        marks: evaluations[student.id] || {}
       }));
 
       if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-        supabaseClient
-          .from('lba_evaluations')
-          .upsert(payload, { onConflict: 'student_id,class_name,subject_name' })
-          .then(({ error }) => {
-            const indicator = document.getElementById('auto-save-indicator');
-            if (indicator) {
-              indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
-              indicator.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i> <span>ಸ್ವಯಂ ಉಳಿಸಲಾಗಿದೆ</span>';
-              setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
-            }
-          }).catch(() => {
-            const indicator = document.getElementById('auto-save-indicator');
-            if (indicator) {
-              indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
-              indicator.innerHTML = '<i class="fa-solid fa-circle-check text-teal-500 text-[11px]"></i> <span>ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ</span>';
-              setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
-            }
-          });
+        try {
+          const { error: upsertErr } = await supabaseClient
+            .from('lba_evaluations')
+            .upsert(payload, { onConflict: 'student_id,class_name,subject_name' });
+
+          if (upsertErr) {
+            console.warn("LBA direct upsert fallback to delete+insert:", upsertErr);
+            await supabaseClient
+              .from('lba_evaluations')
+              .delete()
+              .eq('class_name', className)
+              .eq('subject_name', subjectName);
+
+            const { error: insertErr } = await supabaseClient
+              .from('lba_evaluations')
+              .insert(payload);
+
+            if (insertErr) console.warn("LBA insert error:", insertErr);
+          }
+
+          const indicator = document.getElementById('auto-save-indicator');
+          if (indicator) {
+            indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+            indicator.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i> <span>ಸ್ವಯಂ ಉಳಿಸಲಾಗಿದೆ</span>';
+            setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
+          }
+        } catch (err) {
+          console.warn("LBA save catch:", err);
+          const indicator = document.getElementById('auto-save-indicator');
+          if (indicator) {
+            indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+            indicator.innerHTML = '<i class="fa-solid fa-circle-check text-teal-500 text-[11px]"></i> <span>ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ</span>';
+            setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
+          }
+        }
       }
     }
 
@@ -1116,8 +1139,9 @@
 
             if (!eErr && evals && evals.length > 0) {
               evals.forEach(row => {
-                if (row.student_id && row.evaluations) {
-                  allEvaluations[row.student_id] = row.evaluations;
+                const rowMarks = row.marks || row.evaluations;
+                if (row.student_id && rowMarks) {
+                  allEvaluations[row.student_id] = rowMarks;
                 }
               });
             }
@@ -1191,22 +1215,49 @@
     }
 
     function setGenderFilter(val) {
-      currentGenderFilter = val;
-      ['all', 'boy', 'girl'].forEach(gKey => {
-        const btn = document.getElementById(`gen-btn-${gKey}`);
-        if (!btn) return;
-        const isSelected = (gKey === 'all' && val === 'ALL') || (gKey === 'boy' && val === 'Boy') || (gKey === 'girl' && val === 'Girl');
-        if (isSelected) {
-          btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer";
-        } else {
-          btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold transition bg-transparent text-slate-700 dark:text-slate-300 border-0 cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-700";
-        }
-      });
+      currentGenderFilter = val || 'ALL';
+      const btnAll = document.getElementById('gen-btn-all');
+      const btnBoy = document.getElementById('gen-btn-boy');
+      const btnGirl = document.getElementById('gen-btn-girl');
+
+      const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer';
+      const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer';
+
+      if (btnAll) btnAll.className = currentGenderFilter === 'ALL' ? activeClass : inactiveClass;
+      if (btnBoy) btnBoy.className = currentGenderFilter === 'Boy' ? activeClass : inactiveClass;
+      if (btnGirl) btnGirl.className = currentGenderFilter === 'Girl' ? activeClass : inactiveClass;
+
       renderActiveView();
     }
 
     function applyFiltersAndRender() {
       renderActiveView();
+    }
+
+    function isStudentLbaFilled(studentId) {
+      const evalData = evaluations[studentId];
+      if (!evalData) return false;
+      const activeLessons = getActiveLessons();
+      if (activeLessons.length === 0) return false;
+      for (const unitObj of activeLessons) {
+        const mVal = evalData["les_" + unitObj.originalIndex + "_mark"];
+        if (mVal === '' || mVal === undefined || mVal === null) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function updateLbaRowFilledStatus(studentId) {
+      const tr = document.querySelector(`tr[data-student-id="${studentId}"]`);
+      if (!tr) return;
+      const isFilled = isStudentLbaFilled(studentId);
+      
+      if (isFilled) {
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+      } else {
+        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs";
+      }
     }
 
     function getFilteredStudents() {
@@ -1231,7 +1282,15 @@
           cleanNameKn.includes(cleanQ) || 
           cleanSts.includes(cleanQ);
 
-        return matchesGender && matchesSearch;
+        if (!(matchesGender && matchesSearch)) return false;
+
+        const isFilled = isStudentLbaFilled(s.id);
+        if (statusFilter === 'UNFILLED') {
+          return !isFilled;
+        } else if (statusFilter === 'FILLED') {
+          return isFilled;
+        }
+        return true;
       });
     }
 
@@ -1305,9 +1364,54 @@
 
       filtered.forEach((student, index) => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs";
         const sId = student.id;
         tr.setAttribute('data-student-id', sId);
+        tr.setAttribute('data-row-index', index);
+        const initialFilled = isStudentLbaFilled(sId);
+        if (initialFilled) {
+          tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+        } else {
+          tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs";
+        }
+
+        tr.addEventListener('focusout', (e) => {
+          setTimeout(() => {
+            if (!tr.contains(document.activeElement)) {
+              const currentlyFilled = isStudentLbaFilled(sId);
+              if (currentlyFilled) {
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+              } else {
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition border-b border-slate-200 dark:border-slate-800 text-xs";
+              }
+
+              if (statusFilter === 'UNFILLED' || statusFilter === 'FILLED') {
+                const shouldHide = (statusFilter === 'UNFILLED' && currentlyFilled) || (statusFilter === 'FILLED' && !currentlyFilled);
+                if (shouldHide) {
+                  const focusedInput = document.activeElement;
+                  let targetRowIdx = -1;
+                  let targetColIdx = -1;
+                  if (focusedInput && focusedInput.tagName === 'INPUT') {
+                    targetRowIdx = parseInt(focusedInput.getAttribute('data-row'));
+                    targetColIdx = parseInt(focusedInput.getAttribute('data-col'));
+                  }
+
+                  renderGrid();
+
+                  if (targetColIdx !== -1) {
+                    let nextInput = document.querySelector(`input[data-nav-grid="true"][data-row="${targetRowIdx}"][data-col="${targetColIdx}"]`);
+                    if (!nextInput && targetRowIdx > 0) {
+                      nextInput = document.querySelector(`input[data-nav-grid="true"][data-row="${targetRowIdx - 1}"][data-col="${targetColIdx}"]`);
+                    }
+                    if (nextInput) {
+                      nextInput.focus();
+                      nextInput.select();
+                    }
+                  }
+                }
+              }
+            }
+          }, 50);
+        });
 
         if (!evaluations[sId]) evaluations[sId] = {};
         const evalData = evaluations[sId];
@@ -1499,6 +1603,7 @@
       }
 
       updateCardVisualTheme(studentId, lessonIdx, gradeVal);
+      updateLbaRowFilledStatus(studentId);
       updateTotals();
       triggerAutoSave();
     }
@@ -1902,6 +2007,55 @@
       if (subjectFilter) {
         subjectFilter.addEventListener('change', () => {
           checkAndLoadGrid();
+        });
+      }
+
+      if (statusFilterEl) {
+        statusFilterEl.addEventListener('change', () => {
+          statusFilter = statusFilterEl.value;
+          if (students.length > 0) {
+            renderActiveView();
+          }
+        });
+      }
+
+      const cardsContainer = document.getElementById('student-cards-container');
+      if (cardsContainer) {
+        cardsContainer.addEventListener('focusout', (e) => {
+          const card = e.target.closest('[data-card-student-id]');
+          if (!card) return;
+          const studentId = card.getAttribute('data-card-student-id');
+          
+          setTimeout(() => {
+            if (!card.contains(document.activeElement)) {
+              const currentlyFilled = isStudentLbaFilled(studentId);
+              if (statusFilter === 'UNFILLED' || statusFilter === 'FILLED') {
+                const shouldHide = (statusFilter === 'UNFILLED' && currentlyFilled) || (statusFilter === 'FILLED' && !currentlyFilled);
+                if (shouldHide) {
+                  const focusedInput = document.activeElement;
+                  let targetRowIdx = -1;
+                  let targetColIdx = -1;
+                  if (focusedInput && focusedInput.tagName === 'INPUT') {
+                    targetRowIdx = parseInt(focusedInput.getAttribute('data-card-row'));
+                    targetColIdx = parseInt(focusedInput.getAttribute('data-card-col'));
+                  }
+
+                  renderCards();
+
+                  if (targetColIdx !== -1) {
+                    let nextInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${targetRowIdx}"][data-card-col="${targetColIdx}"]`);
+                    if (!nextInput && targetRowIdx > 0) {
+                      nextInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${targetRowIdx - 1}"][data-card-col="${targetColIdx}"]`);
+                    }
+                    if (nextInput) {
+                      nextInput.focus();
+                      nextInput.select();
+                    }
+                  }
+                }
+              }
+            }
+          }, 50);
         });
       }
 

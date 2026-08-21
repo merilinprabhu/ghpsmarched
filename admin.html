@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -229,7 +229,7 @@
                       <span>1. Government Logo (ಸರ್ಕಾರಿ ಲಾಂಛನ - ಪ್ರಮಾಣಪತ್ರಗಳ ಎಡಭಾಗಕ್ಕೆ)</span>
                     </label>
                     <div class="flex items-center gap-3 bg-white p-2.5 rounded-xl border border-slate-200">
-                      <img id="schGovLogoPreview" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" class="w-12 h-12 object-contain rounded-lg border border-slate-200 bg-slate-50 p-1">
+                      <img id="schGovLogoPreview" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" class="w-12 h-12 object-contain rounded-lg border border-slate-200 bg-slate-50 p-1" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_Karnataka.svg/500px-Seal_of_Karnataka.svg.png'">
                       <div class="relative flex-1">
                         <input type="file" id="schGovLogoFile" accept="image/*" class="hidden" onchange="previewGovLogoFile(this)">
                         <label for="schGovLogoFile" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 border border-slate-300 hover:bg-slate-50 text-xs font-bold text-slate-700 rounded-lg transition shadow-xs bg-white">
@@ -984,43 +984,135 @@
       }
     });
 
-    window.previewLogoFile = function(input) {
+    const defaultGovLogo = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
+    const defaultSchoolLogo = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
+
+    function compressImageFile(file, maxWidth = 400, maxHeight = 400) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let w = img.width;
+            let h = img.height;
+            if (w > h) {
+              if (w > maxWidth) {
+                h = Math.round((h * maxWidth) / w);
+                w = maxWidth;
+              }
+            } else {
+              if (h > maxHeight) {
+                w = Math.round((w * maxHeight) / h);
+                h = maxHeight;
+              }
+            }
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', 0.9));
+          };
+          img.onerror = function() { resolve(e.target.result); };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    window.previewGovLogoFile = async function(input) {
       if (input.files && input.files[0]) {
         const file = input.files[0];
         
-        if (file.size > 800 * 1024) {
-          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಲೋಗೋ ಚಿತ್ರವು 800KB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು. / Image must be less than 800KB.", "error");
+        if (file.size > 2 * 1024 * 1024) {
+          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಲಾಂಛನ ಚಿತ್ರವು 2MB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು.", "error");
           input.value = '';
           return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const base64Data = e.target.result;
-          document.getElementById('schLogoPreview').src = base64Data;
-          document.getElementById('schLogoUrl').value = base64Data;
-        };
-        reader.readAsDataURL(file);
+        // 1. Immediate local preview using compressed base64
+        let finalUrl = await compressImageFile(file);
+        const inputHidden = document.getElementById('schGovLogoUrl');
+        const previewImg = document.getElementById('schGovLogoPreview');
+        if (inputHidden) inputHidden.value = finalUrl;
+        if (previewImg) previewImg.src = finalUrl;
+        localStorage.setItem('school_gov_logo', finalUrl);
+
+        // 2. Try Supabase Storage upload
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          try {
+            const fileExt = file.name.split('.').pop() || 'png';
+            const fileName = `gov_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
+            const { data, error } = await supabaseClient.storage
+              .from('school-logo')
+              .upload(fileName, file, { upsert: true });
+
+            if (!error && data) {
+              const { data: publicData } = supabaseClient.storage
+                .from('school-logo')
+                .getPublicUrl(fileName);
+              if (publicData && publicData.publicUrl) {
+                finalUrl = publicData.publicUrl;
+                if (inputHidden) inputHidden.value = finalUrl;
+                if (previewImg) previewImg.src = finalUrl;
+                localStorage.setItem('school_gov_logo', finalUrl);
+              }
+            } else if (error) {
+              console.warn("Supabase storage upload notice (using compressed data URL fallback):", error.message);
+            }
+          } catch (err) {
+            console.warn("Supabase logo upload notice:", err);
+          }
+        }
+        showToast("ಸರ್ಕಾರಿ ಲಾಂಛನ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು 'ಮಾಹಿತಿ ಉಳಿಸಿ' ಬಟನ್ ಒತ್ತಿ.", "success");
       }
     };
 
-    window.previewGovLogoFile = function(input) {
+    window.previewLogoFile = async function(input) {
       if (input.files && input.files[0]) {
         const file = input.files[0];
         
-        if (file.size > 800 * 1024) {
-          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಸರ್ಕಾರಿ ಲಾಂಛನ ಚಿತ್ರವು 800KB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು. / Image must be less than 800KB.", "error");
+        if (file.size > 2 * 1024 * 1024) {
+          showToast("ಚಿತ್ರದ ಗಾತ್ರ ದೊಡ್ಡದಾಗಿದೆ", "ಶಾಲಾ ಲೋಗೋ 2MB ಗಿಂತ ಕಡಿಮೆ ಇರಬೇಕು.", "error");
           input.value = '';
           return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const base64Data = e.target.result;
-          document.getElementById('schGovLogoPreview').src = base64Data;
-          document.getElementById('schGovLogoUrl').value = base64Data;
-        };
-        reader.readAsDataURL(file);
+        // 1. Immediate local preview using compressed base64
+        let finalUrl = await compressImageFile(file);
+        const inputHidden = document.getElementById('schLogoUrl');
+        const previewImg = document.getElementById('schLogoPreview');
+        if (inputHidden) inputHidden.value = finalUrl;
+        if (previewImg) previewImg.src = finalUrl;
+        localStorage.setItem('school_logo_url', finalUrl);
+
+        // 2. Try Supabase Storage upload
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          try {
+            const fileExt = file.name.split('.').pop() || 'png';
+            const fileName = `school_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
+            const { data, error } = await supabaseClient.storage
+              .from('school-logo')
+              .upload(fileName, file, { upsert: true });
+
+            if (!error && data) {
+              const { data: publicData } = supabaseClient.storage
+                .from('school-logo')
+                .getPublicUrl(fileName);
+              if (publicData && publicData.publicUrl) {
+                finalUrl = publicData.publicUrl;
+                if (inputHidden) inputHidden.value = finalUrl;
+                if (previewImg) previewImg.src = finalUrl;
+                localStorage.setItem('school_logo_url', finalUrl);
+              }
+            } else if (error) {
+              console.warn("Supabase storage upload notice (using compressed data URL fallback):", error.message);
+            }
+          } catch (err) {
+            console.warn("Supabase logo upload notice:", err);
+          }
+        }
+        showToast("ಶಾಲಾ ಲೋಗೋ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು 'ಮಾಹಿತಿ ಉಳಿಸಿ' ಬಟನ್ ಒತ್ತಿ.", "success");
       }
     };
 
@@ -1052,15 +1144,15 @@
           .eq('school_id', currentSchoolId)
           .eq('settings_key', 'web_design');
 
-        const defaultGovLogo = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg";
-        const defaultSchoolLogo = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
-
         const configData = (configDataList && configDataList.length > 0) ? configDataList[configDataList.length - 1] : null;
 
         if (configData && configData.settings_value) {
           const layout = configData.settings_value.nav_layout || 'default_top';
           const logo = configData.settings_value.logo_url || localStorage.getItem('school_logo_url') || '';
-          const govLogo = configData.settings_value.gov_logo_url || localStorage.getItem('school_gov_logo') || defaultGovLogo;
+          let govLogo = configData.settings_value.gov_logo_url || localStorage.getItem('school_gov_logo') || defaultGovLogo;
+          if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) {
+            govLogo = defaultGovLogo;
+          }
 
           document.getElementById('schNavLayout').value = layout;
           document.getElementById('schLogoUrl').value = logo;
@@ -1074,7 +1166,10 @@
           localStorage.setItem('school_gov_logo', govLogo);
         } else {
           document.getElementById('schNavLayout').value = 'default_top';
-          const localGov = localStorage.getItem('school_gov_logo') || defaultGovLogo;
+          let localGov = localStorage.getItem('school_gov_logo') || defaultGovLogo;
+          if (localGov.includes('e/e7/Emblem_of_Karnataka.svg')) {
+            localGov = defaultGovLogo;
+          }
           const localSch = localStorage.getItem('school_logo_url') || '';
 
           document.getElementById('schLogoUrl').value = localSch;
@@ -1087,107 +1182,6 @@
           localStorage.setItem('school_logo_url', localSch);
           localStorage.setItem('school_gov_logo', localGov);
         }
-
-        function compressImageFile(file, maxWidth = 350, maxHeight = 350) {
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              const img = new Image();
-              img.onload = function() {
-                const canvas = document.createElement('canvas');
-                let w = img.width;
-                let h = img.height;
-                if (w > h) {
-                  if (w > maxWidth) {
-                    h = Math.round((h * maxWidth) / w);
-                    w = maxWidth;
-                  }
-                } else {
-                  if (h > maxHeight) {
-                    w = Math.round((w * maxHeight) / h);
-                    h = maxHeight;
-                  }
-                }
-                canvas.width = w;
-                canvas.height = h;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, w, h);
-                resolve(canvas.toDataURL('image/png'));
-              };
-              img.onerror = function() { resolve(e.target.result); };
-              img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-          });
-        }
-
-        window.previewGovLogoFile = async function(input) {
-          if (input.files && input.files[0]) {
-            const file = input.files[0];
-            let finalUrl = await compressImageFile(file);
-
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-              try {
-                const fileExt = file.name.split('.').pop();
-                const fileName = `gov_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
-                const { data, error } = await supabaseClient.storage
-                  .from('school-logo')
-                  .upload(fileName, file, { upsert: true });
-
-                if (!error && data) {
-                  const { data: publicData } = supabaseClient.storage
-                    .from('school-logo')
-                    .getPublicUrl(fileName);
-                  if (publicData && publicData.publicUrl) {
-                    finalUrl = publicData.publicUrl;
-                  }
-                }
-              } catch (err) {
-                console.warn("Supabase logo upload notice:", err);
-              }
-            }
-            const inputHidden = document.getElementById('schGovLogoUrl');
-            const previewImg = document.getElementById('schGovLogoPreview');
-            if (inputHidden) inputHidden.value = finalUrl;
-            if (previewImg) previewImg.src = finalUrl;
-            localStorage.setItem('school_gov_logo', finalUrl);
-            showToast("ಸರ್ಕಾರಿ ಲಾಂಛನ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಿ ಬಟನ್ ಒತ್ತಿ.", "success");
-          }
-        };
-
-        window.previewLogoFile = async function(input) {
-          if (input.files && input.files[0]) {
-            const file = input.files[0];
-            let finalUrl = await compressImageFile(file);
-
-            if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-              try {
-                const fileExt = file.name.split('.').pop();
-                const fileName = `school_logo_${currentSchoolId || 'default'}_${Date.now()}.${fileExt}`;
-                const { data, error } = await supabaseClient.storage
-                  .from('school-logo')
-                  .upload(fileName, file, { upsert: true });
-
-                if (!error && data) {
-                  const { data: publicData } = supabaseClient.storage
-                    .from('school-logo')
-                    .getPublicUrl(fileName);
-                  if (publicData && publicData.publicUrl) {
-                    finalUrl = publicData.publicUrl;
-                  }
-                }
-              } catch (err) {
-                console.warn("Supabase logo upload notice:", err);
-              }
-            }
-            const inputHidden = document.getElementById('schLogoUrl');
-            const previewImg = document.getElementById('schLogoPreview');
-            if (inputHidden) inputHidden.value = finalUrl;
-            if (previewImg) previewImg.src = finalUrl;
-            localStorage.setItem('school_logo_url', finalUrl);
-            showToast("ಶಾಲಾ ಲೋಗೋ ತರಲಾಗಿದೆ", "ಉಳಿಸಲು ಶಾಲಾ ಮಾಹಿತಿ ಉಳಿಸಿ ಬಟನ್ ಒತ್ತಿ.", "success");
-          }
-        };
 
         // Fetch feature permissions from school_settings
         const { data: permData } = await supabaseClient

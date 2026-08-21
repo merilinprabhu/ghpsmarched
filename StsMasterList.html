@@ -698,19 +698,36 @@
       return parsedList;
     }
 
-    function normalizeClass(val) {
-      if (!val && val !== 0) return '';
-      let s = String(val).toUpperCase().trim();
-      if (s === 'LKG' || s.includes('LKG')) return 'LKG';
-      if (s === 'UKG' || s.includes('UKG')) return 'UKG';
-      for (let n = 10; n >= 1; n--) {
-        if (s === String(n) || s.includes('CLASS ' + n) || s.includes('CLASS-' + n) || s.includes(n + 'TH') || s.includes(n + 'ST') || s.includes(n + 'ND') || s.includes(n + 'RD')) {
-          return String(n);
-        }
+    function normalizeClass(classStr) {
+      if (!classStr && classStr !== 0) return "";
+      let clean = classStr.toString().trim().toLowerCase();
+      
+      // Remove any Kannada suffixes like "ನೇ", "ನೆ", "ನೇ ತರಗತಿ", "ತರಗತಿ"
+      clean = clean.replace(/ನೇ/g, '').replace(/ನೆ/g, '').replace(/ನೇ ತರಗತಿ/g, '').replace(/ತರಗತಿ/g, '');
+      
+      // Convert Kannada digits to English digits
+      const kanDigits = {'೧':'1', '೨':'2', '೩':'3', '೪':'4', '೫':'5', '೬':'6', '೭':'7', '೮':'8', '೯':'9', '೧೦':'10', '೦':'0'};
+      for (const key in kanDigits) {
+        clean = clean.replace(new RegExp(key, 'g'), kanDigits[key]);
       }
-      const numMatch = s.match(/\b(10|[1-9])\b/);
-      if (numMatch) return numMatch[1];
-      return s;
+      
+      clean = clean.trim();
+
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("ಎಲ್.ಕೆ.ಜಿ") || clean.includes("ಎಲ್‌ಕೆಜಿ") || clean.includes("l.k.g")) return "LKG";
+      if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2") || clean.includes("ಯು.ಕೆ.ಜಿ") || clean.includes("ಯುಕೆಜಿ") || clean.includes("u.k.g")) return "UKG";
+      
+      if (/\b10\b/.test(clean) || /\bx\b/.test(clean) || clean.includes("10th") || clean.includes("tenth") || clean.includes("class 10") || clean.includes("class-10")) return "10";
+      if (/\b9\b/.test(clean) || /\bix\b/.test(clean) || clean.includes("9th") || clean.includes("ninth") || clean.includes("class 9") || clean.includes("class-9")) return "9";
+      if (/\b8\b/.test(clean) || /\bviii\b/.test(clean) || clean.includes("8th") || clean.includes("eighth") || clean.includes("class 8") || clean.includes("class-8")) return "8";
+      if (/\b7\b/.test(clean) || /\bvii\b/.test(clean) || clean.includes("7th") || clean.includes("seventh") || clean.includes("class 7") || clean.includes("class-7")) return "7";
+      if (/\b6\b/.test(clean) || /\bvi\b/.test(clean) || clean.includes("6th") || clean.includes("sixth") || clean.includes("class 6") || clean.includes("class-6")) return "6";
+      if (/\b5\b/.test(clean) || /\bv\b/.test(clean) || clean.includes("5th") || clean.includes("fifth") || clean.includes("class 5") || clean.includes("class-5")) return "5";
+      if (/\b4\b/.test(clean) || /\biv\b/.test(clean) || clean.includes("4th") || clean.includes("fourth") || clean.includes("class 4") || clean.includes("class-4")) return "4";
+      if (/\b3\b/.test(clean) || /\biii\b/.test(clean) || clean.includes("3rd") || clean.includes("third") || clean.includes("class 3") || clean.includes("class-3")) return "3";
+      if (/\b2\b/.test(clean) || /\bii\b/.test(clean) || clean.includes("2nd") || clean.includes("second") || clean.includes("class 2") || clean.includes("class-2")) return "2";
+      if (/\b1\b/.test(clean) || /\bi\b/.test(clean) || clean.includes("1st") || clean.includes("first") || clean.includes("class 1") || clean.includes("class-1")) return "1";
+      
+      return classStr;
     }
 
     function normalizeGender(val) {

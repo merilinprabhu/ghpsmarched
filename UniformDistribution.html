@@ -411,6 +411,15 @@
 
         <!-- Export Buttons / Bulk Action -->
         <div class="flex gap-2 items-center flex-wrap">
+          <!-- View Mode Switcher -->
+          <div class="flex items-center gap-1 p-1 bg-black/40 border border-white/5 rounded-xl">
+            <button type="button" id="btn-u-cards" onclick="setUniformViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+              <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+            </button>
+            <button type="button" id="btn-u-table" onclick="setUniformViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-400 hover:text-white border-0 bg-transparent">
+              <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+            </button>
+          </div>
           <!-- Bulk actions -->
           <select id="bulkActionSelect" onchange="handleBulkAction(this.value)" class="bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500/30 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer shadow-md">
             <option value="" disabled selected>ಬೃಹತ್ ಕ್ರಿಯೆ / Bulk Action</option>
@@ -436,8 +445,11 @@
         </div>
       </div>
 
+      <!-- Mobile Cards View for Uniform -->
+      <div id="uniform-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 hidden no-print"></div>
+
       <!-- Main entry table -->
-      <div class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
+      <div id="uniform-table-container" class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
           <table id="uniform-table" class="w-full border-collapse text-left text-xs">
             <thead>
@@ -541,6 +553,9 @@
     let activeRenderedStudents = [];
     
     let entrySortCol = 'name_english';
+    let currentUniformViewMode = localStorage.getItem('uniform_view_mode') || 'cards';
+    let currentUniformStudents = [];
+    let currentUniformRecordsMap = {};
     let entrySortOrder = 'asc';
     let uniformChartInstance = null;
 
@@ -677,10 +692,17 @@
         const { data: students, error: studErr } = await studQuery;
         if (studErr) throw studErr;
         
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
         admissionsList = (students || [])
           .filter(s => {
+            const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+            const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+            const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+            const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
             const isAdm = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
-            return isAdm === true || isAdm === 'true';
+            return isNotOut && isNotTrashed && (isAdm === true || isAdm === 'true');
           })
           .map(s => {
             s.enroll_class = normalizeClass(s.enroll_class);
@@ -799,8 +821,166 @@
       applyFilters();
     }
 
+    function setUniformViewMode(mode, triggerRender = true) {
+      currentUniformViewMode = mode || 'cards';
+      localStorage.setItem('uniform_view_mode', currentUniformViewMode);
+
+      const btnCards = document.getElementById('btn-u-cards');
+      const btnTable = document.getElementById('btn-u-table');
+
+      if (currentUniformViewMode === 'cards') {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-400 hover:text-white border-0 bg-transparent';
+      } else {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-400 hover:text-white border-0 bg-transparent';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+      }
+
+      if (triggerRender) {
+        renderActiveUniformView();
+      }
+    }
+
+    function renderActiveUniformView() {
+      const tableEl = document.getElementById('uniform-table-container');
+      const cardsEl = document.getElementById('uniform-cards-container');
+
+      // Always render both so that elements exist for auto-saving and print drawers
+      renderUniformCards(currentUniformStudents, currentUniformRecordsMap);
+      renderUniformTable(currentUniformStudents, currentUniformRecordsMap);
+
+      if (currentUniformViewMode === 'cards') {
+        if (tableEl) tableEl.classList.add('hidden');
+        if (cardsEl) cardsEl.classList.remove('hidden');
+      } else {
+        if (cardsEl) cardsEl.classList.add('hidden');
+        if (tableEl) tableEl.classList.remove('hidden');
+      }
+    }
+
     function renderTable(students, recordsMap) {
+      currentUniformStudents = students;
+      currentUniformRecordsMap = recordsMap;
+      setUniformViewMode(currentUniformViewMode, false);
+      renderActiveUniformView();
+    }
+
+    function renderUniformCards(students, recordsMap) {
+      const container = document.getElementById('uniform-cards-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (students.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 font-semibold glass-card rounded-2xl border border-white/5"><i class="fa-solid fa-user-slash text-3xl mb-2 text-slate-500"></i><p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಂಡುಬಂದಿಲ್ಲ.</p></div>`;
+        return;
+      }
+
+      const sizes = ['22', '24', '26', '28', '30', '32', '34', '36', '38', '40'];
+
+      students.forEach((s, idx) => {
+        const vals = recordsMap[s.id] || {};
+        const cleanClass = normalizeClass(s.enroll_class);
+        const recommendedSize = vals.uniform_size || defaultClassSizes[cleanClass] || '28';
+        const s1 = vals.set1_status === true || vals.set1_status === 'true';
+        const s2 = vals.set2_status === true || vals.set2_status === 'true';
+
+        const isGirl = s.gender && (s.gender.toLowerCase().includes('girl') || s.gender.toLowerCase().includes('female') || s.gender.includes('ಹೆಣ್ಣು'));
+        const isBoy = !isGirl;
+
+        const sizeOptions = sizes.map(sz => `<option value="${sz}" ${sz === recommendedSize ? 'selected' : ''}>Size ${sz}</option>`).join('');
+
+        const cardHtml = `
+          <div class="glass-card rounded-2xl p-4 border border-white/10 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-3.5" data-card-u-id="${s.id}">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-2 border-b border-white/10 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${isBoy ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'bg-pink-600/20 text-pink-400 border border-pink-500/30'}">
+                  ${idx + 1}
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-white leading-tight">${s.name_english || s.student_name}</h4>
+                  ${s.student_name && s.name_english ? `<p class="text-[10px] text-slate-400 font-semibold">${s.student_name}</p>` : ''}
+                </div>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isBoy ? 'bg-blue-900/40 text-blue-300' : 'bg-pink-900/40 text-pink-300'}">
+                  ${isBoy ? '👦 ಬಾಲಕ' : '👧 ಬಾಲಕಿ'}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400 font-semibold">STS: ${s.app_no || s.id}</span>
+              </div>
+            </div>
+
+            <!-- Size Selector -->
+            <div class="flex items-center justify-between bg-black/40 border border-white/5 rounded-xl p-2 px-3 text-xs">
+              <span class="text-slate-300 font-bold">ಸಮವಸ್ತ್ರ ಗಾತ್ರ (Size):</span>
+              <select id="card-size-${s.id}" onchange="handleCardSizeChange('${s.id}', this.value)" class="bg-indigo-950/80 border border-indigo-500/40 rounded-lg px-2.5 py-1 text-xs font-black text-indigo-300 focus:outline-none cursor-pointer">
+                ${sizeOptions}
+              </select>
+            </div>
+
+            <!-- Set 1 & Set 2 Touch Toggle Pills -->
+            <div class="grid grid-cols-2 gap-2 pt-0.5">
+              <!-- Set 1 -->
+              <button type="button" onclick="toggleUniformSet('${s.id}', 1)" id="card-set1-btn-${s.id}" class="py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 ${s1 ? 'bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30' : 'bg-black/50 text-slate-400 border border-white/10'}">
+                <i class="fa-solid fa-shirt text-sm"></i> <span>Set 1 ${s1 ? '✓' : '✗'}</span>
+              </button>
+              <!-- Set 2 -->
+              <button type="button" onclick="toggleUniformSet('${s.id}', 2)" id="card-set2-btn-${s.id}" class="py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 ${s2 ? 'bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30' : 'bg-black/50 text-slate-400 border border-white/10'}">
+                <i class="fa-solid fa-shirt text-sm"></i> <span>Set 2 ${s2 ? '✓' : '✗'}</span>
+              </button>
+            </div>
+
+            <!-- Footer Save Status -->
+            <div class="flex items-center justify-between pt-2 border-t border-white/10 text-xs">
+              <span class="text-[10px] text-slate-400">ಸ್ಥಿತಿ: <strong id="card-status-text-${s.id}" class="${(s1 && s2) ? 'text-emerald-400' : 'text-amber-400'}">${(s1 && s2) ? 'ಎರಡೂ ನೀಡಲಾಗಿದೆ' : (s1 || s2 ? '1 Set ನೀಡಲಾಗಿದೆ' : 'ಬಾಕಿ')}</strong></span>
+              <span id="card-save-status-${s.id}" class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Saved</span>
+            </div>
+          </div>
+        `;
+        container.innerHTML += cardHtml;
+      });
+    }
+
+    function handleCardSizeChange(studentId, sizeVal) {
+      const tblSelect = document.getElementById(`size-${studentId}`);
+      if (tblSelect) tblSelect.value = sizeVal;
+      autoSaveRecord(studentId);
+    }
+
+    function toggleUniformSet(studentId, setNum) {
+      const chk = document.getElementById(`set${setNum}-${studentId}`);
+      let isChecked = false;
+      if (chk) {
+        chk.checked = !chk.checked;
+        isChecked = chk.checked;
+      }
+      
+      const btn = document.getElementById(`card-set${setNum}-btn-${studentId}`);
+      if (btn) {
+        if (isChecked) {
+          btn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30";
+          btn.innerHTML = `<i class="fa-solid fa-shirt text-sm"></i> <span>Set ${setNum} ✓</span>`;
+        } else {
+          btn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-black/50 text-slate-400 border border-white/10";
+          btn.innerHTML = `<i class="fa-solid fa-shirt text-sm"></i> <span>Set ${setNum} ✗</span>`;
+        }
+      }
+
+      // Update card status text
+      const s1 = document.getElementById(`set1-${studentId}`)?.checked;
+      const s2 = document.getElementById(`set2-${studentId}`)?.checked;
+      const statText = document.getElementById(`card-status-text-${studentId}`);
+      if (statText) {
+        statText.className = (s1 && s2) ? 'text-emerald-400' : 'text-amber-400';
+        statText.innerText = (s1 && s2) ? 'ಎರಡೂ ನೀಡಲಾಗಿದೆ' : (s1 || s2 ? '1 Set ನೀಡಲಾಗಿದೆ' : 'ಬಾಕಿ');
+      }
+
+      autoSaveRecord(studentId);
+    }
+
+    function renderUniformTable(students, recordsMap) {
       const tbody = document.getElementById('distributionTableBody');
+      if (!tbody) return;
       if (students.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-slate-500 font-semibold bg-slate-50/5"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> No records match these filters.</td></tr>`;
         return;
@@ -811,11 +991,8 @@
       let html = '';
       students.forEach((s, idx) => {
         const vals = recordsMap[s.id] || {};
-        
-        // Recommended size based on class group rules
         const cleanClass = normalizeClass(s.enroll_class);
         const recommendedSize = vals.uniform_size || defaultClassSizes[cleanClass] || '28';
-
         const s1 = vals.set1_status === true || vals.set1_status === 'true';
         const s2 = vals.set2_status === true || vals.set2_status === 'true';
 
@@ -834,21 +1011,18 @@
             </td>
             <td class="p-2.5 text-center text-[10px]">${displayGender}</td>
             
-            <!-- Uniform Size Selector -->
             <td class="p-2.5 bg-indigo-500/[0.01]">
-              <select id="size-${s.id}" onchange="autoSaveRecord('${s.id}')" class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-indigo-300 focus:outline-none cursor-pointer">
+              <select id="size-${s.id}" onchange="handleTableSizeChange('${s.id}', this.value)" class="bg-black/60 border border-white/10 rounded-xl px-2.5 py-1 text-xs font-bold text-indigo-300 focus:outline-none cursor-pointer">
                 ${sizeOptions}
               </select>
             </td>
 
-            <!-- Set 1 distributed checkbox -->
             <td class="p-2.5 bg-indigo-500/[0.01] border-x border-white/5 text-center">
-              <input type="checkbox" id="set1-${s.id}" onchange="autoSaveRecord('${s.id}')" ${s1 ? 'checked' : ''} class="w-5 h-5 rounded text-indigo-650 bg-black border-white/10 cursor-pointer transform scale-110">
+              <input type="checkbox" id="set1-${s.id}" onchange="handleTableCheckboxChange('${s.id}', 1, this.checked)" ${s1 ? 'checked' : ''} class="w-5 h-5 rounded text-indigo-650 bg-black border-white/10 cursor-pointer transform scale-110">
             </td>
 
-            <!-- Set 2 distributed checkbox -->
             <td class="p-2.5 bg-indigo-500/[0.01] border-x border-white/5 text-center">
-              <input type="checkbox" id="set2-${s.id}" onchange="autoSaveRecord('${s.id}')" ${s2 ? 'checked' : ''} class="w-5 h-5 rounded text-indigo-650 bg-black border-white/10 cursor-pointer transform scale-110">
+              <input type="checkbox" id="set2-${s.id}" onchange="handleTableCheckboxChange('${s.id}', 2, this.checked)" ${s2 ? 'checked' : ''} class="w-5 h-5 rounded text-indigo-650 bg-black border-white/10 cursor-pointer transform scale-110">
             </td>
 
             <td class="p-2.5 no-print" id="status-container-${s.id}">
@@ -861,6 +1035,26 @@
       });
 
       tbody.innerHTML = html;
+    }
+
+    function handleTableSizeChange(studentId, sizeVal) {
+      const cardSelect = document.getElementById(`card-size-${studentId}`);
+      if (cardSelect) cardSelect.value = sizeVal;
+      autoSaveRecord(studentId);
+    }
+
+    function handleTableCheckboxChange(studentId, setNum, isChecked) {
+      const btn = document.getElementById(`card-set${setNum}-btn-${studentId}`);
+      if (btn) {
+        if (isChecked) {
+          btn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30";
+          btn.innerHTML = `<i class="fa-solid fa-shirt text-sm"></i> <span>Set ${setNum} ✓</span>`;
+        } else {
+          btn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-black/50 text-slate-400 border border-white/10";
+          btn.innerHTML = `<i class="fa-solid fa-shirt text-sm"></i> <span>Set ${setNum} ✗</span>`;
+        }
+      }
+      autoSaveRecord(studentId);
     }
 
     async function autoSaveRecord(studentId) {

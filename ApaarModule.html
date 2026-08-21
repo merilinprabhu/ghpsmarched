@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -720,16 +720,26 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
 
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, dob, gender, enroll_class, student_aadhaar, address, father_name_kn, father_name_az, student_photo, app_no, enrolment_no, apaar, pen').neq('is_admitted', false);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, dob, gender, enroll_class, student_aadhaar, address, father_name_kn, father_name_az, student_photo, app_no, student_sts, enrolment_no, apaar, pen, status').neq('is_admitted', false);
         if (schoolId) {
-          query = query.eq('school_id', schoolId);
+          query = query.or(`school_id.eq.${schoolId},school_id.is.null`);
         }
 
         const { data, error } = await query;
 
         if (error) throw error;
 
-        const filteredData = (data || []).filter(s => normalizeClass(s.enroll_class) === normalizeClass(className));
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
+        const filteredData = (data || []).filter(s => {
+          const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+          const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+          const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+          const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+          const isClass = normalizeClass(s.enroll_class) === normalizeClass(className);
+          return isNotOut && isNotTrashed && isClass;
+        });
 
         allStudents = filteredData.map(s => {
           return {

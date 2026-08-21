@@ -281,30 +281,27 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
         { name: "Aadhar Update", href: "ApaarModule.html" },
         { name: "Certificates / ಪ್ರಮಾಣ ಪತ್ರಗಳು (10 Types)", href: "certificates.html" },
         { name: "Bin & TC Out Register / ಮರುಬಳಕೆ ಬುಟ್ಟಿ", href: "RecycleBin.html" },
-        { name: "SATS & Portal Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" },
+        { name: "STS Master List / SATS ಪಟ್ಟಿ", href: "StsMasterList.html" },
+        { name: "STS & Site Compare / SATS ಹೋಲಿಕೆ", href: "StsCompare.html" },
+        { name: "Line-by-Line Compare / ಲೈನ್-ಬೈ-ಲೈನ್ ಹೋಲಿಕೆ", href: "StsUnifiedCompare.html" },
         { name: "Shoe Size Tracker / ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್", href: "ShoeTracker.html" }
       ]
     },
     {
-      name: "UDISE+",
+      name: "UDISE+ & STS",
       icon: "fa-database",
       color: "text-amber-500",
       items: [
-        { name: "Dashboard", href: "UdiseDashboard.html" },
-        { name: "Compare Data", href: "UdiseCompare.html" },
-        { name: "Verification Report", href: "UdiseVerification.html" }
-      ]
-    },
-    {
-      name: "SATS / STS",
-      icon: "fa-id-card",
-      color: "text-indigo-400",
-      items: [
-        { name: "SATS Compare Studio / SATS ಹೋಲಿಕೆ", href: "SatsCompare.html" },
-        { name: "Shoe Size Tracker / ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್", href: "ShoeTracker.html" },
+        { name: "UDISE+ Dashboard", href: "UdiseDashboard.html" },
+        { name: "UDISE+ Verification Report", href: "UdiseVerification.html" },
+        { name: "UDISE+ Data Compare", href: "UdiseCompare.html" },
+        { name: "STS Master List", href: "StsMasterList.html" },
+        { name: "STS & Site Compare", href: "StsCompare.html" },
+        { name: "Line-by-Line Compare & Studio", href: "StsUnifiedCompare.html" },
         { name: "STS Student List / ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ", href: "StudentList.html" },
         { name: "Missing STS Check / ಅಲಭ್ಯ STS ತಪಾಸಣೆ", href: "StudentList.html?sts_check=missing" },
         { name: "STS Verified List / ಪರಿಶೀಲಿಸಿದ STS ಪಟ್ಟಿ", href: "StudentList.html?sts_check=has_sts" },
+        { name: "Shoe Size Tracker / ಶೂ ಅಳತೆ ಟ್ರ್ಯಾಕರ್", href: "ShoeTracker.html" },
         { name: "SATS / STS Portal", href: "https://sts.karnataka.gov.in", external: true }
       ]
     },
@@ -604,27 +601,27 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
 
           <!-- EXPANDED FULL HEADER -->
           <div class="nav-expanded-content flex flex-col w-full">
-            <!-- Top Row (Logo, School Name, Tagline, Controls, Collapse Button) -->
-            <div class="w-full px-6 py-3.5 flex items-center justify-between gap-4 flex-wrap md:flex-nowrap">
-              <!-- Left Logo & Brand with Tagline -->
-              <div class="flex items-center gap-3 shrink-0 cursor-pointer group" onclick="window.togglePortalNav(true)" title="ಕ್ಲಿಕ್ ಮಾಡಿ ಕುಗ್ಗಿಸಿ (Click to Collapse Navigation)">
-                <img src="${logoUrl}" alt="School Logo" class="h-14 w-14 md:h-16 md:w-16 object-contain rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-slate-900/5 dark:border-white/10 bg-white/40 dark:bg-slate-800 p-1.5 transition-all duration-300 group-hover:scale-105 group-hover:shadow-indigo-500/20">
-                <div class="flex flex-col">
-                  <h1 class="text-sm sm:text-base md:text-lg font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent school-title-full truncate">Government Higher Primary School, Marched</h1>
-                  <p class="text-[10px] md:text-xs text-indigo-800 dark:text-indigo-300 font-extrabold tracking-wider uppercase school-title-kn truncate mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್ <span class="text-slate-500 dark:text-slate-400 font-medium normal-case tracking-normal">• Smart Digital School Portal</span></p>
+            <!-- Top Row (Logo, School Name, Controls) -->
+            <div class="w-full px-3.5 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
+              <!-- Left Logo & Brand -->
+              <div class="flex items-center gap-2 sm:gap-3 shrink min-w-0 cursor-pointer group" onclick="window.togglePortalNav(true)" title="ಕ್ಲಿಕ್ ಮಾಡಿ ಕುಗ್ಗಿಸಿ (Click to Collapse Navigation)">
+                <img src="${logoUrl}" alt="School Logo" class="h-10 w-10 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain rounded-xl sm:rounded-2xl shadow-sm border border-slate-900/5 dark:border-white/10 bg-white/40 dark:bg-slate-800 p-1 shrink-0 transition-all duration-300 group-hover:scale-105">
+                <div class="flex flex-col min-w-0">
+                  <h1 class="text-xs sm:text-sm md:text-lg font-black uppercase tracking-wider bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-white dark:via-indigo-200 dark:to-white bg-clip-text text-transparent truncate school-title-full">GHPS Marched</h1>
+                  <p class="text-[9px] sm:text-[10px] md:text-xs text-indigo-800 dark:text-indigo-300 font-extrabold tracking-wider uppercase truncate school-title-kn mt-0.5">ಸ.ಹಿ.ಪ್ರಾ.ಶಾಲೆ, ಮರ್ಚೆಡ್</p>
                 </div>
               </div>
 
-              <!-- Right Status & Controls -->
-              <div class="flex items-center gap-1.5 text-[10px] shrink-0 flex-wrap justify-end">
+              <!-- Right Status & Controls for Desktop (Hidden on Mobile) -->
+              <div class="hidden md:flex items-center gap-1.5 text-[10px] shrink-0 justify-end">
                 <div class="flex items-center gap-2 bg-slate-950/95 border border-slate-800/60 rounded-lg px-2 py-1 shadow-inner">
-                  <span id="liveDate" class="hidden sm:inline text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
-                  <div class="hidden sm:inline w-px h-2.5 bg-slate-800"></div>
+                  <span id="liveDate" class="text-[8px] text-slate-400 font-bold tracking-wider uppercase"></span>
+                  <div class="w-px h-2.5 bg-slate-800"></div>
                   <span id="liveClock" class="font-mono font-black text-emerald-400 text-[10px] tracking-wider glow-text-emerald"></span>
                 </div>
 
                 <!-- Theme Selector -->
-                <div class="hidden sm:flex items-center gap-1.5 bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/10 rounded-lg px-2 py-1 shadow-sm transition-all duration-300">
+                <div class="flex items-center gap-1.5 bg-slate-900/5 dark:bg-white/10 border border-slate-900/10 dark:border-white/10 rounded-lg px-2 py-1 shadow-sm transition-all duration-300">
                   <span class="text-slate-400 font-bold text-[8px] uppercase tracking-wider"><i class="fa-solid fa-palette text-indigo-500 text-[8px]"></i> Theme:</span>
                   <select id="themeSelector" onchange="changeTheme(this.value)" class="bg-transparent text-slate-800 dark:text-white border-0 rounded text-[10px] font-bold focus:outline-none cursor-pointer py-0">
                     <option class="bg-slate-900 text-white" value="light">Light</option>
@@ -636,31 +633,40 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
                 </div>
                 
                 <!-- Version Badge Button -->
-                <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm animate-pulse" title="Version 2.5.1 - Click to view What's New">
+                <button onclick="window.openWhatsNewModal()" class="flex items-center gap-1 bg-gradient-to-r from-amber-500/10 via-emerald-500/10 to-indigo-500/10 hover:from-amber-500/20 hover:to-indigo-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold px-2 py-0.5 rounded-full text-[10px] transition cursor-pointer shadow-sm" title="Version 2.5.1">
                   <i class="fa-solid fa-wand-magic-sparkles text-amber-500 text-[10px]"></i>
                   <span>v2.5.1</span>
                 </button>
 
                 <!-- User Badge Capsule -->
-                <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 hover:border-indigo-500/40 rounded-full px-2.5 py-0.5 shadow-inner transition-all duration-300 group">
-                  <i class="fa-solid fa-user-circle text-[10px] text-indigo-500 group-hover:scale-105 transition-transform"></i>
-                  <span id="headerUser" class="font-bold text-slate-850 dark:text-slate-200 text-[10px] truncate max-w-[70px] md:max-w-[100px]">User</span>
+                <div class="flex items-center gap-1 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-full px-2.5 py-0.5 shadow-inner">
+                  <i class="fa-solid fa-user-circle text-[10px] text-indigo-500"></i>
+                  <span id="headerUser" class="font-bold text-slate-850 dark:text-slate-200 text-[10px] truncate max-w-[100px]">User</span>
                 </div>
 
                 <!-- Collapse Toggle Button -->
-                <button type="button" onclick="window.togglePortalNav(true)" class="flex items-center gap-1 bg-slate-900/5 hover:bg-indigo-600 hover:text-white dark:bg-white/10 dark:hover:bg-indigo-600 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-full text-[10px] font-bold transition-all duration-200 cursor-pointer shadow-xs group" title="ಕ್ಲಿಕ್ ಮಾಡಿ ನ್ಯಾವಿಗೇಷನ್ ಕುಗ್ಗಿಸಿ (Collapse Navigation)">
-                  <i class="fa-solid fa-compress text-indigo-500 group-hover:text-white transition-colors"></i>
-                  <span class="hidden sm:inline">ಕುಗ್ಗಿಸಿ</span>
+                <button type="button" onclick="window.togglePortalNav(true)" class="flex items-center gap-1 bg-slate-900/5 hover:bg-indigo-600 hover:text-white dark:bg-white/10 dark:hover:bg-indigo-600 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 px-2.5 py-1 rounded-full text-[10px] font-bold transition-all duration-200 cursor-pointer shadow-xs" title="ಕುಗ್ಗಿಸಿ">
+                  <i class="fa-solid fa-compress text-indigo-500"></i>
+                  <span>ಕುಗ್ಗಿಸಿ</span>
                 </button>
 
                 <!-- Logout Button -->
-                <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-650 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-[1.02] active:scale-[0.98] glow-shadow-red-hover">
-                  <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span class="hidden sm:inline">Logout</span>
+                <button onclick="handleLogout()" class="bg-red-500/10 hover:bg-red-650 border border-red-500/30 hover:border-red-650 text-red-600 hover:text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all duration-300 cursor-pointer flex items-center gap-1.5 shadow-sm">
+                  <i class="fa-solid fa-right-from-bracket text-[10px]"></i> <span>Logout</span>
                 </button>
+              </div>
 
-                <!-- Hamburger menu button -->
-                <button id="mobileMenuBtn" class="flex md:hidden items-center justify-center p-1.5 text-slate-600 hover:text-black hover:bg-slate-900/5 rounded-lg focus:outline-none cursor-pointer">
-                  <i class="fa-solid fa-bars text-xs"></i>
+              <!-- Mobile Top Right (Hamburger & User Capsule) -->
+              <div class="flex md:hidden items-center gap-2 shrink-0">
+                <!-- User Capsule Mobile -->
+                <div class="flex items-center gap-1 bg-indigo-50 dark:bg-slate-800 border border-indigo-200/60 dark:border-slate-700 rounded-full px-2 py-0.5 text-[10px]">
+                  <i class="fa-solid fa-user text-indigo-600 dark:text-indigo-400 text-[9px]"></i>
+                  <span id="headerUserMobile" class="font-black text-indigo-950 dark:text-slate-100 max-w-[65px] truncate">User</span>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobileMenuBtn" class="flex items-center justify-center p-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm border-0 cursor-pointer transition active:scale-95">
+                  <i class="fa-solid fa-bars text-sm"></i>
                 </button>
               </div>
             </div>
@@ -767,7 +773,7 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
         if (filteredItems.length === 0) return null;
         
         // Inject UDISE+ dynamic submenus
-        if (item.name === "UDISE+") {
+        if (item.name.includes("UDISE")) {
           let dynamicSubmenus = [];
           try {
             const stored = localStorage.getItem('udise_reports_config');
@@ -784,11 +790,17 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
             console.error("Failed to parse UDISE+ config:", e);
           }
           
-          const dashboardItem = filteredItems.find(sub => sub.href === "UdiseDashboard.html") || { name: "Dashboard", href: "UdiseDashboard.html" };
-          const compareItem = filteredItems.find(sub => sub.href === "UdiseCompare.html") || { name: "Compare Data", href: "UdiseCompare.html" };
-          const verificationItem = filteredItems.find(sub => sub.href === "UdiseVerification.html") || { name: "Verification Report", href: "UdiseVerification.html" };
+          const dashboardItem = filteredItems.find(sub => sub.href === "UdiseDashboard.html") || { name: "UDISE+ Dashboard", href: "UdiseDashboard.html" };
+          const verificationItem = filteredItems.find(sub => sub.href === "UdiseVerification.html") || { name: "UDISE+ Verification Report", href: "UdiseVerification.html" };
+          const compareItem = filteredItems.find(sub => sub.href === "UdiseCompare.html") || { name: "UDISE+ Data Compare", href: "UdiseCompare.html" };
           
-          filteredItems = [dashboardItem, ...dynamicSubmenus, compareItem, verificationItem];
+          const remainingItems = filteredItems.filter(sub => 
+            sub.href !== "UdiseDashboard.html" && 
+            sub.href !== "UdiseVerification.html" && 
+            sub.href !== "UdiseCompare.html"
+          );
+
+          filteredItems = [dashboardItem, ...dynamicSubmenus, verificationItem, compareItem, ...remainingItems];
         }
         
         return { ...item, items: filteredItems };
@@ -1050,7 +1062,9 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
         const name = user.user_metadata?.name || user.email || 'User';
         
         const headerUser = document.getElementById('headerUser');
+        const headerUserMobile = document.getElementById('headerUserMobile');
         if (headerUser) headerUser.innerText = name;
+        if (headerUserMobile) headerUserMobile.innerText = name;
 
         const { data: profile } = await client
           .from('profiles')
@@ -2742,11 +2756,15 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
   }
 
   window.loadAndApplySchoolConfig = async function() {
+    const defaultGov = 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg';
+    const defaultSch = 'https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png';
+
     let udiseCode = localStorage.getItem('school_udise') || '2909709801';
     let schoolNameEn = localStorage.getItem('school_name_en') || 'GHPS MARCHED';
     let schoolNameKn = localStorage.getItem('school_name_kn') || 'ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ, ಮರ್ಚೆಡ್';
-    let govLogo = localStorage.getItem('school_gov_logo') || 'https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg';
-    let schoolLogo = localStorage.getItem('school_logo_url') || 'https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png';
+    let govLogo = localStorage.getItem('school_gov_logo') || defaultGov;
+    if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) govLogo = defaultGov;
+    let schoolLogo = localStorage.getItem('school_logo_url') || defaultSch;
 
     const supabaseClient = window.getPortalSupabase();
     if (supabaseClient) {
@@ -2775,6 +2793,7 @@ window.showPortalToast = function(message, type = 'info', duration = 3000) {
           const val = settings[settings.length - 1].settings_value || {};
           if (val.gov_logo_url) govLogo = val.gov_logo_url;
           if (val.logo_url) schoolLogo = val.logo_url;
+          if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) govLogo = defaultGov;
         }
       } catch (e) {
         console.warn("Dynamic school config load error:", e);

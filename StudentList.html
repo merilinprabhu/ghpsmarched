@@ -479,6 +479,10 @@
             <button onclick="openBatchPromoteModal()" id="mass-promote-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-graduation-cap text-[10px]"></i> Promote / ತರಗತಿ ಬಡ್ತಿ
             </button>
+            <!-- TC Out / ವರ್ಗಾವಣೆ -->
+            <button onclick="openTcOutModalForSelected()" id="mass-tc-btn" class="bg-orange-600 hover:bg-orange-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-file-export text-[10px]"></i> TC / ವರ್ಗಾವಣೆ
+            </button>
             <!-- Delete -->
             <button onclick="deleteSelectedStudents()" class="bg-rose-600 hover:bg-rose-500 text-white text-xs font-extrabold py-2 px-3.5 rounded-xl shadow border-0 cursor-pointer flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-trash text-[10px]"></i> Delete / ಅಳಿಸಿ
@@ -620,9 +624,14 @@
         <button type="button" onclick="closeDuplicateFinderModal()" class="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-4 rounded-xl transition border-0 cursor-pointer">
           ಮುಚ್ಚಿ / Close
         </button>
-        <button type="button" id="btn-delete-duplicates" onclick="deleteSelectedDuplicates()" class="bg-rose-600 hover:bg-rose-500 text-white py-2 px-5 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5 font-black">
-          <i class="fa-solid fa-trash-can"></i> ಆಯ್ಕೆ ಮಾಡಿದ ನಕಲಿಗಳನ್ನು ಅಳಿಸಿ / Delete Selected Duplicates
-        </button>
+        <div class="flex items-center gap-2">
+          <a href="StsCompare.html?tab=duplicates" class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-xl shadow transition no-underline flex items-center gap-1.5 font-black text-xs">
+            <i class="fa-solid fa-code-merge"></i> <span>೪. ಸ್ಮಾರ್ಟ್ ವಿಲೀನ ಸ್ಟುಡಿಯೋಗೆ ಹೋಗಿ (Smart Merge Studio)</span>
+          </a>
+          <button type="button" id="btn-delete-duplicates" onclick="deleteSelectedDuplicates()" class="bg-rose-600 hover:bg-rose-500 text-white py-2 px-4 rounded-xl shadow transition border-0 cursor-pointer flex items-center gap-1.5 font-black">
+            <i class="fa-solid fa-trash-can"></i> ಆಯ್ಕೆ ಮಾಡಿದ ನಕಲಿಗಳನ್ನು ಅಳಿಸಿ (Delete)
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -729,6 +738,72 @@
       <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
         <button type="button" onclick="closeBarcodeScannerModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-1.5 px-4 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
           <i class="fa-solid fa-xmark mr-1"></i> ರದ್ದುಗೊಳಿಸಿ / Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- TC Out & Remove Modal Overlay -->
+  <div id="tcOutActionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-[2500] p-4 no-print">
+    <div class="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 transition-all duration-300">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <h3 class="text-base font-black text-slate-800 dark:text-slate-100 flex items-center gap-2 m-0">
+          <span class="p-2 bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 rounded-xl">
+            <i class="fa-solid fa-file-export"></i>
+          </span>
+          <span>ವರ್ಗಾವಣೆ ಪ್ರಮಾಣಪತ್ರ (TC) ನೀಡಿ / TC Issue & Direct Remove</span>
+        </h3>
+        <button onclick="closeTcOutModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm border-0 bg-transparent cursor-pointer p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-4 text-xs font-semibold">
+        <!-- Selected Students Alert -->
+        <div id="tcSelectedStudentsList" class="p-3 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/50 rounded-2xl text-orange-900 dark:text-orange-200 space-y-1">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 font-bold mb-1">TC ಸಂಖ್ಯೆ / TC Number <span class="text-rose-500">*</span></label>
+            <input type="text" id="tcOutNumberInput" placeholder="ಉದಾ: TC-2026-001" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-mono font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-slate-600 dark:text-slate-400 font-bold mb-1">ವರ್ಗಾವಣೆ ದಿನಾಂಕ / TC Date <span class="text-rose-500">*</span></label>
+            <input type="date" id="tcOutDateInput" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-600 dark:text-slate-400 font-bold mb-1">ಶಾಲೆ ಬಿಟ್ಟ ಕಾರಣ / Reason for Leaving</label>
+          <select id="tcOutReasonInput" class="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:ring-2 focus:ring-orange-500 focus:outline-none">
+            <option value="ಉನ್ನತ ಶಿಕ್ಷಣಕ್ಕಾಗಿ / For Higher Education">ಉನ್ನತ ಶಿಕ್ಷಣಕ್ಕಾಗಿ / For Higher Education</option>
+            <option value="ಪೋಷಕರ ವರ್ಗಾವಣೆ / Parent Transfer">ಪೋಷಕರ ವರ್ಗಾವಣೆ / Parent Transfer</option>
+            <option value="ಪೋಷಕರ ಕೋರಿಕೆಯ ಮೇರೆಗೆ / At Parent's Request">ಪೋಷಕರ ಕೋರಿಕೆಯ ಮೇರೆಗೆ / At Parent's Request</option>
+            <option value="ಬೇರೆ ಶಾಲೆಗೆ ದಾಖಲಾತಿ / Admission to Another School">ಬೇರೆ ಶಾಲೆಗೆ ದಾಖಲಾತಿ / Admission to Another School</option>
+            <option value="ಇತರೆ / Others">ಇತರೆ / Others</option>
+          </select>
+        </div>
+
+        <p class="text-[11px] text-slate-500 dark:text-slate-400 m-0 leading-relaxed">
+          <i class="fa-solid fa-circle-info text-orange-500 mr-1"></i>
+          TC ನೀಡಿದ ನಂತರ ವಿದ್ಯಾರ್ಥಿಯ ಸ್ಥಿತಿ <b>'TC_OUT'</b> ಆಗಿ ಬದಲಾಗುತ್ತದೆ ಮತ್ತು ಸಕ್ರಿಯ ದಾಖಲಾತಿ ಪಟ್ಟಿಯಿಂದ ನೇರವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. (ಇವರನ್ನು ನಂತರ 'ಟಿಸಿ ರಜಿಸ್ಟರ್ / ವರ್ಗಾವಣೆ ಪಟ್ಟಿ'ಯಲ್ಲಿ ಕಾಣಬಹುದು).
+        </p>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2 flex-wrap">
+        <button type="button" onclick="closeTcOutModal()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 py-2 px-4 rounded-xl text-xs font-bold transition border-0 cursor-pointer">
+          ರದ್ದುಮಾಡಿ / Cancel
+        </button>
+
+        <button type="button" id="btnOpenTcCertificate" onclick="openTcCertificateForSelected()" class="hidden bg-sky-600 hover:bg-sky-500 text-white py-2 px-4 rounded-xl text-xs font-extrabold transition shadow border-0 cursor-pointer flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> TC ಫಾರ್ಮ್ ಮುದ್ರಿಸಿ (Print TC)
+        </button>
+
+        <button type="button" id="btnConfirmDirectTcOut" onclick="confirmDirectTcOut()" class="bg-orange-600 hover:bg-orange-500 text-white py-2 px-4.5 rounded-xl text-xs font-extrabold transition shadow border-0 cursor-pointer flex items-center gap-1.5 active:scale-95">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> ನೇರವಾಗಿ TC ನೀಡಿ ಪಟ್ಟಿಯಿಂದ ತೆಗೆಯಿರಿ
         </button>
       </div>
     </div>
@@ -1789,7 +1864,7 @@
     async function initApp() {
       try {
         if (typeof initUserAndTheme === 'function') {
-          await initUserAndTheme();
+          initUserAndTheme();
         }
       } catch (e) {
         console.error("Navbar/theme init warning:", e);
@@ -2071,7 +2146,7 @@
         let session = null;
         try {
           const sessionPromise = supabaseClient.auth.getSession();
-          const timeoutPromise = new Promise(res => setTimeout(() => res(null), 800));
+          const timeoutPromise = new Promise(res => setTimeout(() => res(null), 600));
           const result = await Promise.race([sessionPromise, timeoutPromise]);
           if (result && result.data) session = result.data.session;
         } catch (e) {}
@@ -2086,7 +2161,7 @@
               .eq('school_id', schoolId)
               .eq('settings_key', 'category_mappings')
               .maybeSingle();
-            const timeoutPromise = new Promise(res => setTimeout(() => res(null), 800));
+            const timeoutPromise = new Promise(res => setTimeout(() => res(null), 600));
             const mappingRes = await Promise.race([mappingPromise, timeoutPromise]);
             if (mappingRes && mappingRes.data && mappingRes.data.settings_value) {
               let dbMappings = mappingRes.data.settings_value;
@@ -2102,27 +2177,53 @@
 
         let data = null;
         const targetSchoolId = schoolId || 'f592831e-69a8-4138-b82d-69649cb46605';
+        
+        // Helper fetch with timeout
+        const fetchWithTimeout = (promise, ms = 4000) => {
+          const timer = new Promise(resolve => setTimeout(() => resolve({ data: null, error: new Error('Timeout') }), ms));
+          return Promise.race([promise, timer]);
+        };
+
         if (targetSchoolId) {
           try {
-            const { data: res1, error: err1 } = await supabaseClient
-              .from('admissions')
-              .select('*')
-              .or(`school_id.eq.${targetSchoolId},school_id.is.null`)
-              .range(0, 5000);
-            if (!err1 && res1 && res1.length > 0) {
-              data = res1;
+            const res1 = await fetchWithTimeout(
+              supabaseClient
+                .from('admissions')
+                .select('*')
+                .or(`school_id.eq.${targetSchoolId},school_id.is.null`)
+                .range(0, 5000),
+              4000
+            );
+            if (!res1.error && res1.data && res1.data.length > 0) {
+              data = res1.data;
             }
           } catch (e) {}
         }
 
         if (!data || data.length === 0) {
           try {
-            const { data: res2, error: err2 } = await supabaseClient
-              .from('admissions')
-              .select('*')
-              .range(0, 5000);
-            if (!err2 && res2) {
-              data = res2;
+            const res2 = await fetchWithTimeout(
+              supabaseClient
+                .from('admissions')
+                .select('*')
+                .range(0, 5000),
+              4000
+            );
+            if (!res2.error && res2.data && res2.data.length > 0) {
+              data = res2.data;
+            }
+          } catch (e) {}
+        }
+
+        // Cache fallback
+        if (data && data.length > 0) {
+          try { localStorage.setItem('cached_student_list_admissions', JSON.stringify(data)); } catch (e) {}
+        } else {
+          try {
+            const cached = localStorage.getItem('cached_student_list_admissions');
+            if (cached) {
+              data = JSON.parse(cached);
+              console.log("Loaded student data from local cache:", data.length);
             }
           } catch (e) {}
         }
@@ -3058,7 +3159,171 @@
       }
     }
 
-    async function deleteSelectedStudents() {
+    async 
+    // TC Out / Direct Remove Functionality
+    let selectedTcStudents = [];
+
+    function openTcOutModalForSelected() {
+      const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+      const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
+      if (selectedIds.length === 0) {
+        showToast("ಆಯ್ಕೆ ಮಾಡಿ / Select", "ದಯವಿಟ್ಟು ಕನಿಷ್ಠ ಒಬ್ಬ ವಿದ್ಯಾರ್ಥಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.", "warning");
+        return;
+      }
+
+      selectedTcStudents = allStudentsData.filter(s => selectedIds.includes(s.realId));
+      if (selectedTcStudents.length === 0) return;
+
+      const listContainer = document.getElementById('tcSelectedStudentsList');
+      if (listContainer) {
+        const studentNamesHtml = selectedTcStudents.map(s => `
+          <div class="flex items-center justify-between text-xs py-0.5">
+            <span class="font-bold text-slate-800 dark:text-slate-100">${s.name} (${s.className || 'Class'})</span>
+            <span class="font-mono text-slate-500 text-[11px]">STS: ${s.stsNumber || s.applicationNo || '-'}</span>
+          </div>
+        `).join('');
+
+        listContainer.innerHTML = `
+          <div class="font-bold text-orange-950 dark:text-orange-200 mb-1">
+            ಆಯ್ಕೆ ಮಾಡಲಾದ ವಿದ್ಯಾರ್ಥಿಗಳು: <span class="px-2 py-0.5 bg-orange-200 dark:bg-orange-900 text-orange-900 dark:text-orange-100 rounded-full font-black text-[11px]">${selectedTcStudents.length}</span>
+          </div>
+          <div class="max-h-28 overflow-y-auto custom-scrollbar divide-y divide-orange-100 dark:divide-orange-900/40 pr-1">
+            ${studentNamesHtml}
+          </div>
+        `;
+      }
+
+      // Default values
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const dateInput = document.getElementById('tcOutDateInput');
+      if (dateInput) dateInput.value = todayStr;
+
+      const numInput = document.getElementById('tcOutNumberInput');
+      if (numInput) {
+        if (selectedTcStudents.length === 1 && selectedTcStudents[0].stsNumber) {
+          numInput.value = `TC-${now.getFullYear()}-${selectedTcStudents[0].stsNumber.replace(/\s+/g, '').slice(-4)}`;
+        } else {
+          numInput.value = `TC-${now.getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        }
+      }
+
+      const btnPrintTc = document.getElementById('btnOpenTcCertificate');
+      if (btnPrintTc) {
+        if (selectedTcStudents.length === 1) {
+          btnPrintTc.classList.remove('hidden');
+        } else {
+          btnPrintTc.classList.add('hidden');
+        }
+      }
+
+      const modal = document.getElementById('tcOutActionModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeTcOutModal() {
+      const modal = document.getElementById('tcOutActionModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openTcCertificateForSelected() {
+      if (selectedTcStudents.length === 1) {
+        const student = selectedTcStudents[0];
+        const studentId = student.realId || student.id;
+        window.location.href = `tc.html?id=${encodeURIComponent(studentId)}`;
+      }
+    }
+
+    async function confirmDirectTcOut() {
+      if (selectedTcStudents.length === 0) return;
+
+      const tcNo = (document.getElementById('tcOutNumberInput')?.value || '').trim();
+      const tcDate = (document.getElementById('tcOutDateInput')?.value || '').trim();
+      const reason = (document.getElementById('tcOutReasonInput')?.value || '').trim();
+
+      if (!tcNo || !tcDate) {
+        alert("ದಯವಿಟ್ಟು TC ಸಂಖ್ಯೆ ಮತ್ತು ವರ್ಗಾವಣೆ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ. / Please enter TC Number and TC Date.");
+        return;
+      }
+
+      const confirmMsg = `ಖಚಿತಪಡಿಸಿ: ಆಯ್ಕೆ ಮಾಡಲಾದ ${selectedTcStudents.length} ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ TC ನೀಡಿ (TC No: ${tcNo}) ಸಕ್ರಿಯ ಪಟ್ಟಿಯಿಂದ ನೇರವಾಗಿ ತೆಗೆದುಹಾಕಬೇಕೆ?\n\nConfirm: Issue TC and remove ${selectedTcStudents.length} student(s) from active list?`;
+      if (!confirm(confirmMsg)) return;
+
+      const btn = document.getElementById('btnConfirmDirectTcOut');
+      const originalText = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> TC ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ...`;
+      }
+
+      const selectedIds = selectedTcStudents.map(s => s.realId);
+
+      try {
+        // 1. Update Supabase Admissions Table
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+          const { error } = await supabaseClient
+            .from('admissions')
+            .update({
+              status: 'TC_OUT',
+              transfer_no: tcNo,
+              transfer_date: tcDate
+            })
+            .in('id', selectedIds);
+
+          if (error) throw error;
+        }
+
+        // 2. Add to LocalStorage trashed / TC list for persistent archiving
+        const trashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        selectedTcStudents.forEach(st => {
+          const item = {
+            id: st.realId,
+            student_name: st.name,
+            name_english: st.name,
+            app_no: st.stsNumber || st.applicationNo,
+            student_sts: st.stsNumber || st.applicationNo,
+            enroll_class: st.className,
+            gender: st.gender,
+            dob: st.dob,
+            status: 'TC_OUT',
+            transfer_no: tcNo,
+            transfer_date: tcDate,
+            tc_reason: reason,
+            trashed_at: new Date().toISOString()
+          };
+          const existIdx = trashed.findIndex(t => String(t.id) === String(st.realId) || String(t.app_no) === String(item.app_no));
+          if (existIdx !== -1) {
+            trashed[existIdx] = item;
+          } else {
+            trashed.unshift(item);
+          }
+        });
+        localStorage.setItem('trashed_students_list', JSON.stringify(trashed));
+
+        // 3. Remove from memory and update UI
+        allStudentsData = allStudentsData.filter(s => !selectedIds.includes(s.realId));
+        
+        closeTcOutModal();
+        applyFilters();
+        if (typeof updateMetricCards === 'function') updateMetricCards();
+
+        showToast(
+          "TC ನೀಡಲಾಗಿದೆ / TC Issued",
+          `${selectedTcStudents.length} ವಿದ್ಯಾರ್ಥಿಗಳಿಗೆ ಯಶಸ್ವಿಯಾಗಿ TC ನೀಡಿ ಪಟ್ಟಿಯಿಂದ ತೆಗೆಯಲಾಗಿದೆ. (TC No: ${tcNo})`,
+          "success"
+        );
+      } catch (err) {
+        console.error("Direct TC Out Error:", err);
+        alert("TC ನೀಡುವಲ್ಲಿ ದೋಷ ಸಂಭವಿಸಿದೆ: " + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
+      }
+    }
+
+    function deleteSelectedStudents() {
       const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
       const selectedIds = Array.from(checkedBoxes).map(cb => cb.getAttribute('data-id'));
       if (selectedIds.length === 0) return;

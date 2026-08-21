@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -1062,12 +1062,21 @@
         let distributedItemsCount = 0;
         
         // 1. Get total students count & class details
-        let studQuery = supabaseClient.from('admissions').select('id, enroll_class');
-        if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
+        let studQuery = supabaseClient.from('admissions').select('id, enroll_class, status, app_no, student_sts');
+        if (schoolId) studQuery = studQuery.or(`school_id.eq.${schoolId},school_id.is.null`);
         const { data: studData, error: studErr } = await studQuery;
         if (studErr) throw studErr;
 
-        const admissionsList = studData || [];
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
+        const admissionsList = (studData || []).filter(s => {
+          const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+          const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+          const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+          const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+          return isNotOut && isNotTrashed;
+        });
         studentsCount = admissionsList.length;
 
         // 2. Get total distributed records
@@ -3267,9 +3276,20 @@
         const classCompletionRates = [];
 
         // 1. Fetch total student counts per class in this school
-        let studQuery = supabaseClient.from('admissions').select('id, enroll_class');
-        if (schoolId) studQuery = studQuery.eq('school_id', schoolId);
-        const { data: allStudents } = await studQuery;
+        let studQuery = supabaseClient.from('admissions').select('id, enroll_class, status, app_no, student_sts');
+        if (schoolId) studQuery = studQuery.or(`school_id.eq.${schoolId},school_id.is.null`);
+        const { data: allStudentsData } = await studQuery;
+
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
+        const allStudents = (allStudentsData || []).filter(s => {
+          const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+          const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+          const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+          const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+          return isNotOut && isNotTrashed;
+        });
 
         const classStudentMap = {};
         classes.forEach(c => classStudentMap[c] = []);

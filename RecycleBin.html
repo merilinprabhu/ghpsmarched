@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -363,11 +363,11 @@
 
         // 2. Remove from local trash & tc_print_logs so student becomes fully active in StudentList
         let localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
-        localTrashed = localTrashed.filter(s => String(s.id) !== String(id) && String(s.app_no || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
+        localTrashed = localTrashed.filter(s => String(s.id) !== String(id) && String(s.app_no || s.student_sts || s.sts_no || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
         localStorage.setItem('trashed_students_list', JSON.stringify(localTrashed));
 
         let tcLogs = JSON.parse(localStorage.getItem('tc_print_logs') || '[]');
-        tcLogs = tcLogs.filter(l => String(l.sts || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
+        tcLogs = tcLogs.filter(l => String(l.sts || l.id || '').replace(/\s+/g, '') !== String(stsNum).replace(/\s+/g, ''));
         localStorage.setItem('tc_print_logs', JSON.stringify(tcLogs));
 
         alert(`ವಿದ್ಯಾರ್ಥಿ "${name}" ಯಶಸ್ವಿಯಾಗಿ ಸಕ್ರಿಯ ಪಟ್ಟಿಗೆ ಪುನಃ ದಾಖಲಾಗಿದ್ದಾರೆ (Re-Admitted Successfully)!\nದಾಖಲೆಯು 4ನೇ ಟ್ಯಾಬ್ "Re-Admitted Register" ನಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿದೆ.`);

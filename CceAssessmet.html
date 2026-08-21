@@ -415,6 +415,63 @@
         <div id="main-grid-view" class="flex flex-col gap-3 w-full print-container hidden">
           <div id="page-enter-marks" class="flex flex-col gap-3 w-full">
 
+            <!-- Separate Grade Cards (Total, A+, A, B+, B, C+/Others) - Positioned ABOVE table/cards -->
+            <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print hidden">
+              <!-- Total Pupils -->
+              <div class="bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl text-indigo-600 dark:text-indigo-400"><i class="fa-solid fa-users text-base"></i></div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-slate-500 font-bold uppercase tracking-wider truncate">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</div>
+                  <div id="stat-total-students" class="text-base font-black text-slate-800 dark:text-slate-200">0</div>
+                </div>
+              </div>
+
+              <!-- A+ Grade -->
+              <div class="bg-emerald-50/40 dark:bg-emerald-950/20 p-2.5 rounded-2xl border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl text-emerald-700 dark:text-emerald-300 font-black text-xs">A+</div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-emerald-800 dark:text-emerald-300 font-extrabold uppercase tracking-wider truncate">A+ ಶ್ರೇಣಿ</div>
+                  <div id="stat-grade-ap" class="text-base font-black text-emerald-800 dark:text-emerald-200">0</div>
+                </div>
+              </div>
+
+              <!-- A Grade -->
+              <div class="bg-teal-50/40 dark:bg-teal-950/20 p-2.5 rounded-2xl border border-teal-200/60 dark:border-teal-900/40 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-teal-100 dark:bg-teal-900/50 rounded-xl text-teal-700 dark:text-teal-300 font-black text-xs">A</div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-teal-800 dark:text-teal-300 font-extrabold uppercase tracking-wider truncate">A ಶ್ರೇಣಿ</div>
+                  <div id="stat-grade-a" class="text-base font-black text-teal-800 dark:text-teal-200">0</div>
+                </div>
+              </div>
+
+              <!-- B+ Grade -->
+              <div class="bg-sky-50/40 dark:bg-sky-950/20 p-2.5 rounded-2xl border border-sky-200/60 dark:border-sky-900/40 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-sky-100 dark:bg-sky-900/50 rounded-xl text-sky-700 dark:text-sky-300 font-black text-xs">B+</div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-sky-800 dark:text-sky-300 font-extrabold uppercase tracking-wider truncate">B+ ಶ್ರೇಣಿ</div>
+                  <div id="stat-grade-bp" class="text-base font-black text-sky-800 dark:text-sky-200">0</div>
+                </div>
+              </div>
+
+              <!-- B Grade -->
+              <div class="bg-indigo-50/40 dark:bg-indigo-950/20 p-2.5 rounded-2xl border border-indigo-200/60 dark:border-indigo-900/40 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl text-indigo-700 dark:text-indigo-300 font-black text-xs">B</div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-indigo-800 dark:text-indigo-300 font-extrabold uppercase tracking-wider truncate">B ಶ್ರೇಣಿ</div>
+                  <div id="stat-grade-b" class="text-base font-black text-indigo-800 dark:text-indigo-200">0</div>
+                </div>
+              </div>
+
+              <!-- C+ & Others Grade -->
+              <div class="bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 shadow-xs flex items-center gap-2.5">
+                <div class="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 font-black text-xs">C+</div>
+                <div class="min-w-0">
+                  <div class="text-[9px] text-amber-800 dark:text-amber-300 font-extrabold uppercase tracking-wider truncate">C+ / ಇತರ ಶ್ರೇಣಿ</div>
+                  <div id="stat-grade-others" class="text-base font-black text-amber-800 dark:text-amber-200">0</div>
+                </div>
+              </div>
+            </div>
+
             <!-- Single Compact Integrated Toolbar (Dropdowns + Action Buttons + Active Scale Note) -->
             <div class="bg-white dark:bg-slate-900 p-3 sm:p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm no-print">
               <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
@@ -461,6 +518,16 @@
                     <label class="block text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">ವಿಷಯ / Subject</label>
                     <select id="subject-filter" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-sky-500/30 cursor-pointer shadow-xs">
                       <option value="ALL">All Subjects / ಎಲ್ಲಾ</option>
+                    </select>
+                  </div>
+
+                  <!-- Status Filter -->
+                  <div class="w-full sm:w-36">
+                    <label class="block text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">ಸ್ಥಿತಿ / Status</label>
+                    <select id="status-filter" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-sky-500/30 cursor-pointer shadow-xs">
+                      <option value="UNFILLED" selected>Unfilled / ಬಾಕಿ</option>
+                      <option value="ALL">All Students / ಎಲ್ಲಾ</option>
+                      <option value="FILLED">Filled / ಪೂರ್ಣ</option>
                     </select>
                   </div>
 
@@ -521,62 +588,7 @@
               </div>
             </div>
 
-            <!-- Separate Grade Cards (Total, A+, A, B+, B, C+/Others) - Positioned ABOVE table/cards -->
-            <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print hidden">
-              <!-- Total Pupils -->
-              <div class="bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-indigo-50 dark:bg-indigo-950/50 rounded-xl text-indigo-600 dark:text-indigo-400"><i class="fa-solid fa-users text-base"></i></div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-slate-500 font-bold uppercase tracking-wider truncate">ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು</div>
-                  <div id="stat-total-students" class="text-base font-black text-slate-800 dark:text-slate-200">0</div>
-                </div>
-              </div>
 
-              <!-- A+ Grade -->
-              <div class="bg-emerald-50/40 dark:bg-emerald-950/20 p-2.5 rounded-2xl border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl text-emerald-700 dark:text-emerald-300 font-black text-xs">A+</div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-emerald-800 dark:text-emerald-300 font-extrabold uppercase tracking-wider truncate">A+ ಶ್ರೇಣಿ</div>
-                  <div id="stat-grade-ap" class="text-base font-black text-emerald-800 dark:text-emerald-200">0</div>
-                </div>
-              </div>
-
-              <!-- A Grade -->
-              <div class="bg-teal-50/40 dark:bg-teal-950/20 p-2.5 rounded-2xl border border-teal-200/60 dark:border-teal-900/40 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-teal-100 dark:bg-teal-900/50 rounded-xl text-teal-700 dark:text-teal-300 font-black text-xs">A</div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-teal-800 dark:text-teal-300 font-extrabold uppercase tracking-wider truncate">A ಶ್ರೇಣಿ</div>
-                  <div id="stat-grade-a" class="text-base font-black text-teal-800 dark:text-teal-200">0</div>
-                </div>
-              </div>
-
-              <!-- B+ Grade -->
-              <div class="bg-sky-50/40 dark:bg-sky-950/20 p-2.5 rounded-2xl border border-sky-200/60 dark:border-sky-900/40 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-sky-100 dark:bg-sky-900/50 rounded-xl text-sky-700 dark:text-sky-300 font-black text-xs">B+</div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-sky-800 dark:text-sky-300 font-extrabold uppercase tracking-wider truncate">B+ ಶ್ರೇಣಿ</div>
-                  <div id="stat-grade-bp" class="text-base font-black text-sky-800 dark:text-sky-200">0</div>
-                </div>
-              </div>
-
-              <!-- B Grade -->
-              <div class="bg-indigo-50/40 dark:bg-indigo-950/20 p-2.5 rounded-2xl border border-indigo-200/60 dark:border-indigo-900/40 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl text-indigo-700 dark:text-indigo-300 font-black text-xs">B</div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-indigo-800 dark:text-indigo-300 font-extrabold uppercase tracking-wider truncate">B ಶ್ರೇಣಿ</div>
-                  <div id="stat-grade-b" class="text-base font-black text-indigo-800 dark:text-indigo-200">0</div>
-                </div>
-              </div>
-
-              <!-- C+ & Others Grade -->
-              <div class="bg-amber-50/40 dark:bg-amber-950/20 p-2.5 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 shadow-xs flex items-center gap-2.5">
-                <div class="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 font-black text-xs">C+</div>
-                <div class="min-w-0">
-                  <div class="text-[9px] text-amber-800 dark:text-amber-300 font-extrabold uppercase tracking-wider truncate">C+ / ಇತರ ಶ್ರೇಣಿ</div>
-                  <div id="stat-grade-others" class="text-base font-black text-amber-800 dark:text-amber-200">0</div>
-                </div>
-              </div>
-            </div>
 
             <!-- Mobile Cards Container for CCE -->
             <div id="student-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 hidden no-print"></div>
@@ -901,11 +913,13 @@
     let currentViewMode = localStorage.getItem('cce_view_mode') || 'cards';
     let genderFilter = '';
     let searchQuery = '';
+    let statusFilter = 'UNFILLED';
     let currentSchoolId = localStorage.getItem("school_id") || null;
 
     const classFilter = document.getElementById('class-filter');
     const examTypeFilter = document.getElementById('exam-type-filter');
     const subjectFilter = document.getElementById('subject-filter');
+    const statusFilterEl = document.getElementById('status-filter');
 
     document.addEventListener("DOMContentLoaded", async function() {
       await initUserAndTheme();
@@ -1021,6 +1035,62 @@
         renderActiveView();
       }
     });
+
+    if (statusFilterEl) {
+      statusFilterEl.addEventListener('change', () => {
+        statusFilter = statusFilterEl.value;
+        if (students.length > 0) {
+          renderActiveView();
+        }
+      });
+    }
+
+    const cardsContainer = document.getElementById('student-cards-container');
+    if (cardsContainer) {
+      cardsContainer.addEventListener('focusout', (e) => {
+        const card = e.target.closest('[id^="student-card-"]');
+        if (!card) return;
+        const studentId = card.id.replace('student-card-', '');
+        
+        setTimeout(() => {
+          if (!card.contains(document.activeElement)) {
+            const className = classFilter.value;
+            const examType = examTypeFilter.value;
+            const currentSub = subjectFilter.value;
+            
+            const student = students.find(s => String(s.id) === String(studentId));
+            if (!student) return;
+            const currentlyFilled = isStudentCceFilled(student, examType, currentSub);
+            
+            if (statusFilter === 'UNFILLED' || statusFilter === 'FILLED') {
+              const shouldHide = (statusFilter === 'UNFILLED' && currentlyFilled) || (statusFilter === 'FILLED' && !currentlyFilled);
+              if (shouldHide) {
+                const focusedInput = document.activeElement;
+                let targetRowIdx = -1;
+                let targetColIdx = -1;
+                if (focusedInput && focusedInput.tagName === 'INPUT') {
+                  targetRowIdx = parseInt(focusedInput.getAttribute('data-card-row'));
+                  targetColIdx = parseInt(focusedInput.getAttribute('data-card-col'));
+                }
+
+                renderCards();
+
+                if (targetColIdx !== -1) {
+                  let nextInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${targetRowIdx}"][data-card-col="${targetColIdx}"]`);
+                  if (!nextInput && targetRowIdx > 0) {
+                    nextInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${targetRowIdx - 1}"][data-card-col="${targetColIdx}"]`);
+                  }
+                  if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                }
+              }
+            }
+          }
+        }, 50);
+      });
+    }
 
     // Grid Sub Page Switcher System
     let currentGridSubPage = 'entermarks';
@@ -1650,7 +1720,49 @@
       renderActiveView();
     }
 
+    function isStudentCceFilled(student, examType, selectedSub) {
+      const evalData = evaluations[student.id];
+      if (!evalData) return false;
+      const isSA = examType.startsWith("SA");
+      const subs = selectedSub === "ALL" ? currentSubjects : currentSubjects.filter(sub => sub.id === selectedSub);
+      if (subs.length === 0) return false;
+      
+      for (const sub of subs) {
+        const sKey = sub.id;
+        if (isSA) {
+          const wVal = evalData[sKey + "_w"];
+          const oVal = evalData[sKey + "_o"];
+          const hasW = (wVal !== '' && wVal !== undefined && wVal !== null);
+          const hasO = (oVal !== '' && oVal !== undefined && oVal !== null);
+          if (!hasW || !hasO) return false;
+        } else {
+          const mVal = evalData[sKey + "_mark"];
+          const hasM = (mVal !== '' && mVal !== undefined && mVal !== null);
+          if (!hasM) return false;
+        }
+      }
+      return true;
+    }
+
+    function updateRowFilledStatus(studentId) {
+      const tr = document.querySelector(`tr[data-student-id="${studentId}"]`);
+      if (!tr) return;
+      const student = students.find(s => s.id === studentId);
+      if (!student) return;
+      const examType = examTypeFilter.value;
+      const selectedSub = subjectFilter.value;
+      const isFilled = isStudentCceFilled(student, examType, selectedSub);
+      
+      if (isFilled) {
+        tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+      } else {
+        tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition";
+      }
+    }
+
     function getFilteredStudents() {
+      const examType = examTypeFilter.value;
+      const selectedSub = subjectFilter.value;
       return students.filter(s => {
         if (genderFilter && s.gender !== genderFilter) return false;
         if (searchQuery) {
@@ -1658,7 +1770,14 @@
           const nameKn = (s.student_name_kn || s.student_name || '').toLowerCase();
           const sts = (s.adminNo || s.app_no || s.id || '').toLowerCase();
           const father = (s.father_name_az || s.father_name_kn || '').toLowerCase();
-          return nameEn.includes(searchQuery) || nameKn.includes(searchQuery) || sts.includes(searchQuery) || father.includes(searchQuery);
+          if (!(nameEn.includes(searchQuery) || nameKn.includes(searchQuery) || sts.includes(searchQuery) || father.includes(searchQuery))) {
+            return false;
+          }
+        }
+        if (statusFilter === 'UNFILLED') {
+          return !isStudentCceFilled(s, examType, selectedSub);
+        } else if (statusFilter === 'FILLED') {
+          return isStudentCceFilled(s, examType, selectedSub);
         }
         return true;
       });
@@ -1819,7 +1938,57 @@
         const fatherKn = (student.father_name_kn || '').trim();
 
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition";
+        tr.setAttribute('data-student-id', sId);
+        tr.setAttribute('data-row-index', index);
+        const initialFilled = isStudentCceFilled(student, examType, selectedSub);
+        if (initialFilled) {
+          tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+        } else {
+          tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition";
+        }
+
+        tr.addEventListener('focusout', (e) => {
+          setTimeout(() => {
+            if (!tr.contains(document.activeElement)) {
+              const currentExamType = examTypeFilter.value;
+              const currentSub = subjectFilter.value;
+              const currentlyFilled = isStudentCceFilled(student, currentExamType, currentSub);
+              
+              if (currentlyFilled) {
+                tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition bg-emerald-50/25 dark:bg-emerald-950/15 border-l-4 border-l-emerald-500";
+              } else {
+                tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition";
+              }
+
+              if (statusFilter === 'UNFILLED' || statusFilter === 'FILLED') {
+                const shouldHide = (statusFilter === 'UNFILLED' && currentlyFilled) || (statusFilter === 'FILLED' && !currentlyFilled);
+                if (shouldHide) {
+                  const focusedInput = document.activeElement;
+                  let targetRowIdx = -1;
+                  let targetColIdx = -1;
+                  if (focusedInput && focusedInput.tagName === 'INPUT') {
+                    targetRowIdx = parseInt(focusedInput.getAttribute('data-row'));
+                    targetColIdx = parseInt(focusedInput.getAttribute('data-col'));
+                  }
+
+                  renderGrid();
+
+                  if (targetColIdx !== -1) {
+                    let nextInput = document.querySelector(`input[data-nav-grid="true"][data-row="${targetRowIdx}"][data-col="${targetColIdx}"]`);
+                    if (!nextInput && targetRowIdx > 0) {
+                      nextInput = document.querySelector(`input[data-nav-grid="true"][data-row="${targetRowIdx - 1}"][data-col="${targetColIdx}"]`);
+                    }
+                    if (nextInput) {
+                      nextInput.focus();
+                      nextInput.select();
+                    }
+                  }
+                }
+              }
+            }
+          }, 50);
+        });
+
         let rowHtml = `
           <td class="p-2 text-center border-r border-slate-200 dark:border-slate-700 font-bold">${index + 1}</td>
           <td class="p-2 border-r border-slate-200 dark:border-slate-700 font-mono text-slate-600 dark:text-slate-400 text-xs">${student.adminNo || student.id}</td>
@@ -2165,6 +2334,7 @@
       // Dynamic Card & Box Colors
       updateCardVisualTheme(studentId, subKey, grade);
 
+      updateRowFilledStatus(studentId);
       updateTotals();
       triggerAutoSave();
     }
@@ -2236,6 +2406,7 @@
       // Dynamic Card & Box Colors
       updateCardVisualTheme(studentId, subKey, grade);
 
+      updateRowFilledStatus(studentId);
       updateTotals();
       triggerAutoSave();
     }

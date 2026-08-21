@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -814,7 +814,7 @@
 
                       <!-- Flush Center Top Dual Logos -->
                       <div class="flex items-center justify-center gap-3 px-2">
-                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" alt="Govt Logo">
+                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="Govt Logo">
                         <img class="cert-school-logo-img h-12 w-auto object-contain" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo">
                       </div>
                       
@@ -1106,7 +1106,7 @@
                     <!-- Top Header Row: Center Top Dual Logos with Corner Barcode -->
                     <div class="relative flex items-center justify-center pt-0 mb-2">
                       <div class="flex items-center justify-center gap-4">
-                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" alt="Govt Logo">
+                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="Govt Logo">
                         <img class="cert-school-logo-img h-12 w-auto object-contain" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo">
                       </div>
                       <div class="absolute right-0 top-0">
@@ -1178,7 +1178,7 @@
                     <!-- Top Header Row: Center Top Dual Logos with Corner Barcode -->
                     <div class="relative flex items-center justify-center pt-0 mb-2">
                       <div class="flex items-center justify-center gap-4">
-                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" alt="Govt Logo">
+                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="Govt Logo">
                         <img class="cert-school-logo-img h-12 w-auto object-contain" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo">
                       </div>
                       <div class="absolute right-0 top-0">
@@ -1306,7 +1306,7 @@
 
                     <div class="flex flex-col items-center justify-center text-center py-2 space-y-1">
                       <div class="flex items-center justify-center gap-4 mb-1">
-                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg" alt="Govt Logo">
+                        <img class="cert-gov-logo-img h-12 w-auto object-contain" src="https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg" alt="Govt Logo">
                         <img class="cert-school-logo-img h-12 w-auto object-contain" src="https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png" alt="School Logo">
                       </div>
                       <h2 class="text-sm font-black text-black">ಸಾರ್ವಜನಿಕ ಶಿಕ್ಷಣ ಇಲಾಖೆ</h2>
@@ -4248,10 +4248,11 @@
     }
 
     function loadLogosFromStorage() {
-      const defaultGov = "https://upload.wikimedia.org/wikipedia/commons/e/e7/Emblem_of_Karnataka.svg";
+      const defaultGov = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
       const defaultSch = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/Gemini_Generated_Image_pjk3eppjk3eppjk3.png";
 
-      const govLogo = localStorage.getItem('school_gov_logo') || defaultGov;
+      let govLogo = localStorage.getItem('school_gov_logo') || defaultGov;
+      if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) govLogo = defaultGov;
       const schoolLogo = localStorage.getItem('school_logo_url') || defaultSch;
 
       const isGovChecked = document.getElementById('govLogoToggle') ? document.getElementById('govLogoToggle').checked : true;
