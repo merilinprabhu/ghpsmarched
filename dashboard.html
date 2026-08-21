@@ -1326,15 +1326,34 @@
           }
         }
 
-        let query = supabaseClient.from('admissions').select('*');
+        let admissions = null;
         if (schoolId) {
-          query = query.eq('school_id', schoolId);
+          try {
+            const { data: res1, error: err1 } = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .or(`school_id.eq.${schoolId},school_id.is.null`)
+              .range(0, 5000);
+            if (!err1 && res1 && res1.length > 0) {
+              admissions = res1;
+            }
+          } catch (e) {}
         }
 
-        const { data: admissions, error } = await query;
+        if (!admissions || admissions.length === 0) {
+          try {
+            const { data: res2, error: err2 } = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .range(0, 5000);
+            if (!err2 && res2) {
+              admissions = res2;
+            }
+          } catch (e) {}
+        }
 
-        if (error) {
-          console.error("Error fetching admissions:", error);
+        if (!admissions) {
+          console.error("Error fetching admissions or no data returned");
           return;
         }
 
@@ -1397,8 +1416,18 @@
         const year = localStorage.getItem('school_academic_year') || '2026-27';
         const filteredAdmissions = admissions.filter(s => s.academic_year === year || !s.academic_year);
 
-        const admittedList = filteredAdmissions.filter(s => s.is_admitted !== false && s.is_admitted !== 'false').map(normalizeStudentRow);
-        const pendingList = filteredAdmissions.filter(s => s.is_admitted === false || s.is_admitted === 'false').map(normalizeStudentRow);
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
+        const admittedList = filteredAdmissions.filter(s => {
+          const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+          const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+          const sKey2 = String(s.student_sts || s.app_no || s.enrolment_no || '').replace(/\s+/g, '').toLowerCase();
+          const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+          return isNotOut && isNotTrashed;
+        }).map(normalizeStudentRow);
+
+        const pendingList = [];
 
         allStudents = admittedList;
         
@@ -2456,7 +2485,6 @@
         '1-5': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
         '6-7': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
         '8-10': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
-        '6-10': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 },
         'grand': { sc_b: 0, sc_g: 0, st_b: 0, st_g: 0, c1_b: 0, c1_g: 0, min_b: 0, min_g: 0, obc_b: 0, obc_g: 0, unas_b: 0, unas_g: 0, b: 0, g: 0, tot: 0 }
       };
 
@@ -2478,7 +2506,6 @@
         if (['1', '2', '3', '4', '5'].includes(c)) addToGroup('1-5', d);
         if (['6', '7'].includes(c)) addToGroup('6-7', d);
         if (['8', '9', '10'].includes(c)) addToGroup('8-10', d);
-        if (['6', '7', '8', '9', '10'].includes(c)) addToGroup('6-10', d);
         addToGroup('grand', d);
       });
 
@@ -2532,7 +2559,6 @@
         cls.forEach(c => rowsToRender.push({ type: 'class', code: c, slNo: slNo++ }));
         if (cls.length > 0) rowsToRender.push({ type: 'subtotal', group: g.group, label: g.label });
       });
-      if (activeClasses.filter(c => ['6', '7', '8', '9', '10'].includes(c)).length > 0) rowsToRender.push({ type: 'subtotal', group: '6-10', label: '6-10 ಒಟ್ಟು' });
       if (activeClasses.length > 0) rowsToRender.push({ type: 'grand', group: 'grand', label: 'ಒಟ್ಟು' });
 
       rowsToRender.forEach(row => {

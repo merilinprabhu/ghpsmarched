@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -846,11 +846,22 @@
             <div id="grid-container" class="space-y-4 hidden">
               <!-- Roster Actions Header -->
               <div class="flex justify-between items-center flex-wrap gap-2 pb-3 border-b border-slate-200">
-                <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase flex items-center gap-1.5">
-                  <i class="fa-solid fa-list-check text-indigo-650"></i>
-                  <span id="grid-title-info">Evaluation Grid</span>
-                </h3>
-                <div class="flex gap-2">
+                <div class="flex items-center gap-3">
+                  <h3 class="text-xs font-bold text-slate-800 dark:text-slate-100 uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-list-check text-indigo-650"></i>
+                    <span id="grid-title-info">Evaluation Grid</span>
+                  </h3>
+                  <!-- View Mode Switcher -->
+                  <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl">
+                    <button type="button" id="btn-bc-view-cards" onclick="setBCViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+                      <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+                    </button>
+                    <button type="button" id="btn-bc-view-table" onclick="setBCViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent">
+                      <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex gap-2 items-center">
                   <span id="grid-mode-tag" class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-750 font-bold uppercase tracking-wider text-[9px]">View Mode</span>
                   <button id="btn-edit" onclick="enableEditing()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer"><i class="fa-solid fa-pen-to-square"></i> ತಿದ್ದುಪಡಿ / Edit</button>
                   <button id="btn-save" onclick="saveData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition shadow border-0 cursor-pointer hidden"><i class="fa-solid fa-floppy-disk"></i> ಉಳಿಸಿ / Save</button>
@@ -1135,6 +1146,15 @@
       document.getElementById('panel-analytics').classList.toggle('hidden', !isAnalytics);
       document.getElementById('panel-marks').classList.toggle('hidden', !isMarks);
       document.getElementById('panel-reference').classList.toggle('hidden', !isRef);
+
+      if (isMarks) {
+        if (!classFilter.value) classFilter.value = "1";
+        if (!subjectFilter.value) subjectFilter.value = "KANNADA";
+        if (!testTypeFilter.value) testTypeFilter.value = "PRE_TEST";
+        if (classFilter.value && subjectFilter.value && testTypeFilter.value) {
+          loadRosterGrid();
+        }
+      }
       
       const tabAna = document.getElementById('tab-analytics');
       const tabMar = document.getElementById('tab-marks');
@@ -1174,6 +1194,9 @@
     let classStudents = {};
     let selectedStudents = [];
     let evaluations = {};
+    let currentBCViewMode = localStorage.getItem('bc_view_mode') || 'cards';
+    let bcGenderFilter = '';
+    let bcSearchQuery = '';
     let originalEvaluations = {};
     let isEditing = false;
     let activeSkillCarouselIndex = 0;
@@ -1239,19 +1262,30 @@
     async function loadSchoolData() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
 
         // Request gender, caste, and English name fields
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
-        if (schoolId) {
-          query = query.eq('school_id', schoolId);
+        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, student_sts, enroll_class, gender, caste, status').neq('is_admitted', false);
+        const isValidUUID = schoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId);
+        if (isValidUUID) {
+          query = query.or(`school_id.eq.${schoolId},school_id.is.null`);
         }
 
         const { data, error } = await query;
         if (error) throw error;
 
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
         // Sort students alphabetically by English name
-        students = (data || []).sort((a, b) => {
+        students = (data || []).filter(s => {
+          const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+          const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+          const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+          const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+          return isNotOut && isNotTrashed;
+        }).sort((a, b) => {
           const nameA = (a.name_english || a.student_name || '').trim().toUpperCase();
           const nameB = (b.name_english || b.student_name || '').trim().toUpperCase();
           return nameA.localeCompare(nameB);
@@ -1992,7 +2026,9 @@
           name_english: s.name_english || '',
           father_name_kn: s.father_name_kn || '',
           father_name_az: s.father_name_az || '',
-          adminNo: s.app_no
+          gender: s.gender || '',
+          caste: s.caste || '',
+          adminNo: s.app_no || s.student_sts || s.id
         }));
 
         selectedStudents = roster;
@@ -2041,7 +2077,7 @@
         // By default, if no saved data, enable editing mode
         const hasData = Object.keys(evaluations).length > 0;
         setMode(!hasData);
-        renderRosterGrid();
+        renderActiveBCView();
       } catch (err) {
         console.error("Grid Load Error:", err);
         document.getElementById('loading-overlay').classList.add('hidden');
@@ -2077,13 +2113,13 @@
 
     function enableEditing() {
       setMode(true);
-      renderRosterGrid();
+      renderActiveBCView();
     }
 
     function cancelEditing() {
       evaluations = JSON.parse(JSON.stringify(originalEvaluations));
       setMode(Object.keys(originalEvaluations).length === 0);
-      renderRosterGrid();
+      renderActiveBCView();
     }
 
     function getGradeSelectClass(val) {
@@ -2281,7 +2317,8 @@
       });
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
         
         const payload = records.map(r => ({
           school_id: schoolId,
@@ -2320,7 +2357,7 @@
             showToast("ಖಾತ್ರಿ / Saved!", "ಮೌಲ್ಯಮಾಪನ ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ.", "success");
             originalEvaluations = JSON.parse(JSON.stringify(evaluations));
             setMode(false);
-            renderRosterGrid();
+            renderActiveBCView();
 
             // Log save history
             logSaveAction(cls, sub, type, records.length);
@@ -2703,7 +2740,8 @@
           const sub = subjectFilter.value;
           const type = testTypeFilter.value;
           const { data: { session } } = await supabaseClient.auth.getSession();
-          const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+          const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
           
           let changedCount = 0;
           const upsertPayloads = [];
@@ -2767,7 +2805,7 @@
               originalEvaluations = JSON.parse(JSON.stringify(evaluations));
             }
             
-            renderRosterGrid();
+            renderActiveBCView();
             updateClassProgressStats();
             
             // Log save history for CSV import
@@ -2791,7 +2829,8 @@
       const selectedDate = document.getElementById('date-filter') ? document.getElementById('date-filter').value : '';
       
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
         
         const logEntry = {
           timestamp: new Date().toISOString(),
@@ -2851,7 +2890,8 @@
       if (!historyBody) return;
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
         
         let localHistory = [];
         try {

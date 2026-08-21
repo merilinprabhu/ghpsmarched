@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -117,12 +117,53 @@
         print-color-adjust: exact !important;
       }
       body > *:not(#printArea) { display: none !important; }
-      #printArea { display: block !important; background: #ffffff !important; color: #000000 !important; }
-      #printArea table { width: 100% !important; border-collapse: collapse !important; font-size: 8px !important; margin-top: 15px !important; border: 1.5px solid #000000 !important; background-color: #ffffff !important; table-layout: auto !important; }
-      #printArea th, #printArea td { border: 1px solid #000000 !important; padding: 4px 2px !important; text-align: center !important; white-space: normal !important; word-break: break-word !important; }
-      #printArea th { font-weight: bold !important; background-color: #000000 !important; color: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea td { background-color: #ffffff !important; color: #000000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      #printArea .print-signatures-row { margin-top: 40px !important; display: flex !important; justify-content: space-between !important; align-items: center !important; font-size: 11px !important; font-weight: bold !important; color: #000000 !important; page-break-inside: avoid !important; break-inside: avoid !important; }
+      #printArea { 
+        display: block !important; 
+        visibility: visible !important;
+        background: #ffffff !important; 
+        color: #000000 !important; 
+        width: 100% !important;
+      }
+      #printArea table { 
+        width: 100% !important; 
+        border-collapse: collapse !important; 
+        font-size: 8.5px !important; 
+        margin-top: 10px !important; 
+        border: 1.5px solid #000000 !important; 
+        background-color: #ffffff !important; 
+        table-layout: auto !important; 
+      }
+      #printArea th, #printArea td { 
+        border: 1px solid #000000 !important; 
+        padding: 4px 2px !important; 
+        text-align: center !important; 
+        white-space: normal !important; 
+        word-break: break-word !important; 
+      }
+      #printArea th { 
+        font-weight: bold !important; 
+        background-color: #f1f5f9 !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      #printArea td { 
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      #printArea .print-signatures-row { 
+        margin-top: 35px !important; 
+        display: flex !important; 
+        justify-content: space-between !important; 
+        align-items: center !important; 
+        font-size: 11px !important; 
+        font-weight: bold !important; 
+        color: #000000 !important; 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important; 
+      }
     }
   
     @media (min-width: 768px) {
@@ -279,7 +320,7 @@
       <div class="flex-1 bg-white dark:bg-slate-900 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit space-y-4 min-w-0">
         
         <!-- Tab navigation bar -->
-        <div class="bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded-2xl flex flex-wrap gap-2 no-print flex-shrink-0 border border-slate-200/60 dark:border-slate-800">
+        <div class="bg-slate-50 dark:bg-slate-900/50 p-1.5 rounded-2xl flex flex-wrap items-center gap-2 no-print flex-shrink-0 border border-slate-200/60 dark:border-slate-800">
           <button id="tab-dashboard" onclick="switchTab('dashboard')" class="text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-sky-600 text-white shadow-lg shadow-sky-500/20 active:scale-95">
             <i class="fa-solid fa-chart-line text-sm"></i> CCE ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ / CCE Dashboard
           </button>
@@ -289,9 +330,24 @@
           <button id="tab-assesssetting" onclick="switchTab('assesssetting')" class="text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 border-0 cursor-pointer bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-slate-200 active:scale-95">
             <i class="fa-solid fa-sliders text-sm text-amber-500"></i> ನಿಯಮಗಳ ಸಂಯೋಜನೆ / Assessment Setting
           </button>
-          <a href="CceConsolidatedReport.html" class="text-xs font-bold px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white cursor-pointer active:scale-95 shadow-sm ml-auto">
-            <i class="fa-solid fa-file-invoice text-sm"></i> <span>ಸಂಯೋಜಿತ ವರದಿ / Consolidated Report</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-          </a>
+
+          <!-- Right Action Group: Auto Sync + Sync Button + Consolidated Report -->
+          <div class="flex items-center gap-2 ml-auto">
+            <!-- Auto-save / Live Sync Indicator -->
+            <div id="auto-save-indicator" class="hidden text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-xs"></i> <span>ಆಟೋ ಸಿಂಕ್ ಸಕ್ರಿಯವಾಗಿದೆ</span>
+            </div>
+
+            <!-- Sync & Open Consolidated Report Button -->
+            <button onclick="syncAndOpenConsolidated()" title="ಕ್ರೋಢೀಕೃತ ವರದಿ ಸಿಂಕ್ ಮಾಡಿ ತೆರೆಯಿರಿ" class="text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-300 flex items-center gap-1.5 border border-emerald-500/40 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white cursor-pointer active:scale-95 shadow-sm">
+              <i class="fa-solid fa-arrows-rotate text-emerald-600 dark:text-emerald-400"></i> <span>ಕ್ರೋಢೀಕೃತ ವರದಿ ಸಿಂಕ್</span>
+            </button>
+
+            <!-- Consolidated Report Link -->
+            <a href="CceConsolidatedReport.html" class="text-xs font-bold px-3.5 py-2 rounded-xl transition-all duration-300 flex items-center gap-1.5 border border-indigo-500/40 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600 dark:hover:text-white cursor-pointer active:scale-95 shadow-sm">
+              <i class="fa-solid fa-file-invoice text-sm"></i> <span>ಕ್ರೋಢೀಕೃತ ವರದಿ</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+          </div>
         </div>
 
         <!-- CCE DASHBOARD PAGE VIEW -->
@@ -348,7 +404,7 @@
               To update academic evaluation matrix parameters or verify class results, use the <b>Marks Grid</b> navigator interface found at the top link item. Within that menu context, you can apply subject configurations, export comprehensive datasets, and view individual student transcript charts.
             </p>
             <div class="pt-2">
-              <button onclick="switchTab('grid')" class="bg-indigo-650 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow transition duration-300 border-0 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-indigo-500/25 shadow-indigo-600/10">
+              <button onclick="switchTab('grid')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition duration-300 border-0 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 hover:shadow-indigo-500/25 shadow-indigo-600/20">
                 <span>Go to Marks Grid</span> <i class="fa-solid fa-arrow-right"></i>
               </button>
             </div>
@@ -371,6 +427,8 @@
                     <select id="class-filter" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2 py-1.5 text-xs text-slate-800 dark:text-slate-200 font-bold focus:outline-none focus:ring-2 focus:ring-sky-500/30 cursor-pointer shadow-xs">
                       <option value="">-- Class --</option>
                       <option value="ALL">All / ಎಲ್ಲಾ</option>
+                      <option value="LKG">LKG</option>
+                      <option value="UKG">UKG</option>
                       <option value="1">Class 1</option>
                       <option value="2">Class 2</option>
                       <option value="3">Class 3</option>
@@ -408,6 +466,16 @@
 
                   <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-700 mx-1 hidden lg:block"></div>
 
+                  <!-- View Mode Switcher -->
+                  <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl w-fit">
+                    <button type="button" id="btn-view-cards" onclick="setViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+                      <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+                    </button>
+                    <button type="button" id="btn-view-table" onclick="setViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent">
+                      <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+                    </button>
+                  </div>
+
                   <!-- Action Buttons shifted directly aside of DDs -->
                   <div class="flex items-center gap-1.5 flex-wrap">
                     <button onclick="downloadCSVTemplate()" title="ಸಿಎಸ್ವಿ ನಮೂನೆ ಪಡೆ / CSV Template" class="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 border border-slate-200 dark:border-slate-700 p-1.5 rounded-xl transition duration-200 shadow-xs cursor-pointer hover:scale-105 active:scale-95">
@@ -426,16 +494,6 @@
                     <button id="btn-print" onclick="printPage()" title="ಮುದ್ರಿಸು / Print" class="bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 p-1.5 rounded-xl transition duration-200 shadow-xs cursor-pointer hover:scale-105 active:scale-95 hidden">
                       <i class="fa-solid fa-print text-sm"></i>
                     </button>
-
-                    <button id="btn-edit" onclick="enableEditing()" class="bg-gradient-to-r from-indigo-600 to-sky-600 hover:from-indigo-500 hover:to-sky-500 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all duration-200 shadow-xs border-0 cursor-pointer hidden">
-                      <i class="fa-solid fa-pen-to-square text-[11px]"></i> <span>Edit / ತಿದ್ದುಪಡಿ</span>
-                    </button>
-                    <button id="btn-save" onclick="saveData()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 transition-all duration-200 shadow-xs border-0 cursor-pointer hidden">
-                      <i class="fa-solid fa-floppy-disk text-[11px]"></i> <span>Save / ಉಳಿಸಿ</span>
-                    </button>
-                    <button id="btn-cancel" onclick="cancelEditing()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2.5 py-1.5 rounded-xl text-xs font-bold transition duration-200 border border-slate-200 dark:border-slate-700 cursor-pointer hidden">
-                      <span>Cancel</span>
-                    </button>
                   </div>
                 </div>
 
@@ -450,7 +508,20 @@
               </div>
             </div>
 
-            <!-- Separate Grade Cards (Total, A+, A, B+, B, C+/Others) -->
+            <!-- Search & Quick Gender Filter Bar -->
+            <div id="search-filter-bar" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl no-print hidden">
+              <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" id="search-student-input" oninput="applyFiltersAndRender()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / STS ಸಂಖ್ಯೆ ಹುಡುಕಿ..." class="w-full pl-8 pr-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+              </div>
+              <div class="flex items-center gap-1.5 self-end sm:self-auto">
+                <button type="button" onclick="setGenderFilter('')" id="gen-btn-all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer">ಎಲ್ಲಾ</button>
+                <button type="button" onclick="setGenderFilter('Boy')" id="gen-btn-boy" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👦 ಬಾಲಕರು</button>
+                <button type="button" onclick="setGenderFilter('Girl')" id="gen-btn-girl" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👧 ಬಾಲಕಿಯರು</button>
+              </div>
+            </div>
+
+            <!-- Separate Grade Cards (Total, A+, A, B+, B, C+/Others) - Positioned ABOVE table/cards -->
             <div id="stats-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 no-print hidden">
               <!-- Total Pupils -->
               <div class="bg-white dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2.5">
@@ -507,7 +578,10 @@
               </div>
             </div>
 
-              <div class="flex-grow overflow-auto custom-scrollbar relative min-h-[350px] max-h-[72vh]" id="table-container">
+            <!-- Mobile Cards Container for CCE -->
+            <div id="student-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 hidden no-print"></div>
+
+            <div class="flex-grow overflow-auto custom-scrollbar relative min-h-[350px] max-h-[72vh]" id="table-container">
                 <div id="loading-overlay" class="absolute inset-0 bg-white/85 flex flex-col items-center justify-center z-50 hidden">
                   <i class="fa-solid fa-circle-notch fa-spin text-4xl text-sky-600 mb-3"></i>
                   <p class="text-xs font-bold text-slate-700">ಮಾಹಿತಿ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
@@ -821,8 +895,12 @@
     let currentSubjects = [];
     let students = [];
     let evaluations = {};
-    let isEditing = false;
+    let isEditing = true;
+    let autoSaveTimer = null;
     let originalEvaluations = {};
+    let currentViewMode = localStorage.getItem('cce_view_mode') || 'cards';
+    let genderFilter = '';
+    let searchQuery = '';
     let currentSchoolId = localStorage.getItem("school_id") || null;
 
     const classFilter = document.getElementById('class-filter');
@@ -866,22 +944,57 @@
     async function fetchDashboardMetrics() {
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
 
-        let query = supabaseClient.from('admissions').select('*', { count: 'exact', head: true }).neq('is_admitted', false);
+        let totalCount = null;
+
         if (schoolId) {
-          query = query.eq('school_id', schoolId);
+          try {
+            const { count, error } = await supabaseClient
+              .from('admissions')
+              .select('*', { count: 'exact', head: true })
+              .or(`school_id.eq.${schoolId},school_id.is.null`);
+            if (!error && count !== null) {
+              totalCount = count;
+            }
+          } catch(e) {}
         }
 
-        const { count, error } = await query;
-        
-        if (!error && count !== null) {
-          document.getElementById('dash-total-students').innerText = `${count} Pupils`;
-        } else {
-          document.getElementById('dash-total-students').innerText = "0 Pupils";
+        if (totalCount === null) {
+          try {
+            const { count, error } = await supabaseClient
+              .from('admissions')
+              .select('*', { count: 'exact', head: true });
+            if (!error && count !== null) {
+              totalCount = count;
+            }
+          } catch(e) {}
+        }
+
+        if (totalCount === null) {
+          try {
+            const localSt = JSON.parse(
+              localStorage.getItem("all_students_cache") ||
+              localStorage.getItem("students_data") ||
+              localStorage.getItem("sts_master_list") ||
+              localStorage.getItem("students") ||
+              localStorage.getItem("admissions_data") ||
+              "[]"
+            );
+            if (localSt && localSt.length > 0) {
+              totalCount = localSt.filter(s => s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED').length;
+            }
+          } catch(e) {}
+        }
+
+        const el = document.getElementById('dash-total-students');
+        if (el) {
+          el.innerText = totalCount !== null ? `${totalCount} Pupils` : "0 Pupils";
         }
       } catch(e) {
-        document.getElementById('dash-total-students').innerText = "--";
+        const el = document.getElementById('dash-total-students');
+        if (el) el.innerText = "0 Pupils";
       }
     }
 
@@ -905,7 +1018,7 @@
     subjectFilter.addEventListener('change', () => {
       if (students.length > 0) {
         buildTableHeader();
-        renderGrid();
+        renderActiveView();
       }
     });
 
@@ -933,7 +1046,7 @@
       if (pageKey === 'entermarks') {
         pageEnterMarksDiv.classList.remove('hidden');
         pageAssessSettingDiv.classList.add('hidden');
-        if (classFilter.value && examTypeFilter.value) renderGrid();
+        if (classFilter.value && examTypeFilter.value) renderActiveView();
       } else {
         pageEnterMarksDiv.classList.add('hidden');
         pageAssessSettingDiv.classList.remove('hidden');
@@ -972,7 +1085,12 @@
         viewDashboardMain?.classList.add('hidden');
         viewGridMain?.classList.remove('hidden');
         pageAssessSettingDiv?.classList.add('hidden');
-        if (classFilter?.value && examTypeFilter?.value) renderGrid();
+        if (!classFilter.value) classFilter.value = "1";
+        if (!examTypeFilter.value) examTypeFilter.value = "FA1";
+        syncAllFilters();
+        showDynamicRulesNote();
+        loadSettingsIntoInputs();
+        checkAndLoadGrid();
       } else if (tabId === 'assesssetting') {
         viewDashboardMain?.classList.add('hidden');
         viewGridMain?.classList.add('hidden');
@@ -1130,13 +1248,31 @@
     }
 
     function determineGradeByScale(marks, maxTarget) {
-      if (marks === '' || marks === null || undefined === marks) return '-';
+      if (marks === '' || marks === null || marks === undefined) return '-';
       const m = parseFloat(marks);
-      const scale = gradeScales[maxTarget] || { 'A+': 90, 'A': 70, 'B+': 50, 'B': 30, 'C': 0 };
-      if (m >= scale['A+']) return 'A+';
-      if (m >= scale['A']) return 'A';
-      if (m >= scale['B+']) return 'B+';
-      if (m >= scale['B']) return 'B';
+      if (isNaN(m)) return '-';
+      
+      const target = parseFloat(maxTarget) || 10;
+      if (target <= 0) return '-';
+
+      const userScale = gradeScales[target] || gradeScales[target.toString()];
+      
+      // If user configured direct mark threshold (e.g. A+ >= 9, A >= 7 out of 10)
+      if (userScale && userScale['A+'] <= target && userScale['A+'] > 0) {
+        if (m >= userScale['A+']) return 'A+';
+        if (m >= userScale['A']) return 'A';
+        if (m >= userScale['B+']) return 'B+';
+        if (m >= userScale['B']) return 'B';
+        return (userScale['C+'] !== undefined && m >= userScale['C+']) ? 'C+' : 'C';
+      }
+      
+      // Official Karnataka DSEL CCE Percentage Standard (A+: 90-100%, A: 75-89%, B+: 60-74%, B: 50-59%, C+: 35-49%, C: <35%)
+      const pct = (m / target) * 100;
+      if (pct >= 90) return 'A+';
+      if (pct >= 75) return 'A';
+      if (pct >= 60) return 'B+';
+      if (pct >= 50) return 'B';
+      if (pct >= 35) return 'C+';
       return 'C';
     }
 
@@ -1162,28 +1298,38 @@
     }
 
     function normalizeClass(classStr) {
-      if (!classStr) return "";
+      if (!classStr && classStr !== 0) return "";
       let clean = classStr.toString().trim().toLowerCase();
       
-      if (!clean.includes("lkg")) {
-        clean = clean.replace(/class/g, "###").replace(/l/g, "i").replace(/###/g, "class");
-      }
-      
-      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1")) return "LKG";
+      if (clean.includes("lkg") || clean.includes("kg1") || clean.includes("kg 1") || clean.includes("pre-k")) return "LKG";
       if (clean.includes("ukg") || clean.includes("kg2") || clean.includes("kg 2")) return "UKG";
       
-      if (clean === "1" || clean === "1st" || clean === "class 1" || clean === "class i" || clean === "i") return "1";
-      if (clean === "2" || clean === "2nd" || clean === "class 2" || clean === "class ii" || clean === "ii") return "2";
-      if (clean === "3" || clean === "3rd" || clean === "class 3" || clean === "class iii" || clean === "iii") return "3";
-      if (clean === "4" || clean === "4th" || clean === "class 4" || clean === "class iv" || clean === "iv") return "4";
-      if (clean === "5" || clean === "5th" || clean === "class 5" || clean === "class v" || clean === "v") return "5";
-      if (clean === "6" || clean === "6th" || clean === "class 6" || clean === "class vi" || clean === "vi") return "6";
-      if (clean === "7" || clean === "7th" || clean === "class 7" || clean === "class vii" || clean === "vii") return "7";
-      if (clean === "8" || clean === "8th" || clean === "class 8" || clean === "class viii" || clean === "viii") return "8";
-      if (clean === "9" || clean === "9th" || clean === "class 9" || clean === "class ix" || clean === "ix") return "9";
-      if (clean === "10" || clean === "10th" || clean === "class 10" || clean === "class x" || clean === "x") return "10";
+      const numMatch = clean.match(/\b(10|[1-9])(st|nd|rd|th)?\b/);
+      if (numMatch) {
+        return numMatch[1];
+      }
+      
+      if (clean === "i" || clean.includes("class i ") || clean.endsWith("class i") || clean === "class i") return "1";
+      if (clean === "ii" || clean.includes("class ii")) return "2";
+      if (clean === "iii" || clean.includes("class iii")) return "3";
+      if (clean === "iv" || clean.includes("class iv")) return "4";
+      if (clean === "v" || clean.includes("class v")) return "5";
+      if (clean === "vi" || clean.includes("class vi")) return "6";
+      if (clean === "vii" || clean.includes("class vii")) return "7";
+      if (clean === "viii" || clean.includes("class viii")) return "8";
+      if (clean === "ix" || clean.includes("class ix")) return "9";
+      if (clean === "x" || clean.includes("class x")) return "10";
       
       return classStr.toString().trim();
+    }
+
+    function hideActionButtons() {
+      const btnEdit = document.getElementById('btn-edit');
+      const btnSave = document.getElementById('btn-save');
+      const btnCancel = document.getElementById('btn-cancel');
+      if (btnEdit) btnEdit.classList.add('hidden');
+      if (btnSave) btnSave.classList.add('hidden');
+      if (btnCancel) btnCancel.classList.add('hidden');
     }
 
     async function checkAndLoadGrid() {
@@ -1204,41 +1350,117 @@
       hideActionButtons();
 
       try {
-        // Retrieve all student admissions to filter in-memory via normalizeClass to handle database discrepancies
         const { data: { session } } = await supabaseClient.auth.getSession();
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const targetSchoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) 
+          ? rawSchoolId 
+          : 'f592831e-69a8-4138-b82d-69649cb46605';
 
-        let query = supabaseClient.from('admissions').select('id, student_name, name_english, father_name_kn, father_name_az, mother_name_kn, mother_name_az, app_no, enroll_class, gender, caste').neq('is_admitted', false);
-        if (schoolId) {
-          query = query.eq('school_id', schoolId);
+        let data = null;
+        let fetchError = null;
+
+        if (targetSchoolId) {
+          try {
+            const res1 = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .or(`school_id.eq.${targetSchoolId},school_id.is.null`)
+              .range(0, 5000);
+            if (!res1.error && res1.data && res1.data.length > 0) {
+              data = res1.data;
+            } else if (res1.error) {
+              fetchError = res1.error;
+            }
+          } catch (e) {
+            fetchError = e;
+          }
         }
 
-        const { data, error } = await query;
+        if (!data || data.length === 0) {
+          try {
+            const res2 = await supabaseClient
+              .from('admissions')
+              .select('*')
+              .range(0, 5000);
+            if (!res2.error && res2.data) {
+              data = res2.data;
+            }
+          } catch (e) {}
+        }
 
-        if (error) throw error;
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
 
-        const roster = (data || [])
-          .filter(s => className === "ALL" || normalizeClass(s.enroll_class) === normalizeClass(className))
+        let roster = (data || [])
+          .filter(s => {
+            const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+            const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+            const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+            const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+            const rawClass = s.enroll_class || s.standard || s.class || s.enrollClass || s.admitted_class || s.admission_class;
+            const isClass = className === "ALL" || normalizeClass(rawClass) === normalizeClass(className);
+            return isNotOut && isNotTrashed && isClass;
+          })
           .map(s => ({
             id: s.id,
-            student_name_kn: s.student_name || '',
-            student_name: s.student_name || '',
-            name_english: s.name_english || '',
+            student_name_kn: s.student_name_kn || s.student_name || s.name || '',
+            student_name: s.student_name || s.name_english || s.name || '',
+            name_english: s.name_english || s.student_name || s.name || '',
             father_name_kn: s.father_name_kn || '',
             father_name_az: s.father_name_az || '',
             mother_name_kn: s.mother_name_kn || '',
             mother_name_az: s.mother_name_az || '',
             gender: s.gender || '',
             caste: s.caste || '',
-            adminNo: s.app_no,
+            adminNo: s.app_no || s.student_sts || s.id,
             app_no: s.app_no || '',
             enrollClass: s.enroll_class
-          }))
-          .sort((a, b) => {
-            const nameA = (a.name_english || a.student_name_kn || '').trim().toUpperCase();
-            const nameB = (b.name_english || b.student_name_kn || '').trim().toUpperCase();
-            return nameA.localeCompare(nameB);
-          });
+          }));
+
+        // Fallback to local students if database had no matches or errored
+        if (roster.length === 0) {
+          try {
+            const localSt = JSON.parse(
+              localStorage.getItem(`students_class_${className}`) ||
+              localStorage.getItem("all_students_cache") ||
+              localStorage.getItem("students_data") ||
+              localStorage.getItem("sts_master_list") ||
+              localStorage.getItem("students") ||
+              localStorage.getItem("admissions_data") ||
+              "[]"
+            );
+            const matchedLocal = localSt.filter(s => {
+              const isClass = className === "ALL" || normalizeClass(s.enrollClass || s.enroll_class || s.standard || s.class || className) === normalizeClass(className);
+              const sKey = String(s.id || s.adminNo || s.app_no || s.student_sts || '').replace(/\s+/g, '').toLowerCase();
+              return isClass && (!sKey || !trashedKeys.has(sKey));
+            });
+            if (matchedLocal.length > 0) {
+              roster = matchedLocal.map(s => ({
+                id: s.id,
+                student_name_kn: s.student_name_kn || s.student_name || s.name || '',
+                student_name: s.student_name || s.name || '',
+                name_english: s.name_english || s.name || '',
+                father_name_kn: s.father_name_kn || s.father || '',
+                father_name_az: s.father_name_az || s.father || '',
+                mother_name_kn: s.mother_name_kn || s.mother || '',
+                mother_name_az: s.mother_name_az || s.mother || '',
+                gender: s.gender || s.sex || '',
+                caste: s.caste || s.category || '',
+                adminNo: s.adminNo || s.app_no || s.sts_no || s.student_sts || s.id,
+                app_no: s.app_no || s.adminNo || s.id || '',
+                enrollClass: s.enrollClass || s.enroll_class || s.class || className
+              }));
+            }
+          } catch (localErr) {
+            console.warn("Local storage student fallback error:", localErr);
+          }
+        }
+
+        roster.sort((a, b) => {
+          const nameA = (a.name_english || a.student_name_kn || '').trim().toUpperCase();
+          const nameB = (b.name_english || b.student_name_kn || '').trim().toUpperCase();
+          return nameA.localeCompare(nameB);
+        });
 
         let allEvaluations = {};
         
@@ -1277,10 +1499,6 @@
             .from('cce_evaluations')
             .select('student_id, marks')
             .eq('exam_type', examType);
-          
-          if (className !== "ALL") {
-            dbQuery = dbQuery.eq('class_name', className);
-          }
 
           const { data: dbRecords, error: dbError } = await dbQuery;
 
@@ -1320,14 +1538,56 @@
 
       if (students.length === 0) { resetToEmptyState(); return; }
 
+      // Sanitize and re-evaluate grades from actual mark data
+      const className = classFilter.value;
+      const isSA = examTypeFilter.value.startsWith("SA");
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const wMax = isPrimary ? (mutableConfigs.primary.saWrittenMax || 30) : (mutableConfigs.middleHigh.saWrittenMax || 40);
+      const oMax = isPrimary ? (mutableConfigs.primary.saOralMax || 20) : (mutableConfigs.middleHigh.saOralMax || 10);
+      const saTotalMax = wMax + oMax;
+
+      students.forEach(s => {
+        const sId = s.id;
+        if (!evaluations[sId]) evaluations[sId] = {};
+        const eData = evaluations[sId];
+        currentSubjects.forEach(sub => {
+          const sKey = sub.id;
+          if (isSA) {
+            const wVal = eData[sKey + "_w"];
+            const oVal = eData[sKey + "_o"];
+            const hasW = (wVal !== '' && wVal !== undefined && wVal !== null);
+            const hasO = (oVal !== '' && oVal !== undefined && oVal !== null);
+            if (hasW || hasO) {
+              const total = ((parseFloat(wVal) || 0) + (parseFloat(oVal) || 0)).toString();
+              eData[sKey + "_mark"] = total;
+              eData[sKey + "_grade"] = determineGradeByScale(total, saTotalMax);
+            } else {
+              eData[sKey + "_mark"] = '';
+              eData[sKey + "_grade"] = '-';
+            }
+          } else {
+            const m = eData[sKey + "_mark"];
+            if (m !== '' && m !== undefined && m !== null) {
+              eData[sKey + "_grade"] = determineGradeByScale(m, cfg.faMax);
+            } else {
+              eData[sKey + "_mark"] = '';
+              eData[sKey + "_grade"] = '-';
+            }
+          }
+        });
+      });
+
+      originalEvaluations = JSON.parse(JSON.stringify(evaluations));
+
       const gridSubtitle = document.getElementById('grid-subtitle');
       if (gridSubtitle) gridSubtitle.innerText = `${classFilter.value} | Exam: ${examTypeFilter.value}`;
       
-      const compTable = document.getElementById('competency-table');
-      if (compTable) compTable.classList.remove('hidden');
-
       const statsBar = document.getElementById('stats-bar');
       if (statsBar) statsBar.classList.remove('hidden');
+
+      const sfBar = document.getElementById('search-filter-bar');
+      if (sfBar) sfBar.classList.remove('hidden');
 
       if (document.getElementById('btn-export-pdf')) document.getElementById('btn-export-pdf').classList.remove('hidden');
       if (document.getElementById('btn-export-excel')) document.getElementById('btn-export-excel').classList.remove('hidden');
@@ -1336,14 +1596,10 @@
       if (document.getElementById('btn-import-csv')) document.getElementById('btn-import-csv').classList.remove('hidden');
       if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.remove('hidden');
       
-      if (classFilter.value === "ALL") {
-        setMode(false);
-        document.getElementById('btn-edit').classList.add('hidden');
-      } else {
-        setMode(Object.keys(evaluations).length === 0);
-      }
+      isEditing = true;
       buildTableHeader();
-      renderGrid();
+      setViewMode(currentViewMode, false);
+      renderActiveView();
     }
 
     function onDataLoadFailed(err) {
@@ -1352,8 +1608,90 @@
       resetToEmptyState();
     }
 
+    function setViewMode(mode, triggerRender = true) {
+      currentViewMode = mode || 'cards';
+      localStorage.setItem('cce_view_mode', currentViewMode);
+
+      const btnCards = document.getElementById('btn-view-cards');
+      const btnTable = document.getElementById('btn-view-table');
+
+      if (currentViewMode === 'cards') {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent';
+      } else {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+      }
+
+      if (triggerRender) {
+        renderActiveView();
+      }
+    }
+
+    function setGenderFilter(val) {
+      genderFilter = val || '';
+      const btnAll = document.getElementById('gen-btn-all');
+      const btnBoy = document.getElementById('gen-btn-boy');
+      const btnGirl = document.getElementById('gen-btn-girl');
+
+      const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer';
+      const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer';
+
+      if (btnAll) btnAll.className = genderFilter === '' ? activeClass : inactiveClass;
+      if (btnBoy) btnBoy.className = genderFilter === 'Boy' ? activeClass : inactiveClass;
+      if (btnGirl) btnGirl.className = genderFilter === 'Girl' ? activeClass : inactiveClass;
+
+      renderActiveView();
+    }
+
+    function applyFiltersAndRender() {
+      const searchInput = document.getElementById('search-student-input');
+      searchQuery = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      renderActiveView();
+    }
+
+    function getFilteredStudents() {
+      return students.filter(s => {
+        if (genderFilter && s.gender !== genderFilter) return false;
+        if (searchQuery) {
+          const nameEn = (s.name_english || '').toLowerCase();
+          const nameKn = (s.student_name_kn || s.student_name || '').toLowerCase();
+          const sts = (s.adminNo || s.app_no || s.id || '').toLowerCase();
+          const father = (s.father_name_az || s.father_name_kn || '').toLowerCase();
+          return nameEn.includes(searchQuery) || nameKn.includes(searchQuery) || sts.includes(searchQuery) || father.includes(searchQuery);
+        }
+        return true;
+      });
+    }
+
+    function renderActiveView() {
+      const tableEl = document.getElementById('table-container');
+      const cardsEl = document.getElementById('student-cards-container');
+      const tableTag = document.getElementById('competency-table');
+      const sfBar = document.getElementById('search-filter-bar');
+
+      if (sfBar) sfBar.classList.remove('hidden');
+
+      if (currentViewMode === 'cards') {
+        if (tableEl) tableEl.classList.add('hidden');
+        if (cardsEl) {
+          cardsEl.classList.remove('hidden');
+          renderCards();
+        }
+      } else {
+        if (cardsEl) cardsEl.classList.add('hidden');
+        if (tableEl) {
+          tableEl.classList.remove('hidden');
+          if (tableTag) tableTag.classList.remove('hidden');
+          renderGrid();
+        }
+      }
+      updateTotals();
+    }
+
     function buildTableHeader() {
       const thead = document.getElementById('table-head');
+      if (!thead) return;
       const selectedSub = subjectFilter.value;
       const isSA = examTypeFilter.value.startsWith("SA");
       
@@ -1368,41 +1706,94 @@
       currentSubjects.forEach(sub => {
         if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
         if (isSA) {
-          subHeadersHtml += `<th colspan="4" class="p-2 text-center border-r border-slate-200 font-bold" style="width: ${(pctPerSubCol * 4).toFixed(2)}%;">${sub.name}</th>`;
+          subHeadersHtml += `<th colspan="4" class="p-2 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: ${(pctPerSubCol * 4).toFixed(2)}%;">${sub.name}</th>`;
           subLabelsHtml += `
-            <th class="p-1.5 text-center border-r border-slate-200 bg-amber-50/20" style="width: ${pctPerSubCol.toFixed(2)}%;">W</th>
-            <th class="p-1.5 text-center border-r border-slate-200 bg-amber-50/20" style="width: ${pctPerSubCol.toFixed(2)}%;">O</th>
-            <th class="p-1.5 text-center border-r border-slate-200 font-bold bg-amber-100/20" style="width: ${pctPerSubCol.toFixed(2)}%;">Total</th>
-            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Grade</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 bg-amber-50/20 font-bold" style="width: ${pctPerSubCol.toFixed(2)}%;">W</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 bg-amber-50/20 font-bold" style="width: ${pctPerSubCol.toFixed(2)}%;">O</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 font-bold bg-amber-100/20" style="width: ${pctPerSubCol.toFixed(2)}%;">Tot</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: ${pctPerSubCol.toFixed(2)}%;">G</th>
           `;
         } else {
-          subHeadersHtml += `<th colspan="2" class="p-2 text-center border-r border-slate-200 font-bold" style="width: ${(pctPerSubCol * 2).toFixed(2)}%;">${sub.name}</th>`;
+          subHeadersHtml += `<th colspan="2" class="p-2 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: ${(pctPerSubCol * 2).toFixed(2)}%;">${sub.name}</th>`;
           subLabelsHtml += `
-            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Mark</th>
-            <th class="p-1.5 text-center border-r border-slate-200" style="width: ${pctPerSubCol.toFixed(2)}%;">Grade</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: ${pctPerSubCol.toFixed(2)}%;">M</th>
+            <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: ${pctPerSubCol.toFixed(2)}%;">G</th>
           `;
         }
       });
 
       thead.innerHTML = `
-        <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 font-bold">
-          <th rowspan="2" class="p-3 text-center border-r border-slate-200 font-bold" style="width: 4%;">ಕ್ರ.ಸಂ</th>
-          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 10%;">STS ಸಂಖ್ಯೆ</th>
-          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 16%;">ಹೆಸರು</th>
-          <th rowspan="2" class="p-3 border-r border-slate-200 font-bold" style="width: 14%;">ತಂದೆಯ ಹೆಸರು</th>
+        <tr class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 font-bold">
+          <th rowspan="2" class="p-3 text-center border-r border-slate-200 dark:border-slate-700 font-bold" style="width: 4%;">ಕ್ರ.ಸಂ</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 dark:border-slate-700 font-bold" style="width: 10%;">STS ಸಂಖ್ಯೆ</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 dark:border-slate-700 font-bold" style="width: 16%;">ಹೆಸರು</th>
+          <th rowspan="2" class="p-3 border-r border-slate-200 dark:border-slate-700 font-bold" style="width: 14%;">ತಂದೆಯ ಹೆಸರು</th>
           ${subHeadersHtml}
           <th colspan="2" class="p-2 text-center font-bold" style="width: 10%;">ಒಟ್ಟು ಕೌಂಟ್</th>
         </tr>
-        <tr class="bg-slate-50 text-[10px] text-slate-500 uppercase border-b border-slate-200">
+        <tr class="bg-slate-50 dark:bg-slate-850 text-[10px] text-slate-500 uppercase border-b border-slate-200 dark:border-slate-700">
           ${subLabelsHtml}
-          <th class="p-1.5 text-center border-r border-slate-200 bg-emerald-50 text-emerald-800 font-bold" style="width: 5%;">Total A+,A</th>
-          <th class="p-1.5 text-center bg-blue-50 text-blue-800 font-bold" style="width: 5%;">Others</th>
+          <th class="p-1.5 text-center border-r border-slate-200 dark:border-slate-700 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 font-bold" style="width: 5%;">A+,A</th>
+          <th class="p-1.5 text-center bg-blue-50 dark:bg-blue-950/20 text-blue-800 dark:text-blue-300 font-bold" style="width: 5%;">Others</th>
         </tr>
       `;
     }
 
+    function handleGridKeyNav(e, row, col) {
+      if (['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) {
+        if (e.key === 'ArrowDown' || e.key === 'Enter') {
+          e.preventDefault();
+          const nextInput = document.querySelector(`input[data-nav-grid="true"][data-row="${row + 1}"][data-col="${col}"]`);
+          if (nextInput) { nextInput.focus(); nextInput.select(); }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prevInput = document.querySelector(`input[data-nav-grid="true"][data-row="${row - 1}"][data-col="${col}"]`);
+          if (prevInput) { prevInput.focus(); prevInput.select(); }
+        }
+      } else if (e.key === 'ArrowRight') {
+        const input = e.target;
+        if (input.selectionEnd === input.value.length) {
+          const nextCol = document.querySelector(`input[data-nav-grid="true"][data-row="${row}"][data-col="${col + 1}"]`);
+          if (nextCol) { e.preventDefault(); nextCol.focus(); nextCol.select(); }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        const input = e.target;
+        if (input.selectionStart === 0) {
+          const prevCol = document.querySelector(`input[data-nav-grid="true"][data-row="${row}"][data-col="${col - 1}"]`);
+          if (prevCol) { e.preventDefault(); prevCol.focus(); prevCol.select(); }
+        }
+      }
+    }
+
+    function handleCardKeyNav(e, row, col) {
+      if (['ArrowUp', 'ArrowDown', 'Enter'].includes(e.key)) {
+        if (e.key === 'ArrowDown' || e.key === 'Enter') {
+          e.preventDefault();
+          const nextInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${row + 1}"][data-card-col="${col}"]`);
+          if (nextInput) { nextInput.focus(); nextInput.select(); }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          const prevInput = document.querySelector(`input[data-nav-card="true"][data-card-row="${row - 1}"][data-card-col="${col}"]`);
+          if (prevInput) { prevInput.focus(); prevInput.select(); }
+        }
+      } else if (e.key === 'ArrowRight') {
+        const input = e.target;
+        if (input.selectionEnd === input.value.length) {
+          const nextCol = document.querySelector(`input[data-nav-card="true"][data-card-row="${row}"][data-card-col="${col + 1}"]`);
+          if (nextCol) { e.preventDefault(); nextCol.focus(); nextCol.select(); }
+        }
+      } else if (e.key === 'ArrowLeft') {
+        const input = e.target;
+        if (input.selectionStart === 0) {
+          const prevCol = document.querySelector(`input[data-nav-card="true"][data-card-row="${row}"][data-card-col="${col - 1}"]`);
+          if (prevCol) { e.preventDefault(); prevCol.focus(); prevCol.select(); }
+        }
+      }
+    }
+
     function renderGrid() {
       const tbody = document.getElementById('student-grid-body');
+      if (!tbody) return;
       tbody.innerHTML = '';
       const className = classFilter.value;
       const examType = examTypeFilter.value;
@@ -1411,312 +1802,470 @@
       
       const selectedSub = subjectFilter.value;
       const isSA = examType.startsWith("SA");
+      const filtered = getFilteredStudents();
 
-      students.forEach((student, index) => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition";
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="20" class="p-8 text-center text-slate-400 font-semibold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಂಡುಬಂದಿಲ್ಲ.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((student, index) => {
         const sId = student.id;
-        tr.setAttribute('data-student-id', sId);
-
-        if (!evaluations[sId]) {
-          evaluations[sId] = {};
-          currentSubjects.forEach(s => {
-            evaluations[sId][s.id + "_mark"] = "";
-            evaluations[sId][s.id + "_grade"] = "-";
-          });
-        }
-        
+        if (!evaluations[sId]) evaluations[sId] = {};
         const evalData = evaluations[sId];
         const nameEn = (student.name_english || '').trim().toUpperCase();
-        const nameKn = (student.student_name_kn || '').trim();
-        let nameHtml = '';
-        if (nameEn && nameKn) {
-          nameHtml = `<div class="font-bold text-slate-800 text-[11px]">${nameEn}</div><div class="text-[10px] text-slate-550 font-medium">${nameKn}</div>`;
-        } else {
-          nameHtml = `<span class="font-bold text-slate-800 text-[11px]">${nameEn || nameKn || '-'}</span>`;
-        }
-
+        const nameKn = (student.student_name_kn || student.student_name || '').trim();
         const fatherEn = (student.father_name_az || '').trim().toUpperCase();
         const fatherKn = (student.father_name_kn || '').trim();
-        let fatherHtml = '';
-        if (fatherEn && fatherKn) {
-          fatherHtml = `<div class="font-bold text-slate-700 text-[11px]">${fatherEn}</div><div class="text-[10px] text-slate-500 font-medium">${fatherKn}</div>`;
-        } else {
-          fatherHtml = `<span class="font-semibold text-slate-700 text-[11px]">${fatherEn || fatherKn || '-'}</span>`;
-        }
 
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-indigo-50/20 dark:hover:bg-slate-800/40 transition";
         let rowHtml = `
-          <td class="p-3 text-center border-r border-slate-200 font-medium">${index + 1}</td>
-          <td class="p-3 border-r border-slate-200 font-mono text-slate-500 font-bold">${student.adminNo || student.id}</td>
-          <td class="p-3 border-r border-slate-200">${nameHtml}</td>
-          <td class="p-3 border-r border-slate-200">${fatherHtml}</td>
+          <td class="p-2 text-center border-r border-slate-200 dark:border-slate-700 font-bold">${index + 1}</td>
+          <td class="p-2 border-r border-slate-200 dark:border-slate-700 font-mono text-slate-600 dark:text-slate-400 text-xs">${student.adminNo || student.id}</td>
+          <td class="p-2 border-r border-slate-200 dark:border-slate-700 font-semibold">${nameEn || nameKn}${nameKn && nameEn ? `<br><span class="text-[10px] text-slate-400 font-normal">${nameKn}</span>` : ''}</td>
+          <td class="p-2 border-r border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">${fatherEn || fatherKn || '-'}</td>
         `;
 
+        let colIdx = 0;
         currentSubjects.forEach(sub => {
           if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
-
-          const m = evalData[sub.id + "_mark"] !== undefined ? evalData[sub.id + "_mark"] : '';
-          const g = evalData[sub.id + "_grade"] || '-';
+          const sKey = sub.id;
 
           if (isSA) {
-            let written = ''; let oral = ''; let convertedDisplay = '-';
-            if (m !== '' && m !== null) {
-              const parts = m.toString().split('+');
-              written = parts[0] !== undefined ? parts[0] : '';
-              oral = parts[1] !== undefined ? parts[1] : '';
-              
-              if (written !== '' || oral !== '') {
-                const wVal = parseFloat(written) || 0;
-                const oVal = parseFloat(oral) || 0;
-                const actualTotal = wVal + oVal;
-                convertedDisplay = ((actualTotal / 50) * cfg.saMax).toFixed(1);
-              }
-            }
+            const wVal = evalData[sKey + "_w"] !== undefined ? evalData[sKey + "_w"] : '';
+            const oVal = evalData[sKey + "_o"] !== undefined ? evalData[sKey + "_o"] : '';
+            const wMax = isPrimary ? (mutableConfigs.primary.saWrittenMax || 30) : (mutableConfigs.middleHigh.saWrittenMax || 40);
+            const oMax = isPrimary ? (mutableConfigs.primary.saOralMax || 20) : (mutableConfigs.middleHigh.saOralMax || 10);
+            const saTotalMax = wMax + oMax;
 
-            if (isEditing) {
-              rowHtml += `
-                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-55/10">
-                  <input type="number" min="0" max="${cfg.saWrittenMax}" step="0.5" value="${written}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'w', this.value, this)" class="w-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded px-1 py-1 text-center font-bold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
-                </td>
-                <td class="p-1.5 border-r border-slate-200 text-center bg-amber-55/10">
-                  <input type="number" min="0" max="${cfg.saOralMax}" step="0.5" value="${oral}" oninput="onSaMarkChange('${sId}', '${sub.id}', 'o', this.value, this)" class="w-12 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded px-1 py-1 text-center font-bold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
-                </td>
-                <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-amber-100/10">
-                  <span id="sa-total-${sId}-${sub.id}" class="text-xs text-slate-700 font-bold">${convertedDisplay}</span>
-                </td>
-                <td class="p-1.5 border-r border-slate-200 text-center font-bold bg-slate-50/50">
-                  <span id="grade-${sId}-${sub.id}" class="text-xs text-slate-600 font-bold">${g}</span>
-                </td>
-              `;
-            } else {
-              const getGradeBadgeClass = (gr) => {
-                if (gr === 'A+') return 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300/80 px-2 py-0.5 rounded-full font-black shadow-2xs';
-                if (gr === 'A') return 'bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-300/80 px-2 py-0.5 rounded-full font-extrabold';
-                if (gr === 'B+') return 'bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 border border-sky-300/80 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'B') return 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'C+') return 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'C') return 'bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'D') return 'bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 px-2 py-0.5 rounded-full font-extrabold';
-                return 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium';
-              };
-              let badgeClass = getGradeBadgeClass(g);
-              rowHtml += `
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center text-slate-600 dark:text-slate-400 font-semibold">${written !== '' ? written : '-'}</td>
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center text-slate-600 dark:text-slate-400 font-semibold">${oral !== '' ? oral : '-'}</td>
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center font-black text-slate-800 dark:text-slate-200">${convertedDisplay}</td>
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center font-bold"><span class="${badgeClass} badge-print">${g}</span></td>
-              `;
+            const hasW = (wVal !== '' && wVal !== undefined && wVal !== null);
+            const hasO = (oVal !== '' && oVal !== undefined && oVal !== null);
+            let totalVal = '';
+            let g = '-';
+            if (hasW || hasO) {
+              const w = parseFloat(wVal) || 0;
+              const o = parseFloat(oVal) || 0;
+              totalVal = (w + o).toString();
+              g = determineGradeByScale(w + o, saTotalMax);
             }
+            evalData[sKey + "_mark"] = totalVal;
+            evalData[sKey + "_grade"] = g;
+
+            const c1 = colIdx++;
+            const c2 = colIdx++;
+
+            rowHtml += `
+              <td class="p-1 border-r border-slate-200 dark:border-slate-700 text-center">
+                <input type="number" min="0" max="${wMax}" value="${wVal}" data-nav-grid="true" data-row="${index}" data-col="${c1}" onkeydown="handleGridKeyNav(event, ${index}, ${c1})" onfocus="this.select()" oninput="onSAMarkChange('${sId}', '${sKey}', 'w', this.value, this)" class="w-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition">
+              </td>
+              <td class="p-1 border-r border-slate-200 dark:border-slate-700 text-center">
+                <input type="number" min="0" max="${oMax}" value="${oVal}" data-nav-grid="true" data-row="${index}" data-col="${c2}" onkeydown="handleGridKeyNav(event, ${index}, ${c2})" onfocus="this.select()" oninput="onSAMarkChange('${sId}', '${sKey}', 'o', this.value, this)" class="w-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition">
+              </td>
+              <td id="total-${sId}-${sKey}" class="p-2 border-r border-slate-200 dark:border-slate-700 text-center font-black bg-slate-50/50 dark:bg-slate-850 text-xs">${totalVal !== '' ? totalVal : '-'}</td>
+              <td class="p-1 border-r border-slate-200 dark:border-slate-700 text-center font-bold">
+                <span id="grade-${sId}-${sKey}" class="${getCceGradeBadgeClass(g)}">${g}</span>
+              </td>
+            `;
           } else {
-            if (isEditing) {
-              rowHtml += `
-                <td class="p-1.5 border-r border-slate-200 dark:border-slate-800 text-center">
-                  <input type="number" min="0" max="${cfg.faMax}" step="0.5" value="${m}" oninput="onMarkChange('${sId}', '${sub.id}', this.value, this)" class="w-14 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-600 rounded-lg px-1.5 py-1 text-center font-extrabold text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all duration-150 shadow-inner">
-                </td>
-                <td class="p-1.5 border-r border-slate-200 dark:border-slate-800 text-center font-bold bg-slate-50/50 dark:bg-slate-900/40">
-                  <span id="grade-${sId}-${sub.id}" class="text-xs text-slate-600 dark:text-slate-300 font-extrabold">${g}</span>
-                </td>
-              `;
-            } else {
-              const getGradeBadgeClass = (gr) => {
-                if (gr === 'A+') return 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300/80 px-2 py-0.5 rounded-full font-black shadow-2xs';
-                if (gr === 'A') return 'bg-teal-100 dark:bg-teal-950/80 text-teal-800 dark:text-teal-300 border border-teal-300/80 px-2 py-0.5 rounded-full font-extrabold';
-                if (gr === 'B+') return 'bg-sky-100 dark:bg-sky-950/80 text-sky-800 dark:text-sky-300 border border-sky-300/80 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'B') return 'bg-indigo-100 dark:bg-indigo-950/80 text-indigo-800 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'C+') return 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'C') return 'bg-orange-100 dark:bg-orange-950/80 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded-full font-bold';
-                if (gr === 'D') return 'bg-rose-100 dark:bg-rose-950/80 text-rose-800 dark:text-rose-300 px-2 py-0.5 rounded-full font-extrabold';
-                return 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full font-medium';
-              };
-              let badgeClass = getGradeBadgeClass(g);
-              rowHtml += `
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center font-extrabold text-slate-700 dark:text-slate-300">${m !== '' ? m : '-'}</td>
-                <td class="p-2.5 border-r border-slate-200 dark:border-slate-800 text-center font-bold"><span class="${badgeClass} badge-print">${g}</span></td>
-              `;
-            }
+            const m = evalData[sKey + "_mark"] !== undefined ? evalData[sKey + "_mark"] : '';
+            const g = (m !== '' && m !== null && m !== undefined) ? determineGradeByScale(m, cfg.faMax) : '-';
+            evalData[sKey + "_grade"] = g;
+            const c = colIdx++;
+
+            rowHtml += `
+              <td class="p-1.5 border-r border-slate-200 dark:border-slate-700 text-center">
+                <input type="number" min="0" max="${cfg.faMax}" value="${m}" data-nav-grid="true" data-row="${index}" data-col="${c}" onkeydown="handleGridKeyNav(event, ${index}, ${c})" onfocus="this.select()" oninput="onFAMarkChange('${sId}', '${sKey}', this.value, this)" class="w-12 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-1 py-1 text-center font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition">
+              </td>
+              <td class="p-1.5 border-r border-slate-200 dark:border-slate-700 text-center font-bold bg-slate-50/50 dark:bg-slate-850">
+                <span id="grade-${sId}-${sKey}" class="${getCceGradeBadgeClass(g)}">${g}</span>
+              </td>
+            `;
           }
         });
 
         rowHtml += `
-          <td id="row-total-a-${sId}" class="p-3 border-r border-slate-200 text-center font-black bg-emerald-50 text-emerald-800 text-xs">0</td>
-          <td id="row-total-b-${sId}" class="p-3 text-center font-black bg-blue-50 text-blue-800 text-xs">0</td>
+          <td id="row-total-a-${sId}" class="p-3 border-r border-slate-200 dark:border-slate-700 text-center font-black bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 text-xs">0</td>
+          <td id="row-total-b-${sId}" class="p-3 text-center font-black bg-blue-50 dark:bg-blue-950/20 text-blue-800 dark:text-blue-300 text-xs">0</td>
         `;
 
         tr.innerHTML = rowHtml;
         tbody.appendChild(tr);
       });
-
-      updateTotals();
     }
 
-    function onMarkChange(studentId, subjectId, val, inputEl) {
+    function getCceGradeBadgeClass(g) {
+      if (g === 'A+') return 'inline-block bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 rounded-lg px-2 py-0.5 font-black text-xs shadow-xs';
+      if (g === 'A') return 'inline-block bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'B+') return 'inline-block bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'B') return 'inline-block bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'C+' || g === 'C') return 'inline-block bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'D') return 'inline-block bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      return 'inline-block bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 font-bold text-xs';
+    }
+
+    function getStudentOverallGrade(studentId) {
+      const evalData = evaluations[studentId] || {};
+      const selectedSub = subjectFilter.value;
+      if (selectedSub !== "ALL") {
+        return evalData[selectedSub + "_grade"] || '-';
+      }
+      let totalEntered = 0;
+      let gradeCounts = { 'A+': 0, 'A': 0, 'B+': 0, 'B': 0, 'C+': 0, 'C': 0, 'D': 0 };
+      currentSubjects.forEach(sub => {
+        const g = evalData[sub.id + "_grade"];
+        if (g && g !== '-') {
+          totalEntered++;
+          if (gradeCounts[g] !== undefined) gradeCounts[g]++;
+        }
+      });
+      if (totalEntered === 0) return '-';
+      if (gradeCounts['A+'] > 0 && gradeCounts['A+'] >= (totalEntered / 2)) return 'A+';
+      if ((gradeCounts['A+'] + gradeCounts['A']) >= (totalEntered / 2)) return 'A';
+      if ((gradeCounts['A+'] + gradeCounts['A'] + gradeCounts['B+']) >= (totalEntered / 2)) return 'B+';
+      if ((gradeCounts['A+'] + gradeCounts['A'] + gradeCounts['B+'] + gradeCounts['B']) >= (totalEntered / 2)) return 'B';
+      return 'C+';
+    }
+
+    function getStudentCardClasses(grade) {
+      if (grade === 'A+') {
+        return 'bg-gradient-to-b from-emerald-50/90 via-white to-emerald-50/30 dark:from-emerald-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-emerald-400 dark:border-emerald-500/70 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-400/30';
+      } else if (grade === 'A') {
+        return 'bg-gradient-to-b from-teal-50/90 via-white to-teal-50/30 dark:from-teal-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-teal-400 dark:border-teal-500/70 shadow-md shadow-teal-500/10 ring-1 ring-teal-400/30';
+      } else if (grade === 'B+') {
+        return 'bg-gradient-to-b from-sky-50/90 via-white to-sky-50/30 dark:from-sky-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-sky-400 dark:border-sky-500/70 shadow-md shadow-sky-500/10 ring-1 ring-sky-400/30';
+      } else if (grade === 'B') {
+        return 'bg-gradient-to-b from-indigo-50/90 via-white to-indigo-50/30 dark:from-indigo-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-indigo-400 dark:border-indigo-500/70 shadow-md shadow-indigo-500/10 ring-1 ring-indigo-400/30';
+      } else if (grade === 'C+' || grade === 'C') {
+        return 'bg-gradient-to-b from-amber-50/90 via-white to-amber-50/30 dark:from-amber-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-amber-400 dark:border-amber-500/70 shadow-md shadow-amber-500/10 ring-1 ring-amber-400/30';
+      } else if (grade === 'D') {
+        return 'bg-gradient-to-b from-rose-50/90 via-white to-rose-50/30 dark:from-rose-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-rose-400 dark:border-rose-500/70 shadow-md shadow-rose-500/10 ring-1 ring-rose-400/30';
+      }
+      return 'bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 shadow-sm';
+    }
+
+    function getSubjectCardBoxClasses(grade) {
+      if (grade === 'A+') return 'p-2.5 rounded-xl bg-emerald-100/70 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700/80 space-y-2 transition-colors duration-200';
+      if (grade === 'A') return 'p-2.5 rounded-xl bg-teal-100/70 dark:bg-teal-950/50 border border-teal-300 dark:border-teal-700/80 space-y-2 transition-colors duration-200';
+      if (grade === 'B+') return 'p-2.5 rounded-xl bg-sky-100/70 dark:bg-sky-950/50 border border-sky-300 dark:border-sky-700/80 space-y-2 transition-colors duration-200';
+      if (grade === 'B') return 'p-2.5 rounded-xl bg-indigo-100/70 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-700/80 space-y-2 transition-colors duration-200';
+      if (grade === 'C+' || grade === 'C') return 'p-2.5 rounded-xl bg-amber-100/70 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700/80 space-y-2 transition-colors duration-200';
+      if (grade === 'D') return 'p-2.5 rounded-xl bg-rose-100/70 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-700/80 space-y-2 transition-colors duration-200';
+      return 'p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 space-y-2 transition-colors duration-200';
+    }
+
+    function updateCardVisualTheme(studentId, subKey, grade) {
+      const cardEl = document.getElementById(`student-card-${studentId}`);
+      if (cardEl) {
+        const overallGrade = getStudentOverallGrade(studentId);
+        cardEl.className = `student-card-item rounded-2xl p-4 transition-all duration-300 flex flex-col justify-between space-y-3.5 ${getStudentCardClasses(overallGrade)}`;
+      }
+      const subBox = document.getElementById(`subject-card-box-${studentId}-${subKey}`);
+      if (subBox) {
+        subBox.className = getSubjectCardBoxClasses(grade);
+      }
+    }
+
+    function renderCards() {
+      const container = document.getElementById('student-cards-container');
+      if (!container) return;
+      container.innerHTML = '';
+
       const className = classFilter.value;
+      const examType = examTypeFilter.value;
+      const selectedSub = subjectFilter.value;
+      const isSA = examType.startsWith("SA");
       const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
-      const targetScale = isPrimary ? mutableConfigs.primary.faMax : mutableConfigs.middleHigh.faMax;
-      
-      let markVal = val.trim() === '' ? '' : parseFloat(val);
-      if (markVal !== '' && markVal > targetScale) {
-        markVal = targetScale;
-        if (inputEl) inputEl.value = targetScale; 
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const filtered = getFilteredStudents();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 font-semibold bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800"><i class="fa-solid fa-user-slash text-3xl mb-2 text-slate-300"></i><p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಂಡುಬಂದಿಲ್ಲ.</p></div>`;
+        return;
       }
 
-      const gradeVal = determineGradeByScale(markVal, targetScale);
-      evaluations[studentId][subjectId + "_mark"] = markVal;
-      evaluations[studentId][subjectId + "_grade"] = gradeVal;
+      const faMax = cfg.faMax;
+      const wMax = isPrimary ? (mutableConfigs.primary.saWrittenMax || 30) : (mutableConfigs.middleHigh.saWrittenMax || 40);
+      const oMax = isPrimary ? (mutableConfigs.primary.saOralMax || 20) : (mutableConfigs.middleHigh.saOralMax || 10);
+      const presetChips = [faMax, Math.round(faMax * 0.9), Math.round(faMax * 0.75), Math.round(faMax * 0.5), Math.round(faMax * 0.25), 0].filter((v, i, arr) => arr.indexOf(v) === i);
 
-      const gradeEl = document.getElementById(`grade-${studentId}-${subjectId}`);
-      if (gradeEl) gradeEl.innerText = gradeVal;
-      updateTotals();
+      filtered.forEach((student, index) => {
+        const sId = student.id;
+        if (!evaluations[sId]) evaluations[sId] = {};
+        const evalData = evaluations[sId];
+        const nameEn = (student.name_english || '').trim().toUpperCase();
+        const nameKn = (student.student_name_kn || student.student_name || '').trim();
+        const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        const fatherKn = (student.father_name_kn || '').trim();
+        const isBoy = student.gender === 'Boy';
+        const overallGrade = getStudentOverallGrade(sId);
+
+        let subCardsHtml = '';
+        let cardColIdx = 0;
+        currentSubjects.forEach(sub => {
+          if (selectedSub !== "ALL" && sub.id !== selectedSub) return;
+          const sKey = sub.id;
+
+          if (isSA) {
+            const wVal = evalData[sKey + "_w"] !== undefined ? evalData[sKey + "_w"] : '';
+            const oVal = evalData[sKey + "_o"] !== undefined ? evalData[sKey + "_o"] : '';
+            const hasW = (wVal !== '' && wVal !== undefined && wVal !== null);
+            const hasO = (oVal !== '' && oVal !== undefined && oVal !== null);
+            let totalVal = '';
+            let g = '-';
+            if (hasW || hasO) {
+              const w = parseFloat(wVal) || 0;
+              const o = parseFloat(oVal) || 0;
+              totalVal = (w + o).toString();
+              g = determineGradeByScale(w + o, wMax + oMax);
+            }
+            evalData[sKey + "_mark"] = totalVal;
+            evalData[sKey + "_grade"] = g;
+
+            const cc1 = cardColIdx++;
+            const cc2 = cardColIdx++;
+
+            subCardsHtml += `
+              <div id="subject-card-box-${sId}-${sKey}" class="${getSubjectCardBoxClasses(g)}">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-slate-800 dark:text-slate-200 truncate max-w-[160px]">${sub.name}</span>
+                  <span id="card-grade-${sId}-${sKey}" class="${getCceGradeBadgeClass(g)}">${g}</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 items-center">
+                  <div>
+                    <span class="text-[9px] text-slate-400 font-bold block mb-0.5">ಬರಹ (W: 0-${wMax})</span>
+                    <input type="number" min="0" max="${wMax}" value="${wVal}" data-nav-card="true" data-card-row="${index}" data-card-col="${cc1}" onkeydown="handleCardKeyNav(event, ${index}, ${cc1})" onfocus="this.select()" oninput="onSAMarkChange('${sId}', '${sKey}', 'w', this.value, this)" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg py-1 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition" placeholder="0-${wMax}">
+                  </div>
+                  <div>
+                    <span class="text-[9px] text-slate-400 font-bold block mb-0.5">ಮೌಖಿಕ (O: 0-${oMax})</span>
+                    <input type="number" min="0" max="${oMax}" value="${oVal}" data-nav-card="true" data-card-row="${index}" data-card-col="${cc2}" onkeydown="handleCardKeyNav(event, ${index}, ${cc2})" onfocus="this.select()" oninput="onSAMarkChange('${sId}', '${sKey}', 'o', this.value, this)" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg py-1 text-center font-bold text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition" placeholder="0-${oMax}">
+                  </div>
+                  <div>
+                    <span class="text-[9px] text-indigo-500 font-black block mb-0.5">ಒಟ್ಟು (Total)</span>
+                    <div id="card-total-${sId}-${sKey}" class="w-full bg-indigo-50 dark:bg-slate-950 border border-indigo-200 dark:border-indigo-900/50 rounded-lg py-1 text-center font-black text-xs text-indigo-700 dark:text-indigo-300">${totalVal !== '' ? totalVal : '-'}</div>
+                  </div>
+                </div>
+              </div>
+            `;
+          } else {
+            const m = evalData[sKey + "_mark"] !== undefined ? evalData[sKey + "_mark"] : '';
+            const g = (m !== '' && m !== null && m !== undefined) ? determineGradeByScale(m, cfg.faMax) : '-';
+            evalData[sKey + "_grade"] = g;
+            const cc = cardColIdx++;
+
+            subCardsHtml += `
+              <div id="subject-card-box-${sId}-${sKey}" class="${getSubjectCardBoxClasses(g)}">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-black text-slate-800 dark:text-slate-200 truncate max-w-[160px]">${sub.name}</span>
+                  <span id="card-grade-${sId}-${sKey}" class="${getCceGradeBadgeClass(g)}">${g}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" onclick="stepCceFAMark('${sId}', '${sKey}', -1)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 font-black text-sm flex items-center justify-center border-0 cursor-pointer active:scale-95">-</button>
+                  <input type="number" min="0" max="${faMax}" id="card-input-${sId}-${sKey}" value="${m}" data-nav-card="true" data-card-row="${index}" data-card-col="${cc}" onkeydown="handleCardKeyNav(event, ${index}, ${cc})" onfocus="this.select()" oninput="onFAMarkChange('${sId}', '${sKey}', this.value, this)" class="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg py-1 text-center font-black text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-slate-900 dark:text-white transition" placeholder="0-${faMax}">
+                  <button type="button" onclick="stepCceFAMark('${sId}', '${sKey}', 1)" class="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 font-black text-sm flex items-center justify-center border-0 cursor-pointer active:scale-95">+</button>
+                </div>
+                <!-- Preset Chips -->
+                <div class="flex items-center gap-1 justify-between pt-0.5">
+                  ${presetChips.map(sc => `
+                    <button type="button" onclick="quickSetCceFAMark('${sId}', '${sKey}', ${sc})" class="px-1.5 py-0.5 rounded bg-slate-200/60 dark:bg-slate-700/60 hover:bg-indigo-600 hover:text-white text-[10px] font-bold text-slate-600 dark:text-slate-300 transition cursor-pointer border-0">${sc}</button>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }
+        });
+
+        const cardHtml = `
+          <div id="student-card-${sId}" class="student-card-item rounded-2xl p-4 transition-all duration-300 flex flex-col justify-between space-y-3.5 ${getStudentCardClasses(overallGrade)}">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-2 border-b border-slate-200/60 dark:border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${isBoy ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300'} shadow-xs">
+                  ${index + 1}
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 dark:text-white leading-tight">${nameEn || nameKn}</h4>
+                  ${nameKn && nameEn ? `<p class="text-[10px] text-slate-500 font-semibold">${nameKn}</p>` : ''}
+                </div>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isBoy ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' : 'bg-pink-50 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400'}">
+                  ${isBoy ? '👦 ಬಾಲಕ' : '👧 ಬಾಲಕಿ'}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400 font-semibold">STS: ${student.adminNo || student.id}</span>
+              </div>
+            </div>
+
+            <!-- Father -->
+            <div class="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1.5 px-1">
+              <i class="fa-solid fa-user-tie text-slate-400 text-xs"></i>
+              <span>ತಂದೆ: <strong class="text-slate-800 dark:text-slate-200">${fatherEn || fatherKn || '-'}</strong></span>
+            </div>
+
+            <!-- Subject Grid -->
+            <div class="space-y-2 pt-1 flex-1">
+              ${subCardsHtml}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between pt-2.5 border-t border-slate-200/60 dark:border-slate-800 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded">A+,A: <strong id="card-total-a-${sId}">0</strong></span>
+                <span class="text-[10px] font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded">ಇತರ: <strong id="card-total-b-${sId}">0</strong></span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        container.innerHTML += cardHtml;
+      });
     }
 
-    function onSaMarkChange(studentId, subjectId, type, val, inputEl) {
+    function onFAMarkChange(studentId, subKey, val, inputEl) {
+      if (!evaluations[studentId]) evaluations[studentId] = {};
       const className = classFilter.value;
       const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
       const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      
+      if (val !== '' && val !== null && val !== undefined) {
+        let num = parseFloat(val);
+        if (!isNaN(num)) {
+          if (num > cfg.faMax) {
+            num = cfg.faMax;
+            val = cfg.faMax.toString();
+            if (inputEl) inputEl.value = cfg.faMax;
+            const cardInput = document.getElementById(`card-input-${studentId}-${subKey}`);
+            if (cardInput) cardInput.value = cfg.faMax;
+          } else if (num < 0) {
+            num = 0;
+            val = '0';
+            if (inputEl) inputEl.value = '0';
+            const cardInput = document.getElementById(`card-input-${studentId}-${subKey}`);
+            if (cardInput) cardInput.value = '0';
+          }
+        }
+      }
 
-      const currentRaw = evaluations[studentId][subjectId + "_mark"] || '';
-      const parts = currentRaw.toString().split('+');
-      let wStr = parts[0] !== undefined ? parts[0] : '';
-      let oStr = parts[1] !== undefined ? parts[1] : '';
-      
-      if (type === 'w') { wStr = val.trim(); } else { oStr = val.trim(); }
-      
-      let wVal = wStr === '' ? 0 : parseFloat(wStr);
-      let oVal = oStr === '' ? 0 : parseFloat(oStr);
-      
-      if (wVal > cfg.saWrittenMax) { wVal = cfg.saWrittenMax; wStr = cfg.saWrittenMax.toString(); if (inputEl) inputEl.value = wStr; }
-      if (oVal > cfg.saOralMax) { oVal = cfg.saOralMax; oStr = cfg.saOralMax.toString(); if (inputEl) inputEl.value = oStr; }
-      
-      const actualTotal = wVal + oVal;
-      
-      if (wStr === '' && oStr === '') {
-        evaluations[studentId][subjectId + "_mark"] = '';
-        evaluations[studentId][subjectId + "_grade"] = '-';
-      } else {
-        evaluations[studentId][subjectId + "_mark"] = `${wStr}+${oStr}`;
-        const gradeVal = determineGradeByScale(actualTotal, 50);
-        evaluations[studentId][subjectId + "_grade"] = gradeVal;
+      evaluations[studentId][subKey + "_mark"] = val;
+      const grade = (val !== '' && val !== null && val !== undefined) ? determineGradeByScale(val, cfg.faMax) : '-';
+      evaluations[studentId][subKey + "_grade"] = grade;
+
+      const tableGradeEl = document.getElementById(`grade-${studentId}-${subKey}`);
+      if (tableGradeEl) {
+        tableGradeEl.innerText = grade;
+        tableGradeEl.className = `${getCceGradeBadgeClass(grade)} badge-print`;
       }
-      
-      const totalEl = document.getElementById(`sa-total-${studentId}-${subjectId}`);
-      if (totalEl) {
-        totalEl.innerText = (wStr === '' && oStr === '') ? '-' : ((actualTotal / 50) * cfg.saMax).toFixed(1);
+
+      const cardGradeEl = document.getElementById(`card-grade-${studentId}-${subKey}`);
+      if (cardGradeEl) {
+        cardGradeEl.innerText = grade;
+        cardGradeEl.className = getCceGradeBadgeClass(grade);
       }
-      
-      const gradeEl = document.getElementById(`grade-${studentId}-${subjectId}`);
-      if (gradeEl) gradeEl.innerText = evaluations[studentId][subjectId + "_grade"];
+
+      // Dynamic Card & Box Colors
+      updateCardVisualTheme(studentId, subKey, grade);
+
       updateTotals();
+      triggerAutoSave();
     }
 
-    function updateTotals() {
-      let grandTotalA = 0; let grandTotalOthers = 0;
-      let countAP = 0, countA = 0, countBP = 0, countB = 0, countOthers = 0;
+    function onSAMarkChange(studentId, subKey, type, val, inputEl) {
+      if (!evaluations[studentId]) evaluations[studentId] = {};
+      const className = classFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const wMax = isPrimary ? (mutableConfigs.primary.saWrittenMax || 30) : (mutableConfigs.middleHigh.saWrittenMax || 40);
+      const oMax = isPrimary ? (mutableConfigs.primary.saOralMax || 20) : (mutableConfigs.middleHigh.saOralMax || 10);
 
-      students.forEach(student => {
-        const sId = student.id;
-        const evalData = evaluations[sId] || {};
-        let rowA = 0; let rowOthers = 0;
-
-        currentSubjects.forEach(s => {
-          const g = evalData[s.id + "_grade"] || '-';
-          if (g === '-') return;
-          if (g === 'A+') { countAP++; rowA++; }
-          else if (g === 'A') { countA++; rowA++; }
-          else if (g === 'B+') { countBP++; rowOthers++; }
-          else if (g === 'B') { countB++; rowOthers++; }
-          else { countOthers++; rowOthers++; }
-        });
-
-        const rowTotalAEl = document.getElementById(`row-total-a-${sId}`);
-        const rowTotalBEl = document.getElementById(`row-total-b-${sId}`);
-        if (rowTotalAEl) rowTotalAEl.innerText = rowA;
-        if (rowTotalBEl) rowTotalBEl.innerText = rowOthers;
-
-        grandTotalA += rowA; grandTotalOthers += rowOthers;
-      });
-
-      const totalStudentsEl = document.getElementById('stat-total-students');
-      if (totalStudentsEl) totalStudentsEl.innerText = students.length;
-
-      const elAP = document.getElementById('stat-grade-ap');
-      if (elAP) elAP.innerText = countAP;
-
-      const elA = document.getElementById('stat-grade-a');
-      if (elA) elA.innerText = countA;
-
-      const elBP = document.getElementById('stat-grade-bp');
-      if (elBP) elBP.innerText = countBP;
-
-      const elB = document.getElementById('stat-grade-b');
-      if (elB) elB.innerText = countB;
-
-      const elOthers = document.getElementById('stat-grade-others');
-      if (elOthers) elOthers.innerText = countOthers;
-    }
-
-    function setMode(editing) {
-      isEditing = editing;
-      const modeTag = document.getElementById('grid-mode-tag');
-      if (editing) {
-        if(modeTag) {
-          modeTag.innerText = "Edit Mode";
-          modeTag.className = "px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold uppercase tracking-wider text-[10px]";
-          modeTag.classList.remove('hidden');
+      if (type === 'w') {
+        if (val !== '' && val !== null && val !== undefined) {
+          let num = parseFloat(val);
+          if (!isNaN(num)) {
+            if (num > wMax) { num = wMax; val = wMax.toString(); if (inputEl) inputEl.value = wMax; }
+            else if (num < 0) { num = 0; val = '0'; if (inputEl) inputEl.value = '0'; }
+          }
         }
-        document.getElementById('btn-edit').classList.add('hidden');
-        document.getElementById('btn-save').classList.remove('hidden');
-        document.getElementById('btn-cancel').classList.remove('hidden');
-      } else {
-        if(modeTag) {
-          modeTag.innerText = "View Mode";
-          modeTag.className = "px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-bold uppercase tracking-wider text-[10px]";
-          modeTag.classList.remove('hidden');
+        evaluations[studentId][subKey + "_w"] = val;
+      } else if (type === 'o') {
+        if (val !== '' && val !== null && val !== undefined) {
+          let num = parseFloat(val);
+          if (!isNaN(num)) {
+            if (num > oMax) { num = oMax; val = oMax.toString(); if (inputEl) inputEl.value = oMax; }
+            else if (num < 0) { num = 0; val = '0'; if (inputEl) inputEl.value = '0'; }
+          }
         }
-        document.getElementById('btn-edit').classList.remove('hidden');
-        document.getElementById('btn-save').classList.add('hidden');
-        document.getElementById('btn-cancel').classList.add('hidden');
+        evaluations[studentId][subKey + "_o"] = val;
       }
+
+      const wVal = evaluations[studentId][subKey + "_w"];
+      const oVal = evaluations[studentId][subKey + "_o"];
+
+      const hasW = (wVal !== '' && wVal !== undefined && wVal !== null);
+      const hasO = (oVal !== '' && oVal !== undefined && oVal !== null);
+
+      let total = '';
+      let grade = '-';
+      if (hasW || hasO) {
+        const w = parseFloat(wVal) || 0;
+        const o = parseFloat(oVal) || 0;
+        total = w + o;
+        const saTotalMax = wMax + oMax;
+        grade = determineGradeByScale(total, saTotalMax);
+      }
+
+      evaluations[studentId][subKey + "_mark"] = total;
+      evaluations[studentId][subKey + "_grade"] = grade;
+
+      // Table DOM updates
+      const tableTotalEl = document.getElementById(`total-${studentId}-${subKey}`);
+      if (tableTotalEl) tableTotalEl.innerText = total !== '' ? total : '-';
+      const tableGradeEl = document.getElementById(`grade-${studentId}-${subKey}`);
+      if (tableGradeEl) {
+        tableGradeEl.innerText = grade;
+        tableGradeEl.className = `${getCceGradeBadgeClass(grade)} badge-print`;
+      }
+
+      // Card DOM updates
+      const cardTotalEl = document.getElementById(`card-total-${studentId}-${subKey}`);
+      if (cardTotalEl) cardTotalEl.innerText = total !== '' ? total : '-';
+      const cardGradeEl = document.getElementById(`card-grade-${studentId}-${subKey}`);
+      if (cardGradeEl) {
+        cardGradeEl.innerText = grade;
+        cardGradeEl.className = getCceGradeBadgeClass(grade);
+      }
+
+      // Dynamic Card & Box Colors
+      updateCardVisualTheme(studentId, subKey, grade);
+
+      updateTotals();
+      triggerAutoSave();
     }
 
-    function hideActionButtons() {
-      const modeTag = document.getElementById('grid-mode-tag');
-      if(modeTag) modeTag.classList.add('hidden');
-      document.getElementById('btn-edit').classList.add('hidden');
-      document.getElementById('btn-save').classList.add('hidden');
-      document.getElementById('btn-cancel').classList.add('hidden');
+    function triggerAutoSave() {
+      const indicator = document.getElementById('auto-save-indicator');
+      if (indicator) {
+        indicator.classList.remove('hidden');
+        indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 flex items-center gap-1.5 border border-amber-200/60 dark:border-amber-900/40';
+        indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin text-amber-500 text-[11px]"></i> <span>ಉಳಿಸಲಾಗುತ್ತಿದೆ... / Saving...</span>';
+      }
+
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        performSilentSave();
+      }, 700);
     }
 
-    function resetToEmptyState() {
-      document.getElementById('empty-state').classList.remove('hidden');
-      document.getElementById('competency-table').classList.add('hidden');
-      const gridSub = document.getElementById('grid-subtitle');
-      if (gridSub) gridSub.innerText = "ಯಾವುದೇ ತರಗತಿಯನ್ನು ಆರಿಸಲಾಗಿಲ್ಲ";
-      hideActionButtons();
-      document.getElementById('stats-bar').classList.add('hidden');
-      if (document.getElementById('btn-export-pdf')) document.getElementById('btn-export-pdf').classList.add('hidden');
-      document.getElementById('btn-export-excel').classList.add('hidden');
-      document.getElementById('btn-print').classList.add('hidden');
-      if (document.getElementById('btn-export-csv')) document.getElementById('btn-export-csv').classList.add('hidden');
-      if (document.getElementById('btn-import-csv')) document.getElementById('btn-import-csv').classList.add('hidden');
-      if (document.getElementById('btn-add-student')) document.getElementById('btn-add-student').classList.add('hidden');
-      document.getElementById('rules-note-card').classList.add('hidden');
-    }
-
-    function enableEditing() { setMode(true); renderGrid(); }
-    function cancelEditing() {
-      evaluations = JSON.parse(JSON.stringify(originalEvaluations));
-      setMode(Object.keys(originalEvaluations).length === 0);
-      renderGrid();
-    }
-
-    function saveData() {
+    function performSilentSave() {
       const className = classFilter.value;
       const examType = examTypeFilter.value;
-      if (!className || !examType) return;
-      document.getElementById('loading-overlay').classList.remove('hidden');
+      if (!className || !examType || students.length === 0) return;
+
+      // Local backup immediately
+      const mockKey = `cce_eval_${className}_${examType}`;
+      localStorage.setItem(mockKey, JSON.stringify(evaluations));
 
       supabaseClient.auth.getSession().then(({ data: { session } }) => {
-        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
 
         const payload = students.map(student => {
           const sId = student.id;
@@ -1734,19 +2283,156 @@
           .from('cce_evaluations')
           .upsert(payload, { onConflict: 'student_id,exam_type' })
           .then(({ error }) => {
-            if (error) {
-              console.warn("Supabase upsert for CCE evaluations failed, saving to localStorage as fallback:", error);
-            } else {
-              console.log("Supabase CCE evaluations upsert successful");
+            const indicator = document.getElementById('auto-save-indicator');
+            if (indicator) {
+              indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+              if (error) {
+                console.warn("Auto-save to Supabase failed, saved locally:", error);
+                indicator.innerHTML = '<i class="fa-solid fa-circle-check text-teal-500 text-[11px]"></i> <span>ಆಫ್‌ಲೈನ್ ಉಳಿಸಲಾಗಿದೆ</span>';
+              } else {
+                indicator.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i> <span>ಸ್ವಯಂ ಉಳಿಸಲಾಗಿದೆ / Auto-saved</span>';
+              }
+              setTimeout(() => {
+                if (indicator) indicator.classList.add('hidden');
+              }, 2500);
             }
-            
-            // Replicate/backup to localStorage
-            const mockKey = `cce_eval_${className}_${examType}`;
-            localStorage.setItem(mockKey, JSON.stringify(evaluations));
-
-            onDataSaved();
           });
+      }).catch(() => {
+        const indicator = document.getElementById('auto-save-indicator');
+        if (indicator) {
+          indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+          indicator.innerHTML = '<i class="fa-solid fa-circle-check text-teal-500 text-[11px]"></i> <span>ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ</span>';
+          setTimeout(() => {
+            if (indicator) indicator.classList.add('hidden');
+          }, 2500);
+        }
       });
+    }
+
+    function closeReportCardModal() {
+      const modal = document.getElementById('report-card-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function downloadExcelTemplate() {
+      downloadCSVTemplate();
+    }
+
+    function handleImportFile(input) {
+      if (input && input.files && input.files[0]) {
+        handleCSVUpload({ target: input });
+      }
+    }
+
+    function exportIndividualReportCardToExcel() {
+      exportToExcel();
+    }
+
+    function exportIndividualReportCardToPdf() {
+      exportToPdf();
+    }
+
+    function printIndividualReportCard() {
+      printPage();
+    }
+
+    function stepCceFAMark(studentId, subKey, delta) {
+      const className = classFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const currentVal = evaluations[studentId] && evaluations[studentId][subKey + "_mark"] !== undefined && evaluations[studentId][subKey + "_mark"] !== '' ? parseFloat(evaluations[studentId][subKey + "_mark"]) : 0;
+      let newVal = Math.min(cfg.faMax, Math.max(0, currentVal + delta));
+      quickSetCceFAMark(studentId, subKey, newVal);
+    }
+
+    function quickSetCceFAMark(studentId, subKey, markVal) {
+      const className = classFilter.value;
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      let val = Math.min(cfg.faMax, Math.max(0, markVal));
+      onFAMarkChange(studentId, subKey, val.toString());
+      const cardInput = document.getElementById(`card-input-${studentId}-${subKey}`);
+      if (cardInput) cardInput.value = val;
+    }
+
+    function updateTotals() {
+      let grandTotalA = 0;
+      let grandTotalOthers = 0;
+      let apCount = 0, aCount = 0, bpCount = 0, bCount = 0, cCount = 0;
+
+      students.forEach(student => {
+        const sId = student.id;
+        const evalData = evaluations[sId] || {};
+        let rowA = 0;
+        let rowOthers = 0;
+
+        currentSubjects.forEach(sub => {
+          const g = evalData[sub.id + "_grade"] || '-';
+          if (g === '-') return;
+          if (g === 'A+') { apCount++; rowA++; }
+          else if (g === 'A') { aCount++; rowA++; }
+          else if (g === 'B+') { bpCount++; rowOthers++; }
+          else if (g === 'B') { bCount++; rowOthers++; }
+          else if (['C+', 'C', 'D'].includes(g)) { cCount++; rowOthers++; }
+        });
+
+        // Table totals
+        const rowTotalAEl = document.getElementById(`row-total-a-${sId}`);
+        const rowTotalBEl = document.getElementById(`row-total-b-${sId}`);
+        if (rowTotalAEl) rowTotalAEl.innerText = rowA;
+        if (rowTotalBEl) rowTotalBEl.innerText = rowOthers;
+
+        // Card totals
+        const cardTotalAEl = document.getElementById(`card-total-a-${sId}`);
+        const cardTotalBEl = document.getElementById(`card-total-b-${sId}`);
+        if (cardTotalAEl) cardTotalAEl.innerText = rowA;
+        if (cardTotalBEl) cardTotalBEl.innerText = rowOthers;
+
+        grandTotalA += rowA;
+        grandTotalOthers += rowOthers;
+      });
+
+      const statTotalStudents = document.getElementById('stat-total-students');
+      if (statTotalStudents) statTotalStudents.innerText = students.length;
+
+      const statAP = document.getElementById('stat-grade-ap');
+      const statA = document.getElementById('stat-grade-a');
+      const statBP = document.getElementById('stat-grade-bp');
+      const statB = document.getElementById('stat-grade-b');
+      const statC = document.getElementById('stat-grade-others') || document.getElementById('stat-grade-c');
+      if (statAP) statAP.innerText = apCount;
+      if (statA) statA.innerText = aCount;
+      if (statBP) statBP.innerText = bpCount;
+      if (statB) statB.innerText = bCount;
+      if (statC) statC.innerText = cCount;
+    }
+
+    function setMode(editing) {
+      isEditing = true;
+    }
+
+    function resetToEmptyState() {
+      const loadOverlay = document.getElementById('loading-overlay');
+      if (loadOverlay) loadOverlay.classList.add('hidden');
+      const tableContainer = document.getElementById('table-container');
+      if (tableContainer) tableContainer.classList.remove('hidden');
+      const emptyState = document.getElementById('empty-state');
+      if (emptyState) emptyState.classList.remove('hidden');
+      const compTable = document.getElementById('competency-table');
+      if (compTable) compTable.classList.add('hidden');
+      const cardsEl = document.getElementById('student-cards-container');
+      if (cardsEl) cardsEl.classList.add('hidden');
+      const sfBar = document.getElementById('search-filter-bar');
+      if (sfBar) sfBar.classList.add('hidden');
+      const statsBar = document.getElementById('stats-bar');
+      if (statsBar) statsBar.classList.add('hidden');
+    }
+
+    function enableEditing() { isEditing = true; renderActiveView(); }
+    function cancelEditing() { renderActiveView(); }
+
+    function saveData() {
+      performSilentSave();
     }
 
     function onDataSaved() {
@@ -1754,7 +2440,17 @@
       showToast("ಮಾಹಿತಿ ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ!", "success");
       originalEvaluations = JSON.parse(JSON.stringify(evaluations));
       setMode(false);
-      renderGrid();
+      renderActiveView();
+    }
+
+    async function syncAndOpenConsolidated() {
+      const className = classFilter.value || "1";
+      const examType = examTypeFilter.value || "FA1";
+      showToast("ಕ್ರೋಢೀಕೃತ ವರದಿಯೊಂದಿಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...", "info");
+      performSilentSave();
+      setTimeout(() => {
+        window.location.href = `CceConsolidatedReport.html?class=${className}`;
+      }, 600);
     }
 
     function buildPrintArea() {
@@ -1766,88 +2462,184 @@
       const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
       const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
       
-      document.getElementById('print-school-name').innerHTML = `
-        <div style="font-size: 20px; font-weight: 800; text-transform: uppercase; color: #000000; line-height: 1.2;">${schoolNameEn}</div>
-        <div style="font-size: 16px; font-weight: 700; color: #000000; margin-top: 4px; line-height: 1.2;">${schoolNameKn}</div>
+      const defaultGovLogo = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
+      const defaultSchoolLogo = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/ghps-marched-logo.png";
+      let govLogo = localStorage.getItem('school_gov_logo') || defaultGovLogo;
+      if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) govLogo = defaultGovLogo;
+      const schoolLogo = localStorage.getItem('school_logo_url') || defaultSchoolLogo;
+
+      const isPrimary = mutableConfigs.primary.classes.includes(className === "ALL" ? "1" : className);
+      const cfg = isPrimary ? mutableConfigs.primary : mutableConfigs.middleHigh;
+      const maxMarks = examType.startsWith("SA") ? cfg.saMax : cfg.faMax;
+
+      const printArea = document.getElementById('printArea');
+      if (!printArea) return;
+      printArea.innerHTML = '';
+
+      // Header Block with Official Logos
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'text-center mb-3';
+      headerDiv.innerHTML = `
+        <div style="display: grid; grid-template-columns: 65px 1fr 65px; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <!-- Left: Karnataka Govt Emblem -->
+          <div style="text-align: left;">
+            <img src="${govLogo}" style="height: 55px; width: 55px; object-fit: contain;" alt="Govt Logo" crossorigin="anonymous">
+          </div>
+          <!-- Center: Title & School Name -->
+          <div style="text-align: center;">
+            <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #000; letter-spacing: 0.5px;">ಕರ್ನಾಟಕ ಸರ್ಕಾರ | GOVERNMENT OF KARNATAKA</div>
+            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #000; margin-top: 1px;">ಶಾಲಾ ಶಿಕ್ಷಣ ಮತ್ತು ಸಾಕ್ಷರತಾ ಇಲಾಖೆ | DEPARTMENT OF SCHOOL EDUCATION AND LITERACY</div>
+            <div style="font-size: 17px; font-weight: 900; text-transform: uppercase; color: #000; margin-top: 2px; line-height: 1.2;">${schoolNameEn}</div>
+            <div style="font-size: 14px; font-weight: 800; color: #000; margin-top: 1px; line-height: 1.2;">${schoolNameKn}</div>
+          </div>
+          <!-- Right: School Logo / Badge -->
+          <div style="text-align: right;">
+            <img src="${schoolLogo}" style="height: 55px; width: 55px; object-fit: contain;" alt="School Logo" crossorigin="anonymous">
+          </div>
+        </div>
+        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #000; margin-top: 4px; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
+          ಸಂಕಲನಾತ್ಮಕ ಮತ್ತು ರೂಪಣಾತ್ಮಕ ಮೌಲ್ಯಮಾಪನ ಪ್ರಗತಿ ಪಟ್ಟಿ 2026-27 (CCE ASSESSMENT REGISTER)
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #000; margin-top: 6px; padding-bottom: 4px; border-bottom: 1px solid #000;">
+          <span>ತರಗತಿ / Class: <strong>${className}</strong></span>
+          <span>ಪರೀಕ್ಷೆ / Exam: <strong>${examType}</strong></span>
+          ${!isAllSubjects ? `<span>ವಿಷಯ / Subject: <strong>${subjectFilter.options[subjectFilter.selectedIndex]?.text || ''}</strong></span>` : '<span>ವಿಷಯ: <strong>ಎಲ್ಲಾ ವಿಷಯಗಳು (All Subjects)</strong></span>'}
+          <span>ಗರಿಷ್ಠ ಅಂಕ / Max: <strong>${maxMarks}</strong></span>
+          <span>ದಿನಾಂಕ / Date: <strong>${new Date().toLocaleDateString('kn-IN')}</strong></span>
+        </div>
       `;
-      
-      document.getElementById('print-class-lbl').innerText = "ತರಗತಿ / Class: " + className;
-      document.getElementById('print-exam-lbl').innerText = "ಪರೀಕ್ಷೆ / Exam: " + examType;
-      document.getElementById('print-date-lbl').innerText = "ದಿನಾಂಕ / Date: " + new Date().toLocaleDateString('kn-IN');
-      
-      const subLabel = document.getElementById('print-subject-lbl');
-      if (subLabel) {
-        if (isAllSubjects) {
-          subLabel.style.display = 'none';
-        } else {
-          const subText = subjectFilter.options[subjectFilter.selectedIndex].text;
-          subLabel.innerText = "ವಿಷಯ / Subject: " + subText;
-          subLabel.style.display = 'inline';
-        }
-      }
-      
-      // Clean up previous print content
-      const existingTable = document.getElementById('printArea').querySelector('table');
-      if (existingTable) existingTable.remove();
-      const existingSigs = document.getElementById('printArea').querySelector('.print-signatures-row');
-      if (existingSigs) existingSigs.remove();
-      
+      printArea.appendChild(headerDiv);
+
+      // Ensure table rows are fully populated before cloning
+      buildTableHeader();
+      renderGrid();
+
       // Clone competency table
       const originalTable = document.getElementById('competency-table');
-      const tableClone = originalTable.cloneNode(true);
-      tableClone.removeAttribute('id');
-      tableClone.classList.remove('hidden');
-      
-      // Sync input values to cloned table and replace them with spans
-      const inputs = tableClone.querySelectorAll('input');
-      inputs.forEach(input => {
-        const parent = input.parentNode;
-        const span = document.createElement('span');
-        span.innerText = input.value !== '' ? input.value : '-';
-        span.style.fontWeight = 'bold';
-        parent.replaceChild(span, input);
+      if (originalTable) {
+        const tableClone = originalTable.cloneNode(true);
+        tableClone.removeAttribute('id');
+        tableClone.classList.remove('hidden');
+
+        // Replace inputs with plain text spans
+        const inputs = tableClone.querySelectorAll('input');
+        inputs.forEach(input => {
+          const parent = input.parentNode;
+          const span = document.createElement('span');
+          span.innerText = input.value !== '' ? input.value : '-';
+          span.style.fontWeight = 'bold';
+          parent.replaceChild(span, input);
+        });
+
+        // Strip styling classes for crisp native print borders
+        tableClone.removeAttribute('class');
+        tableClone.querySelectorAll('*').forEach(el => {
+          const isLeft = el.classList.contains('text-left');
+          const isRight = el.classList.contains('text-right');
+          el.removeAttribute('class');
+          if (isLeft) {
+            el.style.textAlign = 'left';
+            el.style.paddingLeft = '6px';
+          } else if (isRight) {
+            el.style.textAlign = 'right';
+            el.style.paddingRight = '6px';
+          } else {
+            el.style.textAlign = 'center';
+          }
+        });
+
+        printArea.appendChild(tableClone);
+      }
+
+      // Grade Statistics Abstract Tally Box
+      let totalStudents = students.length;
+      let apCount = 0, aCount = 0, bpCount = 0, bCount = 0, cCount = 0;
+      students.forEach(student => {
+        const sId = student.id;
+        const evalData = evaluations[sId] || {};
+        currentSubjects.forEach(sub => {
+          if (!isAllSubjects && sub.id !== selectedSub) return;
+          const g = evalData[sub.id + "_grade"] || '-';
+          if (g === 'A+') apCount++;
+          else if (g === 'A') aCount++;
+          else if (g === 'B+') bpCount++;
+          else if (g === 'B') bCount++;
+          else if (['C+', 'C', 'D'].includes(g)) cCount++;
+        });
       });
-      
-      // Clean classes from tableClone and its children to allow native print CSS to apply solid black borders and backgrounds
-      tableClone.removeAttribute('class');
-      tableClone.querySelectorAll('*').forEach(el => {
-        const isLeft = el.classList.contains('text-left');
-        const isRight = el.classList.contains('text-right');
-        el.removeAttribute('class');
-        if (isLeft) {
-          el.style.textAlign = 'left';
-          el.style.paddingLeft = '6px';
-        } else if (isRight) {
-          el.style.textAlign = 'right';
-          el.style.paddingRight = '6px';
-        } else {
-          el.style.textAlign = 'center';
-        }
-      });
-      
-      // Append cloned table
-      document.getElementById('printArea').appendChild(tableClone);
-      
-      // Add signature block
+
+      const abstractBox = document.createElement('div');
+      abstractBox.style.marginTop = '12px';
+      abstractBox.style.border = '1.5px solid #000';
+      abstractBox.style.padding = '6px 10px';
+      abstractBox.style.fontSize = '10px';
+      abstractBox.style.fontWeight = 'bold';
+      abstractBox.style.color = '#000';
+      abstractBox.style.display = 'flex';
+      abstractBox.style.justifyContent = 'space-between';
+      abstractBox.style.alignItems = 'center';
+      abstractBox.style.backgroundColor = '#fff';
+      abstractBox.innerHTML = `
+        <span>ಒಟ್ಟು ವಿದ್ಯಾರ್ಥಿಗಳು (Total Pupils): <strong>${totalStudents}</strong></span>
+        <span>A+ ಶ್ರೇಣಿ: <strong>${apCount}</strong></span>
+        <span>A ಶ್ರೇಣಿ: <strong>${aCount}</strong></span>
+        <span>B+ ಶ್ರೇಣಿ: <strong>${bpCount}</strong></span>
+        <span>B ಶ್ರೇಣಿ: <strong>${bCount}</strong></span>
+        <span>C+ / ಇತರ ಶ್ರೇಣಿ: <strong>${cCount}</strong></span>
+      `;
+      printArea.appendChild(abstractBox);
+
+      // Official 3-Signature Block
       const sigRow = document.createElement('div');
       sigRow.className = 'print-signatures-row';
+      sigRow.style.marginTop = '35px';
+      sigRow.style.display = 'flex';
+      sigRow.style.justifyContent = 'space-between';
+      sigRow.style.alignItems = 'flex-end';
+      sigRow.style.fontSize = '11px';
+      sigRow.style.fontWeight = 'bold';
+      sigRow.style.color = '#000';
       sigRow.innerHTML = `
-        <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ / Class Teacher Signature</span>
-        ${!isAllSubjects ? '<span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ / Subject Teacher Signature</span>' : ''}
-        <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ / Head Master Signature</span>
+        <div style="text-align: center;">
+          <div style="border-top: 1px solid #000; width: 160px; margin-bottom: 4px;"></div>
+          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ<br>(Class Teacher Signature)</span>
+        </div>
+        ${!isAllSubjects ? `
+          <div style="text-align: center;">
+            <div style="border-top: 1px solid #000; width: 160px; margin-bottom: 4px;"></div>
+            <span>ವಿಷಯ ಶಿಕ್ಷಕರ ಸಹಿ<br>(Subject Teacher Signature)</span>
+          </div>
+        ` : ''}
+        <div style="text-align: center;">
+          <div style="border-top: 1px solid #000; width: 180px; margin-bottom: 4px;"></div>
+          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ ಮತ್ತು ಮೊಹರು<br>(Head Master Signature & Seal)</span>
+        </div>
       `;
-      document.getElementById('printArea').appendChild(sigRow);
+      printArea.appendChild(sigRow);
+
+      // Restore active view mode so Card View is not affected
+      const currentMode = document.getElementById('btn-view-cards')?.classList.contains('bg-indigo-600') ? 'cards' : 'table';
+      if (currentMode === 'cards') {
+        const compTable = document.getElementById('competency-table');
+        if (compTable) compTable.classList.add('hidden');
+        const cardsEl = document.getElementById('student-cards-container');
+        if (cardsEl) cardsEl.classList.remove('hidden');
+      }
     }
 
     function printPage() {
-      window.openPrintDrawer({
-        tableId: 'competency-table',
-        title: 'CCE Assessment Report / ಸಿಸಿಇ ಮೌಲ್ಯಮಾಪನ ವರದಿ',
-        class: classFilter.value,
-        exam: examTypeFilter.value,
-        subject: subjectFilter.value,
-        students: students
-      });
+      if (students.length === 0) {
+        showToast("ಮುದ್ರಿಸಲು ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳ ಡೇಟಾ ಇಲ್ಲ", "warning");
+        return;
+      }
+      window.customPrintGenerated = true;
+      buildPrintArea();
+      setTimeout(() => {
+        window.print();
+        window.addEventListener('afterprint', () => {
+          window.customPrintGenerated = false;
+        }, { once: true });
+      }, 100);
     }
 
     function exportToPdf() {
@@ -1873,7 +2665,9 @@
       const aoa = [row1, row2];
       students.forEach((student, index) => {
         const sId = student.id; const evalData = evaluations[sId] || {};
-        const row = [index + 1, student.adminNo || student.id, student.name, student.father || ''];
+        const stName = student.name_english || student.student_name_kn || student.student_name || student.name || '';
+        const stFather = student.father_name_az || student.father_name_kn || student.father || '';
+        const row = [index + 1, student.adminNo || student.app_no || student.id, stName, stFather];
         let rowA = 0; let rowOthers = 0;
 
         currentSubjects.forEach(sub => {
@@ -1976,7 +2770,9 @@
       const aoa = [row1, row2];
       students.forEach((student, index) => {
         const sId = student.id; const evalData = evaluations[sId] || {};
-        const row = [index + 1, student.adminNo || student.id, student.name, student.father || ''];
+        const stName = student.name_english || student.student_name_kn || student.student_name || student.name || '';
+        const stFather = student.father_name_az || student.father_name_kn || student.father || '';
+        const row = [index + 1, student.adminNo || student.app_no || student.id, stName, stFather];
         let rowA = 0; let rowOthers = 0;
 
         currentSubjects.forEach(sub => {
@@ -2032,7 +2828,8 @@
             (isPrimary ? mutableConfigs.primary.faMax : mutableConfigs.middleHigh.faMax);
             
           const { data: { session } } = await supabaseClient.auth.getSession();
-          const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+          const rawSchoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const schoolId = (rawSchoolId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawSchoolId)) ? rawSchoolId : null;
           
           let changedCount = 0;
           const upsertPayloads = [];
@@ -2114,7 +2911,7 @@
               originalEvaluations = JSON.parse(JSON.stringify(evaluations));
             }
             
-            renderGrid();
+            renderActiveView();
             alert(`ಯಶಸ್ವಿಯಾಗಿ ${changedCount} ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ!\nSuccessfully updated data for ${changedCount} students.`);
           } else {
             alert("ಯಾವುದೇ ಬದಲಾವಣೆ ಕಂಡುಬಂದಿಲ್ಲ.\nNo changes detected.");

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="kn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STS Master List - GHPS MARCHED</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="supabase.js"></script>
+  <script src="navbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Noto+Sans+Kannada:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', sans-serif; background-color: #f8fafc; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(14px); border: 1px solid rgba(226, 232, 240, 0.9); }
+    .dark .glass-card { background: rgba(15, 23, 42, 0.95); border-color: rgba(30, 41, 59, 0.9); }
+    
+    /* Smooth Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .dark .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* Sticky Header */
+    .sticky-header th {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+    }
+
+    @media print {
+      body { background: white !important; color: black !important; }
+      #navbar-placeholder, #configBar, #filterToolbar, #topBanner, #analyticsDashboard, .no-print, button, input, select { display: none !important; }
+      main { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .table-container { max-height: none !important; overflow: visible !important; border: 0 !important; }
+      table { width: 100% !important; font-size: 9px !important; border-collapse: collapse !important; }
+      th, td { border: 1px solid black !important; padding: 4px 6px !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+
+  <!-- Shared Top Navigation Bar (Rendered via navbar.js) -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-5">
+
+    <!-- Header Banner -->
+    <div id="topBanner" class="glass-card rounded-3xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-200 dark:border-slate-800">
+      <div>
+        <div class="flex items-center gap-3">
+          <span class="p-3 bg-emerald-600 text-white rounded-2xl shadow-md">
+            <i class="fa-solid fa-file-excel text-xl"></i>
+          </span>
+          <div>
+            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              <span>SATS / STS ಅಧಿಕೃತ ಮಾಸ್ಟರ್ ವಿದ್ಯಾರ್ಥಿ ಪಟ್ಟಿ (STS Master Roster)</span>
+            </h1>
+            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+              ಅಧಿಕೃತ Google Spreadsheet ನಲ್ಲಿರುವ ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಶುದ್ಧ ಪಟ್ಟಿ. (ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹವಾಗಿದ್ದು, ನೀವು ಸಿಂಕ್ ಮಾಡಿದಾಗ ಮಾತ್ರ ಅಪ್‌ಡೇಟ್ ಆಗುತ್ತದೆ).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="toggleSummaryDrawer()" class="bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold text-xs py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 cursor-pointer transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie text-xs"></i> <span id="summaryDrawerBtnText">ತರಗತಿವಾರು ಸಾರಾಂಶ</span>
+        </button>
+
+        <button onclick="forceRefreshData()" title="Google Sheet ನಿಂದ ಡೇಟಾ ಮರುಹೊಂದಿಸಿ" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-700 cursor-pointer transition shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-rotate text-xs"></i> ಮರುಹೊಂದಿಸಿ
+        </button>
+
+        <button onclick="printClassRoster()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
+          <i class="fa-solid fa-print"></i> ಮುದ್ರಿಸಿ (Print A4)
+        </button>
+
+        <button onclick="exportExcelReport()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3.5 rounded-xl shadow transition flex items-center gap-1.5 border-0 cursor-pointer">
+          <i class="fa-solid fa-file-excel"></i> Excel ರಫ್ತು
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Metric Cards -->
+    <div id="analyticsDashboard" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- 1. STS Total -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-indigo-200 dark:border-indigo-800 bg-indigo-50/40 dark:bg-indigo-950/20 hover:scale-[1.02] transition">
+        <div class="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">🎯 ಒಟ್ಟು STS ಮಕ್ಕಳು</div>
+        <div id="statTotalSats" class="text-3xl font-black text-indigo-900 dark:text-indigo-100">0</div>
+        <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold">Total STS Records</div>
+      </div>
+
+      <!-- 2. Boys -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-sky-200 dark:border-sky-800 bg-sky-50/40 dark:bg-sky-950/20 hover:scale-[1.02] transition">
+        <div class="text-[10px] font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider">👦 ಬಾಲಕರು (Boys)</div>
+        <div id="statTotalBoys" class="text-3xl font-black text-sky-900 dark:text-sky-100">0</div>
+        <div class="text-[10px] text-sky-600 dark:text-sky-400 font-bold">Total Boys</div>
+      </div>
+
+      <!-- 3. Girls -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-rose-200 dark:border-rose-800 bg-rose-50/40 dark:bg-rose-950/20 hover:scale-[1.02] transition">
+        <div class="text-[10px] font-bold text-rose-700 dark:text-rose-300 uppercase tracking-wider">👧 ಬಾಲಕಿಯರು (Girls)</div>
+        <div id="statTotalGirls" class="text-3xl font-black text-rose-900 dark:text-rose-100">0</div>
+        <div class="text-[10px] text-rose-600 dark:text-rose-400 font-bold">Total Girls</div>
+      </div>
+
+      <!-- 4. Last Synced -->
+      <div class="glass-card p-4 rounded-2xl text-center space-y-1 border-emerald-200 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 hover:scale-[1.02] transition">
+        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">📅 ಕೊನೆಯ ಸಿಂಕ್</div>
+        <div id="statLastSynced" class="text-sm sm:text-base font-black text-emerald-900 dark:text-emerald-100 pt-1.5">-</div>
+        <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Permanent Storage</div>
+      </div>
+    </div>
+
+    <!-- Collapsible Class-wise Summary Matrix Drawer -->
+    <div id="summaryMatrixDrawer" class="hidden glass-card rounded-2xl p-5 border border-indigo-200 dark:border-indigo-800 shadow-md space-y-3 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-indigo-950/20">
+      <div class="flex items-center justify-between pb-2 border-b border-indigo-100 dark:border-indigo-900/40">
+        <div class="flex items-center gap-2">
+          <span class="p-1.5 bg-indigo-600 text-white rounded-lg text-xs"><i class="fa-solid fa-table-cells"></i></span>
+          <h3 class="text-sm font-black text-slate-800 dark:text-slate-100">ಶಾಲೆಯ ತರಗತಿವಾರು ಬಾಲಕ / ಬಾಲಕಿಯರ ಸಾರಾಂಶ ಕೋಷ್ಟಕ (Class-wise Roster Matrix)</h3>
+        </div>
+        <button onclick="toggleSummaryDrawer()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold p-1">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-xs text-center border-collapse">
+          <thead>
+            <tr class="bg-indigo-900 text-white font-bold text-[11px]">
+              <th class="p-2.5 text-left rounded-tl-xl">ತರಗತಿ (Class)</th>
+              <th class="p-2.5">👦 ಬಾಲಕರು (Boys)</th>
+              <th class="p-2.5">👧 ಬಾಲಕಿಯರು (Girls)</th>
+              <th class="p-2.5 font-black">🎯 ಒಟ್ಟು STS ಮಕ್ಕಳು</th>
+              <th class="p-2.5 rounded-tr-xl">ಕ್ರಮ (Action)</th>
+            </tr>
+          </thead>
+          <tbody id="summaryMatrixBody" class="divide-y divide-indigo-100 dark:divide-slate-800 font-semibold bg-white/80 dark:bg-slate-900/80">
+            <!-- Rendered Dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SATS Link & Upload Configuration Bar -->
+    <div id="configBar" class="glass-card p-3.5 rounded-2xl shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded-lg font-bold">
+          <i class="fa-solid fa-database"></i> STS Master Data:
+        </span>
+        <span id="sheetStatusLabel" class="font-bold text-slate-700 dark:text-slate-200">ಡೇಟಾ ಲೋಡ್ ಆಗಿದೆ</span>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap">
+        <input type="text" id="sheetUrlInput" placeholder="Google Sheet URL..." class="text-xs p-1.5 px-3 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-mono w-64 md:w-80 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+        <button onclick="saveAndSyncSpreadsheetUrl()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm flex items-center gap-1.5 transition active:scale-95">
+          <i class="fa-solid fa-arrows-rotate"></i> Google Sheet ನಿಂದ ಸಿಂಕ್ ಮಾಡಿ
+        </button>
+        <button onclick="syncFromDatabase()" class="bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm flex items-center gap-1.5 transition active:scale-95">
+          <i class="fa-solid fa-cloud-arrow-down"></i> DB ನಿಂದ ಲೈವ್ ಸಿಂಕ್
+        </button>
+        <label class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl border-0 cursor-pointer shadow-sm flex items-center gap-1">
+          <i class="fa-solid fa-file-arrow-up"></i> SATS Excel ಅಪ್‌ಲೋಡ್
+          <input type="file" id="satsFileInput" accept=".xlsx,.xls,.csv" onchange="handleSatsFileUpload(event)" class="hidden">
+        </label>
+      </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div id="filterToolbar" class="glass-card p-4 rounded-2xl shadow-sm space-y-3">
+      
+      <!-- Dynamic Class Quick-Filter Pills Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <div class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-indigo-600"></i> ತರಗತಿವಾರು ಆಯ್ಕೆ (Select Class):
+        </div>
+        <div id="classQuickPills" class="flex flex-wrap items-center gap-1.5">
+          <!-- Rendered Dynamically with Class Counts -->
+        </div>
+      </div>
+
+      <!-- Filter Controls Toolbar -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 items-center">
+        
+        <!-- Search with Clear Button -->
+        <div class="relative col-span-1 sm:col-span-2">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="satsSearch" oninput="applyFilters()" placeholder="ಹೆಸರು, STS ಸಂಖ್ಯೆ, ತಂದೆಯ ಹೆಸರು ಹುಡುಕಿ..." class="w-full pl-8 pr-8 py-2 text-xs border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm">
+          <button type="button" onclick="clearSearch()" id="btnClearSearch" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 border-0 bg-transparent cursor-pointer p-1">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Gender Filter -->
+        <div>
+          <select id="genderFilter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+            <option value="">-- ಎಲ್ಲಾ ಲಿಂಗ (All Genders) --</option>
+            <option value="Boy">👦 ಬಾಲಕರು (Boy)</option>
+            <option value="Girl">👧 ಬಾಲಕಿಯರು (Girl)</option>
+          </select>
+        </div>
+
+        <!-- Caste Filter -->
+        <div>
+          <select id="casteFilter" onchange="applyFilters()" class="w-full p-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm">
+            <option value="">-- ಎಲ್ಲಾ ಜಾತಿ/ವರ್ಗ --</option>
+            <option value="SC">SC (ಪ.ಜಾತಿ)</option>
+            <option value="ST">ST (ಪ.ಪಂಗಡ)</option>
+            <option value="GENERAL">General (ಸಾಮಾನ್ಯ)</option>
+            <option value="OTHERS">ಇತರೆ (OBC / Cat-1/2A/2B/3A/3B)</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Action Row & Page Size -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+        <div class="flex items-center gap-2">
+          <!-- Page Size -->
+          <select id="pageSize" onchange="changePageSize(this.value)" class="p-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer">
+            <option value="25">25 Rows / ಪುಟ</option>
+            <option value="50" selected>50 Rows / ಪುಟ</option>
+            <option value="100">100 Rows / ಪುಟ</option>
+            <option value="1000">ಎಲ್ಲಾ (All Rows)</option>
+          </select>
+          <span id="displayCountText" class="font-black text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800">ತೋರಿಸಲಾಗುತ್ತಿದೆ: 0 ವಿದ್ಯಾರ್ಥಿಗಳು</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SATS Master Table Grid -->
+    <div class="glass-card rounded-2xl p-5 shadow-sm space-y-3">
+      <div class="table-container max-h-[650px] overflow-x-auto overflow-y-auto custom-scrollbar border border-slate-200 dark:border-slate-800 rounded-2xl relative bg-white dark:bg-slate-900 shadow-inner">
+        <table class="w-full text-xs text-left border-collapse min-w-[1100px]">
+          <thead class="sticky-header">
+            <tr class="font-bold border-b border-slate-700 text-slate-200 select-none bg-slate-900">
+              <th class="p-3 text-center w-12 bg-slate-900">#</th>
+              <th class="p-3 bg-slate-900 min-w-[130px] cursor-pointer hover:text-indigo-300" onclick="sortTable('sts')">
+                STS ಸಂಖ್ಯೆ <i id="sort-sts" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[170px] cursor-pointer hover:text-indigo-300" onclick="sortTable('name')">
+                ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (English) <i id="sort-name" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[150px] text-slate-300">
+                ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು (ಕನ್ನಡ)
+              </th>
+              <th class="p-3 min-w-[160px] cursor-pointer hover:text-indigo-300" onclick="sortTable('father')">
+                ತಂದೆಯ ಹೆಸರು (English) <i id="sort-father" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 min-w-[150px] text-slate-300">
+                ತಂದೆಯ ಹೆಸರು (ಕನ್ನಡ)
+              </th>
+              <th class="p-3 text-center min-w-[110px] cursor-pointer hover:text-indigo-300 bg-indigo-950/80 text-indigo-200 font-black border-x border-indigo-800" onclick="sortTable('class')">
+                ತರಗತಿ (Class) <i id="sort-class" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[90px] cursor-pointer hover:text-indigo-300" onclick="sortTable('gender')">
+                ಲಿಂಗ <i id="sort-gender" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[110px] cursor-pointer hover:text-indigo-300" onclick="sortTable('dob')">
+                ಜನ್ಮ ದಿನಾಂಕ <i id="sort-dob" class="fa-solid fa-sort text-[10px] ml-0.5 opacity-60"></i>
+              </th>
+              <th class="p-3 text-center min-w-[100px]">ಜಾತಿ / ವರ್ಗ</th>
+              <th class="p-3 text-center min-w-[90px]">ಮಾಧ್ಯಮ</th>
+            </tr>
+          </thead>
+          <tbody id="satsTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+            <!-- Rendered Dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+        <div id="paginationInfo">ಪುಟ 1 / 1</div>
+        <div class="flex items-center gap-1" id="paginationBtns"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- JavaScript Implementation -->
+  <script>
+    const DEFAULT_SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1awYBM024orzUascz9uTYIeXg6rN55sbSJj7hIrhMWp8/edit?gid=1852377268#gid=1852377268";
+
+    let rawSatsRows = [];
+    let currentClassFilter = '';
+    let currentPage = 1;
+    let pageSize = 50;
+    let sortCol = 'idx';
+    let sortDir = 'asc';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (typeof renderNavbar === 'function') {
+        renderNavbar();
+      }
+
+      const savedUrl = localStorage.getItem('sats_spreadsheet_url') || DEFAULT_SPREADSHEET_URL;
+      const urlInput = document.getElementById('sheetUrlInput');
+      if (urlInput) urlInput.value = savedUrl;
+
+      // Load Cached / Permanently Stored STS Data
+      const cached = localStorage.getItem('sts_master_students_list') || localStorage.getItem('sats_cached_sheet_rows_v8');
+      const lastSynced = localStorage.getItem('sts_master_last_synced');
+      const statusLabel = document.getElementById('sheetStatusLabel');
+      const statLastSyncedEl = document.getElementById('statLastSynced');
+
+      if (cached) {
+        try {
+          rawSatsRows = JSON.parse(cached);
+          if (statusLabel) {
+            statusLabel.innerHTML = `<span class="text-emerald-700 dark:text-emerald-300 font-bold">ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹಿಸಿದ ಡೇಟಾ (${rawSatsRows.length} ಮಕ್ಕಳು)</span>${lastSynced ? ` • <span class="text-slate-500 text-[11px]">${lastSynced}</span>` : ''}`;
+          }
+          if (statLastSyncedEl && lastSynced) statLastSyncedEl.innerText = lastSynced;
+          updateMetrics();
+          renderClassQuickPills();
+          renderTable();
+        } catch (e) {
+          console.error("Error parsing cached students:", e);
+        }
+      } else {
+        if (statusLabel) {
+          statusLabel.innerHTML = `<span class="text-amber-600 dark:text-amber-400 font-bold">ಮೊದಲ ಬಾರಿಗೆ ಡೇಟಾ ತರಲು 'ಸಿಂಕ್ ಮಾಡಿ' ಬಟನ್ ಒತ್ತಿ...</span>`;
+        }
+        fetchSpreadsheetData(false);
+      }
+    });
+
+    async function fetchSpreadsheetData(isSilent = false) {
+      const rawUrl = localStorage.getItem('sats_spreadsheet_url') || DEFAULT_SPREADSHEET_URL;
+      const statusLabel = document.getElementById('sheetStatusLabel');
+
+      if (!isSilent && statusLabel) {
+        statusLabel.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-emerald-500 mr-1"></i> Google Sheet ನಿಂದ ಸಂಪೂರ್ಣ STS ಡೇಟಾ ತರಲಾಗುತ್ತಿದೆ...`;
+      }
+
+      try {
+        let jsonRows = null;
+        if (rawUrl.includes("docs.google.com/spreadsheets")) {
+          const match = rawUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+          if (match && match[1]) {
+            const sheetId = match[1];
+            const gidMatch = rawUrl.match(/gid=([0-9]+)/);
+            const gid = gidMatch ? gidMatch[1] : '1852377268';
+            
+            try {
+              const htmlUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:html&gid=${gid}&_nocache=${Date.now()}`;
+              const res = await fetch(htmlUrl);
+              if (res.ok) {
+                const htmlText = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const table = doc.querySelector('table');
+                if (table && table.rows.length > 5) {
+                  jsonRows = Array.from(table.rows).map(tr => 
+                    Array.from(tr.cells).map(td => td.textContent.replace(/\u00a0/g, ' ').trim())
+                  );
+                }
+              }
+            } catch (e) {
+              console.warn("Direct HTML table extract failed:", e);
+            }
+
+            if (!jsonRows || jsonRows.length === 0) {
+              try {
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&gid=${gid}&_nocache=${Date.now()}`;
+                const res2 = await fetch(csvUrl);
+                if (res2.ok) {
+                  const text = await res2.text();
+                  const wb = XLSX.read(text, { type: 'string' });
+                  const sheet = wb.Sheets[wb.SheetNames[0]];
+                  jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                }
+              } catch (e2) {
+                console.warn("Direct CSV export failed:", e2);
+              }
+            }
+
+            if (!jsonRows || jsonRows.length === 0) {
+              try {
+                jsonRows = await fetchGoogleSheetJsonp(sheetId, gid);
+              } catch (e3) {
+                console.warn("JSONP fallback failed:", e3);
+              }
+            }
+          }
+        }
+
+        if (!jsonRows || jsonRows.length === 0) {
+          const res = await fetch(rawUrl + (rawUrl.includes('?') ? '&' : '?') + '_nocache=' + Date.now());
+          const buf = await res.arrayBuffer();
+          const wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
+          const sheet = wb.Sheets[wb.SheetNames[0]];
+          jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        }
+
+        rawSatsRows = parseSatsRawRows(jsonRows);
+        localStorage.setItem('sts_master_students_list', JSON.stringify(rawSatsRows));
+        localStorage.setItem('sats_cached_sheet_rows_v8', JSON.stringify(rawSatsRows));
+        const syncTime = new Date().toLocaleDateString('kn-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        localStorage.setItem('sts_master_last_synced', syncTime);
+
+        if (statusLabel) {
+          statusLabel.innerHTML = `<span class="text-emerald-700 dark:text-emerald-300 font-bold">Google Sheet ನಿಂದ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಆಗಿದೆ (${rawSatsRows.length} ಮಕ್ಕಳು)</span> • <span class="text-slate-500 text-[11px]">${syncTime}</span>`;
+        }
+
+        const statLastSyncedEl = document.getElementById('statLastSynced');
+        if (statLastSyncedEl) statLastSyncedEl.innerText = syncTime;
+
+        updateMetrics();
+        renderClassQuickPills();
+        renderTable();
+
+        if (!isSilent) {
+          alert(`ಯಶಸ್ವಿಯಾಗಿದೆ! ಒಟ್ಟು ${rawSatsRows.length} ವಿದ್ಯಾರ್ಥಿಗಳ ಡೇಟಾವನ್ನು Google Sheet ನಿಂದ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಮಾಡಿ ಶಾಶ್ವತವಾಗಿ ಸಂಗ್ರಹಿಸಲಾಗಿದೆ.`);
+        }
+
+      } catch (err) {
+        console.error("Spreadsheet sync error:", err);
+        if (!isSilent) {
+          alert("ಸ್ಪ್ರೆಡ್‌ಶೀಟ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ: " + err.message);
+        }
+      }
+    }
+
+    function fetchGoogleSheetJsonp(sheetId, gid) {
+      return new Promise((resolve, reject) => {
+        const callbackName = 'gviz_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=responseHandler:${callbackName}&gid=${gid || 0}&_nocache=${Date.now()}`;
+
+        const script = document.createElement('script');
+        const cleanup = () => {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timeoutId = setTimeout(() => {
+          cleanup();
+          reject(new Error("Google Sheets timeout"));
+        }, 12000);
+
+        window[callbackName] = function(response) {
+          clearTimeout(timeoutId);
+          cleanup();
+          if (response && response.status === 'ok' && response.table) {
+            const table = response.table;
+            const headers = table.cols.map(c => (c ? (c.label || c.id || '') : ''));
+            const rows = table.rows.map(r => {
+              if (!r || !r.c) return [];
+              return r.c.map(cell => {
+                if (!cell) return '';
+                return cell.f !== undefined ? cell.f : (cell.v !== undefined ? cell.v : '');
+              });
+            });
+            resolve([headers, ...rows]);
+          } else {
+            reject(new Error("Invalid response format"));
+          }
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error("Script load failed"));
+        };
+
+        script.src = url;
+        document.head.appendChild(script);
+      });
+    }
+
+    function saveAndSyncSpreadsheetUrl() {
+      const input = document.getElementById('sheetUrlInput');
+      const val = input ? input.value.trim() : '';
+      if (val) {
+        localStorage.setItem('sats_spreadsheet_url', val);
+        fetchSpreadsheetData(false);
+      }
+    }
+
+        async function syncFromDatabase(isSilent = false) {
+      const statusLabel = document.getElementById('sheetStatusLabel');
+      if (statusLabel) {
+        statusLabel.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-teal-500 mr-1"></i> ಡೇಟಾಬೇಸ್‌ನಿಂದ 520 ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು ತರಲಾಗುತ್ತಿದೆ...`;
+      }
+
+      try {
+        let schoolId = localStorage.getItem("school_id") || 'f592831e-69a8-4138-b82d-69649cb46605';
+        let query = supabaseClient.from('admissions').select('*').range(0, 5000);
+        if (schoolId) {
+          query = query.or(`school_id.eq.${schoolId},school_id.is.null`);
+        }
+        
+        const { data, error } = await query;
+        if (error) throw error;
+
+        const activeList = (data || []).filter(s => s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED');
+        
+        rawSatsRows = activeList.map((s, idx) => {
+          let rawSts = String(s.student_sts || s.app_no || s.sts_no || s.id || '').trim();
+          let cleanSts = rawSts.replace(/\D/g, '');
+          if (cleanSts.length > 3 && cleanSts.length < 15) {
+            cleanSts = cleanSts.replace(/(\d{3})(\d{3})(\d{3,4})/, '$1 $2 $3');
+          } else {
+            cleanSts = rawSts;
+          }
+
+          const rawClass = s.enroll_class || s.standard || s.class || s.enrollClass || s.admitted_class || '';
+
+          return {
+            idx: idx + 1,
+            sts: cleanSts,
+            rawSts: rawSts,
+            name: String(s.name_english || s.student_name || s.name || '').trim(),
+            name_kn: String(s.student_name_kn || s.name_kannada || '').trim(),
+            father: String(s.father_name_az || s.father_name || s.father || '').trim(),
+            father_kn: String(s.father_name_kn || '').trim(),
+            mother: String(s.mother_name_az || s.mother_name || '').trim(),
+            mother_kn: String(s.mother_name_kn || '').trim(),
+            class: normalizeClass(rawClass),
+            gender: normalizeGender(s.gender || s.sex || ''),
+            dob: normalizeDob(s.dob || ''),
+            caste: String(s.caste || s.social_class || s.student_caste || '').trim(),
+            medium: String(s.medium || 'ಕನ್ನಡ').trim()
+          };
+        });
+
+        localStorage.setItem('sts_master_students_list', JSON.stringify(rawSatsRows));
+        localStorage.setItem('sats_cached_sheet_rows_v8', JSON.stringify(rawSatsRows));
+        const syncTime = new Date().toLocaleDateString('kn-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        localStorage.setItem('sts_master_last_synced', syncTime);
+
+        if (statusLabel) {
+          statusLabel.innerHTML = `<span class="text-emerald-700 dark:text-emerald-300 font-bold">ಡೇಟಾಬೇಸ್‌ನಿಂದ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಆಗಿದೆ (${rawSatsRows.length} ಮಕ್ಕಳು)</span> • <span class="text-slate-500 text-[11px]">${syncTime}</span>`;
+        }
+
+        const statLastSyncedEl = document.getElementById('statLastSynced');
+        if (statLastSyncedEl) statLastSyncedEl.innerText = syncTime;
+
+        updateMetrics();
+        renderClassQuickPills();
+        renderTable();
+
+        if (!isSilent) {
+          alert(`✅ ಯಶಸ್ವಿಯಾಗಿದೆ! ಒಟ್ಟು ${rawSatsRows.length} ವಿದ್ಯಾರ್ಥಿಗಳ ಡೇಟಾವನ್ನು ಡೇಟಾಬೇಸ್‌ನಿಂದ ಯಶಸ್ವಿಯಾಗಿ ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ.`);
+        }
+      } catch (err) {
+        console.error("DB Sync error:", err);
+        if (!isSilent) alert("ಡೇಟಾಬೇಸ್ ಸಿಂಕ್ ವಿಫಲವಾಗಿದೆ: " + err.message);
+      }
+    }
+
+    function forceRefreshData() {
+      fetchSpreadsheetData(false);
+    }
+
+    function handleSatsFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+          rawSatsRows = parseSatsRawRows(json);
+          localStorage.setItem('sts_master_students_list', JSON.stringify(rawSatsRows));
+          localStorage.setItem('sats_cached_sheet_rows_v8', JSON.stringify(rawSatsRows));
+          const syncTime = new Date().toLocaleDateString('kn-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          localStorage.setItem('sts_master_last_synced', syncTime);
+
+          const statusLabel = document.getElementById('sheetStatusLabel');
+          if (statusLabel) {
+            statusLabel.innerHTML = `Excel ನಿಂದ ಅಪ್‌ಲೋಡ್ ಆಗಿದೆ (${rawSatsRows.length} ಮಕ್ಕಳು) • ${syncTime}`;
+          }
+
+          updateMetrics();
+          renderClassQuickPills();
+          renderTable();
+          alert(`✅ ಯಶಸ್ವಿಯಾಗಿದೆ! ಒಟ್ಟು ${rawSatsRows.length} SATS ವಿದ್ಯಾರ್ಥಿಗಳನ್ನು Excel ಫೈಲ್‌ನಿಂದ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.`);
+        } catch (err) {
+          alert("ಫೈಲ್ ಓದಲು ವಿಫಲವಾಗಿದೆ: " + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function parseSatsRawRows(jsonRows) {
+      if (!jsonRows || jsonRows.length === 0) return [];
+
+      let headerIdx = -1;
+      for (let r = 0; r < Math.min(jsonRows.length, 25); r++) {
+        const row = jsonRows[r];
+        if (row && row.some(cell => {
+          const s = String(cell || '').toLowerCase();
+          return s.includes('enrollment') || s.includes('student name') || s.includes('sts') || s.includes('sr. no') || s.includes('standard') || s.includes('father name') || s.includes('date of birth') || s.includes('social category') || s.includes('class') || s.includes('ತರಗತಿ');
+        })) {
+          headerIdx = r;
+          break;
+        }
+      }
+      if (headerIdx === -1) headerIdx = 0;
+
+      const headers = jsonRows[headerIdx].map(h => String(h || '').trim().toLowerCase());
+      
+      const findCol = (...names) => {
+        // Pass 1: Exact Clean Match
+        for (const n of names) {
+          const target = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = headers.findIndex(h => {
+            const hClean = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return hClean === target;
+          });
+          if (idx !== -1) return idx;
+        }
+        // Pass 2: StartsWith / Includes Match
+        for (const n of names) {
+          const target = n.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const idx = headers.findIndex(h => {
+            const hClean = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return (hClean.includes(target) || hClean.startsWith(target)) && !hClean.includes('social') && !hClean.includes('category');
+          });
+          if (idx !== -1) return idx;
+        }
+        return -1;
+      };
+
+      const cSts = findCol('enrollmentno', 'enrollment no', 'enrollment', 'stsnumber', 'stsno', 'satsno', 'appno', 'sts', 'studentid', 'satsid', 'childid', 'ದಾಖಲಾತಿ');
+      const cName = findCol('studentname', 'student name', 'studentsname', 'candidatename', 'nameofstudent', 'name', 'ಹೆಸರು');
+      const cNameKn = findCol('studentnamekn', 'student name kn', 'namekannada', 'ಹೆಸರುಕನ್ನಡ');
+      const cFather = findCol('fathername', 'father name', 'father', 'parentname', 'guardianname', 'ತಂದೆ');
+      const cFatherKn = findCol('fathernamekn', 'father name kn', 'ತಂದೆಯಹೆಸರು');
+      const cMother = findCol('mothername', 'mother name', 'mother', 'ತಾಯಿ');
+      const cMotherKn = findCol('mothernamekn', 'mother name kn', 'ತಾಯಿಯಹೆಸರು');
+      const cDob = findCol('dateofbirth', 'date of birth', 'dob', 'birthdate', 'ಜನ್ಮದಿನಾಂಕ');
+      const cCaste = findCol('socialcategory', 'social category', 'socialclass', 'social class', 'caste', 'category', 'ಜಾತಿ', 'ಪ್ರವರ್ಗ');
+      const cClass = findCol('standard', 'standa rd', 'std', 'class', 'studyingclass', 'ತರಗತಿ', 'grade');
+      const cGender = findCol('gender', 'sex', 'ಲಿಂಗ');
+      const cMedium = findCol('medium', 'instructionmedium', 'ಮಾಧ್ಯಮ');
+
+      const colSts = cSts !== -1 ? cSts : 1;
+      const colName = cName !== -1 ? cName : 2;
+      const colNameKn = cNameKn !== -1 ? cNameKn : 3;
+      const colFather = cFather !== -1 ? cFather : 4;
+      const colFatherKn = cFatherKn !== -1 ? cFatherKn : 5;
+      const colClass = cClass !== -1 ? cClass : 6;
+      const colGender = cGender !== -1 ? cGender : 7;
+      const colDob = cDob !== -1 ? cDob : 8;
+      const colCaste = cCaste !== -1 ? cCaste : 9;
+      const colMedium = cMedium !== -1 ? cMedium : 10;
+
+      const parsedList = [];
+      for (let i = headerIdx + 1; i < jsonRows.length; i++) {
+        const r = jsonRows[i];
+        if (!Array.isArray(r) || r.length === 0) continue;
+        const rawSts = String(r[colSts] || '').trim();
+        const rawName = String(r[colName] || '').trim();
+        if (!rawSts && !rawName) continue;
+        if (rawName.toUpperCase().includes('TOTAL') || rawName.toUpperCase().includes('STUDENT NAME') || rawSts.toUpperCase().includes('STS')) continue;
+
+        let cleanSts = rawSts.replace(/\D/g, '');
+        if (cleanSts.length > 3 && cleanSts.length < 15) {
+          cleanSts = cleanSts.replace(/(\d{3})(\d{3})(\d{3,4})/, '$1 $2 $3');
+        } else {
+          cleanSts = rawSts;
+        }
+
+        const rawClassVal = colClass !== -1 ? r[colClass] : '';
+        const student = {
+          idx: parsedList.length + 1,
+          sts: cleanSts,
+          rawSts: rawSts,
+          name: rawName,
+          name_kn: colNameKn !== -1 ? String(r[colNameKn] || '').trim() : '',
+          father: colFather !== -1 ? String(r[colFather] || '').trim() : '',
+          father_kn: colFatherKn !== -1 ? String(r[colFatherKn] || '').trim() : '',
+          mother: cMother !== -1 ? String(r[cMother] || '').trim() : '',
+          mother_kn: cMotherKn !== -1 ? String(r[cMotherKn] || '').trim() : '',
+          class: normalizeClass(rawClassVal),
+          gender: normalizeGender(colGender !== -1 ? r[colGender] : ''),
+          dob: normalizeDob(colDob !== -1 ? r[colDob] : ''),
+          caste: colCaste !== -1 ? String(r[colCaste] || '').trim() : '',
+          medium: colMedium !== -1 ? String(r[colMedium] || '').trim() : ''
+        };
+        parsedList.push(student);
+      }
+      return parsedList;
+    }
+
+    function normalizeClass(val) {
+      if (!val && val !== 0) return '';
+      let s = String(val).toUpperCase().trim();
+      if (s === 'LKG' || s.includes('LKG')) return 'LKG';
+      if (s === 'UKG' || s.includes('UKG')) return 'UKG';
+      for (let n = 10; n >= 1; n--) {
+        if (s === String(n) || s.includes('CLASS ' + n) || s.includes('CLASS-' + n) || s.includes(n + 'TH') || s.includes(n + 'ST') || s.includes(n + 'ND') || s.includes(n + 'RD')) {
+          return String(n);
+        }
+      }
+      const numMatch = s.match(/\b(10|[1-9])\b/);
+      if (numMatch) return numMatch[1];
+      return s;
+    }
+
+    function normalizeGender(val) {
+      if (!val) return '';
+      const s = String(val).trim().toUpperCase();
+      if (s.startsWith('B') || s.startsWith('M') || s.includes('ಗಂಡು') || s.includes('BOY') || s.includes('MALE')) return 'Boy';
+      if (s.startsWith('G') || s.startsWith('F') || s.includes('ಹೆಣ್ಣು') || s.includes('GIRL') || s.includes('FEMALE')) return 'Girl';
+      return val;
+    }
+
+    function normalizeDob(val) {
+      if (!val) return '';
+      if (typeof val === 'number') {
+        const d = new Date(Math.round((val - 25569) * 86400 * 1000));
+        return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+      }
+      let s = String(val).trim().replace(/[\s/._]/g, '-');
+      const parts = s.split('-');
+      if (parts.length === 3) {
+        if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      }
+      return String(val).trim();
+    }
+
+    function updateMetrics() {
+      const total = rawSatsRows.length;
+      const boys = rawSatsRows.filter(s => s.gender === 'Boy').length;
+      const girls = rawSatsRows.filter(s => s.gender === 'Girl').length;
+
+      document.getElementById('statTotalSats').innerText = total;
+      document.getElementById('statTotalBoys').innerText = boys;
+      document.getElementById('statTotalGirls').innerText = girls;
+      renderSummaryMatrix();
+    }
+
+    function renderClassQuickPills() {
+      const container = document.getElementById('classQuickPills');
+      if (!container) return;
+
+      const classes = ['ALL', 'LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      const counts = {};
+      classes.forEach(c => {
+        if (c === 'ALL') counts[c] = rawSatsRows.length;
+        else counts[c] = rawSatsRows.filter(s => normalizeClass(s.class) === c).length;
+      });
+
+      container.innerHTML = classes.map(c => {
+        const isActive = (c === 'ALL' && !currentClassFilter) || (currentClassFilter === c);
+        const label = c === 'ALL' ? 'ಎಲ್ಲಾ (All)' : (c === 'LKG' || c === 'UKG' ? c : `Class ${c}`);
+        const activeClass = isActive 
+          ? 'bg-indigo-600 text-white shadow-md' 
+          : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700';
+
+        return `
+          <button onclick="filterByClassPill('${c === 'ALL' ? '' : c}')" class="px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${activeClass}">
+            <span>${label}</span>
+            <span class="px-1.5 py-0.2 rounded-full text-[10px] ${isActive ? 'bg-white/25 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'} font-black">${counts[c] || 0}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function filterByClassPill(cls) {
+      currentClassFilter = cls;
+      currentPage = 1;
+      renderClassQuickPills();
+      renderTable();
+    }
+
+    function toggleSummaryDrawer() {
+      const drawer = document.getElementById('summaryMatrixDrawer');
+      const btnText = document.getElementById('summaryDrawerBtnText');
+      if (!drawer) return;
+      if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        if (btnText) btnText.innerText = "ಸಾರಾಂಶ ಮರೆಮಾಡಿ";
+        renderSummaryMatrix();
+      } else {
+        drawer.classList.add('hidden');
+        if (btnText) btnText.innerText = "ತರಗತಿವಾರು ಸಾರಾಂಶ";
+      }
+    }
+
+    function renderSummaryMatrix() {
+      const tbody = document.getElementById('summaryMatrixBody');
+      if (!tbody) return;
+
+      const classes = ['LKG', 'UKG', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+      let html = '';
+      let sumBoys = 0, sumGirls = 0, sumTotal = 0;
+
+      classes.forEach(cls => {
+        const clsStudents = rawSatsRows.filter(s => normalizeClass(s.class) === cls);
+        const boys = clsStudents.filter(s => s.gender === 'Boy').length;
+        const girls = clsStudents.filter(s => s.gender === 'Girl').length;
+        const total = clsStudents.length;
+
+        sumBoys += boys;
+        sumGirls += girls;
+        sumTotal += total;
+
+        const clsLabel = (cls === 'LKG' || cls === 'UKG') ? cls : `Class ${cls}`;
+        html += `
+          <tr class="hover:bg-indigo-50/60 dark:hover:bg-slate-800/60 transition">
+            <td class="p-2.5 text-left font-black text-indigo-900 dark:text-indigo-200">${clsLabel}</td>
+            <td class="p-2.5 font-bold text-sky-700 dark:text-sky-300">${boys}</td>
+            <td class="p-2.5 font-bold text-rose-700 dark:text-rose-300">${girls}</td>
+            <td class="p-2.5 font-black text-slate-900 dark:text-white">${total}</td>
+            <td class="p-2.5">
+              <button onclick="filterByClassPill('${cls}'); toggleSummaryDrawer();" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-lg font-bold cursor-pointer">
+                ವೀಕ್ಷಿಸಿ
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr class="bg-indigo-950 text-white font-black text-xs">
+          <td class="p-2.5 text-left">ಒಟ್ಟು (Grand Total)</td>
+          <td class="p-2.5 text-sky-300">${sumBoys}</td>
+          <td class="p-2.5 text-rose-300">${sumGirls}</td>
+          <td class="p-2.5 text-amber-300">${sumTotal}</td>
+          <td class="p-2.5">-</td>
+        </tr>
+      `;
+
+      tbody.innerHTML = html;
+    }
+
+    function applyFilters() {
+      currentPage = 1;
+      const searchVal = document.getElementById('satsSearch')?.value || '';
+      const clearBtn = document.getElementById('btnClearSearch');
+      if (clearBtn) {
+        if (searchVal.trim().length > 0) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      renderTable();
+    }
+
+    function clearSearch() {
+      const searchInput = document.getElementById('satsSearch');
+      if (searchInput) searchInput.value = '';
+      applyFilters();
+    }
+
+    function getFilteredRows() {
+      const search = (document.getElementById('satsSearch')?.value || '').toLowerCase().trim();
+      const cls = currentClassFilter;
+      const gen = document.getElementById('genderFilter')?.value || '';
+      const caste = document.getElementById('casteFilter')?.value || '';
+
+      return rawSatsRows.filter(s => {
+        if (cls && normalizeClass(s.class) !== normalizeClass(cls)) return false;
+        if (gen && s.gender !== gen) return false;
+        if (caste) {
+          const sCaste = (s.caste || '').toUpperCase();
+          if (caste === 'SC' && !sCaste.includes('SC') && !sCaste.includes('SCHEDULED CASTE')) return false;
+          if (caste === 'ST' && !sCaste.includes('ST') && !sCaste.includes('SCHEDULED TRIBE')) return false;
+          if (caste === 'OTHERS' && (sCaste.includes('SC') || sCaste.includes('ST') || sCaste === 'GENERAL')) return false;
+          if (caste === 'GENERAL' && sCaste !== 'GENERAL' && sCaste !== 'GM') return false;
+        }
+
+        if (search) {
+          const matchSts = (s.sts || '').toLowerCase().includes(search) || (s.rawSts || '').toLowerCase().includes(search);
+          const matchName = (s.name || '').toLowerCase().includes(search) || (s.name_kn || '').toLowerCase().includes(search);
+          const matchFather = (s.father || '').toLowerCase().includes(search) || (s.father_kn || '').toLowerCase().includes(search);
+          if (!matchSts && !matchName && !matchFather) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function sortTable(col) {
+      if (sortCol === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortCol = col;
+        sortDir = 'asc';
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('satsTableBody');
+      if (!tbody) return;
+
+      let rows = getFilteredRows();
+
+      // Sort
+      rows.sort((a, b) => {
+        let valA, valB;
+        if (sortCol === 'idx') {
+          valA = a.idx || 0; valB = b.idx || 0;
+          return sortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (sortCol === 'sts') {
+          valA = (a.sts || '').replace(/\D/g, '');
+          valB = (b.sts || '').replace(/\D/g, '');
+          return sortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (sortCol === 'name') {
+          valA = (a.name || '').toLowerCase();
+          valB = (b.name || '').toLowerCase();
+        } else if (sortCol === 'class') {
+          valA = parseInt(normalizeClass(a.class), 10) || 0;
+          valB = parseInt(normalizeClass(b.class), 10) || 0;
+          return sortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (sortCol === 'gender') {
+          valA = a.gender || ''; valB = b.gender || '';
+        } else if (sortCol === 'dob') {
+          valA = a.dob || ''; valB = b.dob || '';
+        } else if (sortCol === 'father') {
+          valA = (a.father || '').toLowerCase();
+          valB = (b.father || '').toLowerCase();
+        }
+        return sortDir === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+      });
+
+      const totalCount = rows.length;
+      document.getElementById('displayCountText').innerText = `ತೋರಿಸಲಾಗುತ್ತಿದೆ: ${totalCount} ವಿದ್ಯಾರ್ಥಿಗಳು`;
+
+      const totalPages = Math.ceil(totalCount / pageSize) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      const startIdx = (currentPage - 1) * pageSize;
+      const paginatedRows = rows.slice(startIdx, startIdx + pageSize);
+
+      if (paginatedRows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="11" class="py-12 text-center text-slate-400">
+              <i class="fa-solid fa-users-slash text-3xl mb-2 block"></i>
+              ವಿದ್ಯಾರ್ಥಿಗಳ ದಾಖಲೆಗಳು ಲಭ್ಯವಿಲ್ಲ.
+            </td>
+          </tr>
+        `;
+        renderPagination(0, 1);
+        return;
+      }
+
+      tbody.innerHTML = paginatedRows.map((s, i) => {
+        const clsNorm = normalizeClass(s.class);
+        const clsBadge = clsNorm ? `<span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-black text-[11px] border border-indigo-200 dark:border-indigo-800">Class ${clsNorm}</span>` : '-';
+        const genderBadge = s.gender === 'Boy'
+          ? '<span class="text-sky-600 dark:text-sky-400 font-bold">Boy</span>'
+          : (s.gender === 'Girl' ? '<span class="text-rose-600 dark:text-rose-400 font-bold">Girl</span>' : '-');
+
+        return `
+          <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition">
+            <td class="p-3 text-center text-slate-400 font-bold">${startIdx + i + 1}</td>
+            <td class="p-3 font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">${s.sts || s.rawSts || '-'}</td>
+            <td class="p-3 font-bold text-slate-900 dark:text-white uppercase">${s.name || '-'}</td>
+            <td class="p-3 font-medium text-slate-700 dark:text-slate-300">${s.name_kn || '-'}</td>
+            <td class="p-3 font-semibold text-slate-700 dark:text-slate-300 uppercase">${s.father || '-'}</td>
+            <td class="p-3 font-medium text-slate-600 dark:text-slate-400">${s.father_kn || '-'}</td>
+            <td class="p-3 text-center whitespace-nowrap">${clsBadge}</td>
+            <td class="p-3 text-center whitespace-nowrap">${genderBadge}</td>
+            <td class="p-3 text-center font-mono whitespace-nowrap">${s.dob || '-'}</td>
+            <td class="p-3 text-center">${s.caste || '-'}</td>
+            <td class="p-3 text-center">${s.medium || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+
+      renderPagination(totalCount, totalPages);
+    }
+
+    function renderPagination(totalCount, totalPages) {
+      const info = document.getElementById('paginationInfo');
+      const container = document.getElementById('paginationBtns');
+      if (!info || !container) return;
+
+      info.innerText = `ಪುಟ ${currentPage} / ${totalPages} (ಒಟ್ಟು: ${totalCount})`;
+
+      let html = '';
+      if (totalPages > 1) {
+        html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-bold disabled:opacity-30 cursor-pointer">ಹಿಂದಿನ</button>`;
+        for (let p = Math.max(1, currentPage - 2); p <= Math.min(totalPages, currentPage + 2); p++) {
+          const isCurr = p === currentPage;
+          html += `<button onclick="goToPage(${p})" class="px-2.5 py-1 rounded-lg text-xs font-bold ${isCurr ? 'bg-indigo-600 text-white' : 'border border-slate-300 dark:border-slate-700 hover:bg-slate-100'} cursor-pointer">${p}</button>`;
+        }
+        html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-bold disabled:opacity-30 cursor-pointer">ಮುಂದಿನ</button>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function goToPage(p) {
+      currentPage = p;
+      renderTable();
+    }
+
+    function changePageSize(sz) {
+      pageSize = parseInt(sz, 10) || 50;
+      currentPage = 1;
+      renderTable();
+    }
+
+    function printClassRoster() {
+      window.print();
+    }
+
+    function exportExcelReport() {
+      const rows = getFilteredRows();
+      if (rows.length === 0) {
+        alert("ರಫ್ತು ಮಾಡಲು ಯಾವುದೇ ಡೇಟಾ ಇಲ್ಲ.");
+        return;
+      }
+
+      const excelData = rows.map((s, idx) => ({
+        "SL NO": idx + 1,
+        "STS NUMBER": s.sts || s.rawSts,
+        "STUDENT NAME (EN)": s.name,
+        "STUDENT NAME (KN)": s.name_kn,
+        "FATHER NAME (EN)": s.father,
+        "FATHER NAME (KN)": s.father_kn,
+        "CLASS": s.class,
+        "GENDER": s.gender,
+        "DOB": s.dob,
+        "CASTE": s.caste,
+        "MEDIUM": s.medium
+      }));
+
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "STS_Master_List");
+      XLSX.writeFile(wb, `STS_Master_List_${currentClassFilter || 'All'}_${Date.now()}.xlsx`);
+    }
+  </script>
+</body>
+</html>

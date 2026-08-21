@@ -596,6 +596,15 @@
 
         <!-- Export Buttons / Bulk Action -->
         <div class="flex gap-2 items-center flex-wrap">
+          <!-- View Mode Switcher -->
+          <div class="flex items-center gap-1 p-1 bg-black/40 border border-white/5 rounded-xl">
+            <button type="button" id="btn-ss-cards" onclick="setShoeSocksViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+              <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+            </button>
+            <button type="button" id="btn-ss-table" onclick="setShoeSocksViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-400 hover:text-white border-0 bg-transparent">
+              <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+            </button>
+          </div>
           <!-- Bulk actions -->
           <select id="bulkActionSelect" onchange="handleBulkAction(this.value)" class="bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-500/30 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer shadow-md">
             <option value="" disabled selected>ಬೃಹತ್ ಕ್ರಿಯೆ / Bulk Action</option>
@@ -634,8 +643,11 @@
         </button>
       </div>
 
+      <!-- Mobile Cards View for Shoe Socks -->
+      <div id="shoesocks-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 hidden no-print"></div>
+
       <!-- Main entry table -->
-      <div class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
+      <div id="shoesocks-table-container" class="glass-card rounded-3xl border border-white/5 shadow-xl overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
           <table id="shoes-socks-distribution-table" class="w-full border-collapse text-left text-xs">
             <thead id="entryTableHeader">
@@ -949,6 +961,9 @@
 
     // Sorting globals
     let entrySortCol = 'name_english';
+    let currentShoeSocksViewMode = localStorage.getItem('shoesocks_view_mode') || 'cards';
+    let currentShoeSocksStudents = [];
+    let currentShoeSocksRecordsMap = {};
     let entrySortOrder = 'asc';
 
     // Initialize Page
@@ -1223,10 +1238,17 @@
         const { data: students, error: studErr } = await studQuery;
         if (studErr) throw studErr;
         
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
         admissionsList = (students || [])
           .filter(s => {
+            const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+            const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+            const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+            const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
             const isAdm = s.is_admitted === undefined || s.is_admitted === null ? true : s.is_admitted;
-            return isAdm === true || isAdm === 'true';
+            return isNotOut && isNotTrashed && (isAdm === true || isAdm === 'true');
           })
           .map(s => {
             s.enroll_class = normalizeClass(s.enroll_class);

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -363,6 +363,16 @@
           <h2 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
             <i class="fa-solid fa-user-pen text-indigo-550"></i> ವಿದ್ಯಾರ್ಥಿ ವಿವರ / Student Attendance Matrix
           </h2>
+          <!-- View Mode Switcher -->
+          <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl w-fit">
+            <button type="button" id="btn-att-view-cards" onclick="setAttViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+              <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+            </button>
+            <button type="button" id="btn-att-view-table" onclick="setAttViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent">
+              <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+            </button>
+          </div>
+
           <!-- Batch Actions for Daily Attendance -->
           <div id="daily-batch-actions" class="flex flex-wrap items-center gap-2 text-[10px] font-bold">
             <button type="button" onclick="setAllAttendance('present')" class="bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 border border-emerald-200/50 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"><i class="fa-solid fa-check-double"></i> All Present / ಎಲ್ಲರೂ ಹಾಜರು</button>
@@ -376,6 +386,22 @@
           <i class="fa-solid fa-circle-notch fa-spin text-2xl text-indigo-500 mb-2"></i>
           <p class="text-xs font-bold text-slate-500 dark:text-slate-450">ವಿದ್ಯಾರ್ಥಿ ವಿವರ ಲೋಡ್ ಆಗುತ್ತಿದೆ...</p>
         </div>
+
+        <!-- Search & Filter Bar for Entry -->
+        <div id="att-search-filter-bar" class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 rounded-2xl hidden no-print">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="att-search-input" oninput="applyAttFiltersAndRender()" placeholder="ವಿದ್ಯಾರ್ಥಿಯ ಹೆಸರು / STS ಹುಡುಕಿ..." class="w-full pl-8 pr-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+          </div>
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button type="button" onclick="setAttGenderFilter('')" id="att-gen-all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer">ಎಲ್ಲಾ</button>
+            <button type="button" onclick="setAttGenderFilter('Boy')" id="att-gen-boy" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👦 ಬಾಲಕರು</button>
+            <button type="button" onclick="setAttGenderFilter('Girl')" id="att-gen-girl" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer">👧 ಬಾಲಕಿಯರು</button>
+          </div>
+        </div>
+
+        <!-- Mobile Cards View for Attendance -->
+        <div id="att-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 hidden no-print"></div>
 
         <div id="entry-grid-container" class="hidden sticky-table-container border border-slate-200/80 dark:border-slate-800 rounded-2xl custom-scrollbar shadow-inner bg-slate-50/20">
           <table class="sticky-table w-full text-xs text-left whitespace-nowrap">
@@ -530,6 +556,10 @@
     window.supabaseClient = supabaseClient;
 
     let isSupabaseAttendanceAvailable = true;
+    let currentAttViewMode = localStorage.getItem('attendance_view_mode') || 'cards';
+    let attGenderFilter = '';
+    let attSearchQuery = '';
+    let currentLoadedStudents = [];
     let allStudents = [];
     let attendanceRecords = []; // Existing records cached
     let activeTab = 'dashboard';
@@ -680,8 +710,17 @@
           } catch (e) {}
         }
 
+        const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+        const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
         allStudents = (data || [])
-          .filter(s => s.is_admitted !== false && s.is_admitted !== 'false')
+          .filter(s => {
+            const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+            const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+            const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+            const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+            return isNotOut && isNotTrashed;
+          })
           .map(student => {
             const g = (student.gender || '').toString().toLowerCase().trim();
             const isBoy = g.includes('boy') || (g.includes('male') && !g.includes('female')) || g.includes('ಗಂಡು') || g === 'm' || g === 'b';
@@ -847,10 +886,14 @@
       const gridBody = document.getElementById('entry-grid-body');
       const loader = document.getElementById('entry-loading');
       const container = document.getElementById('entry-grid-container');
+      const cardsContainer = document.getElementById('att-cards-container');
+      const sfBar = document.getElementById('att-search-filter-bar');
       const actions = document.getElementById('entry-actions-container');
 
       loader.classList.remove('hidden');
       container.classList.add('hidden');
+      if (cardsContainer) cardsContainer.classList.add('hidden');
+      if (sfBar) sfBar.classList.add('hidden');
       actions.classList.add('hidden');
 
       // Filter students in active class & sort alphabetically (A to Z)
@@ -862,6 +905,8 @@
           return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
         });
       
+      currentLoadedStudents = classStudents;
+
       if (classStudents.length === 0) {
         loader.classList.add('hidden');
         gridBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500 font-bold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳು ಈ ತರಗತಿಯಲ್ಲಿ ಇಲ್ಲ / No students in this class</td></tr>`;
@@ -903,9 +948,114 @@
         );
       }
 
+      currentLoadedStudents.forEach(student => {
+        const rec = existingRecords.find(r => r.student_id === student.id);
+        student._attendanceRec = rec;
+      });
+
+      loader.classList.add('hidden');
+      if (sfBar) sfBar.classList.remove('hidden');
+      actions.classList.remove('hidden');
+
+      // Adjust batch actions visibility
+      const batchContainer = document.getElementById('daily-batch-actions');
+      if (type === 'daily') batchContainer.classList.remove('hidden');
+      else batchContainer.classList.add('hidden');
+
+      setAttViewMode(currentAttViewMode, false);
+      renderAttActiveView();
+      validateAllWorkingDays();
+    }
+
+    function setAttViewMode(mode, triggerRender = true) {
+      currentAttViewMode = mode || 'cards';
+      localStorage.setItem('attendance_view_mode', currentAttViewMode);
+
+      const btnCards = document.getElementById('btn-att-view-cards');
+      const btnTable = document.getElementById('btn-att-view-table');
+
+      if (currentAttViewMode === 'cards') {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent';
+      } else {
+        if (btnCards) btnCards.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent';
+        if (btnTable) btnTable.className = 'px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0';
+      }
+
+      if (triggerRender) {
+        renderAttActiveView();
+      }
+    }
+
+    function setAttGenderFilter(val) {
+      attGenderFilter = val || '';
+      const btnAll = document.getElementById('att-gen-all');
+      const btnBoy = document.getElementById('att-gen-boy');
+      const btnGirl = document.getElementById('att-gen-girl');
+
+      const activeClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-xs border-0 cursor-pointer';
+      const inactiveClass = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 cursor-pointer';
+
+      if (btnAll) btnAll.className = attGenderFilter === '' ? activeClass : inactiveClass;
+      if (btnBoy) btnBoy.className = attGenderFilter === 'Boy' ? activeClass : inactiveClass;
+      if (btnGirl) btnGirl.className = attGenderFilter === 'Girl' ? activeClass : inactiveClass;
+
+      renderAttActiveView();
+    }
+
+    function applyAttFiltersAndRender() {
+      const searchInput = document.getElementById('att-search-input');
+      attSearchQuery = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      renderAttActiveView();
+    }
+
+    function getFilteredAttStudents() {
+      return (currentLoadedStudents || []).filter(s => {
+        if (attGenderFilter && s.gender !== attGenderFilter) return false;
+        if (attSearchQuery) {
+          const nameEn = (s.name_english || '').toLowerCase();
+          const nameKn = (s.student_name || '').toLowerCase();
+          const sts = (s.app_no || s.id || '').toLowerCase();
+          const father = (s.father_name_az || s.father_name_kn || '').toLowerCase();
+          return nameEn.includes(attSearchQuery) || nameKn.includes(attSearchQuery) || sts.includes(attSearchQuery) || father.includes(attSearchQuery);
+        }
+        return true;
+      });
+    }
+
+    function renderAttActiveView() {
+      const tableEl = document.getElementById('entry-grid-container');
+      const cardsEl = document.getElementById('att-cards-container');
+
+      if (currentAttViewMode === 'cards') {
+        if (tableEl) tableEl.classList.add('hidden');
+        if (cardsEl) {
+          cardsEl.classList.remove('hidden');
+          renderAttCards();
+        }
+      } else {
+        if (cardsEl) cardsEl.classList.add('hidden');
+        if (tableEl) {
+          tableEl.classList.remove('hidden');
+          renderAttGrid();
+        }
+      }
+    }
+
+    function renderAttGrid() {
+      const gridBody = document.getElementById('entry-grid-body');
+      if (!gridBody) return;
       gridBody.innerHTML = '';
-      classStudents.forEach((student, index) => {
-        const record = existingRecords.find(r => r.student_id === student.id);
+      const type = document.getElementById('entry-type-select').value;
+      const filtered = getFilteredAttStudents();
+
+      if (filtered.length === 0) {
+        gridBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-semibold">ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಂಡುಬಂದಿಲ್ಲ.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((student, index) => {
+        const record = student._attendanceRec;
         const nameDisplay = `${student.name_english || ''} <span class="block text-[10px] text-slate-450 dark:text-slate-500 font-medium mt-0.5">${student.student_name || ''}</span>`;
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition text-center border-b border-slate-100 dark:border-slate-850';
@@ -913,8 +1063,12 @@
         let controlHtml = '';
         let badgeHtml = '';
 
+        // Read current input value if already entered, or fallback to record/default
+        const existingInput = document.getElementById(`input-present-${student.id}`);
+        const currentVal = existingInput ? parseInt(existingInput.value) : (record ? record.present_days : (type === 'daily' ? 1 : (parseInt(document.getElementById('total-working-days').value) || 22)));
+
         if (type === 'daily') {
-          const isPresent = record ? (record.present_days === 1) : true; // Default to present
+          const isPresent = currentVal === 1;
           controlHtml = `
             <div class="flex items-center justify-center gap-2">
               <button type="button" onclick="setRowStatus('${student.id}', 1)" id="btn-present-${student.id}" class="px-3 py-1.5 rounded-xl font-bold transition text-[10px] ${isPresent ? 'bg-emerald-500 text-white shadow-sm border border-emerald-500' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}">ಹಾಜರು / Present</button>
@@ -924,16 +1078,14 @@
           `;
           badgeHtml = `<span id="badge-${student.id}" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase ${isPresent ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'}">${isPresent ? 'Present' : 'Absent'}</span>`;
         } else {
-          // Monthly or Yearly
           const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
-          const val = record ? record.present_days : maxDays; // Default to full attendance
           controlHtml = `
             <div class="flex items-center justify-center gap-2">
-              <input type="number" id="input-present-${student.id}" value="${val}" min="0" max="${maxDays}" oninput="validateRowAttendance('${student.id}')" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-center font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-slate-800 dark:text-white">
+              <input type="number" id="input-present-${student.id}" value="${currentVal}" min="0" max="${maxDays}" oninput="validateRowAttendance('${student.id}')" class="w-24 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-center font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500 transition text-slate-800 dark:text-white">
               <span class="text-slate-400 text-xs">/ <span class="total-days-label font-bold">${maxDays}</span></span>
             </div>
           `;
-          badgeHtml = `<span id="badge-${student.id}" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">Saved: ${val} Days</span>`;
+          badgeHtml = `<span id="badge-${student.id}" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">Saved: ${currentVal} Days</span>`;
         }
 
         tr.innerHTML = `
@@ -946,115 +1098,152 @@
         `;
         gridBody.appendChild(tr);
       });
+    }
 
-      loader.classList.add('hidden');
-      container.classList.remove('hidden');
-      actions.classList.remove('hidden');
+    function renderAttCards() {
+      const container = document.getElementById('att-cards-container');
+      if (!container) return;
+      container.innerHTML = '';
 
-      // Adjust batch actions visibility
-      const batchContainer = document.getElementById('daily-batch-actions');
-      if (type === 'daily') batchContainer.classList.remove('hidden');
-      else batchContainer.classList.add('hidden');
+      const type = document.getElementById('entry-type-select').value;
+      const filtered = getFilteredAttStudents();
 
-      validateAllWorkingDays();
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400 font-semibold bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800"><i class="fa-solid fa-user-slash text-3xl mb-2 text-slate-300"></i><p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿ ಕಂಡುಬಂದಿಲ್ಲ.</p></div>`;
+        return;
+      }
+
+      filtered.forEach((student, index) => {
+        const record = student._attendanceRec;
+        const sId = student.id;
+        const isBoy = student.gender === 'Boy';
+        const nameEn = (student.name_english || '').trim().toUpperCase();
+        const nameKn = (student.student_name || '').trim();
+        const fatherEn = (student.father_name_az || '').trim().toUpperCase();
+        const fatherKn = (student.father_name_kn || '').trim();
+
+        const existingInput = document.getElementById(`input-present-${student.id}`);
+        const currentVal = existingInput ? parseInt(existingInput.value) : (record ? record.present_days : (type === 'daily' ? 1 : (parseInt(document.getElementById('total-working-days').value) || 22)));
+
+        let entryControlsHtml = '';
+        if (type === 'daily') {
+          const isPresent = currentVal === 1;
+          entryControlsHtml = `
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button type="button" onclick="setRowStatus('${sId}', 1)" id="card-btn-present-${sId}" class="py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 ${isPresent ? 'bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}">
+                <i class="fa-solid fa-check text-sm"></i> <span>ಹಾಜರು (Present)</span>
+              </button>
+              <button type="button" onclick="setRowStatus('${sId}', 0)" id="card-btn-absent-${sId}" class="py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 ${!isPresent ? 'bg-rose-600 text-white shadow-md border-0 ring-2 ring-rose-500/30' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}">
+                <i class="fa-solid fa-xmark text-sm"></i> <span>ಗೈರು (Absent)</span>
+              </button>
+            </div>
+          `;
+        } else {
+          const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
+          entryControlsHtml = `
+            <div class="space-y-1.5 pt-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-500">ಹಾಜರಾದ ದಿನಗಳು:</span>
+                <span class="font-bold text-slate-700 dark:text-slate-300">ಗರಿಷ್ಠ: ${maxDays} ದಿನಗಳು</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="stepAttDays('${sId}', -1)" class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-black text-base flex items-center justify-center border-0 cursor-pointer active:scale-95">-</button>
+                <input type="number" id="card-input-present-${sId}" value="${currentVal}" min="0" max="${maxDays}" oninput="onCardAttDaysChange('${sId}', this.value)" class="flex-1 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl py-1.5 text-center font-black text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <button type="button" onclick="stepAttDays('${sId}', 1)" class="w-9 h-9 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100 font-black text-base flex items-center justify-center border-0 cursor-pointer active:scale-95">+</button>
+              </div>
+            </div>
+          `;
+        }
+
+        const cardHtml = `
+          <div class="bg-white dark:bg-slate-850 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${isBoy ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300'} shadow-xs">
+                  ${index + 1}
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 dark:text-white leading-tight">${nameEn || nameKn}</h4>
+                  ${nameKn && nameEn ? `<p class="text-[10px] text-slate-500 font-semibold">${nameKn}</p>` : ''}
+                </div>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isBoy ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' : 'bg-pink-50 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400'}">
+                  ${isBoy ? '👦 ಬಾಲಕ' : '👧 ಬಾಲಕಿ'}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400 font-semibold">STS: ${student.app_no || student.id}</span>
+              </div>
+            </div>
+
+            <!-- Father -->
+            <div class="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1.5 px-1">
+              <i class="fa-solid fa-user-tie text-slate-400 text-xs"></i>
+              <span>ತಂದೆ: <strong class="text-slate-800 dark:text-slate-200">${fatherEn || fatherKn || '-'}</strong></span>
+            </div>
+
+            <!-- Controls -->
+            <div>
+              ${entryControlsHtml}
+            </div>
+          </div>
+        `;
+        container.innerHTML += cardHtml;
+      });
+    }
+
+    function stepAttDays(studentId, delta) {
+      const maxDays = parseInt(document.getElementById('total-working-days').value) || 22;
+      const input = document.getElementById(`input-present-${studentId}`);
+      const cardInput = document.getElementById(`card-input-present-${studentId}`);
+      let currentVal = input ? parseInt(input.value) : (cardInput ? parseInt(cardInput.value) : 0);
+      let newVal = Math.max(0, Math.min(maxDays, currentVal + delta));
+      if (input) input.value = newVal;
+      if (cardInput) cardInput.value = newVal;
+      validateRowAttendance(studentId);
+    }
+
+    function onCardAttDaysChange(studentId, val) {
+      const input = document.getElementById(`input-present-${studentId}`);
+      if (input) input.value = val;
+      validateRowAttendance(studentId);
     }
 
     function setRowStatus(studentId, val) {
       const input = document.getElementById(`input-present-${studentId}`);
-      if (!input) return;
-      input.value = val;
+      if (input) input.value = val;
 
+      // Table elements
       const pBtn = document.getElementById(`btn-present-${studentId}`);
       const aBtn = document.getElementById(`btn-absent-${studentId}`);
       const badge = document.getElementById(`badge-${studentId}`);
 
-      if (val === 1) {
-        pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-emerald-500 text-white shadow-sm border border-emerald-500";
-        aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
-        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-        badge.innerText = "Present";
-      } else {
-        pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
-        aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-rose-500 text-white shadow-sm border border-rose-500";
-        badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20";
-        badge.innerText = "Absent";
-      }
-    }
-
-    function setAllAttendance(status) {
-      allStudents.forEach(student => {
-        const input = document.getElementById(`input-present-${student.id}`);
-        if (input) {
-          setRowStatus(student.id, status === 'present' ? 1 : 0);
+      if (pBtn && aBtn && badge) {
+        if (val === 1) {
+          pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-emerald-500 text-white shadow-sm border border-emerald-500";
+          aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+          badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+          badge.innerText = "Present";
+        } else {
+          pBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+          aBtn.className = "px-3 py-1.5 rounded-xl font-bold transition text-[10px] bg-rose-500 text-white shadow-sm border border-rose-500";
+          badge.className = "px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-rose-500/10 text-rose-500 border border-rose-500/20";
+          badge.innerText = "Absent";
         }
-      });
-    }
-
-    function invertAllAttendance() {
-      const entryClass = document.getElementById('entry-class-select').value;
-      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
-      classStudents.forEach(student => {
-        const input = document.getElementById(`input-present-${student.id}`);
-        if (input) {
-          const currentVal = parseInt(input.value) || 0;
-          setRowStatus(student.id, currentVal === 1 ? 0 : 1);
-        }
-      });
-    }
-
-    function openWhatsAppModal() {
-      const entryClass = document.getElementById('entry-class-select').value;
-      const dateVal = document.getElementById('entry-date-picker').value || new Date().toISOString().split('T')[0];
-      const classStudents = allStudents.filter(s => normalizeClass(s.enroll_class) === entryClass);
-      
-      const absentList = [];
-      classStudents.forEach(student => {
-        const input = document.getElementById(`input-present-${student.id}`);
-        if (input && parseInt(input.value) === 0) {
-          absentList.push(student);
-        }
-      });
-
-      const modal = document.getElementById('whatsapp-modal');
-      const container = document.getElementById('whatsapp-absent-list');
-      if (!container || !modal) return;
-
-      container.innerHTML = '';
-      if (absentList.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-slate-500 dark:text-slate-400 font-bold"><i class="fa-solid fa-circle-check text-emerald-500 text-xl block mb-2 mx-auto"></i>ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳು ಹಾಜರಾಗಿದ್ದಾರೆ! ಗೈರುಹಾಜರಿ ಇಲ್ಲ. / All students present!</div>`;
-      } else {
-        const schoolNameEn = localStorage.getItem('school_name_en') || "GHPS MARCHED";
-        absentList.forEach((s, idx) => {
-          const phone = (s.parentPhone || '').toString().replace(/[^0-9]/g, '');
-          const msgKn = `ಪ್ರೀತಿಯ ಪೋಷಕರೇ, ನಿಮ್ಮ ಮಗು ${s.student_name || s.name_english} (ತರಗತಿ: ${entryClass}) ಇಂದು (${dateVal}) ಶಾಲೆಗೆ ಗೈರುಹಾಜರಾಗಿದ್ದಾರೆ. ದಯವಿಟ್ಟು ಕಾರಣ ತಿಳಿಸಿ. - ${schoolNameEn}`;
-          const encodedMsg = encodeURIComponent(msgKn);
-          const waUrl = phone ? `https://wa.me/91${phone}?text=${encodedMsg}` : '#';
-
-          const card = document.createElement('div');
-          card.className = "flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/60 dark:border-slate-700/60";
-          card.innerHTML = `
-            <div>
-              <h4 class="font-extrabold text-slate-800 dark:text-white text-xs">${idx + 1}. ${s.name_english || s.student_name}</h4>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-semibold">STS: ${s.app_no || '-'} | ತಂದೆ: ${s.fatherName || '-'} | Phone: ${s.parentPhone || 'ಲಭ್ಯವಿಲ್ಲ'}</p>
-            </div>
-            ${phone ? `
-              <a href="${waUrl}" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 no-underline transition shadow-xs">
-                <i class="fa-brands fa-whatsapp text-sm"></i> ಕಳುಹಿಸಿ
-              </a>
-            ` : `
-              <span class="text-[10px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-800">Phone Na</span>
-            `}
-          `;
-          container.appendChild(card);
-        });
       }
 
-      modal.classList.remove('hidden');
-    }
-
-    function closeWhatsAppModal() {
-      const modal = document.getElementById('whatsapp-modal');
-      if (modal) modal.classList.add('hidden');
+      // Card elements
+      const cardPBtn = document.getElementById(`card-btn-present-${studentId}`);
+      const cardABtn = document.getElementById(`card-btn-absent-${studentId}`);
+      if (cardPBtn && cardABtn) {
+        if (val === 1) {
+          cardPBtn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow-md border-0 ring-2 ring-emerald-500/30";
+          cardABtn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+        } else {
+          cardPBtn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700";
+          cardABtn.className = "py-2.5 px-3 rounded-xl font-black text-xs transition cursor-pointer flex items-center justify-center gap-1.5 bg-rose-600 text-white shadow-md border-0 ring-2 ring-rose-500/30";
+        }
+      }
     }
 
     function validateRowAttendance(studentId) {

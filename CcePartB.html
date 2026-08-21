@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="kn">
 <head>
   <meta charset="UTF-8">
@@ -53,161 +53,251 @@
     .grade-select[data-val="C+"] { background-color: #fef3c7; color: #92400e; border: 1.5px solid #f59e0b; }
     .grade-select[data-val="C"]  { background-color: #ffe4e6; color: #9f1239; border: 1.5px solid #fb7185; }
     .grade-select[data-val="NE"] { background-color: #f1f5f9; color: #64748b; border: 1.5px solid #cbd5e1; }
+
+    @media print {
+      body, body[data-theme="light"], body[data-theme="dark"], body[data-theme="gray"], body[data-theme="blue"], body[data-theme="green"] {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      body > *:not(#printArea) { display: none !important; }
+      #printArea { 
+        display: block !important; 
+        visibility: visible !important;
+        background: #ffffff !important; 
+        color: #000000 !important; 
+        width: 100% !important;
+      }
+      #printArea table { 
+        width: 100% !important; 
+        border-collapse: collapse !important; 
+        font-size: 8.5px !important; 
+        margin-top: 10px !important; 
+        border: 1.5px solid #000000 !important; 
+        background-color: #ffffff !important; 
+        table-layout: auto !important; 
+      }
+      #printArea th, #printArea td { 
+        border: 1px solid #000000 !important; 
+        padding: 4px 2px !important; 
+        text-align: center !important; 
+        white-space: normal !important; 
+        word-break: break-word !important; 
+      }
+      #printArea th { 
+        font-weight: bold !important; 
+        background-color: #f1f5f9 !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      #printArea td { 
+        background-color: #ffffff !important; 
+        color: #000000 !important; 
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important; 
+      }
+      #printArea .print-signatures-row { 
+        margin-top: 35px !important; 
+        display: flex !important; 
+        justify-content: space-between !important; 
+        align-items: center !important; 
+        font-size: 11px !important; 
+        font-weight: bold !important; 
+        color: #000000 !important; 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important; 
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-800 dark:text-slate-100 dark:bg-slate-950">
 
-  <!-- NAVBAR PLACEHOLDER -->
-  <div id="navbar-placeholder"></div>
+  <!-- Printable Area (Hidden in browser) -->
+  <div id="printArea" class="hidden"></div>
 
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="flex-grow p-3 sm:p-5 max-w-[1600px] w-full mx-auto space-y-4">
-    
-    <!-- BANNER HEADER -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-900 via-slate-900 to-indigo-950 p-6 text-white shadow-xl border border-amber-500/20">
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30 mb-2">
-            <i class="fa-solid fa-award"></i>
-            <span>CCE Non-Scholastic Assessment Studio</span>
-          </div>
-          <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2.5">
-            <i class="fa-solid fa-star text-amber-400"></i>
-            ಭಾಗ-ಬಿ ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್ ದಾಖಲಿಸುವ ವಹಿ (PART B - Entry)
-          </h1>
-          <p class="text-xs text-slate-300 max-w-2xl leading-relaxed mt-1">
-            ಬೋಧಕರು ಪ್ರಥಮ (SA1) ಹಾಗೂ ದ್ವಿತೀಯ (SA2) ಸೆಮಿಸ್ಟರ್‌ನ 7 ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಇಲ್ಲಿ ನಮೂದಿಸಿ ಡೇಟಾಬೇಸ್‌ಗೆ ಸೇವ್ ಮಾಡಬಹುದು.
-          </p>
-        </div>
-        
-        <div class="flex items-center gap-2 flex-wrap">
-          <a href="CceConsolidatedReport.html" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-indigo-400/30 flex items-center gap-2 shadow-sm no-underline">
-            <i class="fa-solid fa-table"></i> Marks Register Log
-          </a>
-          <a href="certificates.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-emerald-400/30 flex items-center gap-2 shadow-sm no-underline">
-            <i class="fa-solid fa-certificate"></i> Marks Card (Progress Report)
-          </a>
-        </div>
-      </div>
-    </div>
+  <div class="no-print">
+    <!-- NAVBAR PLACEHOLDER -->
+    <div id="navbar-placeholder"></div>
 
-    <!-- CONTROLS & FILTER CARD -->
-    <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        
-        <!-- Dropdowns Group -->
-        <div class="flex flex-wrap items-center gap-3">
-          
-          <!-- Class Selector -->
-          <div class="w-36">
-            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-chalkboard-user text-indigo-500 mr-1"></i>ತರಗತಿ / Class
-            </label>
-            <select id="dd-class" onchange="loadPartBData()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
-              <option value="1">Class 1</option>
-              <option value="2">Class 2</option>
-              <option value="3">Class 3</option>
-              <option value="4">Class 4</option>
-              <option value="5">Class 5</option>
-              <option value="6">Class 6</option>
-              <option value="7" selected>Class 7</option>
-              <option value="8">Class 8</option>
-              <option value="9">Class 9</option>
-              <option value="10">Class 10</option>
-            </select>
-          </div>
-
-          <!-- Semester Selector -->
-          <div class="w-52">
-            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-calendar-check text-amber-500 mr-1"></i>ಸೆಮಿಸ್ಟರ್ / Semester
-            </label>
-            <select id="dd-semester" onchange="loadPartBData()" class="w-full bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-xl px-3 py-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
-              <option value="SEM1" selected>ಪ್ರಥಮ ಸೆಮಿಸ್ಟರ್ / 1st Sem (SA1)</option>
-              <option value="SEM2">ದ್ವಿತೀಯ ಸೆಮಿಸ್ಟರ್ / 2nd Sem (SA2)</option>
-            </select>
-          </div>
-
-          <!-- Search Input -->
-          <div class="w-full sm:w-64">
-            <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-magnifying-glass text-sky-500 mr-1"></i>ಹುಡುಕಿ / Search Student
-            </label>
-            <input type="text" id="input-search" oninput="renderTable()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಅಥವಾ SATS ಸಂಖ್ಯೆ..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40">
-          </div>
-
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <!-- Batch Preset Buttons -->
-          <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-            <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 px-1.5 uppercase">Set All:</span>
-            <button onclick="setAllPartBGrades('A+')" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A+</button>
-            <button onclick="setAllPartBGrades('A')"  class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A</button>
-            <button onclick="setAllPartBGrades('B+')" class="px-2 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B+</button>
-            <button onclick="setAllPartBGrades('B')"  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B</button>
-          </div>
-
-          <!-- Save Button -->
-          <button id="btn-save-partb" onclick="savePartBGradesBatch()" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-black px-5 py-2.5 rounded-xl transition shadow-md border-0 cursor-pointer flex items-center gap-2">
-            <i class="fa-solid fa-floppy-disk text-sm"></i>
-            <span>ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಉಳಿಸಿ / Save Part B</span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- TABLE SECTION -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden relative">
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow p-3 sm:p-5 max-w-[1600px] w-full mx-auto space-y-4">
       
-      <!-- Loading Overlay -->
-      <div id="loading-state" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50 transition-all duration-300">
-        <div class="text-center p-6">
-          <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-3xl mb-3 block mx-auto"></i>
-          <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">ವಿವರಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Please wait while student records load.</p>
+      <!-- BANNER HEADER -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-900 via-slate-900 to-indigo-950 p-6 text-white shadow-xl border border-amber-500/20">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-500/30 mb-2">
+              <i class="fa-solid fa-award"></i>
+              <span>CCE Non-Scholastic Assessment Studio</span>
+            </div>
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2.5">
+              <i class="fa-solid fa-star text-amber-400"></i>
+              ಭಾಗ-ಬಿ ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್ ದಾಖಲಿಸುವ ವಹಿ (PART B - Entry)
+            </h1>
+            <p class="text-xs text-slate-300 max-w-2xl leading-relaxed mt-1">
+              ಬೋಧಕರು ಪ್ರಥಮ (SA1) ಹಾಗೂ ದ್ವಿತೀಯ (SA2) ಸೆಮಿಸ್ಟರ್‌ನ 7 ಪಠ್ಯೇತರ ವಿಷಯಗಳ ಗ್ರೇಡ್‌ಗಳನ್ನು ಸುಲಭವಾಗಿ ಇಲ್ಲಿ ನಮೂದಿಸಿ ಡೇಟಾಬೇಸ್‌ಗೆ ಸೇವ್ ಮಾಡಬಹುದು.
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="CceConsolidatedReport.html" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-indigo-400/30 flex items-center gap-2 shadow-sm no-underline">
+              <i class="fa-solid fa-table"></i> Marks Register Log
+            </a>
+            <a href="certificates.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition border border-emerald-400/30 flex items-center gap-2 shadow-sm no-underline">
+              <i class="fa-solid fa-certificate"></i> Marks Card (Progress Report)
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="sticky-table-container custom-scrollbar">
-        <table class="sticky-table text-xs">
-          <thead>
-            <tr>
-              <th class="w-10 text-center py-3">ಕ್ರ.ಸಂ.</th>
-              <th class="min-w-[200px] text-left px-3 py-3">ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ / Student Details</th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಭಾವನಾತ್ಮಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">EMOTIONAL SOCIAL</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸಾಂಸ್ಥಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">ORGANIZATIONAL</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ವೈಜ್ಞಾನಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">SCIENTIFIC SKILLS</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಲಲಿತ ಕಲೆ<br><span class="text-[9px] font-normal">FINE ART</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸೃಜನಶೀಲತೆ<br><span class="text-[9px] font-normal">CREATIVITY</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮನೋಧರ್ಮ<br><span class="text-[9px] font-normal">TEMPERAMENT</span></th>
-              <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮೌಲ್ಯಗಳು<br><span class="text-[9px] font-normal">VALUES</span></th>
-            </tr>
-          </thead>
-          <tbody id="table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
-            <!-- Dynamically Rendered -->
-          </tbody>
-        </table>
+      <!-- CONTROLS & FILTER CARD -->
+      <div class="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          
+          <!-- Dropdowns Group -->
+          <div class="flex flex-wrap items-center gap-3">
+            
+            <!-- Class Selector -->
+            <div class="w-36">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-chalkboard-user text-indigo-500 mr-1"></i>ತರಗತಿ / Class
+              </label>
+              <select id="dd-class" onchange="loadPartBData()" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
+                <option value="LKG">LKG</option>
+                <option value="UKG">UKG</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+                <option value="6">Class 6</option>
+                <option value="7" selected>Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+              </select>
+            </div>
+
+            <!-- Semester Selector -->
+            <div class="w-52">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-calendar-check text-amber-500 mr-1"></i>ಸೆಮಿಸ್ಟರ್ / Semester
+              </label>
+              <select id="dd-semester" onchange="loadPartBData()" class="w-full bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 rounded-xl px-3 py-2 text-xs font-black focus:outline-none focus:ring-2 focus:ring-amber-500/40 cursor-pointer">
+                <option value="SEM1" selected>ಪ್ರಥಮ ಸೆಮಿಸ್ಟರ್ / 1st Sem (SA1)</option>
+                <option value="SEM2">ದ್ವಿತೀಯ ಸೆಮಿಸ್ಟರ್ / 2nd Sem (SA2)</option>
+              </select>
+            </div>
+
+            <!-- Search Input -->
+            <div class="w-full sm:w-64">
+              <label class="block text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-magnifying-glass text-sky-500 mr-1"></i>ಹುಡುಕಿ / Search Student
+              </label>
+              <input type="text" id="input-search" oninput="renderActiveView()" placeholder="ವಿದ್ಯಾರ್ಥಿ ಹೆಸರು ಅಥವಾ SATS ಸಂಖ್ಯೆ..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/40">
+            </div>
+
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Auto-save Indicator -->
+            <div id="auto-save-indicator" class="hidden text-xs font-bold px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40 shadow-xs">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-xs"></i> <span>ಸ್ವಯಂ ಉಳಿಸಲಾಗಿದೆ</span>
+            </div>
+
+            <!-- View Switcher -->
+            <div class="flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-xl">
+              <button type="button" id="btn-partb-cards" onclick="setPartBViewMode('cards')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0">
+                <i class="fa-solid fa-grip-vertical"></i> <span>ಕಾರ್ಡ್ ವ್ಯೂ</span>
+              </button>
+              <button type="button" id="btn-partb-table" onclick="setPartBViewMode('table')" class="px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent">
+                <i class="fa-solid fa-table-cells"></i> <span>ಕೋಷ್ಟಕ</span>
+              </button>
+            </div>
+
+            <!-- Batch Preset Buttons -->
+            <div class="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <span class="text-[9px] font-bold text-slate-500 dark:text-slate-400 px-1.5 uppercase">Set All:</span>
+              <button onclick="setAllPartBGrades('A+')" class="px-2 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A+</button>
+              <button onclick="setAllPartBGrades('A')"  class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">A</button>
+              <button onclick="setAllPartBGrades('B+')" class="px-2 py-1 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B+</button>
+              <button onclick="setAllPartBGrades('B')"  class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold border-0 cursor-pointer transition">B</button>
+            </div>
+
+            <!-- Print Button -->
+            <button onclick="triggerPrint()" title="ಮುದ್ರಿಸು / Print" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition border-0 cursor-pointer">
+              <i class="fa-solid fa-print text-sm"></i>
+            </button>
+
+            <!-- Save Button -->
+            <button id="btn-save-partb" onclick="savePartBGradesBatch()" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white text-xs font-black px-4 py-2 rounded-xl transition shadow-md border-0 cursor-pointer flex items-center gap-2">
+              <i class="fa-solid fa-floppy-disk text-sm"></i>
+              <span>ಉಳಿಸಿ / Save</span>
+            </button>
+          </div>
+
+        </div>
       </div>
-    </div>
 
-  </main>
+      <!-- CARDS SECTION -->
+      <div id="partb-cards-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <!-- Dynamically Rendered -->
+      </div>
 
-  <!-- FOOTER -->
-  <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-3 text-center text-xs text-slate-400 mt-auto">
-    <p class="font-medium">Designed & Developed for <span class="text-slate-700 dark:text-slate-300 font-semibold">GHPS Marched</span></p>
-  </footer>
+      <!-- TABLE SECTION -->
+      <div id="partb-table-container" class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden relative">
+        
+        <!-- Loading Overlay -->
+        <div id="loading-state" class="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-center z-50 transition-all duration-300">
+          <div class="text-center p-6">
+            <i class="fa-solid fa-circle-notch fa-spin text-amber-500 text-3xl mb-3 block mx-auto"></i>
+            <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-100">ವಿವರಗಳು ಲೋಡ್ ಆಗುತ್ತಿವೆ...</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">Please wait while student records load.</p>
+          </div>
+        </div>
 
-  <!-- Toast system -->
-  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900/95 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
-    <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white" id="toast-icon">
-      <i class="fa-solid fa-check text-sm"></i>
-    </div>
-    <div>
-      <h4 class="text-xs font-bold" id="toast-title">Success</h4>
-      <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Record saved successfully.</p>
+        <div class="sticky-table-container custom-scrollbar">
+          <table id="partb-competency-table" class="sticky-table text-xs">
+            <thead>
+              <tr>
+                <th class="w-10 text-center py-3">ಕ್ರ.ಸಂ.</th>
+                <th class="min-w-[200px] text-left px-3 py-3">ವಿದ್ಯಾರ್ಥಿಯ ವಿವರ / Student Details</th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಭಾವನಾತ್ಮಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">EMOTIONAL SOCIAL</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸಾಂಸ್ಥಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">ORGANIZATIONAL</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ವೈಜ್ಞಾನಿಕ ಕೌಶಲ್ಯಗಳು<br><span class="text-[9px] font-normal">SCIENTIFIC SKILLS</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಲಲಿತ ಕಲೆ<br><span class="text-[9px] font-normal">FINE ART</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಸೃಜನಶೀಲತೆ<br><span class="text-[9px] font-normal">CREATIVITY</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮನೋಧರ್ಮ<br><span class="text-[9px] font-normal">TEMPERAMENT</span></th>
+                <th class="w-36 text-center py-3 bg-amber-900/90 text-amber-200">ಮೌಲ್ಯಗಳು<br><span class="text-[9px] font-normal">VALUES</span></th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
+              <!-- Dynamically Rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-3 text-center text-xs text-slate-400 mt-auto">
+      <p class="font-medium">Designed & Developed for <span class="text-slate-700 dark:text-slate-300 font-semibold">GHPS Marched</span></p>
+    </footer>
+
+    <!-- Toast system -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900/95 border border-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transition-all transform translate-y-20 opacity-0 z-50">
+      <div class="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-white" id="toast-icon">
+        <i class="fa-solid fa-check text-sm"></i>
+      </div>
+      <div>
+        <h4 class="text-xs font-bold" id="toast-title">Success</h4>
+        <p class="text-[10px] text-slate-400 mt-0.5" id="toast-message">Record saved successfully.</p>
+      </div>
     </div>
   </div>
 
@@ -219,8 +309,18 @@
     window.supabaseClient = supabaseClient;
 
     let currentStudents = [];
-    let partBData = {}; // Key: studentId -> { emotional: 'A+', org: 'A', ... }
+    let partBData = {}; 
+    let currentViewMode = 'cards';
     const partBKeys = ['emotional', 'org', 'sci', 'art', 'creative', 'temp', 'value'];
+    const partBKeyLabels = {
+      emotional: 'ಭಾವನಾತ್ಮಕ (Emotional Social)',
+      org: 'ಸಾಂಸ್ಥಿಕ (Organizational)',
+      sci: 'ವೈಜ್ಞಾನಿಕ (Scientific Skills)',
+      art: 'ಲಲಿತ ಕಲೆ (Fine Art)',
+      creative: 'ಸೃಜನಶೀಲತೆ (Creativity)',
+      temp: 'ಮನೋಧರ್ಮ (Temperament)',
+      value: 'ಮೌಲ್ಯಗಳು (Values)'
+    };
 
     const defaultGradesSem1 = { emotional: 'A', org: 'A', sci: 'A+', art: 'B+', creative: 'A', temp: 'A', value: 'A+' };
     const defaultGradesSem2 = { emotional: 'A', org: 'A+', sci: 'B+', art: 'A+', creative: 'A', temp: 'A+', value: 'B+' };
@@ -257,6 +357,118 @@
       return match ? match[0] : clean;
     }
 
+    function getGradeBadgeClass(g) {
+      if (g === 'A+') return 'inline-block bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 rounded-lg px-2 py-0.5 font-black text-xs shadow-xs';
+      if (g === 'A') return 'inline-block bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'B+') return 'inline-block bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'B') return 'inline-block bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      if (g === 'C+' || g === 'C') return 'inline-block bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40 rounded-lg px-2 py-0.5 font-bold text-xs shadow-xs';
+      return 'inline-block bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-0.5 font-bold text-xs';
+    }
+
+    function getOverallStudentGrade(studentId) {
+      const studentGrades = partBData[studentId] || {};
+      let totalEntered = 0;
+      let gradeCounts = { 'A+': 0, 'A': 0, 'B+': 0, 'B': 0, 'C+': 0, 'C': 0 };
+      partBKeys.forEach(k => {
+        const g = studentGrades[k];
+        if (g && g !== 'NE' && g !== '-') {
+          totalEntered++;
+          if (gradeCounts[g] !== undefined) gradeCounts[g]++;
+        }
+      });
+      if (totalEntered === 0) return '-';
+      if (gradeCounts['A+'] > 0 && gradeCounts['A+'] >= (totalEntered / 2)) return 'A+';
+      if ((gradeCounts['A+'] + gradeCounts['A']) >= (totalEntered / 2)) return 'A';
+      if ((gradeCounts['A+'] + gradeCounts['A'] + gradeCounts['B+']) >= (totalEntered / 2)) return 'B+';
+      return 'B';
+    }
+
+    function getStudentCardClasses(grade) {
+      if (grade === 'A+') return 'bg-gradient-to-b from-emerald-50/90 via-white to-emerald-50/30 dark:from-emerald-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-emerald-400 dark:border-emerald-500/70 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-400/30';
+      if (grade === 'A') return 'bg-gradient-to-b from-teal-50/90 via-white to-teal-50/30 dark:from-teal-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-teal-400 dark:border-teal-500/70 shadow-md shadow-teal-500/10 ring-1 ring-teal-400/30';
+      if (grade === 'B+') return 'bg-gradient-to-b from-sky-50/90 via-white to-sky-50/30 dark:from-sky-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-sky-400 dark:border-sky-500/70 shadow-md shadow-sky-500/10 ring-1 ring-sky-400/30';
+      if (grade === 'B') return 'bg-gradient-to-b from-indigo-50/90 via-white to-indigo-50/30 dark:from-indigo-950/40 dark:via-slate-850 dark:to-slate-850 border-2 border-indigo-400 dark:border-indigo-500/70 shadow-md shadow-indigo-500/10 ring-1 ring-indigo-400/30';
+      return 'bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 shadow-sm';
+    }
+
+    function setPartBViewMode(mode) {
+      currentViewMode = mode;
+      const btnCards = document.getElementById('btn-partb-cards');
+      const btnTable = document.getElementById('btn-partb-table');
+      const cardsEl = document.getElementById('partb-cards-container');
+      const tableEl = document.getElementById('partb-table-container');
+
+      if (mode === 'cards') {
+        if (btnCards) btnCards.className = "px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0";
+        if (btnTable) btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent";
+        if (tableEl) tableEl.classList.add('hidden');
+        if (cardsEl) cardsEl.classList.remove('hidden');
+      } else {
+        if (btnTable) btnTable.className = "px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 bg-indigo-600 text-white shadow-xs border-0";
+        if (btnCards) btnCards.className = "px-3 py-1.5 rounded-lg text-xs font-black transition cursor-pointer flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 border-0 bg-transparent";
+        if (cardsEl) cardsEl.classList.add('hidden');
+        if (tableEl) tableEl.classList.remove('hidden');
+      }
+      renderActiveView();
+    }
+
+    let autoSaveTimer = null;
+    function triggerAutoSave() {
+      const indicator = document.getElementById('auto-save-indicator');
+      if (indicator) {
+        indicator.classList.remove('hidden');
+        indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 flex items-center gap-1.5 border border-amber-200/60 dark:border-amber-900/40';
+        indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate fa-spin text-amber-500 text-[11px]"></i> <span>ಉಳಿಸಲಾಗುತ್ತಿದೆ...</span>';
+      }
+
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        performSilentSave();
+      }, 700);
+    }
+
+    function performSilentSave() {
+      const cls = document.getElementById('dd-class').value;
+      const sem = document.getElementById('dd-semester').value;
+      const evalKey = `PART_B_${sem}`;
+      const mockKey = `cce_mock_cce_${cls}_${evalKey}`;
+
+      localStorage.setItem(mockKey, JSON.stringify(partBData));
+
+      supabaseClient.auth.getSession().then(({ data: { session } }) => {
+        const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id")) || null;
+        const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
+
+        const upsertPayloads = currentStudents.map(student => ({
+          school_id: schoolId,
+          student_id: student.id,
+          exam_type: evalKey,
+          marks: partBData[student.id] || defaultGrades,
+          updated_at: new Date().toISOString()
+        }));
+
+        supabaseClient
+          .from('cce_evaluations')
+          .upsert(upsertPayloads, { onConflict: 'student_id,exam_type' })
+          .then(({ error }) => {
+            const indicator = document.getElementById('auto-save-indicator');
+            if (indicator) {
+              indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+              indicator.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i> <span>ಸ್ವಯಂ ಉಳಿಸಲಾಗಿದೆ</span>';
+              setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
+            }
+          });
+      }).catch(() => {
+        const indicator = document.getElementById('auto-save-indicator');
+        if (indicator) {
+          indicator.className = 'text-xs font-bold px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 border border-emerald-200/60 dark:border-emerald-900/40';
+          indicator.innerHTML = '<i class="fa-solid fa-circle-check text-teal-500 text-[11px]"></i> <span>ಸ್ಥಳೀಯವಾಗಿ ಉಳಿಸಲಾಗಿದೆ</span>';
+          setTimeout(() => { if (indicator) indicator.classList.add('hidden'); }, 2500);
+        }
+      });
+    }
+
     window.onload = async function() {
       await loadPartBData();
     };
@@ -264,7 +476,7 @@
     async function loadPartBData() {
       document.getElementById('loading-state').classList.remove('hidden');
       const cls = document.getElementById('dd-class').value;
-      const sem = document.getElementById('dd-semester').value; // SEM1 or SEM2
+      const sem = document.getElementById('dd-semester').value;
       const evalKey = `PART_B_${sem}`;
 
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -273,12 +485,22 @@
       // 1. Fetch Students
       currentStudents = [];
       try {
-        let q = supabaseClient.from('admissions').select('*').neq('is_admitted', false);
-        if (schoolId) q = q.eq('school_id', schoolId);
+        let q = supabaseClient.from('admissions').select('*');
+        if (schoolId) q = q.or(`school_id.eq.${schoolId},school_id.is.null`);
         const { data, error } = await q;
 
         if (!error && data && data.length > 0) {
-          const matched = data.filter(s => normalizeClass(s.enroll_class || s.standard || s.class) === normalizeClass(cls));
+          const localTrashed = JSON.parse(localStorage.getItem('trashed_students_list') || '[]');
+          const trashedKeys = new Set(localTrashed.map(t => String(t.id || t.app_no || t.student_sts || '').replace(/\s+/g, '').toLowerCase()));
+
+          const matched = data.filter(s => {
+            const isNotOut = s.status !== 'TC_OUT' && s.status !== 'DELETED' && s.status !== 'REMOVED';
+            const sKey1 = String(s.id || '').replace(/\s+/g, '').toLowerCase();
+            const sKey2 = String(s.student_sts || s.app_no || '').replace(/\s+/g, '').toLowerCase();
+            const isNotTrashed = (!sKey1 || !trashedKeys.has(sKey1)) && (!sKey2 || !trashedKeys.has(sKey2));
+            const isClass = normalizeClass(s.enroll_class || s.standard || s.class) === normalizeClass(cls);
+            return isNotOut && isNotTrashed && isClass;
+          });
           if (matched.length > 0) {
             currentStudents = matched.map(s => ({
               id: s.id,
@@ -293,7 +515,6 @@
         console.error("Error loading students:", e);
       }
 
-      // Fallback: LocalStorage student cache
       if (currentStudents.length === 0) {
         try {
           const localSt = JSON.parse(localStorage.getItem(`students_class_${cls}`) || localStorage.getItem("students") || "[]");
@@ -310,13 +531,9 @@
         } catch(e) {}
       }
 
-      // Sort Alphabetically A-Z
       currentStudents.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'kn'));
 
-      // 2. Fetch Part B Evaluations for Selected Semester
       partBData = {};
-      
-      // A. Supabase Query
       try {
         let q = supabaseClient.from('cce_evaluations').select('*').eq('exam_type', evalKey);
         if (schoolId) q = q.eq('school_id', schoolId);
@@ -331,7 +548,6 @@
         }
       } catch(e) {}
 
-      // B. LocalStorage Fallback
       try {
         const mockKey = `cce_mock_cce_${cls}_${evalKey}`;
         const localMock = JSON.parse(localStorage.getItem(mockKey) || "{}");
@@ -343,7 +559,104 @@
       } catch(e) {}
 
       document.getElementById('loading-state').classList.add('hidden');
-      renderTable();
+      renderActiveView();
+    }
+
+    function renderActiveView() {
+      if (currentViewMode === 'cards') {
+        renderCards();
+      } else {
+        renderTable();
+      }
+    }
+
+    function getFilteredStudents() {
+      const searchVal = (document.getElementById('input-search')?.value || '').trim().toLowerCase();
+      return currentStudents.filter(s => {
+        if (!searchVal) return true;
+        const name = (s.name || '').toLowerCase();
+        const father = (s.father || '').toLowerCase();
+        const sts = (s.sts_no || s.id || '').toLowerCase();
+        return name.includes(searchVal) || father.includes(searchVal) || sts.includes(searchVal);
+      });
+    }
+
+    function renderCards() {
+      const container = document.getElementById('partb-cards-container');
+      if (!container) return;
+
+      const sem = document.getElementById('dd-semester').value;
+      const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
+      const filtered = getFilteredStudents();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-400 font-bold bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <i class="fa-solid fa-folder-open text-3xl mb-2 text-slate-300 block"></i>
+            <p>ಯಾವುದೇ ವಿದ್ಯಾರ್ಥಿಗಳ ವಿವರ ಲಭ್ಯವಿಲ್ಲ / No matching student records found</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      filtered.forEach((s, idx) => {
+        const sId = s.id;
+        const studentGrades = partBData[sId] || {};
+        const overallGrade = getOverallStudentGrade(sId);
+        const isBoy = s.gender === 'Boy';
+
+        let subCardsHtml = '';
+        partBKeys.forEach(subKey => {
+          const val = studentGrades[subKey] || defaultGrades[subKey] || 'A';
+          subCardsHtml += `
+            <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-2">
+              <span class="text-[11px] font-bold text-slate-700 dark:text-slate-200 truncate max-w-[170px]">${partBKeyLabels[subKey]}</span>
+              <div class="flex items-center gap-1">
+                ${['A+', 'A', 'B+', 'B'].map(g => `
+                  <button type="button" onclick="onGradeChange('${sId}', '${subKey}', '${g}')" class="px-1.5 py-0.5 rounded text-[10px] font-black transition cursor-pointer border-0 ${val === g ? 'bg-indigo-600 text-white shadow-xs' : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-indigo-500 hover:text-white'}">${g}</button>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        });
+
+        html += `
+          <div class="rounded-2xl p-4 transition-all duration-300 flex flex-col justify-between space-y-3.5 ${getStudentCardClasses(overallGrade)}" data-partb-card-id="${sId}">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center font-black text-xs ${isBoy ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300' : 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300'} shadow-xs">
+                  ${idx + 1}
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-slate-900 dark:text-white leading-tight">${s.name}</h4>
+                  <p class="text-[10px] text-slate-500 font-semibold mt-0.5">ತಂದೆ: ${s.father || '-'}</p>
+                </div>
+              </div>
+              <div class="flex flex-col items-end gap-1">
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${isBoy ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400' : 'bg-pink-50 text-pink-700 dark:bg-pink-950/40 dark:text-pink-400'}">
+                  ${isBoy ? '👦 ಬಾಲಕ' : '👧 ಬಾಲಕಿ'}
+                </span>
+                <span class="text-[10px] font-mono text-slate-400 font-semibold">STS: ${s.sts_no || s.id}</span>
+              </div>
+            </div>
+
+            <!-- Subject Cards -->
+            <div class="space-y-1.5 flex-1">
+              ${subCardsHtml}
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+              <span class="text-[10px] text-slate-500 font-bold">ಒಟ್ಟಾರೆ ಗ್ರೇಡ್:</span>
+              <span class="${getGradeBadgeClass(overallGrade)}">${overallGrade}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
     function renderTable() {
@@ -352,15 +665,7 @@
 
       const sem = document.getElementById('dd-semester').value;
       const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
-      const searchVal = (document.getElementById('input-search')?.value || '').trim().toLowerCase();
-
-      const filtered = currentStudents.filter(s => {
-        if (!searchVal) return true;
-        const name = (s.name || '').toLowerCase();
-        const father = (s.father || '').toLowerCase();
-        const sts = (s.sts_no || s.id || '').toLowerCase();
-        return name.includes(searchVal) || father.includes(searchVal) || sts.includes(searchVal);
-      });
+      const filtered = getFilteredStudents();
 
       if (filtered.length === 0) {
         tbody.innerHTML = `
@@ -389,7 +694,7 @@
           </td>`;
 
         partBKeys.forEach(subKey => {
-          const val = studentGrades[subKey] || defaultGrades[subKey] || 'NE';
+          const val = studentGrades[subKey] || defaultGrades[subKey] || 'A';
 
           html += `<td class="text-center p-2">
             <select id="select_${sId}_${subKey}" 
@@ -418,7 +723,16 @@
       partBData[sId][subKey] = val;
 
       const el = document.getElementById(`select_${sId}_${subKey}`);
-      if (el) el.setAttribute('data-val', val);
+      if (el) {
+        el.value = val;
+        el.setAttribute('data-val', val);
+      }
+
+      if (currentViewMode === 'cards') {
+        renderCards();
+      }
+
+      triggerAutoSave();
     }
 
     function setAllPartBGrades(gradeVal) {
@@ -434,65 +748,144 @@
           }
         });
       });
+      renderActiveView();
+      triggerAutoSave();
       showToast("ಗ್ರೇಡ್ ಬ್ಯಾಚ್ ಅಪ್‌ಡೇಟ್", `ಎಲ್ಲಾ ವಿದ್ಯಾರ್ಥಿಗಳ ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ${gradeVal} ಎಂದು ಬದಲಾಯಿಸಲಾಗಿದೆ.`);
     }
 
     async function savePartBGradesBatch() {
+      performSilentSave();
+      showToast("ಯಶಸ್ವಿಯಾಗಿದೆ! / Success", `ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ!`, "success");
+    }
+
+    function buildPrintArea() {
       const cls = document.getElementById('dd-class').value;
-      const sem = document.getElementById('dd-semester').value; // SEM1 or SEM2
-      const evalKey = `PART_B_${sem}`;
-      const mockKey = `cce_mock_cce_${cls}_${evalKey}`;
+      const sem = document.getElementById('dd-semester').value;
+      
+      const schoolNameEn = localStorage.getItem('school_name_en') || "GOVERNMENT HIGHER PRIMARY SCHOOL, MARCHED";
+      const schoolNameKn = localStorage.getItem('school_name_kn') || "ಸರ್ಕಾರಿ ಹಿರಿಯ ಪ್ರಾಥಮಿಕ ಶಾಲೆ ಮರ್ಛೇಡ್";
+      
+      const defaultGovLogo = "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg";
+      const defaultSchoolLogo = "https://gsayvnnnfrrkwdfwocbu.supabase.co/storage/v1/object/public/school-logo/ghps-marched-logo.png";
+      let govLogo = localStorage.getItem('school_gov_logo') || defaultGovLogo;
+      if (govLogo.includes('e/e7/Emblem_of_Karnataka.svg')) govLogo = defaultGovLogo;
+      const schoolLogo = localStorage.getItem('school_logo_url') || defaultSchoolLogo;
 
-      const saveBtn = document.getElementById('btn-save-partb');
-      saveBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-sm"></i> <span>ಉಳಿಸಲಾಗುತ್ತಿದೆ / Saving...</span>`;
-      saveBtn.disabled = true;
+      const printArea = document.getElementById('printArea');
+      if (!printArea) return;
+      printArea.innerHTML = '';
 
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const schoolId = (session?.user?.user_metadata?.school_id || localStorage.getItem("school_id"));
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'text-center mb-3';
+      headerDiv.innerHTML = `
+        <div style="display: grid; grid-template-columns: 65px 1fr 65px; align-items: center; gap: 8px; margin-bottom: 6px;">
+          <!-- Left: Karnataka Govt Emblem -->
+          <div style="text-align: left;">
+            <img src="${govLogo}" style="height: 55px; width: 55px; object-fit: contain;" alt="Govt Logo" crossorigin="anonymous">
+          </div>
+          <!-- Center: Title & School Name -->
+          <div style="text-align: center;">
+            <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #000; letter-spacing: 0.5px;">ಕರ್ನಾಟಕ ಸರ್ಕಾರ | GOVERNMENT OF KARNATAKA</div>
+            <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #000; margin-top: 1px;">ಶಾಲಾ ಶಿಕ್ಷಣ ಮತ್ತು ಸಾಕ್ಷರತಾ ಇಲಾಖೆ | DEPARTMENT OF SCHOOL EDUCATION AND LITERACY</div>
+            <div style="font-size: 17px; font-weight: 900; text-transform: uppercase; color: #000; margin-top: 2px; line-height: 1.2;">${schoolNameEn}</div>
+            <div style="font-size: 14px; font-weight: 800; color: #000; margin-top: 1px; line-height: 1.2;">${schoolNameKn}</div>
+          </div>
+          <!-- Right: School Logo / Badge -->
+          <div style="text-align: right;">
+            <img src="${schoolLogo}" style="height: 55px; width: 55px; object-fit: contain;" alt="School Logo" crossorigin="anonymous">
+          </div>
+        </div>
+        <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: #000; margin-top: 4px; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; padding: 3px 0;">
+          CCE ಭಾಗ-ಬಿ ಪಠ್ಯೇತರ ಚಟುವಟಿಕೆಗಳ ಮೌಲ್ಯಮಾಪನ ದಾಖಲಾತಿ ವಹಿ (${sem === 'SEM1' ? 'ಪ್ರಥಮ ಸೆಮಿಸ್ಟರ್ - SA1' : 'ದ್ವಿತೀಯ ಸೆಮಿಸ್ಟರ್ - SA2'})
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: #000; margin-top: 6px; padding-bottom: 4px; border-bottom: 1px solid #000;">
+          <span>ತರಗತಿ / Class: <strong>${cls}</strong></span>
+          <span>ಸೆಮಿಸ್ಟರ್ / Semester: <strong>${sem === 'SEM1' ? '1st Sem' : '2nd Sem'}</strong></span>
+          <span>ಒಟ್ಟು ದಾಖಲಾತಿ: <strong>${currentStudents.length}</strong></span>
+          <span>ಮುದ್ರಣ ದಿನಾಂಕ: <strong>${new Date().toLocaleDateString('kn-IN')}</strong></span>
+        </div>
+      `;
+      printArea.appendChild(headerDiv);
 
-      const upsertPayloads = [];
-      const localMock = JSON.parse(localStorage.getItem(mockKey) || "{}");
+      // Fresh table generation
+      renderTable();
 
-      currentStudents.forEach(student => {
-        const sId = student.id;
-        const defaultGrades = sem === 'SEM1' ? defaultGradesSem1 : defaultGradesSem2;
-        const gradesObj = partBData[sId] || defaultGrades;
+      // Clone table
+      const originalTable = document.getElementById('partb-competency-table');
+      if (originalTable) {
+        const tableClone = originalTable.cloneNode(true);
+        tableClone.removeAttribute('id');
+        tableClone.classList.remove('hidden');
 
-        upsertPayloads.push({
-          school_id: schoolId,
-          student_id: sId,
-          exam_type: evalKey,
-          marks: gradesObj,
-          updated_at: new Date().toISOString()
+        // Replace select dropdowns with spans
+        tableClone.querySelectorAll('select').forEach(select => {
+          const span = document.createElement('span');
+          span.innerText = select.value || '-';
+          span.style.fontWeight = 'bold';
+          select.parentNode.replaceChild(span, select);
         });
 
-        localMock[sId] = gradesObj;
-        if (student.sts_no) {
-          localMock[student.sts_no] = gradesObj;
-          localMock[String(student.sts_no).replace(/\s+/g, '')] = gradesObj;
-        }
-      });
+        tableClone.removeAttribute('class');
+        tableClone.querySelectorAll('*').forEach(el => {
+          const isLeft = el.classList.contains('text-left');
+          const isRight = el.classList.contains('text-right');
+          el.removeAttribute('class');
+          if (isLeft) { el.style.textAlign = 'left'; el.style.paddingLeft = '6px'; }
+          else if (isRight) { el.style.textAlign = 'right'; el.style.paddingRight = '6px'; }
+          else { el.style.textAlign = 'center'; }
+        });
 
-      // Save to LocalStorage
-      localStorage.setItem(mockKey, JSON.stringify(localMock));
-
-      // Save to Supabase cce_evaluations
-      if (typeof supabaseClient !== 'undefined' && supabaseClient && upsertPayloads.length > 0) {
-        try {
-          const { error } = await supabaseClient
-            .from('cce_evaluations')
-            .upsert(upsertPayloads, { onConflict: 'student_id,exam_type' });
-
-          if (error) console.warn("Supabase upsert warning, cached locally:", error);
-        } catch(e) {
-          console.error("Supabase Part B save error:", e);
-        }
+        printArea.appendChild(tableClone);
       }
 
-      saveBtn.innerHTML = `<i class="fa-solid fa-floppy-disk text-sm"></i> <span>ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಉಳಿಸಿ / Save Part B</span>`;
-      saveBtn.disabled = false;
+      // Signature block
+      const sigRow = document.createElement('div');
+      sigRow.className = 'print-signatures-row';
+      sigRow.style.marginTop = '35px';
+      sigRow.style.display = 'flex';
+      sigRow.style.justifyContent = 'space-between';
+      sigRow.style.alignItems = 'flex-end';
+      sigRow.style.fontSize = '11px';
+      sigRow.style.fontWeight = 'bold';
+      sigRow.style.color = '#000';
+      sigRow.innerHTML = `
+        <div style="text-align: center;">
+          <div style="border-top: 1px solid #000; width: 160px; margin-bottom: 4px;"></div>
+          <span>ತರಗತಿ ಶಿಕ್ಷಕರ ಸಹಿ<br>(Class Teacher Signature)</span>
+        </div>
+        <div style="text-align: center;">
+          <div style="border-top: 1px solid #000; width: 160px; margin-bottom: 4px;"></div>
+          <span>ದೈಹಿಕ ಶಿಕ್ಷಣ ಶಿಕ್ಷಕರ ಸಹಿ<br>(Physical Education Teacher)</span>
+        </div>
+        <div style="text-align: center;">
+          <div style="border-top: 1px solid #000; width: 180px; margin-bottom: 4px;"></div>
+          <span>ಮುಖ್ಯೋಪಾಧ್ಯಾಯರ ಸಹಿ ಮತ್ತು ಮೊಹರು<br>(Head Master Signature & Seal)</span>
+        </div>
+      `;
+      printArea.appendChild(sigRow);
 
-      showToast("ಯಶಸ್ವಿಯಾಗಿದೆ! / Success", `ತರಗತಿ ${cls} (${sem}) ಭಾಗ-ಬಿ ಗ್ರೇಡ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಡೇಟಾಬೇಸ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ!`, "success");
+      // Restore active view
+      if (currentViewMode === 'cards') {
+        const compTable = document.getElementById('partb-table-container');
+        if (compTable) compTable.classList.add('hidden');
+        const cardsEl = document.getElementById('partb-cards-container');
+        if (cardsEl) cardsEl.classList.remove('hidden');
+      }
+    }
+
+    function triggerPrint() {
+      if (currentStudents.length === 0) {
+        showToast("ಮುದ್ರಿಸಲು ಡೇಟಾ ಇಲ್ಲ", "warning");
+        return;
+      }
+      window.customPrintGenerated = true;
+      buildPrintArea();
+      setTimeout(() => {
+        window.print();
+        window.addEventListener('afterprint', () => {
+          window.customPrintGenerated = false;
+        }, { once: true });
+      }, 100);
     }
   </script>
 </body>
